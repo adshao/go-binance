@@ -14,7 +14,9 @@ import (
 
 type baseTestSuite struct {
 	suite.Suite
-	client *mockedClient
+	client    *mockedClient
+	apiKey    string
+	secretKey string
 }
 
 func (s *baseTestSuite) r() *require.Assertions {
@@ -22,7 +24,9 @@ func (s *baseTestSuite) r() *require.Assertions {
 }
 
 func (s *baseTestSuite) SetupTest() {
-	s.client = newMockedClient("dummyAPIKey", "dummySecretKey")
+	s.apiKey = "dummyAPIKey"
+	s.secretKey = "dummySecretKey"
+	s.client = newMockedClient(s.apiKey, s.secretKey)
 }
 
 func (s *baseTestSuite) mockDo(data []byte, err error, statusCode ...int) {

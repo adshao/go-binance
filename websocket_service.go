@@ -18,6 +18,7 @@ func WsDepthServe(symbol string, handler WsDepthHandler) (chan struct{}, error) 
 	wsHandler := func(message []byte) {
 		j, err := newJSON(message)
 		if err != nil {
+			// TODO: callback if there is an error
 			return
 		}
 		event := new(WsDepthEvent)
@@ -26,7 +27,7 @@ func WsDepthServe(symbol string, handler WsDepthHandler) (chan struct{}, error) 
 		event.Symbol = j.Get("s").MustString()
 		event.UpdateID = j.Get("u").MustInt64()
 		bidsLen := len(j.Get("b").MustArray())
-		event.Bids = make([]Bid, 0)
+		event.Bids = make([]Bid, bidsLen)
 		for i := 0; i < bidsLen; i++ {
 			item := j.Get("b").GetIndex(i)
 			event.Bids[i] = Bid{
@@ -35,7 +36,7 @@ func WsDepthServe(symbol string, handler WsDepthHandler) (chan struct{}, error) 
 			}
 		}
 		asksLen := len(j.Get("a").MustArray())
-		event.Asks = make([]Ask, 0)
+		event.Asks = make([]Ask, asksLen)
 		for i := 0; i < asksLen; i++ {
 			item := j.Get("a").GetIndex(i)
 			event.Asks[i] = Ask{
@@ -74,27 +75,29 @@ func WsKlineServe(symbol string, interval string, handler WsKlineHandler) (chan 
 }
 
 type WsKlineEvent struct {
-	Event  string `json:"e"`
-	Time   int64  `json:"E"`
-	Symbol string `json:"s"`
-	Kline  struct {
-		StartTime            int64  `json:"t"`
-		EndTime              int64  `json:"T"`
-		Symbol               string `json:"s"`
-		Interval             string `json:"i"`
-		FirstTradeID         int64  `json:"f"`
-		LastTradeID          int64  `json:"L"`
-		Open                 string `json:"o"`
-		Close                string `json:"c"`
-		High                 string `json:"h"`
-		Low                  string `json:"l"`
-		Volume               string `json:"v"`
-		TradeNum             int64  `json:"n"`
-		IsFinal              bool   `json:"x"`
-		QuoteVolume          string `json:"q"`
-		ActiveBuyVolume      string `json:"V"`
-		ActiveBuyQuoteVolume string `json:"Q"`
-	} `json:"k"`
+	Event  string  `json:"e"`
+	Time   int64   `json:"E"`
+	Symbol string  `json:"s"`
+	Kline  WsKline `json:"k"`
+}
+
+type WsKline struct {
+	StartTime            int64  `json:"t"`
+	EndTime              int64  `json:"T"`
+	Symbol               string `json:"s"`
+	Interval             string `json:"i"`
+	FirstTradeID         int64  `json:"f"`
+	LastTradeID          int64  `json:"L"`
+	Open                 string `json:"o"`
+	Close                string `json:"c"`
+	High                 string `json:"h"`
+	Low                  string `json:"l"`
+	Volume               string `json:"v"`
+	TradeNum             int64  `json:"n"`
+	IsFinal              bool   `json:"x"`
+	QuoteVolume          string `json:"q"`
+	ActiveBuyVolume      string `json:"V"`
+	ActiveBuyQuoteVolume string `json:"Q"`
 }
 
 type WsAggTradeHandler func(event *WsAggTradeEvent)
@@ -117,13 +120,14 @@ type WsAggTradeEvent struct {
 	Event                 string `json:"e"`
 	Time                  int64  `json:"E"`
 	Symbol                string `json:"s"`
-	AggregateTradeID      int64  `json:"a"`
+	AggTradeID            int64  `json:"a"`
 	Price                 string `json:"p"`
 	Quantity              string `json:"q"`
 	FirstBreakdownTradeID int64  `json:"f"`
 	LastBreakdownTradeID  int64  `json:"l"`
 	TradeTime             int64  `json:"T"`
 	IsBuyerMaker          bool   `json:"m"`
+	Placeholder_          bool   `json:"M"` // add this field to avoid case insensitive unmarshaling
 }
 
 func WsUserDataServe(listenKey string, handler WsHandler) (chan struct{}, error) {

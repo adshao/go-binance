@@ -16,7 +16,9 @@ func newWsConfig(endpoint string) *wsConfig {
 	}
 }
 
-func wsServe(cfg *wsConfig, handler WsHandler) (done chan struct{}, err error) {
+type wsServeFunc func(*wsConfig, WsHandler) (chan struct{}, error)
+
+var wsServe = func(cfg *wsConfig, handler WsHandler) (done chan struct{}, err error) {
 	c, _, err := websocket.DefaultDialer.Dial(cfg.endpoint, nil)
 	if err != nil {
 		return
