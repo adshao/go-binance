@@ -1,0 +1,16 @@
+language: go
+
+go:
+  - 1.8
+  - 1.9
+
+os:
+  - linux
+
+before_install:
+  - go get -t github.com/bitly/go-simplejson
+  - go get -t github.com/gorilla/websocket
+  - go get -t github.com/stretchr/testify
+
+script:
+  - go test -v ./...
