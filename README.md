@@ -89,11 +89,13 @@ for _, k := range klines {
 err := client.NewCreateOrderService().Symbol("BNBETH").
         Side(binance.SideTypeBuy).Type(binance.OrderTypeLimit).
         TimeInForce(binance.TimeInForceGTC).Quantity("100").
-        Price("0.00310000").Test(context.Background())
+        Price("0.00310000").Do(context.Background())
 if err != nil {
     fmt.Println(err)
     return
 }
+
+// Use Test() instead of Do() for testing.
 ```
 
 #### Cancel Order
