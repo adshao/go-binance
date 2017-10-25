@@ -2,6 +2,8 @@
 
 A Golang SDK for [binance](https://www.binance.com) API.
 
+[![GoDoc](https://godoc.org/github.com/adshao/go-binance?status.svg)](https://godoc.org/github.com/adshao/go-binance)
+
 All the REST APIs listed in [binance API document](https://www.binance.com/restapipub.html) are implemented, as well as the websocket APIs.
 
 For best compatibility, please use Go >= 1.8.
