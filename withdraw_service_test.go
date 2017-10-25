@@ -24,7 +24,7 @@ func (s *withdrawServiceTestSuite) TestCreateWithdraw() {
 
 	asset := "ETH"
 	address := "myaddress"
-	amount := 0.01
+	amount := "0.01"
 	name := "eth"
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().SetFormParams(params{

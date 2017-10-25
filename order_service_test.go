@@ -27,8 +27,8 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 	side := SideTypeBuy
 	orderType := OrderTypeLimit
 	timeInForce := TimeInForceGTC
-	quantity := 12.00
-	price := 0.0001
+	quantity := "12.00"
+	price := "0.0001"
 	newClientOrderID := "myOrder1"
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().SetFormParams(params{

@@ -12,11 +12,11 @@ type CreateOrderService struct {
 	side             SideType
 	orderType        OrderType
 	timeInForce      TimeInForce
-	quantity         float64
-	price            float64
+	quantity         string
+	price            string
 	newClientOrderID *string
-	stopPrice        *float64
-	icebergQuantity  *float64
+	stopPrice        *string
+	icebergQuantity  *string
 }
 
 func (s *CreateOrderService) Symbol(symbol string) *CreateOrderService {
@@ -39,12 +39,12 @@ func (s *CreateOrderService) TimeInForce(timeInForce TimeInForce) *CreateOrderSe
 	return s
 }
 
-func (s *CreateOrderService) Quantity(quantity float64) *CreateOrderService {
+func (s *CreateOrderService) Quantity(quantity string) *CreateOrderService {
 	s.quantity = quantity
 	return s
 }
 
-func (s *CreateOrderService) Price(price float64) *CreateOrderService {
+func (s *CreateOrderService) Price(price string) *CreateOrderService {
 	s.price = price
 	return s
 }
@@ -54,12 +54,12 @@ func (s *CreateOrderService) NewClientOrderID(newClientOrderID string) *CreateOr
 	return s
 }
 
-func (s *CreateOrderService) StopPrice(stopPrice float64) *CreateOrderService {
+func (s *CreateOrderService) StopPrice(stopPrice string) *CreateOrderService {
 	s.stopPrice = &stopPrice
 	return s
 }
 
-func (s *CreateOrderService) IcebergQuantity(icebergQuantity float64) *CreateOrderService {
+func (s *CreateOrderService) IcebergQuantity(icebergQuantity string) *CreateOrderService {
 	s.icebergQuantity = &icebergQuantity
 	return s
 }

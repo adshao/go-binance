@@ -10,7 +10,7 @@ type CreateWithdrawService struct {
 	c       *Client
 	asset   string
 	address string
-	amount  float64
+	amount  string
 	name    *string
 }
 
@@ -24,7 +24,7 @@ func (s *CreateWithdrawService) Address(address string) *CreateWithdrawService {
 	return s
 }
 
-func (s *CreateWithdrawService) Amount(amount float64) *CreateWithdrawService {
+func (s *CreateWithdrawService) Amount(amount string) *CreateWithdrawService {
 	s.amount = amount
 	return s
 }
