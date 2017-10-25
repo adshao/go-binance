@@ -25,7 +25,9 @@ import (
 )
 ```
 
-### Setup
+### REST API
+
+#### Setup
 
 Init client for API services. Get APIKey/SecretKey from your binance account.
 
@@ -41,8 +43,6 @@ client := binance.NewClient(apiKey, secretKey)
 A service instance stands for a REST API endpoint and is initialized by client.NewXXXService function.
 
 Simply call API in chain style. Call Do() in the end to send HTTP request.
-
-### REST API
 
 #### List Ticker Prices
 
@@ -155,7 +155,7 @@ if err != nil {
 
 #### Kline
 
-```glang
+```golang
 wsKlineHandler := func(event *binance.WsKlineEvent) {
     fmt.Println(event)
 }
@@ -181,4 +181,4 @@ if err != nil {
 
 ### Documentation
 
-https://godoc.org/github.com/adshao/go-binance
+[![GoDoc](https://godoc.org/github.com/adshao/go-binance?status.svg)](https://godoc.org/github.com/adshao/go-binance)
