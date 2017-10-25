@@ -107,7 +107,7 @@ func (s *tradeServiceTestSuite) TestAggregateTrades() {
 		s.assertRequestEqual(e, r)
 	})
 
-	aggTrades, err := s.client.NewAggregateTradesService().Symbol(symbol).
+	aggTrades, err := s.client.NewAggTradesService().Symbol(symbol).
 		FromID(fromID).StartTime(startTime).EndTime(endTime).Limit(limit).
 		Do(newContext())
 	r := s.r()

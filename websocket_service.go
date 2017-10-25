@@ -10,8 +10,10 @@ var (
 	baseURL = "wss://stream.binance.com:9443/ws"
 )
 
+// WsDepthHandler handle websocket depth event
 type WsDepthHandler func(event *WsDepthEvent)
 
+// WsDepthServe serve websocket depth handler with a symbol
 func WsDepthServe(symbol string, handler WsDepthHandler) (chan struct{}, error) {
 	endpoint := fmt.Sprintf("%s/%s@depth", baseURL, strings.ToLower(symbol))
 	cfg := newWsConfig(endpoint)
@@ -49,6 +51,7 @@ func WsDepthServe(symbol string, handler WsDepthHandler) (chan struct{}, error) 
 	return wsServe(cfg, wsHandler)
 }
 
+// WsDepthEvent define websocket depth event
 type WsDepthEvent struct {
 	Event    string `json:"e"`
 	Time     int64  `json:"E"`
@@ -58,8 +61,10 @@ type WsDepthEvent struct {
 	Asks     []Ask  `json:"a"`
 }
 
+// WsKlineHandler handle websocket kline event
 type WsKlineHandler func(event *WsKlineEvent)
 
+// WsKlineServe serve websocket kline handler with a symbol and interval like 15m, 30s
 func WsKlineServe(symbol string, interval string, handler WsKlineHandler) (chan struct{}, error) {
 	endpoint := fmt.Sprintf("%s/%s@kline_%s", baseURL, strings.ToLower(symbol), interval)
 	cfg := newWsConfig(endpoint)
@@ -74,6 +79,7 @@ func WsKlineServe(symbol string, interval string, handler WsKlineHandler) (chan 
 	return wsServe(cfg, wsHandler)
 }
 
+// WsKlineEvent define websocket kline event
 type WsKlineEvent struct {
 	Event  string  `json:"e"`
 	Time   int64   `json:"E"`
@@ -81,6 +87,7 @@ type WsKlineEvent struct {
 	Kline  WsKline `json:"k"`
 }
 
+// WsKline define websocket kline
 type WsKline struct {
 	StartTime            int64  `json:"t"`
 	EndTime              int64  `json:"T"`
@@ -100,8 +107,10 @@ type WsKline struct {
 	ActiveBuyQuoteVolume string `json:"Q"`
 }
 
+// WsAggTradeHandler handle websocket aggregate trade event
 type WsAggTradeHandler func(event *WsAggTradeEvent)
 
+// WsAggTradeServe serve websocket aggregate handler with a symbol
 func WsAggTradeServe(symbol string, handler WsAggTradeHandler) (chan struct{}, error) {
 	endpoint := fmt.Sprintf("%s/%s@aggTrade", baseURL, strings.ToLower(symbol))
 	cfg := newWsConfig(endpoint)
@@ -116,6 +125,7 @@ func WsAggTradeServe(symbol string, handler WsAggTradeHandler) (chan struct{}, e
 	return wsServe(cfg, wsHandler)
 }
 
+// WsAggTradeEvent define websocket aggregate trade event
 type WsAggTradeEvent struct {
 	Event                 string `json:"e"`
 	Time                  int64  `json:"E"`
@@ -127,9 +137,10 @@ type WsAggTradeEvent struct {
 	LastBreakdownTradeID  int64  `json:"l"`
 	TradeTime             int64  `json:"T"`
 	IsBuyerMaker          bool   `json:"m"`
-	Placeholder_          bool   `json:"M"` // add this field to avoid case insensitive unmarshaling
+	Placeholder           bool   `json:"M"` // add this field to avoid case insensitive unmarshaling
 }
 
+// WsUserDataServe serve user data handler with listen key
 func WsUserDataServe(listenKey string, handler WsHandler) (chan struct{}, error) {
 	endpoint := fmt.Sprintf("%s/%s", baseURL, listenKey)
 	cfg := newWsConfig(endpoint)

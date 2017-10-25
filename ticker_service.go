@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 )
 
+// ListBookTickersService list all book tickers
 type ListBookTickersService struct {
 	c *Client
 }
@@ -26,6 +27,7 @@ func (s *ListBookTickersService) Do(ctx context.Context, opts ...RequestOption) 
 	return
 }
 
+// BookTicker define book ticker info
 type BookTicker struct {
 	Symbol      string `json:"symbol"`
 	BidPrice    string `json:"bidPrice"`
@@ -34,6 +36,7 @@ type BookTicker struct {
 	AskQuantity string `json:"askQty"`
 }
 
+// ListPricesService list all ticker prices
 type ListPricesService struct {
 	c *Client
 }
@@ -60,6 +63,7 @@ type SymbolPrice struct {
 	Price  string `json:"price"`
 }
 
+// PriceChangeStatsService show stats of price change in last 24 hours
 type PriceChangeStatsService struct {
 	c      *Client
 	symbol string
@@ -88,6 +92,7 @@ func (s *PriceChangeStatsService) Do(ctx context.Context, opts ...RequestOption)
 	return
 }
 
+// PriceChangeStats define price change stats
 type PriceChangeStats struct {
 	PriceChange        string `json:"priceChange"`
 	PriceChangePercent string `json:"priceChangePercent"`

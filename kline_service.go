@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// KlinesService list klines
 type KlinesService struct {
 	c         *Client
 	symbol    string

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 )
 
+// ListTradesService list trades
 type ListTradesService struct {
 	c      *Client
 	symbol string
@@ -52,6 +53,7 @@ func (s *ListTradesService) Do(ctx context.Context, opts ...RequestOption) (res 
 	return
 }
 
+// Trade define trade info
 type Trade struct {
 	ID              int64  `json:"id"`
 	Price           string `json:"price"`
@@ -64,7 +66,8 @@ type Trade struct {
 	IsBestMatch     bool   `json:"isBestMatch"`
 }
 
-type AggregateTradesService struct {
+// AggTradesService list aggregate trades
+type AggTradesService struct {
 	c         *Client
 	symbol    string
 	fromID    *int64
@@ -73,32 +76,32 @@ type AggregateTradesService struct {
 	limit     *int
 }
 
-func (s *AggregateTradesService) Symbol(symbol string) *AggregateTradesService {
+func (s *AggTradesService) Symbol(symbol string) *AggTradesService {
 	s.symbol = symbol
 	return s
 }
 
-func (s *AggregateTradesService) FromID(fromID int64) *AggregateTradesService {
+func (s *AggTradesService) FromID(fromID int64) *AggTradesService {
 	s.fromID = &fromID
 	return s
 }
 
-func (s *AggregateTradesService) StartTime(startTime int64) *AggregateTradesService {
+func (s *AggTradesService) StartTime(startTime int64) *AggTradesService {
 	s.startTime = &startTime
 	return s
 }
 
-func (s *AggregateTradesService) EndTime(endTime int64) *AggregateTradesService {
+func (s *AggTradesService) EndTime(endTime int64) *AggTradesService {
 	s.endTime = &endTime
 	return s
 }
 
-func (s *AggregateTradesService) Limit(limit int) *AggregateTradesService {
+func (s *AggTradesService) Limit(limit int) *AggTradesService {
 	s.limit = &limit
 	return s
 }
 
-func (s *AggregateTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*AggTrade, err error) {
+func (s *AggTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*AggTrade, err error) {
 	r := &request{
 		method:   "GET",
 		endpoint: "/api/v1/aggTrades",
@@ -128,6 +131,7 @@ func (s *AggregateTradesService) Do(ctx context.Context, opts ...RequestOption) 
 	return
 }
 
+// AggTrade define aggregate trade info
 type AggTrade struct {
 	AggTradeID       int64  `json:"a"`
 	Price            string `json:"p"`

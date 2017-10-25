@@ -4,6 +4,7 @@ import (
 	"context"
 )
 
+// StartUserStreamService create listen key for user stream service
 type StartUserStreamService struct {
 	c *Client
 }
@@ -26,6 +27,7 @@ func (s *StartUserStreamService) Do(ctx context.Context, opts ...RequestOption) 
 	return
 }
 
+// KeepaliveUserStreamService update listen key
 type KeepaliveUserStreamService struct {
 	c         *Client
 	listenKey string
@@ -47,6 +49,7 @@ func (s *KeepaliveUserStreamService) Do(ctx context.Context, opts ...RequestOpti
 	return
 }
 
+// CloseUserStreamService delete listen key
 type CloseUserStreamService struct {
 	c         *Client
 	listenKey string

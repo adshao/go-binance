@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 )
 
+// CreateWithdrawService create withdraw
 type CreateWithdrawService struct {
 	c       *Client
 	asset   string
@@ -55,6 +56,7 @@ func (s *CreateWithdrawService) Do(ctx context.Context) (err error) {
 	return
 }
 
+// ListWithdrawsService list withdraws
 type ListWithdrawsService struct {
 	c         *Client
 	asset     *string
@@ -113,11 +115,13 @@ func (s *ListWithdrawsService) Do(ctx context.Context) (withdraws []*Withdraw, e
 	return res.Withdraws, nil
 }
 
+// WithdrawHistoryResponse define withdraw history response
 type WithdrawHistoryResponse struct {
 	Withdraws []*Withdraw `json:"withdrawList"`
 	Success   bool        `json:"success"`
 }
 
+// Withdraw define withdraw info
 type Withdraw struct {
 	Amount    float64 `json:"amount"`
 	Address   string  `json:"address"`

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 )
 
+// ListDepositsService list deposits
 type ListDepositsService struct {
 	c         *Client
 	asset     *string
@@ -66,11 +67,13 @@ func (s *ListDepositsService) Do(ctx context.Context, opts ...RequestOption) (de
 	return res.Deposits, nil
 }
 
+// DepositHistoryResponse define deposit history
 type DepositHistoryResponse struct {
 	Success  bool       `json:"success"`
 	Deposits []*Deposit `json:"depositList"`
 }
 
+// Deposit define deposit info
 type Deposit struct {
 	InsertTime int64   `json:"insertTime"`
 	Amount     float64 `json:"amount"`

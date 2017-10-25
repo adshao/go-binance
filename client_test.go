@@ -47,11 +47,11 @@ func (s *baseTestSuite) assertReq(f func(r *request)) {
 }
 
 func (s *baseTestSuite) assertRequestEqual(e, a *request) {
-	s.assertUrlValuesEqual(e.query, a.query)
-	s.assertUrlValuesEqual(e.form, a.form)
+	s.assertURLValuesEqual(e.query, a.query)
+	s.assertURLValuesEqual(e.form, a.form)
 }
 
-func (s *baseTestSuite) assertUrlValuesEqual(e, a url.Values) {
+func (s *baseTestSuite) assertURLValuesEqual(e, a url.Values) {
 	var eKeys, aKeys []string
 	for k := range e {
 		eKeys = append(eKeys, k)

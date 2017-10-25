@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 )
 
+// GetAccountService get account info
 type GetAccountService struct {
 	c *Client
 }
@@ -27,6 +28,7 @@ func (s *GetAccountService) Do(ctx context.Context, opts ...RequestOption) (res 
 	return
 }
 
+// Account define account info
 type Account struct {
 	MakerCommission  int64     `json:"makerCommission"`
 	TakerCommission  int64     `json:"takerCommission"`
@@ -38,6 +40,7 @@ type Account struct {
 	Balances         []Balance `json:"balances"`
 }
 
+// Balance define user balance of your account
 type Balance struct {
 	Asset  string `json:"asset"`
 	Free   string `json:"free"`

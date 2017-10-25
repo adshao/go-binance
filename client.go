@@ -17,10 +17,16 @@ import (
 	"github.com/bitly/go-simplejson"
 )
 
+// SideType define side type of order
 type SideType string
+
+// Order Type define order type
 type OrderType string
+
+// TimeInForce define time in force type of order
 type TimeInForce string
 
+// Global enums
 const (
 	SideTypeBuy  SideType = "BUY"
 	SideTypeSell SideType = "SELL"
@@ -48,7 +54,9 @@ func newJSON(data []byte) (j *simplejson.Json, err error) {
 	return
 }
 
-// NewClient initialize API client
+// NewClient initialize an API client instance with API key and secret key.
+// You should always call this function before using this SDK.
+// Services will be created by the form client.NewXXXService().
 func NewClient(apiKey, secretKey string) *Client {
 	return &Client{
 		APIKey:     apiKey,
@@ -62,6 +70,7 @@ func NewClient(apiKey, secretKey string) *Client {
 
 type doFunc func(req *http.Request) (*http.Response, error)
 
+// Client define API client
 type Client struct {
 	APIKey     string
 	SecretKey  string
@@ -159,91 +168,107 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 	return
 }
 
-// NewPingService initialize ping service
+// NewPingService init ping service
 func (c *Client) NewPingService() *PingService {
 	return &PingService{c: c}
 }
 
-// NewServerTimeService initialize server time service
+// NewServerTimeService init server time service
 func (c *Client) NewServerTimeService() *ServerTimeService {
 	return &ServerTimeService{c: c}
 }
 
-// NewDepthService initialize depth service
+// NewDepthService init depth service
 func (c *Client) NewDepthService() *DepthService {
 	return &DepthService{c: c}
 }
 
-// NewAggregateTradesService initialize aggregate trades service
-func (c *Client) NewAggregateTradesService() *AggregateTradesService {
-	return &AggregateTradesService{c: c}
+// NewAggTradesService init aggregate trades service
+func (c *Client) NewAggTradesService() *AggTradesService {
+	return &AggTradesService{c: c}
 }
 
-// NewKlinesService initialize klines service
+// NewKlinesService init klines service
 func (c *Client) NewKlinesService() *KlinesService {
 	return &KlinesService{c: c}
 }
 
+// NewPriceChangeStatsService init prices change stats service
 func (c *Client) NewPriceChangeStatsService() *PriceChangeStatsService {
 	return &PriceChangeStatsService{c: c}
 }
 
+// NewListPricesService init listing prices service
 func (c *Client) NewListPricesService() *ListPricesService {
 	return &ListPricesService{c: c}
 }
 
+// NewListBookTickersService init listing booking tickers service
 func (c *Client) NewListBookTickersService() *ListBookTickersService {
 	return &ListBookTickersService{c: c}
 }
 
+// NewCreateOrderService init creating order service
 func (c *Client) NewCreateOrderService() *CreateOrderService {
 	return &CreateOrderService{c: c}
 }
 
+// NewGetOrderService init get order service
 func (c *Client) NewGetOrderService() *GetOrderService {
 	return &GetOrderService{c: c}
 }
 
+// NewCancelOrderService init cancel order service
 func (c *Client) NewCancelOrderService() *CancelOrderService {
 	return &CancelOrderService{c: c}
 }
 
+// NewListOpenOrdersService init list open orders service
 func (c *Client) NewListOpenOrdersService() *ListOpenOrdersService {
 	return &ListOpenOrdersService{c: c}
 }
 
+// NewListOrdersService init listing orders service
 func (c *Client) NewListOrdersService() *ListOrdersService {
 	return &ListOrdersService{c: c}
 }
 
+// NewGetAccountService init getting account service
 func (c *Client) NewGetAccountService() *GetAccountService {
 	return &GetAccountService{c: c}
 }
 
+// NewListTradesService init listing trades service
 func (c *Client) NewListTradesService() *ListTradesService {
 	return &ListTradesService{c: c}
 }
 
+// NewListDepositsService init listing deposits service
 func (c *Client) NewListDepositsService() *ListDepositsService {
 	return &ListDepositsService{c: c}
 }
 
+// NewCreateWithdrawService init creating withdraw service
 func (c *Client) NewCreateWithdrawService() *CreateWithdrawService {
 	return &CreateWithdrawService{c: c}
 }
 
+// NewListWithdrawsService init listing withdraw service
 func (c *Client) NewListWithdrawsService() *ListWithdrawsService {
 	return &ListWithdrawsService{c: c}
 }
 
+// NewStartUserStreamService init starting user stream service
 func (c *Client) NewStartUserStreamService() *StartUserStreamService {
 	return &StartUserStreamService{c: c}
 }
 
+// NewKeepaliveUserStreamService init keep alive user stream service
 func (c *Client) NewKeepaliveUserStreamService() *KeepaliveUserStreamService {
 	return &KeepaliveUserStreamService{c: c}
 }
 
+// NewCloseUserStreamService init closing user stream service
 func (c *Client) NewCloseUserStreamService() *CloseUserStreamService {
 	return &CloseUserStreamService{c: c}
 }

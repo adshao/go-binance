@@ -4,6 +4,7 @@ import (
 	"context"
 )
 
+// PingService ping server
 type PingService struct {
 	c *Client
 }
@@ -20,6 +21,7 @@ func (s *PingService) Do(ctx context.Context, opts ...RequestOption) (err error)
 	return
 }
 
+// ServerTimeService get server time
 type ServerTimeService struct {
 	c *Client
 }

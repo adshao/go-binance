@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 )
 
+// CreateOrderService create order
 type CreateOrderService struct {
 	c                *Client
 	symbol           string
@@ -63,7 +64,7 @@ func (s *CreateOrderService) IcebergQuantity(icebergQuantity float64) *CreateOrd
 	return s
 }
 
-func (s *CreateOrderService) createOrder(endpoint string, ctx context.Context, opts ...RequestOption) (data []byte, err error) {
+func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, err error) {
 	r := &request{
 		method:   "POST",
 		endpoint: endpoint,
@@ -95,7 +96,7 @@ func (s *CreateOrderService) createOrder(endpoint string, ctx context.Context, o
 }
 
 func (s *CreateOrderService) Do(ctx context.Context, opts ...RequestOption) (res *CreateOrderResponse, err error) {
-	data, err := s.createOrder("/api/v3/order", ctx, opts...)
+	data, err := s.createOrder(ctx, "/api/v3/order", opts...)
 	if err != nil {
 		return
 	}
@@ -108,10 +109,11 @@ func (s *CreateOrderService) Do(ctx context.Context, opts ...RequestOption) (res
 }
 
 func (s *CreateOrderService) Test(ctx context.Context, opts ...RequestOption) (err error) {
-	_, err = s.createOrder("/api/v3/order/test", ctx, opts...)
+	_, err = s.createOrder(ctx, "/api/v3/order/test", opts...)
 	return
 }
 
+// CreateOrderResponse define create order response
 type CreateOrderResponse struct {
 	Symbol        string `json:"symbol"`
 	OrderID       int64  `json:"orderId"`
@@ -119,6 +121,7 @@ type CreateOrderResponse struct {
 	TransactTime  int64  `json:"transactTime"`
 }
 
+// ListOpenOrdersService list opened orders
 type ListOpenOrdersService struct {
 	c      *Client
 	symbol string
@@ -148,6 +151,7 @@ func (s *ListOpenOrdersService) Do(ctx context.Context, opts ...RequestOption) (
 	return
 }
 
+// GetOrderService get an order
 type GetOrderService struct {
 	c                 *Client
 	symbol            string
@@ -195,6 +199,7 @@ func (s *GetOrderService) Do(ctx context.Context, opts ...RequestOption) (res *O
 	return
 }
 
+// Order define order info
 type Order struct {
 	Symbol           string `json:"symbol"`
 	OrderID          int64  `json:"orderId"`
@@ -211,6 +216,7 @@ type Order struct {
 	Time             int64  `json:"time"`
 }
 
+// ListOrdersService list all orders
 type ListOrdersService struct {
 	c       *Client
 	symbol  string
@@ -258,6 +264,7 @@ func (s *ListOrdersService) Do(ctx context.Context, opts ...RequestOption) (res 
 	return
 }
 
+// CancelOrderService cancel an order
 type CancelOrderService struct {
 	c                 *Client
 	symbol            string

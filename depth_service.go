@@ -4,6 +4,7 @@ import (
 	"context"
 )
 
+// DepthService show depth info
 type DepthService struct {
 	c      *Client
 	symbol string

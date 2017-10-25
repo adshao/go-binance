@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// WsHandler handle raw websocket message
 type WsHandler func(message []byte)
 
 type wsConfig struct {
