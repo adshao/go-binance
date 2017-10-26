@@ -14,26 +14,31 @@ type CreateWithdrawService struct {
 	name    *string
 }
 
+// Asset set asset
 func (s *CreateWithdrawService) Asset(asset string) *CreateWithdrawService {
 	s.asset = asset
 	return s
 }
 
+// Address set address
 func (s *CreateWithdrawService) Address(address string) *CreateWithdrawService {
 	s.address = address
 	return s
 }
 
+// Amount set amount
 func (s *CreateWithdrawService) Amount(amount string) *CreateWithdrawService {
 	s.amount = amount
 	return s
 }
 
+// Name set name
 func (s *CreateWithdrawService) Name(name string) *CreateWithdrawService {
 	s.name = &name
 	return s
 }
 
+// Do send request
 func (s *CreateWithdrawService) Do(ctx context.Context) (err error) {
 	r := &request{
 		method:   "POST",
@@ -65,26 +70,31 @@ type ListWithdrawsService struct {
 	endTime   *int64
 }
 
+// Asset set asset
 func (s *ListWithdrawsService) Asset(asset string) *ListWithdrawsService {
 	s.asset = &asset
 	return s
 }
 
+// Status set status
 func (s *ListWithdrawsService) Status(status int) *ListWithdrawsService {
 	s.status = &status
 	return s
 }
 
+// StartTime set startTime
 func (s *ListWithdrawsService) StartTime(startTime int64) *ListWithdrawsService {
 	s.startTime = &startTime
 	return s
 }
 
+// EndTime set endTime
 func (s *ListWithdrawsService) EndTime(endTime int64) *ListWithdrawsService {
 	s.endTime = &endTime
 	return s
 }
 
+// Do send request
 func (s *ListWithdrawsService) Do(ctx context.Context) (withdraws []*Withdraw, err error) {
 	r := &request{
 		method:   "POST",

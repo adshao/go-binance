@@ -25,6 +25,7 @@ type request struct {
 	secType    secType
 }
 
+// SetParam set param with key/value to query string
 func (r *request) SetParam(key string, value interface{}) *request {
 	if r.query == nil {
 		r.query = url.Values{}
@@ -33,6 +34,7 @@ func (r *request) SetParam(key string, value interface{}) *request {
 	return r
 }
 
+// SetParams set params with key/values to query string
 func (r *request) SetParams(m params) *request {
 	for k, v := range m {
 		r.SetParam(k, v)
@@ -40,6 +42,7 @@ func (r *request) SetParams(m params) *request {
 	return r
 }
 
+// SetFormParam set param with key/value to request form body
 func (r *request) SetFormParam(key string, value interface{}) *request {
 	if r.form == nil {
 		r.form = url.Values{}
@@ -48,6 +51,7 @@ func (r *request) SetFormParam(key string, value interface{}) *request {
 	return r
 }
 
+// SetFormParams set params with key/values to request form body
 func (r *request) SetFormParams(m params) *request {
 	for k, v := range m {
 		r.SetFormParam(k, v)

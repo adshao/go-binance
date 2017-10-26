@@ -13,21 +13,25 @@ type ListTradesService struct {
 	fromID *int64
 }
 
+// Symbol set symbol
 func (s *ListTradesService) Symbol(symbol string) *ListTradesService {
 	s.symbol = symbol
 	return s
 }
 
+// Limit set limit
 func (s *ListTradesService) Limit(limit int) *ListTradesService {
 	s.limit = &limit
 	return s
 }
 
+// FromID set fromID
 func (s *ListTradesService) FromID(fromID int64) *ListTradesService {
 	s.fromID = &fromID
 	return s
 }
 
+// Do send request
 func (s *ListTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*Trade, err error) {
 	r := &request{
 		method:   "GET",
@@ -76,31 +80,37 @@ type AggTradesService struct {
 	limit     *int
 }
 
+// Symbol set symbol
 func (s *AggTradesService) Symbol(symbol string) *AggTradesService {
 	s.symbol = symbol
 	return s
 }
 
+// FromID set fromID
 func (s *AggTradesService) FromID(fromID int64) *AggTradesService {
 	s.fromID = &fromID
 	return s
 }
 
+// StartTime set startTime
 func (s *AggTradesService) StartTime(startTime int64) *AggTradesService {
 	s.startTime = &startTime
 	return s
 }
 
+// EndTime set endTime
 func (s *AggTradesService) EndTime(endTime int64) *AggTradesService {
 	s.endTime = &endTime
 	return s
 }
 
+// Limit set limit
 func (s *AggTradesService) Limit(limit int) *AggTradesService {
 	s.limit = &limit
 	return s
 }
 
+// Do send request
 func (s *AggTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*AggTrade, err error) {
 	r := &request{
 		method:   "GET",

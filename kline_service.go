@@ -15,31 +15,37 @@ type KlinesService struct {
 	endTime   *int64
 }
 
+// Symbol set symbol
 func (s *KlinesService) Symbol(symbol string) *KlinesService {
 	s.symbol = symbol
 	return s
 }
 
+// Interval set interval
 func (s *KlinesService) Interval(interval string) *KlinesService {
 	s.interval = interval
 	return s
 }
 
+// Limit set limit
 func (s *KlinesService) Limit(limit int) *KlinesService {
 	s.limit = &limit
 	return s
 }
 
+// StartTime set startTime
 func (s *KlinesService) StartTime(startTime int64) *KlinesService {
 	s.startTime = &startTime
 	return s
 }
 
+// EndTime set endTime
 func (s *KlinesService) EndTime(endTime int64) *KlinesService {
 	s.endTime = &endTime
 	return s
 }
 
+// Do send request
 func (s *KlinesService) Do(ctx context.Context, opts ...RequestOption) (res []*Kline, err error) {
 	r := &request{
 		method:   "GET",
@@ -89,6 +95,7 @@ func (s *KlinesService) Do(ctx context.Context, opts ...RequestOption) (res []*K
 	return
 }
 
+// Kline define kline info
 type Kline struct {
 	OpenTime                 int64  `json:"openTime"`
 	Open                     string `json:"open"`

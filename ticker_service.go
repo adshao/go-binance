@@ -10,6 +10,7 @@ type ListBookTickersService struct {
 	c *Client
 }
 
+// Do send request
 func (s *ListBookTickersService) Do(ctx context.Context, opts ...RequestOption) (res []*BookTicker, err error) {
 	r := &request{
 		method:   "GET",
@@ -41,6 +42,7 @@ type ListPricesService struct {
 	c *Client
 }
 
+// Do send request
 func (s *ListPricesService) Do(ctx context.Context, opts ...RequestOption) (res []*SymbolPrice, err error) {
 	r := &request{
 		method:   "GET",
@@ -58,6 +60,7 @@ func (s *ListPricesService) Do(ctx context.Context, opts ...RequestOption) (res 
 	return
 }
 
+// SymbolPrice define symbol and price pair
 type SymbolPrice struct {
 	Symbol string `json:"symbol"`
 	Price  string `json:"price"`
@@ -69,11 +72,13 @@ type PriceChangeStatsService struct {
 	symbol string
 }
 
+// Symbol set symbol
 func (s *PriceChangeStatsService) Symbol(symbol string) *PriceChangeStatsService {
 	s.symbol = symbol
 	return s
 }
 
+// Do send request
 func (s *PriceChangeStatsService) Do(ctx context.Context, opts ...RequestOption) (res *PriceChangeStats, err error) {
 	r := &request{
 		method:   "GET",

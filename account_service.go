@@ -10,6 +10,7 @@ type GetAccountService struct {
 	c *Client
 }
 
+// Do send request
 func (s *GetAccountService) Do(ctx context.Context, opts ...RequestOption) (res *Account, err error) {
 	r := &request{
 		method:   "GET",

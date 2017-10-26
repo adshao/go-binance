@@ -19,46 +19,55 @@ type CreateOrderService struct {
 	icebergQuantity  *string
 }
 
+// Symbol set symbol
 func (s *CreateOrderService) Symbol(symbol string) *CreateOrderService {
 	s.symbol = symbol
 	return s
 }
 
+// Side set side
 func (s *CreateOrderService) Side(side SideType) *CreateOrderService {
 	s.side = side
 	return s
 }
 
+// Type set type
 func (s *CreateOrderService) Type(orderType OrderType) *CreateOrderService {
 	s.orderType = orderType
 	return s
 }
 
+// TimeInForce set timeInForce
 func (s *CreateOrderService) TimeInForce(timeInForce TimeInForce) *CreateOrderService {
 	s.timeInForce = timeInForce
 	return s
 }
 
+// Quantity set quantity
 func (s *CreateOrderService) Quantity(quantity string) *CreateOrderService {
 	s.quantity = quantity
 	return s
 }
 
+// Price set price
 func (s *CreateOrderService) Price(price string) *CreateOrderService {
 	s.price = price
 	return s
 }
 
+// NewClientOrderID set newClientOrderID
 func (s *CreateOrderService) NewClientOrderID(newClientOrderID string) *CreateOrderService {
 	s.newClientOrderID = &newClientOrderID
 	return s
 }
 
+// StopPrice set stopPrice
 func (s *CreateOrderService) StopPrice(stopPrice string) *CreateOrderService {
 	s.stopPrice = &stopPrice
 	return s
 }
 
+// IcebergQuantity set icebergQuantity
 func (s *CreateOrderService) IcebergQuantity(icebergQuantity string) *CreateOrderService {
 	s.icebergQuantity = &icebergQuantity
 	return s
@@ -95,6 +104,7 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 	return
 }
 
+// Do send request
 func (s *CreateOrderService) Do(ctx context.Context, opts ...RequestOption) (res *CreateOrderResponse, err error) {
 	data, err := s.createOrder(ctx, "/api/v3/order", opts...)
 	if err != nil {
@@ -108,6 +118,7 @@ func (s *CreateOrderService) Do(ctx context.Context, opts ...RequestOption) (res
 	return
 }
 
+// Test send test api to check if the request is valid
 func (s *CreateOrderService) Test(ctx context.Context, opts ...RequestOption) (err error) {
 	_, err = s.createOrder(ctx, "/api/v3/order/test", opts...)
 	return
@@ -127,11 +138,13 @@ type ListOpenOrdersService struct {
 	symbol string
 }
 
+// Symbol set symbol
 func (s *ListOpenOrdersService) Symbol(symbol string) *ListOpenOrdersService {
 	s.symbol = symbol
 	return s
 }
 
+// Do send request
 func (s *ListOpenOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*Order, err error) {
 	r := &request{
 		method:   "GET",
@@ -159,21 +172,25 @@ type GetOrderService struct {
 	origClientOrderID *string
 }
 
+// Symbol set symbol
 func (s *GetOrderService) Symbol(symbol string) *GetOrderService {
 	s.symbol = symbol
 	return s
 }
 
+// OrderID set orderID
 func (s *GetOrderService) OrderID(orderID int64) *GetOrderService {
 	s.orderID = &orderID
 	return s
 }
 
+// OrigClientOrderID set origClientOrderID
 func (s *GetOrderService) OrigClientOrderID(origClientOrderID string) *GetOrderService {
 	s.origClientOrderID = &origClientOrderID
 	return s
 }
 
+// Do send request
 func (s *GetOrderService) Do(ctx context.Context, opts ...RequestOption) (res *Order, err error) {
 	r := &request{
 		method:   "GET",
@@ -224,21 +241,25 @@ type ListOrdersService struct {
 	limit   *int
 }
 
+// Symbol set symbol
 func (s *ListOrdersService) Symbol(symbol string) *ListOrdersService {
 	s.symbol = symbol
 	return s
 }
 
+// OrderID set orderID
 func (s *ListOrdersService) OrderID(orderID int64) *ListOrdersService {
 	s.orderID = &orderID
 	return s
 }
 
+// Limit set limit
 func (s *ListOrdersService) Limit(limit int) *ListOrdersService {
 	s.limit = &limit
 	return s
 }
 
+// Do send request
 func (s *ListOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*Order, err error) {
 	r := &request{
 		method:   "GET",
@@ -273,26 +294,31 @@ type CancelOrderService struct {
 	newClientOrderID  *string
 }
 
+// Symbol set symbol
 func (s *CancelOrderService) Symbol(symbol string) *CancelOrderService {
 	s.symbol = symbol
 	return s
 }
 
+// OrderID set orderID
 func (s *CancelOrderService) OrderID(orderID int64) *CancelOrderService {
 	s.orderID = &orderID
 	return s
 }
 
+// OrigClientOrderID set origClientOrderID
 func (s *CancelOrderService) OrigClientOrderID(origClientOrderID string) *CancelOrderService {
 	s.origClientOrderID = &origClientOrderID
 	return s
 }
 
+// NewClientOrderID set newClientOrderID
 func (s *CancelOrderService) NewClientOrderID(newClientOrderID string) *CancelOrderService {
 	s.newClientOrderID = &newClientOrderID
 	return s
 }
 
+// Do send request
 func (s *CancelOrderService) Do(ctx context.Context, opts ...RequestOption) (res *CancelOrderResponse, err error) {
 	r := &request{
 		method:   "DELETE",
@@ -321,6 +347,7 @@ func (s *CancelOrderService) Do(ctx context.Context, opts ...RequestOption) (res
 	return
 }
 
+// CancelOrderResponse define response of canceling order
 type CancelOrderResponse struct {
 	Symbol            string `json:"symbol"`
 	OrigClientOrderID string `json:"origClientOrderId"`

@@ -9,6 +9,7 @@ type StartUserStreamService struct {
 	c *Client
 }
 
+// Do send request
 func (s *StartUserStreamService) Do(ctx context.Context, opts ...RequestOption) (listenKey string, err error) {
 	r := &request{
 		method:   "POST",
@@ -33,11 +34,13 @@ type KeepaliveUserStreamService struct {
 	listenKey string
 }
 
+// ListenKey set listen key
 func (s *KeepaliveUserStreamService) ListenKey(listenKey string) *KeepaliveUserStreamService {
 	s.listenKey = listenKey
 	return s
 }
 
+// Do send request
 func (s *KeepaliveUserStreamService) Do(ctx context.Context, opts ...RequestOption) (err error) {
 	r := &request{
 		method:   "PUT",
@@ -55,11 +58,13 @@ type CloseUserStreamService struct {
 	listenKey string
 }
 
+// ListenKey set listen key
 func (s *CloseUserStreamService) ListenKey(listenKey string) *CloseUserStreamService {
 	s.listenKey = listenKey
 	return s
 }
 
+// Do send request
 func (s *CloseUserStreamService) Do(ctx context.Context, opts ...RequestOption) (err error) {
 	r := &request{
 		method:   "DELETE",

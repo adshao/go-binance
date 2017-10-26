@@ -11,16 +11,19 @@ type DepthService struct {
 	limit  *int
 }
 
+// Symbol set symbol
 func (s *DepthService) Symbol(symbol string) *DepthService {
 	s.symbol = symbol
 	return s
 }
 
+// Limit set limit
 func (s *DepthService) Limit(limit int) *DepthService {
 	s.limit = &limit
 	return s
 }
 
+// Do send request
 func (s *DepthService) Do(ctx context.Context, opts ...RequestOption) (res *DepthResponse, err error) {
 	r := &request{
 		method:   "GET",
@@ -61,17 +64,20 @@ func (s *DepthService) Do(ctx context.Context, opts ...RequestOption) (res *Dept
 	return
 }
 
+// DepthResponse define depth info with bids and asks
 type DepthResponse struct {
 	LastUpdateID int64 `json:"lastUpdateId"`
 	Bids         []Bid `json:"bids"`
 	Asks         []Ask `json:"asks"`
 }
 
+// Bid define bid info with price and quantity
 type Bid struct {
 	Price    string
 	Quantity string
 }
 
+// Ask define ask info with price and quantity
 type Ask struct {
 	Price    string
 	Quantity string

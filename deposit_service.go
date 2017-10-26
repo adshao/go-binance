@@ -14,26 +14,31 @@ type ListDepositsService struct {
 	endTime   *int64
 }
 
+// Asset set asset
 func (s *ListDepositsService) Asset(asset string) *ListDepositsService {
 	s.asset = &asset
 	return s
 }
 
+// Status set status
 func (s *ListDepositsService) Status(status int) *ListDepositsService {
 	s.status = &status
 	return s
 }
 
+// StartTime set startTime
 func (s *ListDepositsService) StartTime(startTime int64) *ListDepositsService {
 	s.startTime = &startTime
 	return s
 }
 
+// EndTime set endTime
 func (s *ListDepositsService) EndTime(endTime int64) *ListDepositsService {
 	s.endTime = &endTime
 	return s
 }
 
+// Do send request
 func (s *ListDepositsService) Do(ctx context.Context, opts ...RequestOption) (deposits []*Deposit, err error) {
 	r := &request{
 		method:   "POST",
