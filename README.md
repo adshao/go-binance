@@ -47,7 +47,7 @@ A service instance stands for a REST API endpoint and is initialized by client.N
 
 Simply call API in chain style. Call Do() in the end to send HTTP request.
 
-Please refer to [![GoDoc](https://godoc.org/github.com/adshao/go-binance?status.svg)](https://godoc.org/github.com/adshao/go-binance) for full references.
+Following are some simple examples, please refer to [godoc](https://godoc.org/github.com/adshao/go-binance) for full references.
 
 #### Create Order
 
@@ -132,7 +132,6 @@ for _, p := range prices {
 #### Show Depth
 
 ```golang
-// show depth of symbol LTCBTC
 res, err := client.NewDepthService().Symbol("LTCBTC").
     Do(context.Background())
 if err != nil {
@@ -145,7 +144,6 @@ fmt.Println(res)
 #### List Klines
 
 ```golang
-// list klines of symbol LTCBTC with interval 15m and limit 3
 klines, err := client.NewKlinesService().Symbol("LTCBTC").
     Interval("15m").Do(context.Background())
 if err != nil {
@@ -158,8 +156,6 @@ for _, k := range klines {
 ```
 
 #### List Aggregate Trades
-
-Add option binance.WithRecvWindow(recvWindow) if you want to change the default recvWindow.
 
 ```golang
 trades, err := client.NewAggTradesService().
@@ -177,7 +173,6 @@ for _, t := range trades {
 #### Get Account
 
 ```golang
-// show account info
 res, err := client.NewGetAccountService().Do(context.Background())
 if err != nil {
     fmt.Println(err)
