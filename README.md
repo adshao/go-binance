@@ -25,6 +25,10 @@ import (
 )
 ```
 
+### Documentation
+
+[![GoDoc](https://godoc.org/github.com/adshao/go-binance?status.svg)](https://godoc.org/github.com/adshao/go-binance)
+
 ### REST API
 
 #### Setup
@@ -37,12 +41,80 @@ var (
     secretKey = "your secret key"
 )
 client := binance.NewClient(apiKey, secretKey)
-// client.Debug = true // enable debug to verbose mode
 ```
 
 A service instance stands for a REST API endpoint and is initialized by client.NewXXXService function.
 
 Simply call API in chain style. Call Do() in the end to send HTTP request.
+
+Please refer to [![GoDoc](https://godoc.org/github.com/adshao/go-binance?status.svg)](https://godoc.org/github.com/adshao/go-binance) for full references.
+
+#### Create Order
+
+```golang
+order, err := client.NewCreateOrderService().Symbol("BNBETH").
+        Side(binance.SideTypeBuy).Type(binance.OrderTypeLimit).
+        TimeInForce(binance.TimeInForceGTC).Quantity("5").
+        Price("0.0030000").Do(context.Background())
+if err != nil {
+    fmt.Println(err)
+    return
+}
+fmt.Println(order)
+
+// Use Test() instead of Do() for testing.
+```
+
+#### Get Order
+
+```golang
+order, err := client.NewGetOrderService().Symbol("BNBETH").
+    OrderID(4432844).Do(context.Background())
+if err != nil {
+    fmt.Println(err)
+    return
+}
+fmt.Println(order)
+```
+
+#### Cancel Order
+
+```golang
+_, err := client.NewCancelOrderService().Symbol("BNBETH").
+    OrderID(4432844).Do(context.Background())
+if err != nil {
+    fmt.Println(err)
+    return
+}
+```
+
+#### List Open Orders
+
+```golang
+openOrders, err := client.NewListOpenOrdersService().Symbol("BNBETH").
+    Do(context.Background())
+if err != nil {
+    fmt.Println(err)
+    return
+}
+for _, o := range openOrders {
+    fmt.Println(o)
+}
+```
+
+#### List Orders
+
+```golang
+orders, err := client.NewListOrdersService().Symbol("BNBETH").
+    Do(context.Background())
+if err != nil {
+    fmt.Println(err)
+    return
+}
+for _, o := range orders {
+    fmt.Println(o)
+}
+```
 
 #### List Ticker Prices
 
@@ -61,7 +133,8 @@ for _, p := range prices {
 
 ```golang
 // show depth of symbol LTCBTC
-res, err := client.NewDepthService().Symbol("LTCBTC").Do(context.Background())
+res, err := client.NewDepthService().Symbol("LTCBTC").
+    Do(context.Background())
 if err != nil {
     fmt.Println(err)
     return
@@ -73,7 +146,8 @@ fmt.Println(res)
 
 ```golang
 // list klines of symbol LTCBTC with interval 15m and limit 3
-klines, err := client.NewKlinesService().Symbol("LTCBTC").Interval("15m").Limit(3).Do(context.Background())
+klines, err := client.NewKlinesService().Symbol("LTCBTC").
+    Interval("15m").Do(context.Background())
 if err != nil {
     fmt.Println(err)
     return
@@ -83,37 +157,14 @@ for _, k := range klines {
 }
 ```
 
-#### Create Order
-
-```golang
-err := client.NewCreateOrderService().Symbol("BNBETH").
-        Side(binance.SideTypeBuy).Type(binance.OrderTypeLimit).
-        TimeInForce(binance.TimeInForceGTC).Quantity("100").
-        Price("0.00310000").Do(context.Background())
-if err != nil {
-    fmt.Println(err)
-    return
-}
-
-// Use Test() instead of Do() for testing.
-```
-
-#### Cancel Order
-
-```golang
-_, err := client.NewCancelOrderService().Symbol("LTCBTC").OrderID(1).Do(context.Background())
-if err != nil {
-    fmt.Println(err)
-    return
-}
-```
-
 #### List Aggregate Trades
 
 Add option binance.WithRecvWindow(recvWindow) if you want to change the default recvWindow.
 
 ```golang
-trades, err := client.NewAggTradesService().Symbol("LTCBTC").StartTime(1508673256594).EndTime(1508673256594).Do(context.Background(), binance.WithRecvWindow(5000))
+trades, err := client.NewAggTradesService().
+    Symbol("LTCBTC").StartTime(1508673256594).EndTime(1508673256595).
+    Do(context.Background())
 if err != nil {
     fmt.Println(err)
     return
@@ -135,7 +186,16 @@ if err != nil {
 fmt.Println(res)
 ```
 
-Please refer to [godoc](https://godoc.org/github.com/adshao/go-binance) for the full SDK services.
+#### Start User Stream
+
+```golang
+res, err := client.NewStartUserStreamService().Do(context.Background())
+if err != nil {
+    fmt.Println(err)
+    return
+}
+fmt.Println(res)
+```
 
 ### Websocket
 
@@ -182,6 +242,16 @@ if err != nil {
 <-done
 ```
 
-### Documentation
+#### User Data
 
-[![GoDoc](https://godoc.org/github.com/adshao/go-binance?status.svg)](https://godoc.org/github.com/adshao/go-binance)
+```golang
+wsHandler := func(message []byte) {
+    fmt.Println(string(message))
+}
+done, err := binance.WsUserDataServe(listenKey, wsHandler)
+if err != nil {
+    fmt.Println(err)
+    return
+}
+<-done
+```

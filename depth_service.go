@@ -50,7 +50,7 @@ func (s *DepthService) Do(ctx context.Context, opts ...RequestOption) (res *Dept
 		}
 	}
 	asksLen := len(j.Get("asks").MustArray())
-	res.Asks = make([]Ask, bidsLen)
+	res.Asks = make([]Ask, asksLen)
 	for i := 0; i < asksLen; i++ {
 		item := j.Get("asks").GetIndex(i)
 		res.Asks[i] = Ask{

@@ -20,7 +20,7 @@ import (
 // SideType define side type of order
 type SideType string
 
-// Order Type define order type
+// OrderType define order type
 type OrderType string
 
 // TimeInForce define time in force type of order
