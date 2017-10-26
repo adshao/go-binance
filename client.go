@@ -88,7 +88,7 @@ func (c *Client) debug(format string, v ...interface{}) {
 	}
 }
 
-func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption) (data []byte, err error) {
+func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 	// set request options from user
 	for _, opt := range opts {
 		opt(r)
@@ -98,7 +98,7 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 		return
 	}
 
-	endpoint := fmt.Sprintf("%s%s", c.BaseURL, r.endpoint)
+	fullURL := fmt.Sprintf("%s%s", c.BaseURL, r.endpoint)
 	if r.recvWindow > 0 {
 		r.SetParam(recvWindowKey, r.recvWindow)
 	}
@@ -130,16 +130,27 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 		}
 	}
 	if queryString != "" {
-		endpoint = fmt.Sprintf("%s?%s", endpoint, queryString)
+		fullURL = fmt.Sprintf("%s?%s", fullURL, queryString)
 	}
-	c.debug("endpoint: %s, body: %s", endpoint, bodyString)
+	c.debug("full url: %s, body: %s", fullURL, bodyString)
 
-	req, err := http.NewRequest(r.method, endpoint, body)
+	r.fullURL = fullURL
+	r.header = header
+	r.body = body
+	return
+}
+
+func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption) (data []byte, err error) {
+	err = c.parseRequest(r, opts...)
+	if err != nil {
+		return
+	}
+	req, err := http.NewRequest(r.method, r.fullURL, r.body)
 	if err != nil {
 		return
 	}
 	req = req.WithContext(ctx)
-	req.Header = header
+	req.Header = r.header
 	c.debug("request: %#v", req)
 	f := c.do
 	if f == nil {

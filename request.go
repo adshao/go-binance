@@ -2,6 +2,8 @@ package binance
 
 import (
 	"fmt"
+	"io"
+	"net/http"
 	"net/url"
 )
 
@@ -23,6 +25,9 @@ type request struct {
 	form       url.Values
 	recvWindow int64
 	secType    secType
+	header     http.Header
+	body       io.Reader
+	fullURL    string
 }
 
 // SetParam set param with key/value to query string
