@@ -51,16 +51,16 @@ func (s *KlinesService) Do(ctx context.Context, opts ...RequestOption) (res []*K
 		method:   "GET",
 		endpoint: "/api/v1/klines",
 	}
-	r.SetParam("symbol", s.symbol)
-	r.SetParam("interval", s.interval)
+	r.setParam("symbol", s.symbol)
+	r.setParam("interval", s.interval)
 	if s.limit != nil {
-		r.SetParam("limit", *s.limit)
+		r.setParam("limit", *s.limit)
 	}
 	if s.startTime != nil {
-		r.SetParam("startTime", *s.startTime)
+		r.setParam("startTime", *s.startTime)
 	}
 	if s.endTime != nil {
-		r.SetParam("endTime", *s.endTime)
+		r.setParam("endTime", *s.endTime)
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {

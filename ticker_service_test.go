@@ -135,7 +135,7 @@ func (s *tickerServiceTestSuite) TestPriceChangeStats() {
 
 	symbol := "BTC"
 	s.assertReq(func(r *request) {
-		e := newRequest().SetParam("symbol", symbol)
+		e := newRequest().setParam("symbol", symbol)
 		s.assertRequestEqual(e, r)
 	})
 	res, err := s.client.NewPriceChangeStatsService().Symbol(symbol).Do(newContext())

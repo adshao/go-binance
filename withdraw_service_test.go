@@ -27,7 +27,7 @@ func (s *withdrawServiceTestSuite) TestCreateWithdraw() {
 	amount := "0.01"
 	name := "eth"
 	s.assertReq(func(r *request) {
-		e := newSignedRequest().SetFormParams(params{
+		e := newSignedRequest().setFormParams(params{
 			"asset":   asset,
 			"address": address,
 			"amount":  amount,
@@ -70,7 +70,7 @@ func (s *withdrawServiceTestSuite) TestListWithdraws() {
 	startTime := int64(1508198532000)
 	endTime := int64(1508198532001)
 	s.assertReq(func(r *request) {
-		e := newSignedRequest().SetParams(params{
+		e := newSignedRequest().setParams(params{
 			"asset":     asset,
 			"status":    status,
 			"startTime": startTime,

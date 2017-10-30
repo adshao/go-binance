@@ -37,7 +37,7 @@ func (s *userStreamServiceTestSuite) TestKeepaliveUserStream() {
 
 	listenKey := "dummykey"
 	s.assertReq(func(r *request) {
-		s.assertRequestEqual(newRequest().SetFormParam("listenKey", listenKey), r)
+		s.assertRequestEqual(newRequest().setFormParam("listenKey", listenKey), r)
 	})
 
 	err := s.client.NewKeepaliveUserStreamService().ListenKey(listenKey).Do(newContext())
@@ -51,7 +51,7 @@ func (s *userStreamServiceTestSuite) TestCloseUserStream() {
 
 	listenKey := "dummykey"
 	s.assertReq(func(r *request) {
-		s.assertRequestEqual(newRequest().SetFormParam("listenKey", listenKey), r)
+		s.assertRequestEqual(newRequest().setFormParam("listenKey", listenKey), r)
 	})
 
 	err := s.client.NewCloseUserStreamService().ListenKey(listenKey).Do(newContext())

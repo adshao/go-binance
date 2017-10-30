@@ -84,7 +84,7 @@ func (s *PriceChangeStatsService) Do(ctx context.Context, opts ...RequestOption)
 		method:   "GET",
 		endpoint: "/api/v1/ticker/24hr",
 	}
-	r.SetParam("symbol", s.symbol)
+	r.setParam("symbol", s.symbol)
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return

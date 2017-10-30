@@ -37,8 +37,8 @@ func (s *depthServiceTestSuite) TestDepth() {
 	symbol := "LTCBTC"
 	limit := 3
 	s.assertReq(func(r *request) {
-		e := newRequest().SetParam("symbol", symbol).
-			SetParam("limit", limit)
+		e := newRequest().setParam("symbol", symbol).
+			setParam("limit", limit)
 		s.assertRequestEqual(e, r)
 	})
 	res, err := s.client.NewDepthService().Symbol(symbol).Limit(limit).Do(newContext())

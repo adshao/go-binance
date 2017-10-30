@@ -58,7 +58,7 @@ func (s *ListDepositsService) Do(ctx context.Context, opts ...RequestOption) (de
 	if s.endTime != nil {
 		m["endTime"] = *s.endTime
 	}
-	r.SetParams(m)
+	r.setParams(m)
 
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {

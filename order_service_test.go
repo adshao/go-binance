@@ -31,7 +31,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 	price := "0.0001"
 	newClientOrderID := "myOrder1"
 	s.assertReq(func(r *request) {
-		e := newSignedRequest().SetFormParams(params{
+		e := newSignedRequest().setFormParams(params{
 			"symbol":           symbol,
 			"side":             side,
 			"type":             orderType,
@@ -92,7 +92,7 @@ func (s *orderServiceTestSuite) TestListOpenOrders() {
 	symbol := "LTCBTC"
 	recvWindow := int64(1000)
 	s.assertReq(func(r *request) {
-		e := newSignedRequest().SetParams(params{
+		e := newSignedRequest().setParams(params{
 			"symbol":     symbol,
 			"recvWindow": recvWindow,
 		})
@@ -161,7 +161,7 @@ func (s *orderServiceTestSuite) TestGetOrder() {
 	orderID := int64(1)
 	origClientOrderID := "myOrder1"
 	s.assertReq(func(r *request) {
-		e := newSignedRequest().SetParams(params{
+		e := newSignedRequest().setParams(params{
 			"symbol":            symbol,
 			"orderId":           orderID,
 			"origClientOrderId": origClientOrderID,
@@ -214,7 +214,7 @@ func (s *orderServiceTestSuite) TestListOrders() {
 	orderID := int64(1)
 	limit := 3
 	s.assertReq(func(r *request) {
-		e := newSignedRequest().SetParams(params{
+		e := newSignedRequest().setParams(params{
 			"symbol":  symbol,
 			"orderId": orderID,
 			"limit":   limit,
@@ -260,7 +260,7 @@ func (s *orderServiceTestSuite) TestCancelOrder() {
 	origClientOrderID := "myOrder1"
 	newClientOrderID := "cancelMyOrder1"
 	s.assertReq(func(r *request) {
-		e := newSignedRequest().SetFormParams(params{
+		e := newSignedRequest().setFormParams(params{
 			"symbol":            symbol,
 			"orderId":           orderID,
 			"origClientOrderId": origClientOrderID,

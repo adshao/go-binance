@@ -53,7 +53,7 @@ func (s *CreateWithdrawService) Do(ctx context.Context) (err error) {
 	if s.name != nil {
 		m["name"] = *s.name
 	}
-	r.SetFormParams(m)
+	r.setFormParams(m)
 	_, err = s.c.callAPI(ctx, r)
 	if err != nil {
 		return
@@ -102,16 +102,16 @@ func (s *ListWithdrawsService) Do(ctx context.Context) (withdraws []*Withdraw, e
 		secType:  secTypeSigned,
 	}
 	if s.asset != nil {
-		r.SetParam("asset", *s.asset)
+		r.setParam("asset", *s.asset)
 	}
 	if s.status != nil {
-		r.SetParam("status", *s.status)
+		r.setParam("status", *s.status)
 	}
 	if s.startTime != nil {
-		r.SetParam("startTime", *s.startTime)
+		r.setParam("startTime", *s.startTime)
 	}
 	if s.endTime != nil {
-		r.SetParam("endTime", *s.endTime)
+		r.setParam("endTime", *s.endTime)
 	}
 	data, err := s.c.callAPI(ctx, r)
 	if err != nil {

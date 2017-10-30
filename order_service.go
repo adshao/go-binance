@@ -96,7 +96,7 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 	if s.icebergQuantity != nil {
 		m["icebergQty"] = *s.icebergQuantity
 	}
-	r.SetFormParams(m)
+	r.setFormParams(m)
 	data, err = s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return
@@ -151,7 +151,7 @@ func (s *ListOpenOrdersService) Do(ctx context.Context, opts ...RequestOption) (
 		endpoint: "/api/v3/openOrders",
 		secType:  secTypeSigned,
 	}
-	r.SetParam("symbol", s.symbol)
+	r.setParam("symbol", s.symbol)
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return
@@ -197,12 +197,12 @@ func (s *GetOrderService) Do(ctx context.Context, opts ...RequestOption) (res *O
 		endpoint: "/api/v3/order",
 		secType:  secTypeSigned,
 	}
-	r.SetParam("symbol", s.symbol)
+	r.setParam("symbol", s.symbol)
 	if s.orderID != nil {
-		r.SetParam("orderId", *s.orderID)
+		r.setParam("orderId", *s.orderID)
 	}
 	if s.origClientOrderID != nil {
-		r.SetParam("origClientOrderId", *s.origClientOrderID)
+		r.setParam("origClientOrderId", *s.origClientOrderID)
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
@@ -266,12 +266,12 @@ func (s *ListOrdersService) Do(ctx context.Context, opts ...RequestOption) (res 
 		endpoint: "/api/v3/allOrders",
 		secType:  secTypeSigned,
 	}
-	r.SetParam("symbol", s.symbol)
+	r.setParam("symbol", s.symbol)
 	if s.orderID != nil {
-		r.SetParam("orderId", *s.orderID)
+		r.setParam("orderId", *s.orderID)
 	}
 	if s.limit != nil {
-		r.SetParam("limit", *s.limit)
+		r.setParam("limit", *s.limit)
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
@@ -325,15 +325,15 @@ func (s *CancelOrderService) Do(ctx context.Context, opts ...RequestOption) (res
 		endpoint: "/api/v3/order",
 		secType:  secTypeSigned,
 	}
-	r.SetFormParam("symbol", s.symbol)
+	r.setFormParam("symbol", s.symbol)
 	if s.orderID != nil {
-		r.SetFormParam("orderId", *s.orderID)
+		r.setFormParam("orderId", *s.orderID)
 	}
 	if s.origClientOrderID != nil {
-		r.SetFormParam("origClientOrderId", *s.origClientOrderID)
+		r.setFormParam("origClientOrderId", *s.origClientOrderID)
 	}
 	if s.newClientOrderID != nil {
-		r.SetFormParam("newClientOrderId", *s.newClientOrderID)
+		r.setFormParam("newClientOrderId", *s.newClientOrderID)
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {

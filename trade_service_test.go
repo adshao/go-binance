@@ -35,7 +35,7 @@ func (s *tradeServiceTestSuite) TestListTrades() {
 	limit := 3
 	fromID := int64(1)
 	s.assertReq(func(r *request) {
-		e := newSignedRequest().SetParams(params{
+		e := newSignedRequest().setParams(params{
 			"symbol": symbol,
 			"limit":  limit,
 			"fromId": fromID,
@@ -97,7 +97,7 @@ func (s *tradeServiceTestSuite) TestAggregateTrades() {
 	endTime := int64(1498793709156)
 	limit := 1
 	s.assertReq(func(r *request) {
-		e := newRequest().SetParams(params{
+		e := newRequest().setParams(params{
 			"symbol":    symbol,
 			"fromId":    fromID,
 			"startTime": startTime,

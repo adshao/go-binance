@@ -30,7 +30,7 @@ func (s *depositServiceTestSuite) TestListDeposits() {
 	s.mockDo(data, nil)
 	defer s.assertDo()
 	s.assertReq(func(r *request) {
-		e := newSignedRequest().SetParams(params{
+		e := newSignedRequest().setParams(params{
 			"asset":     "BTC",
 			"status":    1,
 			"startTime": 1508198532000,

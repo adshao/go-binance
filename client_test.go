@@ -99,7 +99,7 @@ func newRequest() *request {
 }
 
 func newSignedRequest() *request {
-	return newRequest().SetParams(params{
+	return newRequest().setParams(params{
 		timestampKey: "",
 		signatureKey: "",
 	})

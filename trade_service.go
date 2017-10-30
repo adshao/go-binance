@@ -38,12 +38,12 @@ func (s *ListTradesService) Do(ctx context.Context, opts ...RequestOption) (res 
 		endpoint: "/api/v3/myTrades",
 		secType:  secTypeSigned,
 	}
-	r.SetParam("symbol", s.symbol)
+	r.setParam("symbol", s.symbol)
 	if s.limit != nil {
-		r.SetParam("limit", *s.limit)
+		r.setParam("limit", *s.limit)
 	}
 	if s.fromID != nil {
-		r.SetParam("fromId", *s.fromID)
+		r.setParam("fromId", *s.fromID)
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
@@ -116,18 +116,18 @@ func (s *AggTradesService) Do(ctx context.Context, opts ...RequestOption) (res [
 		method:   "GET",
 		endpoint: "/api/v1/aggTrades",
 	}
-	r.SetParam("symbol", s.symbol)
+	r.setParam("symbol", s.symbol)
 	if s.fromID != nil {
-		r.SetParam("fromId", *s.fromID)
+		r.setParam("fromId", *s.fromID)
 	}
 	if s.startTime != nil {
-		r.SetParam("startTime", *s.startTime)
+		r.setParam("startTime", *s.startTime)
 	}
 	if s.endTime != nil {
-		r.SetParam("endTime", *s.endTime)
+		r.setParam("endTime", *s.endTime)
 	}
 	if s.limit != nil {
-		r.SetParam("limit", *s.limit)
+		r.setParam("limit", *s.limit)
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {

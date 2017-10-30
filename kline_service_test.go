@@ -54,7 +54,7 @@ func (s *klineServiceTestSuite) TestKlines() {
 	startTime := int64(1499040000000)
 	endTime := int64(1499040000001)
 	s.assertReq(func(r *request) {
-		e := newRequest().SetParams(params{
+		e := newRequest().setParams(params{
 			"symbol":    symbol,
 			"interval":  interval,
 			"limit":     limit,

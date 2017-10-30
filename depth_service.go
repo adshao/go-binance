@@ -29,9 +29,9 @@ func (s *DepthService) Do(ctx context.Context, opts ...RequestOption) (res *Dept
 		method:   "GET",
 		endpoint: "/api/v1/depth",
 	}
-	r.SetParam("symbol", s.symbol)
+	r.setParam("symbol", s.symbol)
 	if s.limit != nil {
-		r.SetParam("limit", *s.limit)
+		r.setParam("limit", *s.limit)
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {

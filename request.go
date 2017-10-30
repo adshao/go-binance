@@ -30,8 +30,8 @@ type request struct {
 	fullURL    string
 }
 
-// SetParam set param with key/value to query string
-func (r *request) SetParam(key string, value interface{}) *request {
+// setParam set param with key/value to query string
+func (r *request) setParam(key string, value interface{}) *request {
 	if r.query == nil {
 		r.query = url.Values{}
 	}
@@ -39,16 +39,16 @@ func (r *request) SetParam(key string, value interface{}) *request {
 	return r
 }
 
-// SetParams set params with key/values to query string
-func (r *request) SetParams(m params) *request {
+// setParams set params with key/values to query string
+func (r *request) setParams(m params) *request {
 	for k, v := range m {
-		r.SetParam(k, v)
+		r.setParam(k, v)
 	}
 	return r
 }
 
-// SetFormParam set param with key/value to request form body
-func (r *request) SetFormParam(key string, value interface{}) *request {
+// setFormParam set param with key/value to request form body
+func (r *request) setFormParam(key string, value interface{}) *request {
 	if r.form == nil {
 		r.form = url.Values{}
 	}
@@ -56,10 +56,10 @@ func (r *request) SetFormParam(key string, value interface{}) *request {
 	return r
 }
 
-// SetFormParams set params with key/values to request form body
-func (r *request) SetFormParams(m params) *request {
+// setFormParams set params with key/values to request form body
+func (r *request) setFormParams(m params) *request {
 	for k, v := range m {
-		r.SetFormParam(k, v)
+		r.setFormParam(k, v)
 	}
 	return r
 }
