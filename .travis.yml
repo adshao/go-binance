@@ -8,9 +8,14 @@ os:
   - linux
 
 before_install:
-  - go get -t github.com/bitly/go-simplejson
-  - go get -t github.com/gorilla/websocket
-  - go get -t github.com/stretchr/testify
+  - test -z $(gofmt -l .)
+  - go get github.com/golang/lint/golint
+  - golint -set_exit_status .
+  - govet .
+  - go get -t -v ./...
 
 script:
-  - go test -v ./...
+  - go test -v -race -coverprofile=coverage.txt -covermode=atomic
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
