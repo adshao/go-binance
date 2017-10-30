@@ -11,7 +11,7 @@ before_install:
   - test -z $(gofmt -l .)
   - go get github.com/golang/lint/golint
   - golint -set_exit_status .
-  - govet .
+  - go vet ./...
   - go get -t -v ./...
 
 script:
