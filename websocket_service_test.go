@@ -304,3 +304,207 @@ func (s *websocketServiceTestSuite) TestWsUserDataServe() {
         ]
     }`))
 }
+
+func (s *websocketServiceTestSuite) TestWsMarketStatServe() {
+	data := []byte(`{
+  		"e": "24hrTicker",
+  		"E": 123456789,
+  		"s": "BNBBTC",
+  		"p": "0.0015",
+  		"P": "250.00",
+  		"w": "0.0018",
+  		"x": "0.0009",
+  		"c": "0.0025",
+  		"Q": "10",
+  		"b": "0.0024",
+  		"B": "10",
+  		"a": "0.0026",
+  		"A": "100",
+  		"o": "0.0010",
+  		"h": "0.0026",
+  		"l": "0.0010",
+  		"v": "10000",
+  		"q": "18",
+ 		"O": 0,
+  		"C": 86400000,
+  		"F": 0,
+  		"L": 18150,
+  		"n": 18151
+	}`)
+	s.mockWsServe(data)
+	defer s.assertWsServe()
+
+	_, err := WsMarketStatServe("BNBBTC", func(event *WsMarketStatEvent) {
+		e := &WsMarketStatEvent{
+			Event:              "24hrTicker",
+			Time:               123456789,
+			Symbol:             "BNBBTC",
+			PriceChange:        "0.0015",
+			PriceChangePercent: "250.00",
+			WeightedAvgPrice:   "0.0018",
+			PrevClosePrice:     "0.0009",
+			LastPrice:          "0.0025",
+			CloseQty:           "10",
+			BidPrice:           "0.0024",
+			BidQty:             "10",
+			AskPrice:           "0.0026",
+			AskQty:             "100",
+			OpenPrice:          "0.0010",
+			HighPrice:          "0.0026",
+			LowPrice:           "0.0010",
+			BaseVolume:         "10000",
+			QuoteVolume:        "18",
+			OpenTime:           0,
+			CloseTime:          86400000,
+			FirstID:            0,
+			LastID:             18150,
+			Count:              18151,
+		}
+		s.assertWsMarketStatEventEqual(e, event)
+	})
+	s.r().NoError(err)
+}
+
+func (s *websocketServiceTestSuite) assertWsMarketStatEventEqual(e, a *WsMarketStatEvent) {
+	r := s.r()
+	r.Equal(e.Event, a.Event, "Event")
+	r.Equal(e.Time, a.Time, "Time")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.PriceChange, a.PriceChange, "PriceChange")
+	r.Equal(e.PriceChangePercent, a.PriceChangePercent, "PriceChangePercent")
+	r.Equal(e.WeightedAvgPrice, a.WeightedAvgPrice, "WeightedAvgPrice")
+	r.Equal(e.PrevClosePrice, a.PrevClosePrice, "PrevClosePrice")
+	r.Equal(e.LastPrice, a.LastPrice, "LastPrice")
+	r.Equal(e.CloseQty, a.CloseQty, "CloseQty")
+	r.Equal(e.BidPrice, a.BidPrice, "BidPrice")
+	r.Equal(e.BidQty, a.BidQty, "BidQty")
+	r.Equal(e.AskPrice, a.AskPrice, "AskPrice")
+	r.Equal(e.AskQty, a.AskQty, "AskQty")
+	r.Equal(e.OpenPrice, a.OpenPrice, "OpenPrice")
+	r.Equal(e.HighPrice, a.HighPrice, "HighPrice")
+	r.Equal(e.LowPrice, a.LowPrice, "LowPrice")
+	r.Equal(e.BaseVolume, a.BaseVolume, "BaseVolume")
+	r.Equal(e.QuoteVolume, a.QuoteVolume, "QuoteVolume")
+	r.Equal(e.OpenTime, a.OpenTime, "OpenTime")
+	r.Equal(e.CloseTime, a.CloseTime, "CloseTime")
+	r.Equal(e.FirstID, a.FirstID, "FirstID")
+	r.Equal(e.LastID, a.LastID, "LastID")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+}
+
+func (s *websocketServiceTestSuite) TestWsAllMarketSStatServe() {
+	data := []byte(`[{
+  		"e": "24hrTicker",
+  		"E": 123456789,
+  		"s": "BNBBTC",
+  		"p": "0.0015",
+  		"P": "250.00",
+  		"w": "0.0018",
+  		"x": "0.0009",
+  		"c": "0.0025",
+  		"Q": "10",
+  		"b": "0.0024",
+  		"B": "10",
+  		"a": "0.0026",
+  		"A": "100",
+  		"o": "0.0010",
+  		"h": "0.0026",
+  		"l": "0.0010",
+  		"v": "10000",
+  		"q": "18",
+ 		"O": 0,
+  		"C": 86400000,
+  		"F": 0,
+  		"L": 18150,
+  		"n": 18151
+	},{
+  		"e": "24hrTicker",
+  		"E": 123456789,
+  		"s": "ETHBTC",
+  		"p": "0.0015",
+  		"P": "250.00",
+  		"w": "0.0018",
+  		"x": "0.0009",
+  		"c": "0.0025",
+  		"Q": "10",
+  		"b": "0.0024",
+  		"B": "10",
+  		"a": "0.0026",
+  		"A": "100",
+  		"o": "0.0010",
+  		"h": "0.0026",
+  		"l": "0.0010",
+  		"v": "10000",
+  		"q": "18",
+ 		"O": 0,
+  		"C": 86400000,
+  		"F": 0,
+  		"L": 18150,
+  		"n": 18151
+	}]`)
+	s.mockWsServe(data)
+	defer s.assertWsServe()
+
+	_, err := WsAllMarketsStatServe(func(event WsAllMarketsStatEvent) {
+		e := WsAllMarketsStatEvent{
+			&WsMarketStatEvent{
+				Event:              "24hrTicker",
+				Time:               123456789,
+				Symbol:             "BNBBTC",
+				PriceChange:        "0.0015",
+				PriceChangePercent: "250.00",
+				WeightedAvgPrice:   "0.0018",
+				PrevClosePrice:     "0.0009",
+				LastPrice:          "0.0025",
+				CloseQty:           "10",
+				BidPrice:           "0.0024",
+				BidQty:             "10",
+				AskPrice:           "0.0026",
+				AskQty:             "100",
+				OpenPrice:          "0.0010",
+				HighPrice:          "0.0026",
+				LowPrice:           "0.0010",
+				BaseVolume:         "10000",
+				QuoteVolume:        "18",
+				OpenTime:           0,
+				CloseTime:          86400000,
+				FirstID:            0,
+				LastID:             18150,
+				Count:              18151,
+			},
+			&WsMarketStatEvent{
+				Event:              "24hrTicker",
+				Time:               123456789,
+				Symbol:             "ETHBTC",
+				PriceChange:        "0.0015",
+				PriceChangePercent: "250.00",
+				WeightedAvgPrice:   "0.0018",
+				PrevClosePrice:     "0.0009",
+				LastPrice:          "0.0025",
+				CloseQty:           "10",
+				BidPrice:           "0.0024",
+				BidQty:             "10",
+				AskPrice:           "0.0026",
+				AskQty:             "100",
+				OpenPrice:          "0.0010",
+				HighPrice:          "0.0026",
+				LowPrice:           "0.0010",
+				BaseVolume:         "10000",
+				QuoteVolume:        "18",
+				OpenTime:           0,
+				CloseTime:          86400000,
+				FirstID:            0,
+				LastID:             18150,
+				Count:              18151,
+			},
+		}
+		s.assertWsAllMarketsStatEventEqual(e, event)
+	})
+	s.r().NoError(err)
+}
+
+func (s *websocketServiceTestSuite) assertWsAllMarketsStatEventEqual(e, a WsAllMarketsStatEvent) {
+	for i := range e {
+		s.assertWsMarketStatEventEqual(e[i], a[i])
+	}
+}
