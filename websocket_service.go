@@ -146,3 +146,69 @@ func WsUserDataServe(listenKey string, handler WsHandler) (chan struct{}, error)
 	cfg := newWsConfig(endpoint)
 	return wsServe(cfg, handler)
 }
+
+// WsMarketStatHandler handle websocket that push single market statistics for 24hr
+type WsMarketStatHandler func(event *WsMarketStatEvent)
+
+// WsMarketStatServe serve websocket that push 24hr statistics for single market every second
+func WsMarketStatServe(symbol string, handler WsMarketStatHandler) (chan struct{}, error) {
+	endpoint := fmt.Sprintf("%s/%s@ticker", baseURL, strings.ToLower(symbol))
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		var event WsMarketStatEvent
+		err := json.Unmarshal(message, &event)
+		if err != nil {
+			return
+		}
+		handler(&event)
+	}
+	return wsServe(cfg, wsHandler)
+}
+
+// WsAllMarketsStatHandler handle websocket that push all markets statistics for 24hr
+type WsAllMarketsStatHandler func(event WsAllMarketsStatEvent)
+
+// WsAllMarketsStatServe serve websocket that push 24hr statistics for all market every second
+func WsAllMarketsStatServe(handler WsAllMarketsStatHandler) (chan struct{}, error) {
+	endpoint := fmt.Sprintf("%s/!ticker@arr", baseURL)
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		var event WsAllMarketsStatEvent
+		err := json.Unmarshal(message, &event)
+		if err != nil {
+			return
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler)
+}
+
+// WsAllMarketsStatEvent define array of websocket market statistics events
+type WsAllMarketsStatEvent []*WsMarketStatEvent
+
+// WsMarketStatEvent define websocket market statistics event
+type WsMarketStatEvent struct {
+	Event              string `json:"e"`
+	Time               int64  `json:"E"`
+	Symbol             string `json:"s"`
+	PriceChange        string `json:"p"`
+	PriceChangePercent string `json:"P"`
+	WeightedAvgPrice   string `json:"w"`
+	PrevClosePrice     string `json:"x"`
+	LastPrice          string `json:"c"`
+	CloseQty           string `json:"Q"`
+	BidPrice           string `json:"b"`
+	BidQty             string `json:"B"`
+	AskPrice           string `json:"a"`
+	AskQty             string `json:"A"`
+	OpenPrice          string `json:"o"`
+	HighPrice          string `json:"h"`
+	LowPrice           string `json:"l"`
+	BaseVolume         string `json:"v"`
+	QuoteVolume        string `json:"q"`
+	OpenTime           int64  `json:"O"`
+	CloseTime          int64  `json:"C"`
+	FirstID            int64  `json:"F"`
+	LastID             int64  `json:"L"`
+	Count              int64  `json:"n"`
+}
