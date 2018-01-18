@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 )
 
-// ExchangeInfoService
+// ExchangeInfoService exchange info service
 type ExchangeInfoService struct {
 	c *Client
 }
@@ -29,12 +29,12 @@ func (s *ExchangeInfoService) Do(ctx context.Context, opts ...RequestOption) (re
 	return
 }
 
-// ExchangeInfo
+// ExchangeInfo exchange info
 type ExchangeInfo struct {
 	Symbols []Symbol `json:"symbols"`
 }
 
-// Symbol
+// Symbol market symbol
 type Symbol struct {
 	Symbol             string `json:"symbol"`
 	BaseAsset          string `json:"baseAsset"`
