@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 )
 
+// ExchangeInfoService
 type ExchangeInfoService struct {
 	c *Client
 }
 
+// Do send request
 func (s *ExchangeInfoService) Do(ctx context.Context, opts ...RequestOption) (res *ExchangeInfo, err error) {
 	r := &request{
 		method:   "GET",
@@ -27,10 +29,12 @@ func (s *ExchangeInfoService) Do(ctx context.Context, opts ...RequestOption) (re
 	return
 }
 
+// ExchangeInfo
 type ExchangeInfo struct {
 	Symbols []Symbol `json:"symbols"`
 }
 
+// Symbol
 type Symbol struct {
 	Symbol             string `json:"symbol"`
 	BaseAsset          string `json:"baseAsset"`
