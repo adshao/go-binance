@@ -71,7 +71,7 @@ func (s *accountServiceTestSuite) TestGetAccount() {
 
 func (s *accountServiceTestSuite) assertAccountEqual(e, a *Account) {
 	r := s.r()
-	r.Equal(e.MakerCommission, a.MakerCommission, "AakerCommission")
+	r.Equal(e.MakerCommission, a.MakerCommission, "MakerCommission")
 	r.Equal(e.TakerCommission, a.TakerCommission, "TakerCommission")
 	r.Equal(e.BuyerCommission, a.BuyerCommission, "BuyerCommission")
 	r.Equal(e.SellerCommission, a.SellerCommission, "SellerCommission")
@@ -80,7 +80,7 @@ func (s *accountServiceTestSuite) assertAccountEqual(e, a *Account) {
 	r.Equal(e.CanDeposit, a.CanDeposit, "CanDeposit")
 	r.Len(a.Balances, len(e.Balances))
 	for i := 0; i < len(a.Balances); i++ {
-		r.Equal(e.Balances[i].Asset, a.Balances[i].Asset, "Assert")
+		r.Equal(e.Balances[i].Asset, a.Balances[i].Asset, "Asset")
 		r.Equal(e.Balances[i].Free, a.Balances[i].Free, "Free")
 		r.Equal(e.Balances[i].Locked, a.Balances[i].Locked, "Locked")
 	}
