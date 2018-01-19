@@ -15,6 +15,23 @@ func TestExchangeInfoService(t *testing.T) {
 }
 
 func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
+	data := []byte(`{
+		"symbols": [
+			{
+				"symbol": "ETHBTC",
+				"baseAsset": "ETH",
+				"baseAssetPrecision": 8,
+				"quoteAsset": "BTC",
+				"quotePrecision": 8
+			}
+		]
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	s.assertReq(func(r *request) {
+		e := newRequest()
+		s.assertRequestEqual(e, r)
+	})
 	res, err := s.client.NewExchangeInfoService().Do(newContext())
 	s.r().NoError(err)
 	ei := &ExchangeInfo{
