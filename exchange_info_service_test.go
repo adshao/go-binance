@@ -19,10 +19,14 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 		"symbols": [
 			{
 				"symbol": "ETHBTC",
+				"status": "TRADING",
 				"baseAsset": "ETH",
 				"baseAssetPrecision": 8,
 				"quoteAsset": "BTC",
-				"quotePrecision": 8
+				"quotePrecision": 8,
+				"orderTypes":["LIMIT","LIMIT_MAKER","MARKET","STOP_LOSS_LIMIT","TAKE_PROFIT_LIMIT"],
+				"icebergAllowed": true,
+				"filters":[{"filterType":"PRICE_FILTER","minPrice":"0.00000100","maxPrice":"100000.00000000","tickSize":"0.00000100"},{"filterType":"LOT_SIZE","minQty":"0.00100000","maxQty":"100000.00000000","stepSize":"0.00100000"},{"filterType":"MIN_NOTIONAL","minNotional":"0.00100000"}]
 			}
 		]
 	}`)
@@ -38,10 +42,18 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 		Symbols: []Symbol{
 			{
 				Symbol:             "ETHBTC",
+				Status:             "TRADING",
 				BaseAsset:          "ETH",
 				BaseAssetPrecision: 8,
 				QuoteAsset:         "BTC",
 				QuotePrecision:     8,
+				OrderTypes:         []string{"LIMIT", "LIMIT_MAKER", "MARKET", "STOP_LOSS_LIMIT", "TAKE_PROFIT_LIMIT"},
+				IcebergAllowed:     true,
+				Filters: []map[string]string{
+					{"filterType": "PRICE_FILTER", "minPrice": "0.00000100", "maxPrice": "100000.00000000", "tickSize": "0.00000100"},
+					{"filterType": "LOT_SIZE", "minQty": "0.00100000", "maxQty": "100000.00000000", "stepSize": "0.00100000"},
+					{"filterType": "MIN_NOTIONAL", "minNotional": "0.00100000"},
+				},
 			},
 		},
 	}
@@ -50,12 +62,34 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 
 func (s *exchangeInfoServiceTestSuite) assertExchangeInfoEqual(e, a *ExchangeInfo) {
 	r := s.r()
-	for i := 0; i < len(a.Symbols); i++ {
+	for i, currentSymbol := range a.Symbols {
 		if a.Symbols[i].Symbol == e.Symbols[0].Symbol {
-			r.Equal(e.Symbols[i].BaseAsset, a.Symbols[i].BaseAsset, "BaseAsset")
-			r.Equal(e.Symbols[i].BaseAssetPrecision, a.Symbols[i].BaseAssetPrecision, "BaseAssetPrecision")
-			r.Equal(e.Symbols[i].QuoteAsset, a.Symbols[i].QuoteAsset, "QuoteAsset")
-			r.Equal(e.Symbols[i].QuotePrecision, a.Symbols[i].QuotePrecision, "QuotePrecision")
+			r.Equal(e.Symbols[i].Status, currentSymbol.Status, "Status")
+			r.Equal(e.Symbols[i].BaseAsset, currentSymbol.BaseAsset, "BaseAsset")
+			r.Equal(e.Symbols[i].BaseAssetPrecision, currentSymbol.BaseAssetPrecision, "BaseAssetPrecision")
+			r.Equal(e.Symbols[i].QuoteAsset, currentSymbol.QuoteAsset, "QuoteAsset")
+			r.Equal(e.Symbols[i].QuotePrecision, currentSymbol.QuotePrecision, "QuotePrecision")
+			r.Len(currentSymbol.OrderTypes, len(e.Symbols[i].OrderTypes))
+			r.Equal(e.Symbols[i].OrderTypes, currentSymbol.OrderTypes, "OrderTypes")
+			r.Equal(e.Symbols[i].IcebergAllowed, currentSymbol.IcebergAllowed, "IcebergAllowed")
+			r.Len(currentSymbol.Filters, len(e.Symbols[i].Filters))
+			for fi, currentFilter := range currentSymbol.Filters {
+				r.Len(currentFilter, len(e.Symbols[i].Filters[fi]))
+				switch currentFilter["filterType"] {
+				case "PRICE_FILTER":
+					r.Equal(e.Symbols[i].Filters[fi]["minPrice"], currentFilter["minPrice"], "minPrice")
+					r.Equal(e.Symbols[i].Filters[fi]["maxPrice"], currentFilter["maxPrice"], "maxPrice")
+					r.Equal(e.Symbols[i].Filters[fi]["tickSize"], currentFilter["tickSize"], "tickSize")
+				case "LOT_SIZE":
+					r.Equal(e.Symbols[i].Filters[fi]["minQty"], currentFilter["minQty"], "minQty")
+					r.Equal(e.Symbols[i].Filters[fi]["maxQty"], currentFilter["maxQty"], "maxQty")
+					r.Equal(e.Symbols[i].Filters[fi]["stepSize"], currentFilter["stepSize"], "stepSize")
+				case "MIN_NOTIONAL":
+					r.Equal(e.Symbols[i].Filters[fi]["minNotional"], currentFilter["minNotional"], "minNotional")
+				}
+
+			}
+
 			return
 		}
 
