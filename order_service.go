@@ -3,6 +3,7 @@ package binance
 import (
 	"context"
 	"encoding/json"
+	"strconv"
 )
 
 // CreateOrderService create order
@@ -231,6 +232,24 @@ type Order struct {
 	StopPrice        string `json:"stopPrice"`
 	IcebergQuantity  string `json:"icebergQty"`
 	Time             int64  `json:"time"`
+}
+
+// GetPrice returns the price as float64
+func (o *Order) GetPrice() float64 {
+	out, err := strconv.ParseFloat(o.Price, 64)
+	if err == nil {
+		return out
+	}
+	return 0
+}
+
+// GetSize returns the quantity as float64
+func (o *Order) GetSize() float64 {
+	out, err := strconv.ParseFloat(o.OrigQuantity, 64)
+	if err == nil {
+		return out
+	}
+	return 0
 }
 
 // ListOrdersService list all orders
