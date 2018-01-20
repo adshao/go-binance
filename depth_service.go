@@ -2,6 +2,7 @@ package binance
 
 import (
 	"context"
+	"strconv"
 )
 
 // DepthService show depth info
@@ -44,21 +45,21 @@ func (s *DepthService) Do(ctx context.Context, opts ...RequestOption) (res *Dept
 	res = new(DepthResponse)
 	res.LastUpdateID = j.Get("lastUpdateId").MustInt64()
 	bidsLen := len(j.Get("bids").MustArray())
-	res.Bids = make([]Bid, bidsLen)
+	res.Bids = make([]BookEntry, bidsLen)
 	for i := 0; i < bidsLen; i++ {
 		item := j.Get("bids").GetIndex(i)
-		res.Bids[i] = Bid{
-			Price:    item.GetIndex(0).MustString(),
-			Quantity: item.GetIndex(1).MustString(),
+		res.Bids[i] = BookEntry{
+			item.GetIndex(0).MustString(),
+			item.GetIndex(1).MustString(),
 		}
 	}
 	asksLen := len(j.Get("asks").MustArray())
-	res.Asks = make([]Ask, asksLen)
+	res.Asks = make([]BookEntry, asksLen)
 	for i := 0; i < asksLen; i++ {
 		item := j.Get("asks").GetIndex(i)
-		res.Asks[i] = Ask{
-			Price:    item.GetIndex(0).MustString(),
-			Quantity: item.GetIndex(1).MustString(),
+		res.Asks[i] = BookEntry{
+			item.GetIndex(0).MustString(),
+			item.GetIndex(1).MustString(),
 		}
 	}
 	return
@@ -66,19 +67,22 @@ func (s *DepthService) Do(ctx context.Context, opts ...RequestOption) (res *Dept
 
 // DepthResponse define depth info with bids and asks
 type DepthResponse struct {
-	LastUpdateID int64 `json:"lastUpdateId"`
-	Bids         []Bid `json:"bids"`
-	Asks         []Ask `json:"asks"`
+	LastUpdateID int64       `json:"lastUpdateId"`
+	Bids         []BookEntry `json:"bids"`
+	Asks         []BookEntry `json:"asks"`
 }
 
-// Bid define bid info with price and quantity
-type Bid struct {
-	Price    string
-	Quantity string
+// BookEntry = bid or ask info with price and quantity
+type BookEntry []string
+
+// Price = bid or ask price
+func (be *BookEntry) Price() float64 {
+	out, _ := strconv.ParseFloat((*be)[0], 64)
+	return out
 }
 
-// Ask define ask info with price and quantity
-type Ask struct {
-	Price    string
-	Quantity string
+// Quantity = bid or ask size
+func (be *BookEntry) Quantity() float64 {
+	out, _ := strconv.ParseFloat((*be)[1], 64)
+	return out
 }

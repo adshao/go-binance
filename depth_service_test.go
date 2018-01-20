@@ -45,16 +45,16 @@ func (s *depthServiceTestSuite) TestDepth() {
 	s.r().NoError(err)
 	e := &DepthResponse{
 		LastUpdateID: 1027024,
-		Bids: []Bid{
+		Bids: []BookEntry{
 			{
-				Price:    "4.00000000",
-				Quantity: "431.00000000",
+				"4.00000000",
+				"431.00000000",
 			},
 		},
-		Asks: []Ask{
+		Asks: []BookEntry{
 			{
-				Price:    "4.00000200",
-				Quantity: "12.00000000",
+				"4.00000200",
+				"12.00000000",
 			},
 		},
 	}
@@ -66,12 +66,12 @@ func (s *depthServiceTestSuite) assertDepthResponseEqual(e, a *DepthResponse) {
 	r.Equal(e.LastUpdateID, a.LastUpdateID, "LastUpdateID")
 	r.Len(a.Bids, len(e.Bids))
 	for i := 0; i < len(a.Bids); i++ {
-		r.Equal(e.Bids[i].Price, a.Bids[i].Price, "Price")
-		r.Equal(e.Bids[i].Quantity, a.Bids[i].Quantity, "Quantity")
+		r.Equal(e.Bids[i].Price(), a.Bids[i].Price(), "Price")
+		r.Equal(e.Bids[i].Quantity(), a.Bids[i].Quantity(), "Quantity")
 	}
 	r.Len(a.Asks, len(e.Asks))
 	for i := 0; i < len(a.Asks); i++ {
-		r.Equal(e.Asks[i].Price, a.Asks[i].Price, "Price")
-		r.Equal(e.Asks[i].Quantity, a.Asks[i].Quantity, "Quantity")
+		r.Equal(e.Asks[i].Price(), a.Asks[i].Price(), "Price")
+		r.Equal(e.Asks[i].Quantity(), a.Asks[i].Quantity(), "Quantity")
 	}
 }

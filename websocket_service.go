@@ -29,21 +29,21 @@ func WsDepthServe(symbol string, handler WsDepthHandler) (chan struct{}, error) 
 		event.Symbol = j.Get("s").MustString()
 		event.UpdateID = j.Get("u").MustInt64()
 		bidsLen := len(j.Get("b").MustArray())
-		event.Bids = make([]Bid, bidsLen)
+		event.Bids = make([]BookEntry, bidsLen)
 		for i := 0; i < bidsLen; i++ {
 			item := j.Get("b").GetIndex(i)
-			event.Bids[i] = Bid{
-				Price:    item.GetIndex(0).MustString(),
-				Quantity: item.GetIndex(1).MustString(),
+			event.Bids[i] = BookEntry{
+				item.GetIndex(0).MustString(),
+				item.GetIndex(1).MustString(),
 			}
 		}
 		asksLen := len(j.Get("a").MustArray())
-		event.Asks = make([]Ask, asksLen)
+		event.Asks = make([]BookEntry, asksLen)
 		for i := 0; i < asksLen; i++ {
 			item := j.Get("a").GetIndex(i)
-			event.Asks[i] = Ask{
-				Price:    item.GetIndex(0).MustString(),
-				Quantity: item.GetIndex(1).MustString(),
+			event.Asks[i] = BookEntry{
+				item.GetIndex(0).MustString(),
+				item.GetIndex(1).MustString(),
 			}
 		}
 		handler(event)
@@ -53,12 +53,12 @@ func WsDepthServe(symbol string, handler WsDepthHandler) (chan struct{}, error) 
 
 // WsDepthEvent define websocket depth event
 type WsDepthEvent struct {
-	Event    string `json:"e"`
-	Time     int64  `json:"E"`
-	Symbol   string `json:"s"`
-	UpdateID int64  `json:"u"`
-	Bids     []Bid  `json:"b"`
-	Asks     []Ask  `json:"a"`
+	Event    string      `json:"e"`
+	Time     int64       `json:"E"`
+	Symbol   string      `json:"s"`
+	UpdateID int64       `json:"u"`
+	Bids     []BookEntry `json:"b"`
+	Asks     []BookEntry `json:"a"`
 }
 
 // WsKlineHandler handle websocket kline event
