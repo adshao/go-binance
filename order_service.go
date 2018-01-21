@@ -130,6 +130,13 @@ type CreateOrderResponse struct {
 	OrderID       int64  `json:"orderId"`
 	ClientOrderID string `json:"clientOrderId"`
 	TransactTime  int64  `json:"transactTime"`
+	Price            string `json:"price"`
+	OrigQuantity     string `json:"origQty"`
+	ExecutedQuantity string `json:"executedQty"`
+	Status           string `json:"status"`
+	TimeInForce      string `json:"timeInForce"`
+	Type             string `json:"type"`
+	Side             string `json:"side"`
 }
 
 // ListOpenOrdersService list opened orders
