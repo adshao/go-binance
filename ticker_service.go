@@ -14,7 +14,7 @@ type ListBookTickersService struct {
 func (s *ListBookTickersService) Do(ctx context.Context, opts ...RequestOption) (res []*BookTicker, err error) {
 	r := &request{
 		method:   "GET",
-		endpoint: "/api/v1/ticker/allBookTickers",
+		endpoint: "/api/v3/ticker/bookTicker",
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
