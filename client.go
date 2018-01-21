@@ -36,6 +36,7 @@ const (
 
 	TimeInForceGTC TimeInForce = "GTC"
 	TimeInForceIOC TimeInForce = "IOC"
+	TimeInForceFOK TimeInForce = "FOK"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
