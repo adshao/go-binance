@@ -61,6 +61,37 @@ func (s *tickerServiceTestSuite) TestListBookTickers() {
 	s.assertBookTickerEqual(e2, tickers[1])
 }
 
+func (s *tickerServiceTestSuite) TestSingleBookTicker() {
+	data := []byte(`{
+            "symbol": "LTCBTC",
+            "bidPrice": "4.00000000",
+            "bidQty": "431.00000000",
+            "askPrice": "4.00000200",
+            "askQty": "9.00000000"
+        }`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	symbol := "LTCBTC"
+
+	s.assertReq(func(r *request) {
+		e := newRequest().setParam("symbol", symbol)
+		s.assertRequestEqual(e, r)
+	})
+
+	ticker, err := s.client.NewBookTickerService().Symbol("LTCBTC").Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	e := &BookTicker{
+		Symbol:      "LTCBTC",
+		BidPrice:    "4.00000000",
+		BidQuantity: "431.00000000",
+		AskPrice:    "4.00000200",
+		AskQuantity: "9.00000000",
+	}
+	s.assertBookTickerEqual(e, ticker)
+}
+
 func (s *tickerServiceTestSuite) assertBookTickerEqual(e, a *BookTicker) {
 	r := s.r()
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
