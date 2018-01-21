@@ -7,7 +7,7 @@ import (
 
 // ListBookTickersService list all book tickers
 type ListBookTickersService struct {
-	c *Client
+	c      *Client
 }
 
 // Do send request
@@ -21,6 +21,36 @@ func (s *ListBookTickersService) Do(ctx context.Context, opts ...RequestOption) 
 		return
 	}
 	res = make([]*BookTicker, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return
+	}
+	return
+}
+
+// BookTickerService list symbol's book ticker
+type BookTickerService struct {
+	c      *Client
+	symbol string
+}
+
+// Symbol set symbol
+func (s *BookTickerService) Symbol(symbol string) *BookTickerService {
+	s.symbol = symbol
+	return s
+}
+
+func (s *BookTickerService) Do(ctx context.Context, opts ...RequestOption) (res *BookTicker, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/api/v3/ticker/bookTicker",
+	}
+	r.setParam("symbol", s.symbol)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return
+	}
+	res = new(BookTicker)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return

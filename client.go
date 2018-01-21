@@ -215,6 +215,11 @@ func (c *Client) NewListPricesService() *ListPricesService {
 	return &ListPricesService{c: c}
 }
 
+// NewBookTickerService init booking ticker service
+func (c *Client) NewBookTickerService() *BookTickerService {
+	return &BookTickerService{c: c}
+}
+
 // NewListBookTickersService init listing booking tickers service
 func (c *Client) NewListBookTickersService() *ListBookTickersService {
 	return &ListBookTickersService{c: c}
