@@ -283,3 +283,8 @@ func (c *Client) NewKeepaliveUserStreamService() *KeepaliveUserStreamService {
 func (c *Client) NewCloseUserStreamService() *CloseUserStreamService {
 	return &CloseUserStreamService{c: c}
 }
+
+// NewExchangeInfoService init exchange info service
+func (c *Client) NewExchangeInfoService() *ExchangeInfoService {
+	return &ExchangeInfoService{c: c}
+}
