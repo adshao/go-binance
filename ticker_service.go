@@ -40,6 +40,7 @@ func (s *BookTickerService) Symbol(symbol string) *BookTickerService {
 	return s
 }
 
+// Do send request
 func (s *BookTickerService) Do(ctx context.Context, opts ...RequestOption) (res *BookTicker, err error) {
 	r := &request{
 		method:   "GET",
