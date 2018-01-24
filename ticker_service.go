@@ -7,7 +7,7 @@ import (
 
 // ListBookTickersService list all book tickers
 type ListBookTickersService struct {
-	c      *Client
+	c *Client
 }
 
 // Do send request

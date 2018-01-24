@@ -54,17 +54,17 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 		Price(price).NewClientOrderID(newClientOrderID).Do(newContext())
 	s.r().NoError(err)
 	e := &CreateOrderResponse{
-		Symbol:        "LTCBTC",
-		OrderID:       1,
-		ClientOrderID: "myOrder1",
-		TransactTime:  1499827319559,
-		Price: "0.0001",
-		OrigQuantity: "12.00",
+		Symbol:           "LTCBTC",
+		OrderID:          1,
+		ClientOrderID:    "myOrder1",
+		TransactTime:     1499827319559,
+		Price:            "0.0001",
+		OrigQuantity:     "12.00",
 		ExecutedQuantity: "10.00",
-		Status: "FILLED",
-		TimeInForce: "GTC",
-		Type: "LIMIT",
-		Side: "BUY",
+		Status:           "FILLED",
+		TimeInForce:      "GTC",
+		Type:             "LIMIT",
+		Side:             "BUY",
 	}
 	s.assertCreateOrderResponseEqual(e, res)
 
