@@ -36,6 +36,7 @@ const (
 
 	TimeInForceGTC TimeInForce = "GTC"
 	TimeInForceIOC TimeInForce = "IOC"
+	TimeInForceFOK TimeInForce = "FOK"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
@@ -212,6 +213,11 @@ func (c *Client) NewPriceChangeStatsService() *PriceChangeStatsService {
 // NewListPricesService init listing prices service
 func (c *Client) NewListPricesService() *ListPricesService {
 	return &ListPricesService{c: c}
+}
+
+// NewBookTickerService init booking ticker service
+func (c *Client) NewBookTickerService() *BookTickerService {
+	return &BookTickerService{c: c}
 }
 
 // NewListBookTickersService init listing booking tickers service

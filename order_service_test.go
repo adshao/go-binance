@@ -16,11 +16,18 @@ func TestOrderService(t *testing.T) {
 
 func (s *orderServiceTestSuite) TestCreateOrder() {
 	data := []byte(`{
-        "symbol":"LTCBTC",
-        "orderId": 1,
-        "clientOrderId": "myOrder1",
-        "transactTime": 1499827319559
-    }`)
+		"symbol": "LTCBTC",
+		"orderId": 1,
+		"clientOrderId": "myOrder1",
+		"transactTime": 1499827319559,
+		"price": "0.0001",
+		"origQty": "12.00",
+		"executedQty": "10.00",
+		"status": "FILLED",
+		"timeInForce": "GTC",
+		"type": "LIMIT",
+		"side": "BUY"
+	}`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
 	symbol := "LTCBTC"
@@ -47,10 +54,17 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 		Price(price).NewClientOrderID(newClientOrderID).Do(newContext())
 	s.r().NoError(err)
 	e := &CreateOrderResponse{
-		Symbol:        "LTCBTC",
-		OrderID:       1,
-		ClientOrderID: "myOrder1",
-		TransactTime:  1499827319559,
+		Symbol:           "LTCBTC",
+		OrderID:          1,
+		ClientOrderID:    "myOrder1",
+		TransactTime:     1499827319559,
+		Price:            "0.0001",
+		OrigQuantity:     "12.00",
+		ExecutedQuantity: "10.00",
+		Status:           "FILLED",
+		TimeInForce:      "GTC",
+		Type:             "LIMIT",
+		Side:             "BUY",
 	}
 	s.assertCreateOrderResponseEqual(e, res)
 
@@ -66,6 +80,13 @@ func (s *orderServiceTestSuite) assertCreateOrderResponseEqual(e, a *CreateOrder
 	r.Equal(e.OrderID, a.OrderID, "OrderID")
 	r.Equal(e.ClientOrderID, a.ClientOrderID, "ClientOrderID")
 	r.Equal(e.TransactTime, a.TransactTime, "TransactTime")
+	r.Equal(e.Price, a.Price, "Price")
+	r.Equal(e.OrigQuantity, a.OrigQuantity, "OrigQuantity")
+	r.Equal(e.ExecutedQuantity, a.ExecutedQuantity, "ExecutedQuantity")
+	r.Equal(e.Status, a.Status, "Status")
+	r.Equal(e.TimeInForce, a.TimeInForce, "TimeInForce")
+	r.Equal(e.Type, a.Type, "Type")
+	r.Equal(e.Side, a.Side, "Side")
 }
 
 func (s *orderServiceTestSuite) TestListOpenOrders() {
