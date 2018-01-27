@@ -80,10 +80,10 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 		secType:  secTypeSigned,
 	}
 	m := params{
-		"symbol":      s.symbol,
-		"side":        s.side,
-		"type":        s.orderType,
-		"quantity":    s.quantity,
+		"symbol":   s.symbol,
+		"side":     s.side,
+		"type":     s.orderType,
+		"quantity": s.quantity,
 	}
 	if s.timeInForce != nil {
 		m["timeInForce"] = *s.timeInForce
