@@ -7,7 +7,7 @@ import (
 
 // ListBookTickersService list all book tickers
 type ListBookTickersService struct {
-	c      *Client
+	c *Client
 }
 
 // Do send request
@@ -40,6 +40,7 @@ func (s *BookTickerService) Symbol(symbol string) *BookTickerService {
 	return s
 }
 
+// Do send request
 func (s *BookTickerService) Do(ctx context.Context, opts ...RequestOption) (res *BookTicker, err error) {
 	r := &request{
 		method:   "GET",
