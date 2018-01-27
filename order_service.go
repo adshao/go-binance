@@ -11,9 +11,9 @@ type CreateOrderService struct {
 	symbol           string
 	side             SideType
 	orderType        OrderType
-	timeInForce      TimeInForce
+	timeInForce      *TimeInForce
 	quantity         string
-	price            string
+	price            *string
 	newClientOrderID *string
 	stopPrice        *string
 	icebergQuantity  *string
@@ -39,7 +39,7 @@ func (s *CreateOrderService) Type(orderType OrderType) *CreateOrderService {
 
 // TimeInForce set timeInForce
 func (s *CreateOrderService) TimeInForce(timeInForce TimeInForce) *CreateOrderService {
-	s.timeInForce = timeInForce
+	s.timeInForce = &timeInForce
 	return s
 }
 
@@ -51,7 +51,7 @@ func (s *CreateOrderService) Quantity(quantity string) *CreateOrderService {
 
 // Price set price
 func (s *CreateOrderService) Price(price string) *CreateOrderService {
-	s.price = price
+	s.price = &price
 	return s
 }
 
@@ -80,12 +80,16 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 		secType:  secTypeSigned,
 	}
 	m := params{
-		"symbol":      s.symbol,
-		"side":        s.side,
-		"type":        s.orderType,
-		"timeInForce": s.timeInForce,
-		"quantity":    s.quantity,
-		"price":       s.price,
+		"symbol":   s.symbol,
+		"side":     s.side,
+		"type":     s.orderType,
+		"quantity": s.quantity,
+	}
+	if s.timeInForce != nil {
+		m["timeInForce"] = *s.timeInForce
+	}
+	if s.price != nil {
+		m["price"] = *s.price
 	}
 	if s.newClientOrderID != nil {
 		m["newClientOrderId"] = *s.newClientOrderID
