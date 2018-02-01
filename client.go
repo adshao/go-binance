@@ -260,6 +260,11 @@ func (c *Client) NewListTradesService() *ListTradesService {
 	return &ListTradesService{c: c}
 }
 
+// NewHistoricalTradesService init listing trades service
+func (c *Client) NewHistoricalTradesService() *HistoricalTradesService {
+	return &HistoricalTradesService{c: c}
+}
+
 // NewListDepositsService init listing deposits service
 func (c *Client) NewListDepositsService() *ListDepositsService {
 	return &ListDepositsService{c: c}
