@@ -82,24 +82,24 @@ func (s *websocketServiceTestSuite) TestDepthServe() {
 			Time:     1499404630606,
 			Symbol:   "ETHBTC",
 			UpdateID: 7913455,
-			Bids: []Bid{
+			Bids: []BookEntry{
 				{
-					Price:    "0.10376590",
-					Quantity: "59.15767010",
+					"0.10376590",
+					"59.15767010",
 				},
 			},
-			Asks: []Ask{
+			Asks: []BookEntry{
 				{
-					Price:    "0.10376586",
-					Quantity: "159.15767010",
+					"0.10376586",
+					"159.15767010",
 				},
 				{
-					Price:    "0.10383109",
-					Quantity: "345.86845230",
+					"0.10383109",
+					"345.86845230",
 				},
 				{
-					Price:    "0.10490700",
-					Quantity: "0.00000000",
+					"0.10490700",
+					"0.00000000",
 				},
 			},
 		}
@@ -115,12 +115,12 @@ func (s *websocketServiceTestSuite) assertWsDepthEventEqual(e, a *WsDepthEvent) 
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
 	r.Equal(e.UpdateID, a.UpdateID, "UpdateID")
 	for i := 0; i < len(e.Bids); i++ {
-		r.Equal(e.Bids[i].Price, a.Bids[i].Price, "Price")
-		r.Equal(e.Bids[i].Quantity, a.Bids[i].Quantity, "Quantity")
+		r.Equal(e.Bids[i].Price(), a.Bids[i].Price(), "Price")
+		r.Equal(e.Bids[i].Quantity(), a.Bids[i].Quantity(), "Quantity")
 	}
 	for i := 0; i < len(e.Asks); i++ {
-		r.Equal(e.Asks[i].Price, a.Asks[i].Price, "Price")
-		r.Equal(e.Asks[i].Quantity, a.Asks[i].Quantity, "Quantity")
+		r.Equal(e.Asks[i].Price(), a.Asks[i].Price(), "Price")
+		r.Equal(e.Asks[i].Quantity(), a.Asks[i].Quantity(), "Quantity")
 	}
 }
 
