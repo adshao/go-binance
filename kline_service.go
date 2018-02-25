@@ -64,11 +64,11 @@ func (s *KlinesService) Do(ctx context.Context, opts ...RequestOption) (res []*K
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return
+		return []*Kline{}, err
 	}
 	j, err := newJSON(data)
 	if err != nil {
-		return
+		return []*Kline{}, err
 	}
 	num := len(j.MustArray())
 	res = make([]*Kline, num)
@@ -76,7 +76,7 @@ func (s *KlinesService) Do(ctx context.Context, opts ...RequestOption) (res []*K
 		item := j.GetIndex(i)
 		if len(item.MustArray()) < 11 {
 			err = fmt.Errorf("invalid kline response")
-			return
+			return []*Kline{}, err
 		}
 		res[i] = &Kline{
 			OpenTime:                 item.GetIndex(0).MustInt64(),
@@ -92,7 +92,7 @@ func (s *KlinesService) Do(ctx context.Context, opts ...RequestOption) (res []*K
 			TakerBuyQuoteAssetVolume: item.GetIndex(10).MustString(),
 		}
 	}
-	return
+	return res, nil
 }
 
 // Kline define kline info

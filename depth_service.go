@@ -35,11 +35,11 @@ func (s *DepthService) Do(ctx context.Context, opts ...RequestOption) (res *Dept
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return
+		return nil, err
 	}
 	j, err := newJSON(data)
 	if err != nil {
-		return
+		return nil, err
 	}
 	res = new(DepthResponse)
 	res.LastUpdateID = j.Get("lastUpdateId").MustInt64()
@@ -61,7 +61,7 @@ func (s *DepthService) Do(ctx context.Context, opts ...RequestOption) (res *Dept
 			Quantity: item.GetIndex(1).MustString(),
 		}
 	}
-	return
+	return res, nil
 }
 
 // DepthResponse define depth info with bids and asks

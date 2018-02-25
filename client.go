@@ -50,9 +50,9 @@ func currentTimestamp() int64 {
 func newJSON(data []byte) (j *simplejson.Json, err error) {
 	j, err = simplejson.NewJson(data)
 	if err != nil {
-		return
+		return nil, err
 	}
-	return
+	return j, nil
 }
 
 // NewClient initialize an API client instance with API key and secret key.
@@ -96,7 +96,7 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 	}
 	err = r.validate()
 	if err != nil {
-		return
+		return err
 	}
 
 	fullURL := fmt.Sprintf("%s%s", c.BaseURL, r.endpoint)
@@ -138,17 +138,17 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 	r.fullURL = fullURL
 	r.header = header
 	r.body = body
-	return
+	return nil
 }
 
 func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption) (data []byte, err error) {
 	err = c.parseRequest(r, opts...)
 	if err != nil {
-		return
+		return []byte{}, err
 	}
 	req, err := http.NewRequest(r.method, r.fullURL, r.body)
 	if err != nil {
-		return
+		return []byte{}, err
 	}
 	req = req.WithContext(ctx)
 	req.Header = r.header
@@ -159,11 +159,11 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 	}
 	res, err := f(req)
 	if err != nil {
-		return
+		return []byte{}, err
 	}
 	data, err = ioutil.ReadAll(res.Body)
 	if err != nil {
-		return
+		return []byte{}, err
 	}
 	defer res.Body.Close()
 	c.debug("response: %#v", res)
@@ -177,7 +177,7 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 		}
 		return nil, apiErr
 	}
-	return
+	return data, nil
 }
 
 // NewPingService init ping service

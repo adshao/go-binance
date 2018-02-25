@@ -18,14 +18,14 @@ func (s *StartUserStreamService) Do(ctx context.Context, opts ...RequestOption) 
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return
+		return "", err
 	}
 	j, err := newJSON(data)
 	if err != nil {
-		return
+		return "", err
 	}
 	listenKey = j.Get("listenKey").MustString()
-	return
+	return listenKey, nil
 }
 
 // KeepaliveUserStreamService update listen key
@@ -49,7 +49,7 @@ func (s *KeepaliveUserStreamService) Do(ctx context.Context, opts ...RequestOpti
 	}
 	r.setFormParam("listenKey", s.listenKey)
 	_, err = s.c.callAPI(ctx, r, opts...)
-	return
+	return err
 }
 
 // CloseUserStreamService delete listen key
@@ -73,5 +73,5 @@ func (s *CloseUserStreamService) Do(ctx context.Context, opts ...RequestOption) 
 	}
 	r.setFormParam("listenKey", s.listenKey)
 	_, err = s.c.callAPI(ctx, r, opts...)
-	return
+	return err
 }
