@@ -196,7 +196,7 @@ fmt.Println(res)
 
 ### Websocket
 
-You don't need Client in websocket API. Just call binance.WsXXXServe(args, handler).
+You don't need Client in websocket API. Just call binance.WsXXXServe(args, handler, errHandler).
 
 #### Depth
 
@@ -204,7 +204,13 @@ You don't need Client in websocket API. Just call binance.WsXXXServe(args, handl
 wsDepthHandler := func(event *binance.WsDepthEvent) {
     fmt.Println(event)
 }
-done, err := binance.WsDepthServe("LTCBTC", wsDepthHandler)
+errHandler := func(err error) {
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+}
+done, err := binance.WsDepthServe("LTCBTC", wsDepthHandler, errHandler)
 if err != nil {
     fmt.Println(err)
     return
@@ -219,7 +225,13 @@ if err != nil {
 wsKlineHandler := func(event *binance.WsKlineEvent) {
     fmt.Println(event)
 }
-done, err := binance.WsKlineServe("LTCBTC", "1m", wsKlineHandler)
+errHandler := func(err error) {
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+}
+done, err := binance.WsKlineServe("LTCBTC", "1m", wsKlineHandler, errHandler)
 if err != nil {
     fmt.Println(err)
 }
@@ -232,7 +244,13 @@ if err != nil {
 wsAggTradeHandler := func(event *binance.WsAggTradeEvent) {
     fmt.Println(event)
 }
-done, err := binance.WsAggTradeServe("LTCBTC", wsAggTradeHandler)
+errHandler := func(err error) {
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+}
+done, err := binance.WsAggTradeServe("LTCBTC", wsAggTradeHandler, errHandler)
 if err != nil {
     fmt.Println(err)
 }
@@ -245,7 +263,13 @@ if err != nil {
 wsHandler := func(message []byte) {
     fmt.Println(string(message))
 }
-done, err := binance.WsUserDataServe(listenKey, wsHandler)
+errHandler := func(err error) {
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+}
+done, err := binance.WsUserDataServe(listenKey, wsHandler, errHandler)
 if err != nil {
     fmt.Println(err)
     return
