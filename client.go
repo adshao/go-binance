@@ -121,7 +121,10 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 	if r.secType == secTypeSigned {
 		raw := fmt.Sprintf("%s%s", queryString, bodyString)
 		mac := hmac.New(sha256.New, []byte(c.SecretKey))
-		mac.Write([]byte(raw))
+		_, err = mac.Write([]byte(raw))
+		if err != nil {
+			return err
+		}
 		v := url.Values{}
 		v.Set(signatureKey, fmt.Sprintf("%x", (mac.Sum(nil))))
 		if queryString == "" {
@@ -165,7 +168,14 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 	if err != nil {
 		return []byte{}, err
 	}
-	defer res.Body.Close()
+	defer func() {
+		cerr := res.Body.Close()
+		// Only overwrite the retured error if the original error was nil and an
+		// error occurred while closing the body.
+		if err == nil && cerr != nil {
+			err = cerr
+		}
+	}()
 	c.debug("response: %#v", res)
 	c.debug("response body: %s", string(data))
 
