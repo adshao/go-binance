@@ -20,12 +20,13 @@ func newWsConfig(endpoint string) *wsConfig {
 	}
 }
 
-var wsServe = func(cfg *wsConfig, handler WsHandler, errHandler ErrHandler) (done chan struct{}, err error) {
+var wsServe = func(cfg *wsConfig, handler WsHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	c, _, err := websocket.DefaultDialer.Dial(cfg.endpoint, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	done = make(chan struct{})
+	doneC = make(chan struct{})
+	stopC = make(chan struct{})
 	go func() {
 		defer func() {
 			cerr := c.Close()
@@ -33,14 +34,19 @@ var wsServe = func(cfg *wsConfig, handler WsHandler, errHandler ErrHandler) (don
 				errHandler(cerr)
 			}
 		}()
-		defer close(done)
+		defer close(doneC)
 		for {
-			_, message, err := c.ReadMessage()
-			if err != nil {
-				go errHandler(err)
+			select {
+			case <-stopC:
 				return
+			default:
+				_, message, err := c.ReadMessage()
+				if err != nil {
+					go errHandler(err)
+					return
+				}
+				go handler(message)
 			}
-			go handler(message)
 		}
 	}()
 	return

@@ -196,7 +196,7 @@ fmt.Println(res)
 
 ### Websocket
 
-You don't need Client in websocket API. Just call binance.WsXXXServe(args, handler, errHandler).
+You don't need Client in websocket API. Just call binance.WsXxxServe(args, handler, errHandler).
 
 #### Depth
 
@@ -205,18 +205,20 @@ wsDepthHandler := func(event *binance.WsDepthEvent) {
     fmt.Println(event)
 }
 errHandler := func(err error) {
-    if err != nil {
-        fmt.Println(err)
-        return
-    }
+    fmt.Println(err)
 }
-done, err := binance.WsDepthServe("LTCBTC", wsDepthHandler, errHandler)
+doneC, stopC, err := binance.WsDepthServe("LTCBTC", wsDepthHandler, errHandler)
 if err != nil {
     fmt.Println(err)
     return
 }
+// use stopC to exit
+go func() {
+    time.Sleep(5 * time.Second)
+    stopC <- struct{}{}
+}()
 // remove this if you do not want to be blocked here
-<-done
+<-doneC
 ```
 
 #### Kline
@@ -226,16 +228,14 @@ wsKlineHandler := func(event *binance.WsKlineEvent) {
     fmt.Println(event)
 }
 errHandler := func(err error) {
-    if err != nil {
-        fmt.Println(err)
-        return
-    }
-}
-done, err := binance.WsKlineServe("LTCBTC", "1m", wsKlineHandler, errHandler)
-if err != nil {
     fmt.Println(err)
 }
-<-done
+doneC, _, err := binance.WsKlineServe("LTCBTC", "1m", wsKlineHandler, errHandler)
+if err != nil {
+    fmt.Println(err)
+    return
+}
+<-doneC
 ```
 
 #### Aggregate
@@ -245,16 +245,14 @@ wsAggTradeHandler := func(event *binance.WsAggTradeEvent) {
     fmt.Println(event)
 }
 errHandler := func(err error) {
-    if err != nil {
-        fmt.Println(err)
-        return
-    }
-}
-done, err := binance.WsAggTradeServe("LTCBTC", wsAggTradeHandler, errHandler)
-if err != nil {
     fmt.Println(err)
 }
-<-done
+doneC, _, err := binance.WsAggTradeServe("LTCBTC", wsAggTradeHandler, errHandler)
+if err != nil {
+    fmt.Println(err)
+    return
+}
+<-doneC
 ```
 
 #### User Data
@@ -264,15 +262,12 @@ wsHandler := func(message []byte) {
     fmt.Println(string(message))
 }
 errHandler := func(err error) {
-    if err != nil {
-        fmt.Println(err)
-        return
-    }
+    fmt.Println(err)
 }
-done, err := binance.WsUserDataServe(listenKey, wsHandler, errHandler)
+doneC, _, err := binance.WsUserDataServe(listenKey, wsHandler, errHandler)
 if err != nil {
     fmt.Println(err)
     return
 }
-<-done
+<-doneC
 ```
