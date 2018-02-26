@@ -103,23 +103,23 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 	r.setFormParams(m)
 	data, err = s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return
+		return []byte{}, err
 	}
-	return
+	return data, nil
 }
 
 // Do send request
 func (s *CreateOrderService) Do(ctx context.Context, opts ...RequestOption) (res *CreateOrderResponse, err error) {
 	data, err := s.createOrder(ctx, "/api/v3/order", opts...)
 	if err != nil {
-		return
+		return nil, err
 	}
 	res = new(CreateOrderResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
-		return
+		return nil, err
 	}
-	return
+	return res, nil
 }
 
 // Test send test api to check if the request is valid
@@ -165,14 +165,14 @@ func (s *ListOpenOrdersService) Do(ctx context.Context, opts ...RequestOption) (
 	r.setParam("symbol", s.symbol)
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return
+		return []*Order{}, err
 	}
 	res = make([]*Order, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
-		return
+		return []*Order{}, err
 	}
-	return
+	return res, nil
 }
 
 // GetOrderService get an order
@@ -217,14 +217,14 @@ func (s *GetOrderService) Do(ctx context.Context, opts ...RequestOption) (res *O
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return
+		return nil, err
 	}
 	res = new(Order)
 	err = json.Unmarshal(data, res)
 	if err != nil {
-		return
+		return nil, err
 	}
-	return
+	return res, nil
 }
 
 // Order define order info
@@ -286,14 +286,14 @@ func (s *ListOrdersService) Do(ctx context.Context, opts ...RequestOption) (res 
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return
+		return []*Order{}, err
 	}
 	res = make([]*Order, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
-		return
+		return []*Order{}, err
 	}
-	return
+	return res, nil
 }
 
 // CancelOrderService cancel an order
@@ -348,14 +348,14 @@ func (s *CancelOrderService) Do(ctx context.Context, opts ...RequestOption) (res
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return
+		return nil, err
 	}
 	res = new(CancelOrderResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
-		return
+		return nil, err
 	}
-	return
+	return res, nil
 }
 
 // CancelOrderResponse define response of canceling order

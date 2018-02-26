@@ -47,14 +47,14 @@ func (s *ListTradesService) Do(ctx context.Context, opts ...RequestOption) (res 
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return
+		return []*Trade{}, err
 	}
 	res = make([]*Trade, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
-		return
+		return []*Trade{}, err
 	}
-	return
+	return res, nil
 }
 
 // Trade define trade info
@@ -131,14 +131,14 @@ func (s *AggTradesService) Do(ctx context.Context, opts ...RequestOption) (res [
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return
+		return []*AggTrade{}, err
 	}
 	res = make([]*AggTrade, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
-		return
+		return []*AggTrade{}, err
 	}
-	return
+	return res, nil
 }
 
 // AggTrade define aggregate trade info

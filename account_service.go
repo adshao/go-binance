@@ -19,14 +19,14 @@ func (s *GetAccountService) Do(ctx context.Context, opts ...RequestOption) (res 
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return
+		return nil, err
 	}
 	res = new(Account)
 	err = json.Unmarshal(data, res)
 	if err != nil {
-		return
+		return nil, err
 	}
-	return
+	return res, nil
 }
 
 // Account define account info
