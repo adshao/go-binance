@@ -19,15 +19,15 @@ func (s *ExchangeInfoService) Do(ctx context.Context, opts ...RequestOption) (re
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return
+		return nil, err
 	}
 	res = new(ExchangeInfo)
 	err = json.Unmarshal(data, res)
 	if err != nil {
-		return
+		return nil, err
 	}
 
-	return
+	return res, nil
 }
 
 // ExchangeInfo exchange info

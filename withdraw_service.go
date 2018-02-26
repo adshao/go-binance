@@ -55,10 +55,7 @@ func (s *CreateWithdrawService) Do(ctx context.Context) (err error) {
 	}
 	r.setFormParams(m)
 	_, err = s.c.callAPI(ctx, r)
-	if err != nil {
-		return
-	}
-	return
+	return err
 }
 
 // ListWithdrawsService list withdraws
