@@ -32,7 +32,9 @@ func (s *websocketServiceTestSuite) mockWsServe(data []byte, err error) {
 		done = make(chan struct{})
 		defer close(done)
 		handler(data)
-		errHandler(err)
+		if err != nil {
+			errHandler(err)
+		}
 		return done, nil
 	}
 }

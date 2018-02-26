@@ -20,7 +20,7 @@ func WsDepthServe(symbol string, handler WsDepthHandler, errHandler ErrHandler) 
 	wsHandler := func(message []byte) {
 		j, err := newJSON(message)
 		if err != nil {
-			go errHandler(err)
+			errHandler(err)
 			return
 		}
 		event := new(WsDepthEvent)
@@ -72,7 +72,7 @@ func WsKlineServe(symbol string, interval string, handler WsKlineHandler, errHan
 		event := new(WsKlineEvent)
 		err := json.Unmarshal(message, event)
 		if err != nil {
-			go errHandler(err)
+			errHandler(err)
 			return
 		}
 		handler(event)
@@ -119,7 +119,7 @@ func WsAggTradeServe(symbol string, handler WsAggTradeHandler, errHandler ErrHan
 		event := new(WsAggTradeEvent)
 		err := json.Unmarshal(message, event)
 		if err != nil {
-			go errHandler(err)
+			errHandler(err)
 			return
 		}
 		handler(event)
@@ -160,7 +160,7 @@ func WsMarketStatServe(symbol string, handler WsMarketStatHandler, errHandler Er
 		var event WsMarketStatEvent
 		err := json.Unmarshal(message, &event)
 		if err != nil {
-			go errHandler(err)
+			errHandler(err)
 			return
 		}
 		handler(&event)
@@ -179,7 +179,7 @@ func WsAllMarketsStatServe(handler WsAllMarketsStatHandler, errHandler ErrHandle
 		var event WsAllMarketsStatEvent
 		err := json.Unmarshal(message, &event)
 		if err != nil {
-			go errHandler(err)
+			errHandler(err)
 			return
 		}
 		handler(event)

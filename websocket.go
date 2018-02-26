@@ -30,7 +30,7 @@ var wsServe = func(cfg *wsConfig, handler WsHandler, errHandler ErrHandler) (don
 		defer func() {
 			cerr := c.Close()
 			if cerr != nil {
-				go errHandler(cerr)
+				errHandler(cerr)
 			}
 		}()
 		defer close(done)
