@@ -1,6 +1,7 @@
 package binance
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -8,7 +9,7 @@ import (
 
 type websocketServiceTestSuite struct {
 	baseTestSuite
-	origWsServe wsServeFunc
+	origWsServe func(*wsConfig, WsHandler, ErrHandler) (chan struct{}, chan struct{}, error)
 	serveCount  int
 }
 
@@ -25,13 +26,20 @@ func (s *websocketServiceTestSuite) TearDownTest() {
 	s.serveCount = 0
 }
 
-func (s *websocketServiceTestSuite) mockWsServe(data []byte) {
-	wsServe = func(cfg *wsConfig, handler WsHandler) (done chan struct{}, err error) {
+func (s *websocketServiceTestSuite) mockWsServe(data []byte, err error) {
+	wsServe = func(cfg *wsConfig, handler WsHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, innerErr error) {
 		s.serveCount++
-		done = make(chan struct{})
-		defer close(done)
+		doneC = make(chan struct{})
+		stopC = make(chan struct{})
+		go func() {
+			<-stopC
+			close(doneC)
+		}()
 		handler(data)
-		return
+		if err != nil {
+			errHandler(err)
+		}
+		return doneC, stopC, nil
 	}
 }
 
@@ -74,9 +82,11 @@ func (s *websocketServiceTestSuite) TestDepthServe() {
             ]
         ]
     }`)
-	s.mockWsServe(data)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
-	_, err := WsDepthServe("ETHBTC", func(event *WsDepthEvent) {
+
+	doneC, stopC, err := WsDepthServe("ETHBTC", func(event *WsDepthEvent) {
 		e := &WsDepthEvent{
 			Event:    "depthUpdate",
 			Time:     1499404630606,
@@ -104,8 +114,12 @@ func (s *websocketServiceTestSuite) TestDepthServe() {
 			},
 		}
 		s.assertWsDepthEventEqual(e, event)
+	}, func(err error) {
+		s.r().EqualError(err, fakeErrMsg)
 	})
 	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
 }
 
 func (s *websocketServiceTestSuite) assertWsDepthEventEqual(e, a *WsDepthEvent) {
@@ -149,10 +163,11 @@ func (s *websocketServiceTestSuite) TestKlineServe() {
             "B": "13279784.01349473"
         }
     }`)
-	s.mockWsServe(data)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
 
-	_, err := WsKlineServe("ETHBTC", "1m", func(event *WsKlineEvent) {
+	doneC, stopC, err := WsKlineServe("ETHBTC", "1m", func(event *WsKlineEvent) {
 		e := &WsKlineEvent{
 			Event:  "kline",
 			Time:   1499404907056,
@@ -177,8 +192,12 @@ func (s *websocketServiceTestSuite) TestKlineServe() {
 			},
 		}
 		s.assertWsKlineEventEqual(e, event)
+	}, func(err error) {
+		s.r().EqualError(err, fakeErrMsg)
 	})
 	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
 }
 
 func (s *websocketServiceTestSuite) assertWsKlineEventEqual(e, a *WsKlineEvent) {
@@ -219,10 +238,11 @@ func (s *websocketServiceTestSuite) TestWsAggTradeServe() {
         "m": false,
         "M": true
     }`)
-	s.mockWsServe(data)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
 
-	_, err := WsAggTradeServe("ETHBTC", func(event *WsAggTradeEvent) {
+	doneC, stopC, err := WsAggTradeServe("ETHBTC", func(event *WsAggTradeEvent) {
 		e := &WsAggTradeEvent{
 			Event:                 "aggTrade",
 			Time:                  1499405254326,
@@ -236,8 +256,12 @@ func (s *websocketServiceTestSuite) TestWsAggTradeServe() {
 			IsBuyerMaker:          false,
 		}
 		s.assertWsAggTradeServeEqual(e, event)
+	}, func(err error) {
+		s.r().EqualError(err, fakeErrMsg)
 	})
 	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
 }
 
 func (s *websocketServiceTestSuite) assertWsAggTradeServeEqual(e, a *WsAggTradeEvent) {
@@ -255,13 +279,18 @@ func (s *websocketServiceTestSuite) assertWsAggTradeServeEqual(e, a *WsAggTradeE
 }
 
 func (s *websocketServiceTestSuite) testWsUserDataServe(data []byte) {
-	s.mockWsServe(data)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
 
-	_, err := WsUserDataServe("listenKey", func(event []byte) {
+	doneC, stopC, err := WsUserDataServe("listenKey", func(event []byte) {
 		s.r().Equal(data, event)
+	}, func(err error) {
+		s.r().EqualError(err, fakeErrMsg)
 	})
 	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
 }
 
 func (s *websocketServiceTestSuite) TestWsUserDataServe() {
@@ -331,10 +360,11 @@ func (s *websocketServiceTestSuite) TestWsMarketStatServe() {
   		"L": 18150,
   		"n": 18151
 	}`)
-	s.mockWsServe(data)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
 
-	_, err := WsMarketStatServe("BNBBTC", func(event *WsMarketStatEvent) {
+	doneC, stopC, err := WsMarketStatServe("BNBBTC", func(event *WsMarketStatEvent) {
 		e := &WsMarketStatEvent{
 			Event:              "24hrTicker",
 			Time:               123456789,
@@ -361,8 +391,12 @@ func (s *websocketServiceTestSuite) TestWsMarketStatServe() {
 			Count:              18151,
 		}
 		s.assertWsMarketStatEventEqual(e, event)
+	}, func(err error) {
+		s.r().EqualError(err, fakeErrMsg)
 	})
 	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
 }
 
 func (s *websocketServiceTestSuite) assertWsMarketStatEventEqual(e, a *WsMarketStatEvent) {
@@ -442,10 +476,11 @@ func (s *websocketServiceTestSuite) TestWsAllMarketSStatServe() {
   		"L": 18150,
   		"n": 18151
 	}]`)
-	s.mockWsServe(data)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
 
-	_, err := WsAllMarketsStatServe(func(event WsAllMarketsStatEvent) {
+	doneC, stopC, err := WsAllMarketsStatServe(func(event WsAllMarketsStatEvent) {
 		e := WsAllMarketsStatEvent{
 			&WsMarketStatEvent{
 				Event:              "24hrTicker",
@@ -499,8 +534,12 @@ func (s *websocketServiceTestSuite) TestWsAllMarketSStatServe() {
 			},
 		}
 		s.assertWsAllMarketsStatEventEqual(e, event)
+	}, func(err error) {
+		s.r().EqualError(err, fakeErrMsg)
 	})
 	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
 }
 
 func (s *websocketServiceTestSuite) assertWsAllMarketsStatEventEqual(e, a WsAllMarketsStatEvent) {

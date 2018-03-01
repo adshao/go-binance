@@ -18,14 +18,14 @@ func (s *ListBookTickersService) Do(ctx context.Context, opts ...RequestOption) 
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return
+		return []*BookTicker{}, err
 	}
 	res = make([]*BookTicker, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
-		return
+		return []*BookTicker{}, err
 	}
-	return
+	return res, nil
 }
 
 // BookTickerService list symbol's book ticker
@@ -49,14 +49,14 @@ func (s *BookTickerService) Do(ctx context.Context, opts ...RequestOption) (res 
 	r.setParam("symbol", s.symbol)
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return
+		return nil, err
 	}
 	res = new(BookTicker)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
-		return
+		return nil, err
 	}
-	return
+	return res, nil
 }
 
 // BookTicker define book ticker info
@@ -81,14 +81,14 @@ func (s *ListPricesService) Do(ctx context.Context, opts ...RequestOption) (res 
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return
+		return []*SymbolPrice{}, err
 	}
 	res = make([]*SymbolPrice, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
-		return
+		return []*SymbolPrice{}, err
 	}
-	return
+	return res, nil
 }
 
 // SymbolPrice define symbol and price pair
@@ -118,14 +118,14 @@ func (s *PriceChangeStatsService) Do(ctx context.Context, opts ...RequestOption)
 	r.setParam("symbol", s.symbol)
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return
+		return res, err
 	}
 	res = new(PriceChangeStats)
 	err = json.Unmarshal(data, res)
 	if err != nil {
-		return
+		return nil, err
 	}
-	return
+	return res, nil
 }
 
 // PriceChangeStats define price change stats

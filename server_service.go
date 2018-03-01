@@ -16,10 +16,7 @@ func (s *PingService) Do(ctx context.Context, opts ...RequestOption) (err error)
 		endpoint: "/api/v1/ping",
 	}
 	_, err = s.c.callAPI(ctx, r, opts...)
-	if err != nil {
-		return
-	}
-	return
+	return err
 }
 
 // ServerTimeService get server time
@@ -35,12 +32,12 @@ func (s *ServerTimeService) Do(ctx context.Context, opts ...RequestOption) (serv
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return
+		return 0, err
 	}
 	j, err := newJSON(data)
 	if err != nil {
-		return
+		return 0, err
 	}
 	serverTime = j.Get("serverTime").MustInt64()
-	return
+	return serverTime, nil
 }

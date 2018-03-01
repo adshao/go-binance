@@ -7,6 +7,9 @@ import (
 // WsHandler handle raw websocket message
 type WsHandler func(message []byte)
 
+// ErrHandler handles errors
+type ErrHandler func(err error)
+
 type wsConfig struct {
 	endpoint string
 }
@@ -17,23 +20,33 @@ func newWsConfig(endpoint string) *wsConfig {
 	}
 }
 
-type wsServeFunc func(*wsConfig, WsHandler) (chan struct{}, error)
-
-var wsServe = func(cfg *wsConfig, handler WsHandler) (done chan struct{}, err error) {
+var wsServe = func(cfg *wsConfig, handler WsHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	c, _, err := websocket.DefaultDialer.Dial(cfg.endpoint, nil)
 	if err != nil {
-		return
+		return nil, nil, err
 	}
-	done = make(chan struct{})
+	doneC = make(chan struct{})
+	stopC = make(chan struct{})
 	go func() {
-		defer c.Close()
-		defer close(done)
-		for {
-			_, message, err := c.ReadMessage()
-			if err != nil {
-				return
+		defer func() {
+			cerr := c.Close()
+			if cerr != nil {
+				errHandler(cerr)
 			}
-			go handler(message)
+		}()
+		defer close(doneC)
+		for {
+			select {
+			case <-stopC:
+				return
+			default:
+				_, message, err := c.ReadMessage()
+				if err != nil {
+					go errHandler(err)
+					return
+				}
+				go handler(message)
+			}
 		}
 	}()
 	return

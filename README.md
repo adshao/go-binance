@@ -196,7 +196,7 @@ fmt.Println(res)
 
 ### Websocket
 
-You don't need Client in websocket API. Just call binance.WsXXXServe(args, handler).
+You don't need Client in websocket API. Just call binance.WsXxxServe(args, handler, errHandler).
 
 #### Depth
 
@@ -204,13 +204,21 @@ You don't need Client in websocket API. Just call binance.WsXXXServe(args, handl
 wsDepthHandler := func(event *binance.WsDepthEvent) {
     fmt.Println(event)
 }
-done, err := binance.WsDepthServe("LTCBTC", wsDepthHandler)
+errHandler := func(err error) {
+    fmt.Println(err)
+}
+doneC, stopC, err := binance.WsDepthServe("LTCBTC", wsDepthHandler, errHandler)
 if err != nil {
     fmt.Println(err)
     return
 }
+// use stopC to exit
+go func() {
+    time.Sleep(5 * time.Second)
+    stopC <- struct{}{}
+}()
 // remove this if you do not want to be blocked here
-<-done
+<-doneC
 ```
 
 #### Kline
@@ -219,11 +227,15 @@ if err != nil {
 wsKlineHandler := func(event *binance.WsKlineEvent) {
     fmt.Println(event)
 }
-done, err := binance.WsKlineServe("LTCBTC", "1m", wsKlineHandler)
-if err != nil {
+errHandler := func(err error) {
     fmt.Println(err)
 }
-<-done
+doneC, _, err := binance.WsKlineServe("LTCBTC", "1m", wsKlineHandler, errHandler)
+if err != nil {
+    fmt.Println(err)
+    return
+}
+<-doneC
 ```
 
 #### Aggregate
@@ -232,11 +244,15 @@ if err != nil {
 wsAggTradeHandler := func(event *binance.WsAggTradeEvent) {
     fmt.Println(event)
 }
-done, err := binance.WsAggTradeServe("LTCBTC", wsAggTradeHandler)
-if err != nil {
+errHandler := func(err error) {
     fmt.Println(err)
 }
-<-done
+doneC, _, err := binance.WsAggTradeServe("LTCBTC", wsAggTradeHandler, errHandler)
+if err != nil {
+    fmt.Println(err)
+    return
+}
+<-doneC
 ```
 
 #### User Data
@@ -245,10 +261,13 @@ if err != nil {
 wsHandler := func(message []byte) {
     fmt.Println(string(message))
 }
-done, err := binance.WsUserDataServe(listenKey, wsHandler)
+errHandler := func(err error) {
+    fmt.Println(err)
+}
+doneC, _, err := binance.WsUserDataServe(listenKey, wsHandler, errHandler)
 if err != nil {
     fmt.Println(err)
     return
 }
-<-done
+<-doneC
 ```
