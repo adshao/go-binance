@@ -32,7 +32,7 @@ func (s *ListTradesService) FromID(fromID int64) *ListTradesService {
 }
 
 // Do send request
-func (s *ListTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*Trade, err error) {
+func (s *ListTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*TradeV3, err error) {
 	r := &request{
 		method:   "GET",
 		endpoint: "/api/v3/myTrades",
@@ -47,12 +47,12 @@ func (s *ListTradesService) Do(ctx context.Context, opts ...RequestOption) (res 
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return []*Trade{}, err
+		return []*TradeV3{}, err
 	}
-	res = make([]*Trade, 0)
+	res = make([]*TradeV3, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
-		return []*Trade{}, err
+		return []*TradeV3{}, err
 	}
 	return res, nil
 }
@@ -112,6 +112,16 @@ func (s *HistoricalTradesService) Do(ctx context.Context, opts ...RequestOption)
 
 // Trade define trade info
 type Trade struct {
+	ID           int64  `json:"id"`
+	Price        string `json:"price"`
+	Quantity     string `json:"qty"`
+	Time         int64  `json:"time"`
+	IsBuyerMaker bool   `json:"isBuyerMaker"`
+	IsBestMatch  bool   `json:"isBestMatch"`
+}
+
+// TradeV3 define v3 trade info
+type TradeV3 struct {
 	ID              int64  `json:"id"`
 	Price           string `json:"price"`
 	Quantity        string `json:"qty"`
