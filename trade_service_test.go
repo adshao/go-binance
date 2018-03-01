@@ -48,7 +48,7 @@ func (s *tradeServiceTestSuite) TestListTrades() {
 	r := s.r()
 	r.NoError(err)
 	r.Len(trades, 1)
-	e := &Trade{
+	e := &TradeV3{
 		ID:              28457,
 		Price:           "4.00000100",
 		Quantity:        "12.00000000",
@@ -59,10 +59,10 @@ func (s *tradeServiceTestSuite) TestListTrades() {
 		IsMaker:         false,
 		IsBestMatch:     true,
 	}
-	s.assertTradeEqual(e, trades[0])
+	s.assertTradeV3Equal(e, trades[0])
 }
 
-func (s *tradeServiceTestSuite) assertTradeEqual(e, a *Trade) {
+func (s *tradeServiceTestSuite) assertTradeV3Equal(e, a *TradeV3) {
 	r := s.r()
 	r.Equal(e.ID, a.ID, "ID")
 	r.Equal(e.Price, a.Price, "Price")
@@ -136,4 +136,56 @@ func (s *tradeServiceTestSuite) assertAggTradeEqual(e, a *AggTrade) {
 	r.Equal(e.Timestamp, a.Timestamp, "Timestamp")
 	r.Equal(e.IsBuyerMaker, a.IsBuyerMaker, "IsBuyerMaker")
 	r.Equal(e.IsBestPriceMatch, a.IsBestPriceMatch, "IsBestPriceMatch")
+}
+
+func (s *tradeServiceTestSuite) TestHistoricalTrades() {
+	data := []byte(`[
+        {
+            "id": 28457,
+            "price": "4.00000100",
+            "qty": "12.00000000",
+            "time": 1499865549590,
+            "isBuyerMaker": true,
+            "isBestMatch": true
+        }
+    ]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	symbol := "LTCBTC"
+	limit := 3
+	fromID := int64(1)
+	s.assertReq(func(r *request) {
+		e := newRequest().setParams(params{
+			"symbol": symbol,
+			"limit":  limit,
+			"fromId": fromID,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	trades, err := s.client.NewHistoricalTradesService().Symbol(symbol).
+		Limit(limit).FromID(fromID).Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	r.Len(trades, 1)
+	e := &Trade{
+		ID:           28457,
+		Price:        "4.00000100",
+		Quantity:     "12.00000000",
+		Time:         1499865549590,
+		IsBuyerMaker: true,
+		IsBestMatch:  true,
+	}
+	s.assertTradeEqual(e, trades[0])
+}
+
+func (s *tradeServiceTestSuite) assertTradeEqual(e, a *Trade) {
+	r := s.r()
+	r.Equal(e.ID, a.ID, "ID")
+	r.Equal(e.Price, a.Price, "Price")
+	r.Equal(e.Quantity, a.Quantity, "Quantity")
+	r.Equal(e.Time, a.Time, "Time")
+	r.Equal(e.IsBuyerMaker, a.IsBuyerMaker, "IsBuyerMaker")
+	r.Equal(e.IsBestMatch, a.IsBestMatch, "IsBestMatch")
 }
