@@ -255,7 +255,7 @@ func (s *websocketServiceTestSuite) TestWsAggTradeServe() {
 			TradeTime:             1499405254324,
 			IsBuyerMaker:          false,
 		}
-		s.assertWsAggTradeServeEqual(e, event)
+		s.assertWsAggTradeEventEqual(e, event)
 	}, func(err error) {
 		s.r().EqualError(err, fakeErrMsg)
 	})
@@ -264,7 +264,7 @@ func (s *websocketServiceTestSuite) TestWsAggTradeServe() {
 	<-doneC
 }
 
-func (s *websocketServiceTestSuite) assertWsAggTradeServeEqual(e, a *WsAggTradeEvent) {
+func (s *websocketServiceTestSuite) assertWsAggTradeEventEqual(e, a *WsAggTradeEvent) {
 	r := s.r()
 	r.Equal(e.Event, a.Event, "Event")
 	r.Equal(e.Time, a.Time, "Time")
@@ -426,7 +426,7 @@ func (s *websocketServiceTestSuite) assertWsMarketStatEventEqual(e, a *WsMarketS
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
 }
 
-func (s *websocketServiceTestSuite) TestWsAllMarketSStatServe() {
+func (s *websocketServiceTestSuite) TestWsAllMarketsStatServe() {
 	data := []byte(`[{
   		"e": "24hrTicker",
   		"E": 123456789,
@@ -546,4 +546,58 @@ func (s *websocketServiceTestSuite) assertWsAllMarketsStatEventEqual(e, a WsAllM
 	for i := range e {
 		s.assertWsMarketStatEventEqual(e[i], a[i])
 	}
+}
+
+func (s *websocketServiceTestSuite) TestWsTradeServe() {
+	data := []byte(`{
+        "e": "trade",
+        "E": 123456789,
+        "s": "BNBBTC",
+        "t": 12345,
+        "p": "0.001",
+        "q": "100",
+        "b": 88,
+        "a": 50,
+        "T": 123456785,
+        "m": true,
+        "M": true
+    }`)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+
+	doneC, stopC, err := WsTradeServe("BNBBTC", func(event *WsTradeEvent) {
+		e := &WsTradeEvent{
+			Event:         "trade",
+			Time:          123456789,
+			Symbol:        "BNBBTC",
+			TradeID:       12345,
+			Price:         "0.001",
+			Quantity:      "100",
+			BuyerOrderID:  88,
+			SellerOrderID: 50,
+			TradeTime:     123456785,
+			IsBuyerMaker:  true,
+		}
+		s.assertWsTradeEventEqual(e, event)
+	}, func(err error) {
+		s.r().EqualError(err, fakeErrMsg)
+	})
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
+func (s *websocketServiceTestSuite) assertWsTradeEventEqual(e, a *WsTradeEvent) {
+	r := s.r()
+	r.Equal(e.Event, a.Event, "Event")
+	r.Equal(e.Time, a.Time, "Time")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.TradeID, a.TradeID, "TradeID")
+	r.Equal(e.Price, a.Price, "Price")
+	r.Equal(e.Quantity, a.Quantity, "Quantity")
+	r.Equal(e.BuyerOrderID, a.BuyerOrderID, "BuyerOrderID")
+	r.Equal(e.SellerOrderID, a.SellerOrderID, "SellerOrderID")
+	r.Equal(e.TradeTime, a.TradeTime, "TradeTime")
+	r.Equal(e.IsBuyerMaker, a.IsBuyerMaker, "IsBuyerMaker")
 }
