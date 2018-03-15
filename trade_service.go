@@ -216,16 +216,6 @@ type AggTrade struct {
 	IsBestPriceMatch bool   `json:"M"`
 }
 
-// RecentTrade define recent trades info
-type RecentTrade struct {
-	ID               int64  `json:"id"`
-	Price            string `json:"price"`
-	Quantity         string `json:"qty"`
-	Timestamp        int64  `json:"time"`
-	IsBuyerMaker     bool   `json:"isBuyerMaker"`
-	IsBestPriceMatch bool   `json:"isBestMatch"`
-}
-
 // RecentTradesService list recent trades
 type RecentTradesService struct {
 	c      *Client
@@ -246,7 +236,7 @@ func (s *RecentTradesService) Limit(limit int) *RecentTradesService {
 }
 
 // Do send request
-func (s *RecentTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*RecentTrade, err error) {
+func (s *RecentTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*Trade, err error) {
 	r := &request{
 		method:   "GET",
 		endpoint: "/api/v1/trades",
@@ -257,12 +247,12 @@ func (s *RecentTradesService) Do(ctx context.Context, opts ...RequestOption) (re
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return []*RecentTrade{}, err
+		return []*Trade{}, err
 	}
-	res = make([]*RecentTrade, 0)
+	res = make([]*Trade, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
-		return []*RecentTrade{}, err
+		return []*Trade{}, err
 	}
 	return res, nil
 }
