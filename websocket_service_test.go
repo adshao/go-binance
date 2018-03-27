@@ -75,6 +75,7 @@ func (s *websocketServiceTestSuite) TestPartialDepthServe() {
 
 	doneC, stopC, err := WsPartialDepthServe("ETHBTC", "5", func(event *WsPartialDepthEvent) {
 		e := &WsPartialDepthEvent{
+			Symbol:       "ETHBTC",
 			LastUpdateID: 160,
 			Bids: []Bid{
 				{
@@ -102,6 +103,7 @@ func (s *websocketServiceTestSuite) TestPartialDepthServe() {
 
 func (s *websocketServiceTestSuite) assertWsPartialDepthEventEqual(e, a *WsPartialDepthEvent) {
 	r := s.r()
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
 	r.Equal(e.LastUpdateID, a.LastUpdateID, "LastUpdateID")
 	for i := 0; i < len(e.Bids); i++ {
 		r.Equal(e.Bids[i].Price, a.Bids[i].Price, "Price")

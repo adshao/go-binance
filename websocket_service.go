@@ -12,6 +12,7 @@ var (
 
 // WsPartialDepthEvent define websocket partial depth book event
 type WsPartialDepthEvent struct {
+	Symbol       string
 	LastUpdateID int64 `json:"lastUpdateId"`
 	Bids         []Bid `json:"bids"`
 	Asks         []Ask `json:"asks"`
@@ -31,6 +32,7 @@ func WsPartialDepthServe(symbol string, levels string, handler WsPartialDepthHan
 			return
 		}
 		event := new(WsPartialDepthEvent)
+		event.Symbol = symbol
 		event.LastUpdateID = j.Get("lastUpdateId").MustInt64()
 		bidsLen := len(j.Get("bids").MustArray())
 		event.Bids = make([]Bid, bidsLen)
