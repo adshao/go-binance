@@ -51,6 +51,70 @@ func (s *websocketServiceTestSuite) assertWsServe(count ...int) {
 	s.r().Equal(e, s.serveCount)
 }
 
+func (s *websocketServiceTestSuite) TestPartialDepthServe() {
+	data := []byte(`{
+	  "lastUpdateId": 160,
+	  "bids": [
+	    [
+	      "0.0024",
+	      "10",
+	      []
+	    ]
+	  ],
+	  "asks": [
+	    [
+	      "0.0026",
+	      "100",
+	      []
+	    ]
+	  ]
+	}`)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+
+	doneC, stopC, err := WsPartialDepthServe("ETHBTC", "5", func(event *WsPartialDepthEvent) {
+		e := &WsPartialDepthEvent{
+			Symbol:       "ETHBTC",
+			LastUpdateID: 160,
+			Bids: []Bid{
+				{
+					Price:    "0.0024",
+					Quantity: "10",
+				},
+			},
+			Asks: []Ask{
+				{
+					Price:    "0.0026",
+					Quantity: "100",
+				},
+			},
+		}
+		s.assertWsPartialDepthEventEqual(e, event)
+	},
+		func(err error) {
+			s.r().EqualError(err, fakeErrMsg)
+		})
+
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
+func (s *websocketServiceTestSuite) assertWsPartialDepthEventEqual(e, a *WsPartialDepthEvent) {
+	r := s.r()
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.LastUpdateID, a.LastUpdateID, "LastUpdateID")
+	for i := 0; i < len(e.Bids); i++ {
+		r.Equal(e.Bids[i].Price, a.Bids[i].Price, "Price")
+		r.Equal(e.Bids[i].Quantity, a.Bids[i].Quantity, "Quantity")
+	}
+	for i := 0; i < len(e.Asks); i++ {
+		r.Equal(e.Asks[i].Price, a.Asks[i].Price, "Price")
+		r.Equal(e.Asks[i].Quantity, a.Asks[i].Quantity, "Quantity")
+	}
+}
+
 func (s *websocketServiceTestSuite) TestDepthServe() {
 	data := []byte(`{
         "e": "depthUpdate",

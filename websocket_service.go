@@ -10,6 +10,53 @@ var (
 	baseURL = "wss://stream.binance.com:9443/ws"
 )
 
+// WsPartialDepthEvent define websocket partial depth book event
+type WsPartialDepthEvent struct {
+	Symbol       string
+	LastUpdateID int64 `json:"lastUpdateId"`
+	Bids         []Bid `json:"bids"`
+	Asks         []Ask `json:"asks"`
+}
+
+// WsPartialDepthHandler handle websocket partial depth event
+type WsPartialDepthHandler func(event *WsPartialDepthEvent)
+
+// WsPartialDepthServe serve websocket partial depth handler with a symbol
+func WsPartialDepthServe(symbol string, levels string, handler WsPartialDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/%s@depth%s", baseURL, strings.ToLower(symbol), levels)
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		j, err := newJSON(message)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		event := new(WsPartialDepthEvent)
+		event.Symbol = symbol
+		event.LastUpdateID = j.Get("lastUpdateId").MustInt64()
+		bidsLen := len(j.Get("bids").MustArray())
+		event.Bids = make([]Bid, bidsLen)
+		for i := 0; i < bidsLen; i++ {
+			item := j.Get("bids").GetIndex(i)
+			event.Bids[i] = Bid{
+				Price:    item.GetIndex(0).MustString(),
+				Quantity: item.GetIndex(1).MustString(),
+			}
+		}
+		asksLen := len(j.Get("asks").MustArray())
+		event.Asks = make([]Ask, asksLen)
+		for i := 0; i < asksLen; i++ {
+			item := j.Get("asks").GetIndex(i)
+			event.Asks[i] = Ask{
+				Price:    item.GetIndex(0).MustString(),
+				Quantity: item.GetIndex(1).MustString(),
+			}
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
 // WsDepthHandler handle websocket depth event
 type WsDepthHandler func(event *WsDepthEvent)
 
