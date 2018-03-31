@@ -22,7 +22,8 @@ func (s *depositServiceTestSuite) TestListDeposits() {
                 "insertTime": 1508198532000,
                 "amount": 0.04670582,
                 "asset": "ETH",
-                "status": 1
+                "status": 1,
+                "txId": "TxId"
             }
         ],
         "success": true
@@ -49,6 +50,7 @@ func (s *depositServiceTestSuite) TestListDeposits() {
 		Amount:     0.04670582,
 		Asset:      "ETH",
 		Status:     1,
+		TxId:       "TxId",
 	}
 	s.assertDepositEqual(e, deposits[0])
 }
@@ -59,4 +61,5 @@ func (s *depositServiceTestSuite) assertDepositEqual(e, a *Deposit) {
 	r.Equal(e.Asset, a.Asset, "Asset")
 	r.InDelta(e.Amount, a.Amount, 0.0000000001, "Amount")
 	r.Equal(e.Status, a.Status, "Status")
+	r.Equal(e.TxId, a.TxId, "TxId")
 }
