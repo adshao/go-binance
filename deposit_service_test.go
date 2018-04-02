@@ -61,5 +61,5 @@ func (s *depositServiceTestSuite) assertDepositEqual(e, a *Deposit) {
 	r.Equal(e.Asset, a.Asset, "Asset")
 	r.InDelta(e.Amount, a.Amount, 0.0000000001, "Amount")
 	r.Equal(e.Status, a.Status, "Status")
-	r.Equal(e.TxID, a.TxID, "TxID")
+	r.Equal(e.TxID, a.TxID, "b3c6219639c8ae3f9cf010cdc24fw7f7yt8j1e063f9b4bd1a05cb44c4b6e2509")
 }
