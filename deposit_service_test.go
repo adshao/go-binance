@@ -23,7 +23,7 @@ func (s *depositServiceTestSuite) TestListDeposits() {
                 "amount": 0.04670582,
                 "asset": "ETH",
                 "status": 1,
-                "TxID": "TxID"
+                "TxID": "b3c6219639c8ae3f9cf010cdc24fw7f7yt8j1e063f9b4bd1a05cb44c4b6e2509"
             }
         ],
         "success": true
@@ -50,7 +50,7 @@ func (s *depositServiceTestSuite) TestListDeposits() {
 		Amount:     0.04670582,
 		Asset:      "ETH",
 		Status:     1,
-		TxID:       "TxID",
+		TxID:       "b3c6219639c8ae3f9cf010cdc24fw7f7yt8j1e063f9b4bd1a05cb44c4b6e2509",
 	}
 	s.assertDepositEqual(e, deposits[0])
 }
