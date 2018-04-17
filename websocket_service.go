@@ -301,7 +301,6 @@ type WsMarketStatEvent struct {
 // WsAllMiniMarketsStatServeHandler handle websocket that push all mini-ticker market statistics for 24hr
 type WsAllMiniMarketsStatServeHandler func(event WsAllMiniMarketsStatEvent)
 
-
 // WsAllMiniMarketsStatServe serve websocket that push mini version of 24hr statistics for all market every second
 func WsAllMiniMarketsStatServe(handler WsAllMiniMarketsStatServeHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := fmt.Sprintf("%s/!miniTicker@arr", baseURL)
@@ -323,13 +322,13 @@ type WsAllMiniMarketsStatEvent []*WsMiniMarketsStatEvent
 
 // WsMiniMarketsStatEvent define websocket market mini-ticker statistics event
 type WsMiniMarketsStatEvent struct {
-	Event              string `json:"e"`
-	Time               int64  `json:"E"`
-	Symbol             string `json:"s"`
-	LastPrice          string `json:"c"`
-	OpenPrice          string `json:"o"`
-	HighPrice          string `json:"h"`
-	LowPrice           string `json:"l"`
-	BaseVolume         string `json:"v"`
-	QuoteVolume        string `json:"q"`
+	Event       string `json:"e"`
+	Time        int64  `json:"E"`
+	Symbol      string `json:"s"`
+	LastPrice   string `json:"c"`
+	OpenPrice   string `json:"o"`
+	HighPrice   string `json:"h"`
+	LowPrice    string `json:"l"`
+	BaseVolume  string `json:"v"`
+	QuoteVolume string `json:"q"`
 }

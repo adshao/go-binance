@@ -666,7 +666,6 @@ func (s *websocketServiceTestSuite) assertWsTradeEventEqual(e, a *WsTradeEvent) 
 	r.Equal(e.IsBuyerMaker, a.IsBuyerMaker, "IsBuyerMaker")
 }
 
-
 func (s *websocketServiceTestSuite) TestWsAllMiniMarketsStatServe() {
 	data := []byte(`[{
   		"e": "24hrMiniTicker",
@@ -696,26 +695,26 @@ func (s *websocketServiceTestSuite) TestWsAllMiniMarketsStatServe() {
 	doneC, stopC, err := WsAllMiniMarketsStatServe(func(event WsAllMiniMarketsStatEvent) {
 		e := WsAllMiniMarketsStatEvent{
 			&WsMiniMarketsStatEvent{
-				Event:              "24hrMiniTicker",
-				Time:               1523658017154,
-				Symbol:             "BNBBTC",
-				LastPrice:          "0.00175640",
-				OpenPrice:          "0.00161200",
-				HighPrice:          "0.00176000",
-				LowPrice:           "0.00159370",
-				BaseVolume:         "3479863.89000000",
-				QuoteVolume:        "5725.90587704",
+				Event:       "24hrMiniTicker",
+				Time:        1523658017154,
+				Symbol:      "BNBBTC",
+				LastPrice:   "0.00175640",
+				OpenPrice:   "0.00161200",
+				HighPrice:   "0.00176000",
+				LowPrice:    "0.00159370",
+				BaseVolume:  "3479863.89000000",
+				QuoteVolume: "5725.90587704",
 			},
 			&WsMiniMarketsStatEvent{
-				Event:              "24hrMiniTicker",
-				Time:               1523658017133,
-				Symbol:             "BNBETH",
-				LastPrice:          "0.02827000",
-				OpenPrice:          "0.02628100",
-				HighPrice:          "0.02830300",
-				LowPrice:           "0.02469400",
-				BaseVolume:         "456266.78000000",
-				QuoteVolume:        "11873.11095682",
+				Event:       "24hrMiniTicker",
+				Time:        1523658017133,
+				Symbol:      "BNBETH",
+				LastPrice:   "0.02827000",
+				OpenPrice:   "0.02628100",
+				HighPrice:   "0.02830300",
+				LowPrice:    "0.02469400",
+				BaseVolume:  "456266.78000000",
+				QuoteVolume: "11873.11095682",
 			},
 		}
 		s.assertWsAllMiniMarketsStatEventEqual(e, event)
