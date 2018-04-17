@@ -3,6 +3,7 @@ package binance
 import (
 	"testing"
 
+	"github.com/adshao/go-binance"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -101,39 +102,31 @@ func (s *tickerServiceTestSuite) assertBookTickerEqual(e, a *BookTicker) {
 	r.Equal(e.AskQuantity, a.AskQuantity, "AskQuantity")
 }
 
-func (s *tickerServiceTestSuite) TestListPrices() {
-	data := []byte(`[
-        {
-            "symbol": "LTCBTC",
-            "price": "4.00000200"
-        },
-        {
-            "symbol": "ETHBTC",
-            "price": "0.07946600"
-        }
-    ]`)
-	s.mockDo(data, nil)
-	defer s.assertDo()
-
-	s.assertReq(func(r *request) {
-		e := newRequest()
-		s.assertRequestEqual(e, r)
-	})
-
-	prices, err := s.client.NewListPricesService().Do(newContext())
+func (s *tickerServiceTestSuite) TestListPrice() {
 	r := s.r()
-	r.NoError(err)
-	r.Len(prices, 2)
-	e1 := &SymbolPrice{
-		Symbol: "LTCBTC",
-		Price:  "4.00000200",
+	const SYMBOL = "TRXBTC"
+
+	var result *binance.SymbolPrice
+	err := s.client.NewListPricesService().Do(newContext(),
+		&result, WithSymbol(SYMBOL))
+	if err != nil {
+		return
 	}
-	e2 := &SymbolPrice{
-		Symbol: "ETHBTC",
-		Price:  "0.07946600",
+
+	r.Equal(result.Symbol, SYMBOL)
+}
+
+func (s *tickerServiceTestSuite) TestListPrices() {
+	r := s.r()
+
+	var result []*binance.SymbolPrice
+	err := s.client.NewListPricesService().Do(newContext(),
+		&result)
+	if err != nil {
+		return
 	}
-	s.assertSymbolPriceEqual(e1, prices[0])
-	s.assertSymbolPriceEqual(e2, prices[1])
+
+	r.True(len(result) > 0)
 }
 
 func (s *tickerServiceTestSuite) assertSymbolPriceEqual(e, a *SymbolPrice) {

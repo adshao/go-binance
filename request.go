@@ -24,6 +24,7 @@ type request struct {
 	query      url.Values
 	form       url.Values
 	recvWindow int64
+	timeDiff   int64
 	secType    secType
 	header     http.Header
 	body       io.Reader
@@ -83,3 +84,16 @@ func WithRecvWindow(recvWindow int64) RequestOption {
 		r.recvWindow = recvWindow
 	}
 }
+
+func TimeDiffWithServer(timeDiff int64) RequestOption {
+	return func(r *request) {
+		r.timeDiff = timeDiff
+	}
+}
+
+func WithSymbol(symbol string) RequestOption {
+	return func(r *request) {
+		r.setParam("symbol", symbol)
+	}
+}
+
