@@ -665,3 +665,82 @@ func (s *websocketServiceTestSuite) assertWsTradeEventEqual(e, a *WsTradeEvent) 
 	r.Equal(e.TradeTime, a.TradeTime, "TradeTime")
 	r.Equal(e.IsBuyerMaker, a.IsBuyerMaker, "IsBuyerMaker")
 }
+
+func (s *websocketServiceTestSuite) TestWsAllMiniMarketsStatServe() {
+	data := []byte(`[{
+  		"e": "24hrMiniTicker",
+    	"E": 1523658017154,
+    	"s": "BNBBTC",
+   	 	"c": "0.00175640",
+    	"o": "0.00161200",
+    	"h": "0.00176000",
+    	"l": "0.00159370",
+    	"v": "3479863.89000000",
+    	"q": "5725.90587704"
+	},{
+  		"e": "24hrMiniTicker",
+    	"E": 1523658017133,
+    	"s": "BNBETH",
+    	"c": "0.02827000",
+    	"o": "0.02628100",
+    	"h": "0.02830300",
+    	"l": "0.02469400",
+    	"v": "456266.78000000",
+    	"q": "11873.11095682"
+	}]`)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+
+	doneC, stopC, err := WsAllMiniMarketsStatServe(func(event WsAllMiniMarketsStatEvent) {
+		e := WsAllMiniMarketsStatEvent{
+			&WsMiniMarketsStatEvent{
+				Event:       "24hrMiniTicker",
+				Time:        1523658017154,
+				Symbol:      "BNBBTC",
+				LastPrice:   "0.00175640",
+				OpenPrice:   "0.00161200",
+				HighPrice:   "0.00176000",
+				LowPrice:    "0.00159370",
+				BaseVolume:  "3479863.89000000",
+				QuoteVolume: "5725.90587704",
+			},
+			&WsMiniMarketsStatEvent{
+				Event:       "24hrMiniTicker",
+				Time:        1523658017133,
+				Symbol:      "BNBETH",
+				LastPrice:   "0.02827000",
+				OpenPrice:   "0.02628100",
+				HighPrice:   "0.02830300",
+				LowPrice:    "0.02469400",
+				BaseVolume:  "456266.78000000",
+				QuoteVolume: "11873.11095682",
+			},
+		}
+		s.assertWsAllMiniMarketsStatEventEqual(e, event)
+	}, func(err error) {
+		s.r().EqualError(err, fakeErrMsg)
+	})
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
+func (s *websocketServiceTestSuite) assertWsAllMiniMarketsStatEventEqual(e, a WsAllMiniMarketsStatEvent) {
+	for i := range e {
+		s.assertWsMiniMarketsStatEventEqual(e[i], a[i])
+	}
+}
+
+func (s *websocketServiceTestSuite) assertWsMiniMarketsStatEventEqual(e, a *WsMiniMarketsStatEvent) {
+	r := s.r()
+	r.Equal(e.Event, a.Event, "Event")
+	r.Equal(e.Time, a.Time, "Time")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.LastPrice, a.LastPrice, "LastPrice")
+	r.Equal(e.OpenPrice, a.OpenPrice, "OpenPrice")
+	r.Equal(e.HighPrice, a.HighPrice, "HighPrice")
+	r.Equal(e.LowPrice, a.LowPrice, "LowPrice")
+	r.Equal(e.BaseVolume, a.BaseVolume, "BaseVolume")
+	r.Equal(e.QuoteVolume, a.QuoteVolume, "QuoteVolume")
+}
