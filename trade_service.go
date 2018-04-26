@@ -123,6 +123,7 @@ type Trade struct {
 // TradeV3 define v3 trade info
 type TradeV3 struct {
 	ID              int64  `json:"id"`
+	OrderID         int64  `json:"orderId"`
 	Price           string `json:"price"`
 	Quantity        string `json:"qty"`
 	Commission      string `json:"commission"`
