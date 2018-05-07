@@ -106,6 +106,7 @@ func (s *orderServiceTestSuite) TestCreateOrderFull() {
 	quantity := "12.00"
 	price := "0.0001"
 	newClientOrderID := "myOrder1"
+	newOrderRespType := NewOrderRespTypeFULL
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setFormParams(params{
 			"symbol":           symbol,
@@ -115,12 +116,14 @@ func (s *orderServiceTestSuite) TestCreateOrderFull() {
 			"quantity":         quantity,
 			"price":            price,
 			"newClientOrderId": newClientOrderID,
+			"newOrderRespType": newOrderRespType,
 		})
 		s.assertRequestEqual(e, r)
 	})
 	res, err := s.client.NewCreateOrderService().Symbol(symbol).Side(side).
 		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).
-		Price(price).NewClientOrderID(newClientOrderID).Do(newContext())
+		Price(price).NewClientOrderID(newClientOrderID).
+		NewOrderRespType(newOrderRespType).Do(newContext())
 	s.r().NoError(err)
 	e := &CreateOrderResponse{
 		Symbol:           "LTCBTC",
@@ -147,7 +150,8 @@ func (s *orderServiceTestSuite) TestCreateOrderFull() {
 
 	err = s.client.NewCreateOrderService().Symbol(symbol).Side(side).
 		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).
-		Price(price).NewClientOrderID(newClientOrderID).Test(newContext())
+		Price(price).NewClientOrderID(newClientOrderID).
+		NewOrderRespType(newOrderRespType).Test(newContext())
 	s.r().NoError(err)
 }
 
@@ -165,6 +169,7 @@ func (s *orderServiceTestSuite) assertCreateOrderResponseEqual(e, a *CreateOrder
 	r.Equal(e.Type, a.Type, "Type")
 	r.Equal(e.Side, a.Side, "Side")
 
+	r.Len(a.Fills, len(e.Fills))
 	for idx, fill := range e.Fills {
 		s.assertFillEqual(fill, a.Fills[idx])
 	}
