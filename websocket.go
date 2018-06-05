@@ -13,13 +13,11 @@ type ErrHandler func(err error)
 
 type wsConfig struct {
 	endpoint string
-	timeout  time.Duration
 }
 
-func newWsConfig(endpoint string, timeout time.Duration) *wsConfig {
+func newWsConfig(endpoint string) *wsConfig {
 	return &wsConfig{
 		endpoint: endpoint,
-		timeout:  timeout,
 	}
 }
 
@@ -38,7 +36,10 @@ var wsServe = func(cfg *wsConfig, handler WsHandler, errHandler ErrHandler) (don
 			}
 		}()
 		defer close(doneC)
-		keepAlive(c, cfg.timeout)
+		if WebsocketKeepalive {
+			keepAlive(c, WebsocketTimeout)
+		}
+
 		for {
 			select {
 			case <-stopC:
@@ -68,7 +69,8 @@ func keepAlive(c *websocket.Conn, timeout time.Duration) {
 	go func() {
 		defer ticker.Stop()
 		for {
-			err := c.WriteMessage(websocket.PingMessage, []byte("keepalive"))
+			deadline := time.Now().Add(10 * time.Second)
+			err := c.WriteControl(websocket.PingMessage, []byte{}, deadline)
 			if err != nil {
 				return
 			}

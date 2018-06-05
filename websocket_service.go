@@ -9,7 +9,10 @@ import (
 
 var (
 	baseURL = "wss://stream.binance.com:9443/ws"
-	timeout = 60 * time.Second
+	// WebsocketTimeout is an interval for sending ping/pong messages if WebsocketKeepalive is enabled
+	WebsocketTimeout = time.Second * 60
+	// WebsocketKeepalive enables sending ping/pong messages to check the connection stability
+	WebsocketKeepalive = false
 )
 
 // WsPartialDepthEvent define websocket partial depth book event
@@ -26,7 +29,7 @@ type WsPartialDepthHandler func(event *WsPartialDepthEvent)
 // WsPartialDepthServe serve websocket partial depth handler with a symbol
 func WsPartialDepthServe(symbol string, levels string, handler WsPartialDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := fmt.Sprintf("%s/%s@depth%s", baseURL, strings.ToLower(symbol), levels)
-	cfg := newWsConfig(endpoint, timeout)
+	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		j, err := newJSON(message)
 		if err != nil {
@@ -65,7 +68,7 @@ type WsDepthHandler func(event *WsDepthEvent)
 // WsDepthServe serve websocket depth handler with a symbol
 func WsDepthServe(symbol string, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := fmt.Sprintf("%s/%s@depth", baseURL, strings.ToLower(symbol))
-	cfg := newWsConfig(endpoint, timeout)
+	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		j, err := newJSON(message)
 		if err != nil {
@@ -118,7 +121,7 @@ type WsKlineHandler func(event *WsKlineEvent)
 // WsKlineServe serve websocket kline handler with a symbol and interval like 15m, 30s
 func WsKlineServe(symbol string, interval string, handler WsKlineHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := fmt.Sprintf("%s/%s@kline_%s", baseURL, strings.ToLower(symbol), interval)
-	cfg := newWsConfig(endpoint, timeout)
+	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		event := new(WsKlineEvent)
 		err := json.Unmarshal(message, event)
@@ -165,7 +168,7 @@ type WsAggTradeHandler func(event *WsAggTradeEvent)
 // WsAggTradeServe serve websocket aggregate handler with a symbol
 func WsAggTradeServe(symbol string, handler WsAggTradeHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := fmt.Sprintf("%s/%s@aggTrade", baseURL, strings.ToLower(symbol))
-	cfg := newWsConfig(endpoint, timeout)
+	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		event := new(WsAggTradeEvent)
 		err := json.Unmarshal(message, event)
@@ -199,7 +202,7 @@ type WsTradeHandler func(event *WsTradeEvent)
 // WsTradeServe serve websocket handler with a symbol
 func WsTradeServe(symbol string, handler WsTradeHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := fmt.Sprintf("%s/%s@trade", baseURL, strings.ToLower(symbol))
-	cfg := newWsConfig(endpoint, timeout)
+	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		event := new(WsTradeEvent)
 		err := json.Unmarshal(message, event)
@@ -230,7 +233,7 @@ type WsTradeEvent struct {
 // WsUserDataServe serve user data handler with listen key
 func WsUserDataServe(listenKey string, handler WsHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := fmt.Sprintf("%s/%s", baseURL, listenKey)
-	cfg := newWsConfig(endpoint, timeout)
+	cfg := newWsConfig(endpoint)
 	return wsServe(cfg, handler, errHandler)
 }
 
@@ -240,7 +243,7 @@ type WsMarketStatHandler func(event *WsMarketStatEvent)
 // WsMarketStatServe serve websocket that push 24hr statistics for single market every second
 func WsMarketStatServe(symbol string, handler WsMarketStatHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := fmt.Sprintf("%s/%s@ticker", baseURL, strings.ToLower(symbol))
-	cfg := newWsConfig(endpoint, timeout)
+	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		var event WsMarketStatEvent
 		err := json.Unmarshal(message, &event)
@@ -259,7 +262,7 @@ type WsAllMarketsStatHandler func(event WsAllMarketsStatEvent)
 // WsAllMarketsStatServe serve websocket that push 24hr statistics for all market every second
 func WsAllMarketsStatServe(handler WsAllMarketsStatHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := fmt.Sprintf("%s/!ticker@arr", baseURL)
-	cfg := newWsConfig(endpoint, timeout)
+	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		var event WsAllMarketsStatEvent
 		err := json.Unmarshal(message, &event)
@@ -308,7 +311,7 @@ type WsAllMiniMarketsStatServeHandler func(event WsAllMiniMarketsStatEvent)
 // WsAllMiniMarketsStatServe serve websocket that push mini version of 24hr statistics for all market every second
 func WsAllMiniMarketsStatServe(handler WsAllMiniMarketsStatServeHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := fmt.Sprintf("%s/!miniTicker@arr", baseURL)
-	cfg := newWsConfig(endpoint, timeout)
+	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		var event WsAllMiniMarketsStatEvent
 		err := json.Unmarshal(message, &event)
