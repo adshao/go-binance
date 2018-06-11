@@ -4,10 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 )
 
 var (
 	baseURL = "wss://stream.binance.com:9443/ws"
+	// WebsocketTimeout is an interval for sending ping/pong messages if WebsocketKeepalive is enabled
+	WebsocketTimeout = time.Second * 60
+	// WebsocketKeepalive enables sending ping/pong messages to check the connection stability
+	WebsocketKeepalive = false
 )
 
 // WsPartialDepthEvent define websocket partial depth book event

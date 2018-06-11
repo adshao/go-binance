@@ -2,6 +2,7 @@ package binance
 
 import (
 	"github.com/gorilla/websocket"
+	"time"
 )
 
 // WsHandler handle raw websocket message
@@ -35,6 +36,10 @@ var wsServe = func(cfg *wsConfig, handler WsHandler, errHandler ErrHandler) (don
 			}
 		}()
 		defer close(doneC)
+		if WebsocketKeepalive {
+			keepAlive(c, WebsocketTimeout)
+		}
+
 		for {
 			select {
 			case <-stopC:
@@ -50,4 +55,30 @@ var wsServe = func(cfg *wsConfig, handler WsHandler, errHandler ErrHandler) (don
 		}
 	}()
 	return
+}
+
+func keepAlive(c *websocket.Conn, timeout time.Duration) {
+	ticker := time.NewTicker(timeout)
+
+	lastResponse := time.Now()
+	c.SetPongHandler(func(msg string) error {
+		lastResponse = time.Now()
+		return nil
+	})
+
+	go func() {
+		defer ticker.Stop()
+		for {
+			deadline := time.Now().Add(10 * time.Second)
+			err := c.WriteControl(websocket.PingMessage, []byte{}, deadline)
+			if err != nil {
+				return
+			}
+			<-ticker.C
+			if time.Now().Sub(lastResponse) > timeout {
+				c.Close()
+				return
+			}
+		}
+	}()
 }
