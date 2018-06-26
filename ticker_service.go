@@ -128,8 +128,32 @@ func (s *PriceChangeStatsService) Do(ctx context.Context, opts ...RequestOption)
 	return res, nil
 }
 
+// ListPriceChangeStatsService show stats of price change in last 24 hours for all symbols
+type ListPriceChangeStatsService struct {
+	c *Client
+}
+
+// Do send request
+func (s *ListPriceChangeStatsService) Do(ctx context.Context, opts ...RequestOption) (res []*PriceChangeStats, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/api/v1/ticker/24hr",
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return res, err
+	}
+	res = make([]*PriceChangeStats, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
 // PriceChangeStats define price change stats
 type PriceChangeStats struct {
+	Symbol             string `json:"symbol"`
 	PriceChange        string `json:"priceChange"`
 	PriceChangePercent string `json:"priceChangePercent"`
 	WeightedAvgPrice   string `json:"weightedAvgPrice"`

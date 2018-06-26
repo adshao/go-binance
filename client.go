@@ -232,6 +232,11 @@ func (c *Client) NewPriceChangeStatsService() *PriceChangeStatsService {
 	return &PriceChangeStatsService{c: c}
 }
 
+// NewListPriceChangeStatsService init list prices change stats service
+func (c *Client) NewListPriceChangeStatsService() *ListPriceChangeStatsService {
+	return &ListPriceChangeStatsService{c: c}
+}
+
 // NewListPricesService init listing prices service
 func (c *Client) NewListPricesService() *ListPricesService {
 	return &ListPricesService{c: c}

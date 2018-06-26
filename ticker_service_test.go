@@ -144,6 +144,7 @@ func (s *tickerServiceTestSuite) assertSymbolPriceEqual(e, a *SymbolPrice) {
 
 func (s *tickerServiceTestSuite) TestPriceChangeStats() {
 	data := []byte(`{
+		"symbol": "BNBBTC",
         "priceChange": "-94.99999800",
         "priceChangePercent": "-95.960",
         "weightedAvgPrice": "0.29628482",
@@ -164,7 +165,7 @@ func (s *tickerServiceTestSuite) TestPriceChangeStats() {
 	s.mockDo(data, nil)
 	defer s.assertDo()
 
-	symbol := "BTC"
+	symbol := "BNBBTC"
 	s.assertReq(func(r *request) {
 		e := newRequest().setParam("symbol", symbol)
 		s.assertRequestEqual(e, r)
@@ -173,6 +174,7 @@ func (s *tickerServiceTestSuite) TestPriceChangeStats() {
 	r := s.r()
 	r.NoError(err)
 	e := &PriceChangeStats{
+		Symbol:             "BNBBTC",
 		PriceChange:        "-94.99999800",
 		PriceChangePercent: "-95.960",
 		WeightedAvgPrice:   "0.29628482",
@@ -195,6 +197,7 @@ func (s *tickerServiceTestSuite) TestPriceChangeStats() {
 
 func (s *tickerServiceTestSuite) assertPriceChangeStatsEqual(e, a *PriceChangeStats) {
 	r := s.r()
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
 	r.Equal(e.PriceChange, a.PriceChange, "PriceChange")
 	r.Equal(e.PriceChangePercent, a.PriceChangePercent, "PriceChangePercent")
 	r.Equal(e.WeightedAvgPrice, a.WeightedAvgPrice, "WeightedAvgPrice")
@@ -211,4 +214,84 @@ func (s *tickerServiceTestSuite) assertPriceChangeStatsEqual(e, a *PriceChangeSt
 	r.Equal(e.FristID, a.FristID, "FristID")
 	r.Equal(e.LastID, a.LastID, "LastID")
 	r.Equal(e.Count, a.Count, "Count")
+}
+
+func (s *tickerServiceTestSuite) TestListPriceChangeStats() {
+	data := []byte(`[{
+    	"symbol": "BNBBTC",
+    	"priceChange": "-94.99999800",
+    	"priceChangePercent": "-95.960",
+    	"weightedAvgPrice": "0.29628482",
+    	"prevClosePrice": "0.10002000",
+    	"lastPrice": "4.00000200",
+    	"lastQty": "200.00000000",
+    	"bidPrice": "4.00000000",
+    	"askPrice": "4.00000200",
+    	"openPrice": "99.00000000",
+    	"highPrice": "100.00000000",
+    	"lowPrice": "0.10000000",
+    	"volume": "8913.30000000",
+    	"quoteVolume": "15.30000000",
+    	"openTime": 1499783499040,
+    	"closeTime": 1499869899040,
+    	"firstId": 28385,  
+    	"lastId": 28460,
+    	"count": 76 
+  	}]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newRequest()
+		s.assertRequestEqual(e, r)
+	})
+	res, err := s.client.NewListPriceChangeStatsService().Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	e := []*PriceChangeStats{
+		{
+			Symbol:             "BNBBTC",
+			PriceChange:        "-94.99999800",
+			PriceChangePercent: "-95.960",
+			WeightedAvgPrice:   "0.29628482",
+			PrevClosePrice:     "0.10002000",
+			LastPrice:          "4.00000200",
+			BidPrice:           "4.00000000",
+			AskPrice:           "4.00000200",
+			OpenPrice:          "99.00000000",
+			HighPrice:          "100.00000000",
+			LowPrice:           "0.10000000",
+			Volume:             "8913.30000000",
+			OpenTime:           1499783499040,
+			CloseTime:          1499869899040,
+			FristID:            28385,
+			LastID:             28460,
+			Count:              76,
+		},
+	}
+	s.assertListPriceChangeStatsEqual(e, res)
+}
+
+func (s *tickerServiceTestSuite) assertListPriceChangeStatsEqual(e, a []*PriceChangeStats) {
+	r := s.r()
+	for i := range e {
+		r.Equal(e[i].Symbol, a[i].Symbol, "Symbol")
+		r.Equal(e[i].PriceChange, a[i].PriceChange, "PriceChange")
+		r.Equal(e[i].PriceChangePercent, a[i].PriceChangePercent, "PriceChangePercent")
+		r.Equal(e[i].WeightedAvgPrice, a[i].WeightedAvgPrice, "WeightedAvgPrice")
+		r.Equal(e[i].PrevClosePrice, a[i].PrevClosePrice, "PrevClosePrice")
+		r.Equal(e[i].LastPrice, a[i].LastPrice, "LastPrice")
+		r.Equal(e[i].BidPrice, a[i].BidPrice, "BidPrice")
+		r.Equal(e[i].AskPrice, a[i].AskPrice, "AskPrice")
+		r.Equal(e[i].OpenPrice, a[i].OpenPrice, "OpenPrice")
+		r.Equal(e[i].HighPrice, a[i].HighPrice, "HighPrice")
+		r.Equal(e[i].LowPrice, a[i].LowPrice, "LowPrice")
+		r.Equal(e[i].Volume, a[i].Volume, "Volume")
+		r.Equal(e[i].OpenTime, a[i].OpenTime, "OpenTime")
+		r.Equal(e[i].CloseTime, a[i].CloseTime, "CloseTime")
+		r.Equal(e[i].FristID, a[i].FristID, "FristID")
+		r.Equal(e[i].LastID, a[i].LastID, "LastID")
+		r.Equal(e[i].Count, a[i].Count, "Count")
+	}
+
 }
