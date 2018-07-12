@@ -326,3 +326,8 @@ func (c *Client) NewCloseUserStreamService() *CloseUserStreamService {
 func (c *Client) NewExchangeInfoService() *ExchangeInfoService {
 	return &ExchangeInfoService{c: c}
 }
+
+// NewGetWithdrawFeeService init get withdraw fee service
+func (c *Client) NewGetWithdrawFeeService() *GetWithdrawFeeService {
+	return &GetWithdrawFeeService{c: c}
+}
