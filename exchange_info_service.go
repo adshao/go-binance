@@ -21,9 +21,9 @@ func (s *ExchangeInfoService) Do(ctx context.Context, opts ...RequestOption) (re
 	if err != nil {
 		return nil, err
 	}
+
 	res = new(ExchangeInfo)
-	err = json.Unmarshal(data, res)
-	if err != nil {
+	if 	err = json.Unmarshal(data, res); err != nil {
 		return nil, err
 	}
 
@@ -45,5 +45,5 @@ type Symbol struct {
 	QuotePrecision     int                 `json:"quotePrecision"`
 	OrderTypes         []string            `json:"orderTypes"`
 	IcebergAllowed     bool                `json:"icebergAllowed"`
-	Filters            []map[string]string `json:"filters"`
+	Filters            []map[string]interface{} `json:"filters"`
 }
