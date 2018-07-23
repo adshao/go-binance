@@ -28,14 +28,12 @@ var wsServe = func(cfg *wsConfig, handler WsHandler, errHandler ErrHandler) (don
 	}
 	doneC = make(chan struct{})
 	stopC = make(chan struct{})
+
 	go func() {
 		defer func() {
-			cerr := c.Close()
-			if cerr != nil {
-				errHandler(cerr)
-			}
+			c.Close()
+			close(doneC)
 		}()
-		defer close(doneC)
 		if WebsocketKeepalive {
 			keepAlive(c, WebsocketTimeout)
 		}
