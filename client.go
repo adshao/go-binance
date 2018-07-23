@@ -50,6 +50,11 @@ const (
 	recvWindowKey = "recvWindow"
 )
 
+var (
+	// UseServerTime enables getting server time to send in the timestamp key
+	UseServerTime = false
+)
+
 func currentTimestamp() int64 {
 	return int64(time.Nanosecond) * time.Now().UnixNano() / int64(time.Millisecond)
 }
@@ -111,7 +116,24 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 		r.setParam(recvWindowKey, r.recvWindow)
 	}
 	if r.secType == secTypeSigned {
-		r.setParam(timestampKey, currentTimestamp())
+		timestamp := currentTimestamp()
+		if UseServerTime {
+			resp, err := c.callAPI(context.Background(), &request{
+				method:   "GET",
+				endpoint: "/api/v1/time",
+				secType:  secTypeNone,
+			})
+			if err != nil {
+				return err
+			}
+			j, err := newJSON(resp)
+			if err != nil {
+				return err
+			}
+			timestamp = j.Get("serverTime").MustInt64()
+		}
+
+		r.setParam(timestampKey, timestamp)
 	}
 	queryString := r.query.Encode()
 	body := &bytes.Buffer{}
