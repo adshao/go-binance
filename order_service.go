@@ -12,6 +12,7 @@ type CreateOrderService struct {
 	side             SideType
 	orderType        OrderType
 	timeInForce      *TimeInForce
+	newOrderRespType *NewOrderRespType
 	quantity         string
 	price            *string
 	newClientOrderID *string
@@ -73,6 +74,12 @@ func (s *CreateOrderService) IcebergQuantity(icebergQuantity string) *CreateOrde
 	return s
 }
 
+// NewOrderRespType set icebergQuantity
+func (s *CreateOrderService) NewOrderRespType(newOrderRespType NewOrderRespType) *CreateOrderService {
+	s.newOrderRespType = &newOrderRespType
+	return s
+}
+
 func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, err error) {
 	r := &request{
 		method:   "POST",
@@ -99,6 +106,9 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 	}
 	if s.icebergQuantity != nil {
 		m["icebergQty"] = *s.icebergQuantity
+	}
+	if s.newOrderRespType != nil {
+		m["newOrderRespType"] = *s.newOrderRespType
 	}
 	r.setFormParams(m)
 	data, err = s.c.callAPI(ctx, r, opts...)
@@ -130,17 +140,26 @@ func (s *CreateOrderService) Test(ctx context.Context, opts ...RequestOption) (e
 
 // CreateOrderResponse define create order response
 type CreateOrderResponse struct {
-	Symbol           string `json:"symbol"`
-	OrderID          int64  `json:"orderId"`
-	ClientOrderID    string `json:"clientOrderId"`
-	TransactTime     int64  `json:"transactTime"`
-	Price            string `json:"price"`
-	OrigQuantity     string `json:"origQty"`
-	ExecutedQuantity string `json:"executedQty"`
-	Status           string `json:"status"`
-	TimeInForce      string `json:"timeInForce"`
-	Type             string `json:"type"`
-	Side             string `json:"side"`
+	Symbol           string  `json:"symbol"`
+	OrderID          int64   `json:"orderId"`
+	ClientOrderID    string  `json:"clientOrderId"`
+	TransactTime     int64   `json:"transactTime"`
+	Price            string  `json:"price"`
+	OrigQuantity     string  `json:"origQty"`
+	ExecutedQuantity string  `json:"executedQty"`
+	Status           string  `json:"status"`
+	TimeInForce      string  `json:"timeInForce"`
+	Type             string  `json:"type"`
+	Side             string  `json:"side"`
+	Fills            []*Fill `json:"fills"`
+}
+
+// Fill may be returned in an array of fills in a CreateOrderResponse.
+type Fill struct {
+	Price           string `json:"price"`
+	Quantity        string `json:"qty"`
+	Commission      string `json:"commission"`
+	CommissionAsset string `json:"commissionAsset"`
 }
 
 // ListOpenOrdersService list opened orders

@@ -26,6 +26,9 @@ type OrderType string
 // TimeInForce define time in force type of order
 type TimeInForce string
 
+// NewOrderRespType define response JSON verbosity
+type NewOrderRespType string
+
 // Global enums
 const (
 	SideTypeBuy  SideType = "BUY"
@@ -37,6 +40,10 @@ const (
 	TimeInForceGTC TimeInForce = "GTC"
 	TimeInForceIOC TimeInForce = "IOC"
 	TimeInForceFOK TimeInForce = "FOK"
+
+	NewOrderRespTypeACK    NewOrderRespType = "ACK"
+	NewOrderRespTypeRESULT NewOrderRespType = "RESULT"
+	NewOrderRespTypeFULL   NewOrderRespType = "FULL"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
@@ -183,7 +190,7 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 		apiErr := new(APIError)
 		e := json.Unmarshal(data, apiErr)
 		if e != nil {
-			c.debug("failed to unmarshal json: %s", err)
+			c.debug("failed to unmarshal json: %s", e)
 		}
 		return nil, apiErr
 	}
@@ -223,6 +230,11 @@ func (c *Client) NewKlinesService() *KlinesService {
 // NewPriceChangeStatsService init prices change stats service
 func (c *Client) NewPriceChangeStatsService() *PriceChangeStatsService {
 	return &PriceChangeStatsService{c: c}
+}
+
+// NewListPriceChangeStatsService init list prices change stats service
+func (c *Client) NewListPriceChangeStatsService() *ListPriceChangeStatsService {
+	return &ListPriceChangeStatsService{c: c}
 }
 
 // NewListPricesService init listing prices service
@@ -313,4 +325,9 @@ func (c *Client) NewCloseUserStreamService() *CloseUserStreamService {
 // NewExchangeInfoService init exchange info service
 func (c *Client) NewExchangeInfoService() *ExchangeInfoService {
 	return &ExchangeInfoService{c: c}
+}
+
+// NewGetWithdrawFeeService init get withdraw fee service
+func (c *Client) NewGetWithdrawFeeService() *GetWithdrawFeeService {
+	return &GetWithdrawFeeService{c: c}
 }

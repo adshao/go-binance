@@ -84,4 +84,5 @@ type Deposit struct {
 	Amount     float64 `json:"amount"`
 	Asset      string  `json:"asset"`
 	Status     int     `json:"status"`
+	TxID       string  `json:"txId"`
 }

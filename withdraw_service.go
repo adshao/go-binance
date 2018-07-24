@@ -137,3 +137,40 @@ type Withdraw struct {
 	ApplyTime int64   `json:"applyTime"`
 	Status    int     `json:"status"`
 }
+
+// GetWithdrawFeeService get withdraw fee
+type GetWithdrawFeeService struct {
+	c     *Client
+	asset string
+}
+
+// Asset set asset
+func (s *GetWithdrawFeeService) Asset(asset string) *GetWithdrawFeeService {
+	s.asset = asset
+	return s
+}
+
+// Do send request
+func (s *GetWithdrawFeeService) Do(ctx context.Context, opts ...RequestOption) (res *WithdrawFee, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/wapi/v3/withdrawFee.html",
+		secType:  secTypeSigned,
+	}
+	r.setParam("asset", s.asset)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(WithdrawFee)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// WithdrawFee withdraw fee
+type WithdrawFee struct {
+	Fee float64 `json:"withdrawFee"` // docs specify string value but api returns decimal
+}
