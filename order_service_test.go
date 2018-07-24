@@ -74,6 +74,87 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 	s.r().NoError(err)
 }
 
+func (s *orderServiceTestSuite) TestCreateOrderFull() {
+	data := []byte(`{
+		"symbol": "LTCBTC",
+		"orderId": 1,
+		"clientOrderId": "myOrder1",
+		"transactTime": 1499827319559,
+		"price": "0.0001",
+		"origQty": "12.00",
+		"executedQty": "10.00",
+		"status": "FILLED",
+		"timeInForce": "GTC",
+		"type": "LIMIT",
+		"side": "BUY",
+		"fills": [
+			{
+				"price":"0.00002991",
+				"qty":"344.00000000",
+				"commission":"0.00332384",
+				"commissionAsset":"BNB",
+				"tradeId":1566397
+			}
+		]
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	symbol := "LTCBTC"
+	side := SideTypeBuy
+	orderType := OrderTypeLimit
+	timeInForce := TimeInForceGTC
+	quantity := "12.00"
+	price := "0.0001"
+	newClientOrderID := "myOrder1"
+	newOrderRespType := NewOrderRespTypeFULL
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setFormParams(params{
+			"symbol":           symbol,
+			"side":             side,
+			"type":             orderType,
+			"timeInForce":      timeInForce,
+			"quantity":         quantity,
+			"price":            price,
+			"newClientOrderId": newClientOrderID,
+			"newOrderRespType": newOrderRespType,
+		})
+		s.assertRequestEqual(e, r)
+	})
+	res, err := s.client.NewCreateOrderService().Symbol(symbol).Side(side).
+		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).
+		Price(price).NewClientOrderID(newClientOrderID).
+		NewOrderRespType(newOrderRespType).Do(newContext())
+	s.r().NoError(err)
+	e := &CreateOrderResponse{
+		Symbol:           "LTCBTC",
+		OrderID:          1,
+		ClientOrderID:    "myOrder1",
+		TransactTime:     1499827319559,
+		Price:            "0.0001",
+		OrigQuantity:     "12.00",
+		ExecutedQuantity: "10.00",
+		Status:           "FILLED",
+		TimeInForce:      "GTC",
+		Type:             "LIMIT",
+		Side:             "BUY",
+		Fills: []*Fill{
+			&Fill{
+				Price:           "0.00002991",
+				Quantity:        "344.00000000",
+				Commission:      "0.00332384",
+				CommissionAsset: "BNB",
+			},
+		},
+	}
+	s.assertCreateOrderResponseEqual(e, res)
+
+	err = s.client.NewCreateOrderService().Symbol(symbol).Side(side).
+		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).
+		Price(price).NewClientOrderID(newClientOrderID).
+		NewOrderRespType(newOrderRespType).Test(newContext())
+	s.r().NoError(err)
+}
+
 func (s *orderServiceTestSuite) assertCreateOrderResponseEqual(e, a *CreateOrderResponse) {
 	r := s.r()
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
@@ -87,6 +168,19 @@ func (s *orderServiceTestSuite) assertCreateOrderResponseEqual(e, a *CreateOrder
 	r.Equal(e.TimeInForce, a.TimeInForce, "TimeInForce")
 	r.Equal(e.Type, a.Type, "Type")
 	r.Equal(e.Side, a.Side, "Side")
+
+	r.Len(a.Fills, len(e.Fills))
+	for idx, fill := range e.Fills {
+		s.assertFillEqual(fill, a.Fills[idx])
+	}
+}
+
+func (s *orderServiceTestSuite) assertFillEqual(e, a *Fill) {
+	r := s.r()
+	r.Equal(e.Commission, a.Commission, "Commission")
+	r.Equal(e.CommissionAsset, a.CommissionAsset, "CommissionAsset")
+	r.Equal(e.Price, a.Price, "Price")
+	r.Equal(e.Quantity, a.Quantity, "Quantity")
 }
 
 func (s *orderServiceTestSuite) TestListOpenOrders() {

@@ -18,6 +18,7 @@ func (s *tradeServiceTestSuite) TestListTrades() {
 	data := []byte(`[
         {
             "id": 28457,
+            "orderId": 12345,
             "price": "4.00000100",
             "qty": "12.00000000",
             "commission": "10.10000000",
@@ -50,6 +51,7 @@ func (s *tradeServiceTestSuite) TestListTrades() {
 	r.Len(trades, 1)
 	e := &TradeV3{
 		ID:              28457,
+		OrderID:         12345,
 		Price:           "4.00000100",
 		Quantity:        "12.00000000",
 		Commission:      "10.10000000",
@@ -65,6 +67,7 @@ func (s *tradeServiceTestSuite) TestListTrades() {
 func (s *tradeServiceTestSuite) assertTradeV3Equal(e, a *TradeV3) {
 	r := s.r()
 	r.Equal(e.ID, a.ID, "ID")
+	r.Equal(e.OrderID, a.OrderID, "OrderID")
 	r.Equal(e.Price, a.Price, "Price")
 	r.Equal(e.Quantity, a.Quantity, "Quantity")
 	r.Equal(e.Commission, a.Commission, "Commission")

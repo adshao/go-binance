@@ -4,10 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 )
 
 var (
 	baseURL = "wss://stream.binance.com:9443/ws"
+	// WebsocketTimeout is an interval for sending ping/pong messages if WebsocketKeepalive is enabled
+	WebsocketTimeout = time.Second * 60
+	// WebsocketKeepalive enables sending ping/pong messages to check the connection stability
+	WebsocketKeepalive = false
 )
 
 // WsPartialDepthEvent define websocket partial depth book event
@@ -75,6 +80,7 @@ func WsDepthServe(symbol string, handler WsDepthHandler, errHandler ErrHandler) 
 		event.Time = j.Get("E").MustInt64()
 		event.Symbol = j.Get("s").MustString()
 		event.UpdateID = j.Get("u").MustInt64()
+		event.FirstUpdateID = j.Get("U").MustInt64()
 		bidsLen := len(j.Get("b").MustArray())
 		event.Bids = make([]Bid, bidsLen)
 		for i := 0; i < bidsLen; i++ {
@@ -100,12 +106,13 @@ func WsDepthServe(symbol string, handler WsDepthHandler, errHandler ErrHandler) 
 
 // WsDepthEvent define websocket depth event
 type WsDepthEvent struct {
-	Event    string `json:"e"`
-	Time     int64  `json:"E"`
-	Symbol   string `json:"s"`
-	UpdateID int64  `json:"u"`
-	Bids     []Bid  `json:"b"`
-	Asks     []Ask  `json:"a"`
+	Event         string `json:"e"`
+	Time          int64  `json:"E"`
+	Symbol        string `json:"s"`
+	UpdateID      int64  `json:"u"`
+	FirstUpdateID int64  `json:"U"`
+	Bids          []Bid  `json:"b"`
+	Asks          []Ask  `json:"a"`
 }
 
 // WsKlineHandler handle websocket kline event
@@ -296,4 +303,39 @@ type WsMarketStatEvent struct {
 	FirstID            int64  `json:"F"`
 	LastID             int64  `json:"L"`
 	Count              int64  `json:"n"`
+}
+
+// WsAllMiniMarketsStatServeHandler handle websocket that push all mini-ticker market statistics for 24hr
+type WsAllMiniMarketsStatServeHandler func(event WsAllMiniMarketsStatEvent)
+
+// WsAllMiniMarketsStatServe serve websocket that push mini version of 24hr statistics for all market every second
+func WsAllMiniMarketsStatServe(handler WsAllMiniMarketsStatServeHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/!miniTicker@arr", baseURL)
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		var event WsAllMiniMarketsStatEvent
+		err := json.Unmarshal(message, &event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+// WsAllMiniMarketsStatEvent define array of websocket market mini-ticker statistics events
+type WsAllMiniMarketsStatEvent []*WsMiniMarketsStatEvent
+
+// WsMiniMarketsStatEvent define websocket market mini-ticker statistics event
+type WsMiniMarketsStatEvent struct {
+	Event       string `json:"e"`
+	Time        int64  `json:"E"`
+	Symbol      string `json:"s"`
+	LastPrice   string `json:"c"`
+	OpenPrice   string `json:"o"`
+	HighPrice   string `json:"h"`
+	LowPrice    string `json:"l"`
+	BaseVolume  string `json:"v"`
+	QuoteVolume string `json:"q"`
 }
