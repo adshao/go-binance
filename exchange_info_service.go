@@ -45,5 +45,16 @@ type Symbol struct {
 	QuotePrecision     int                 `json:"quotePrecision"`
 	OrderTypes         []string            `json:"orderTypes"`
 	IcebergAllowed     bool                `json:"icebergAllowed"`
-	Filters            []map[string]string `json:"filters"`
+	Filters            []struct {
+		FilterType       string `json:"filterType"`
+		MinPrice         string `json:"minPrice,omitempty"`
+		MaxPrice         string `json:"maxPrice,omitempty"`
+		TickSize         string `json:"tickSize,omitempty"`
+		MinQty           string `json:"minQty,omitempty"`
+		MaxQty           string `json:"maxQty,omitempty"`
+		StepSize         string `json:"stepSize,omitempty"`
+		MinNotional      string `json:"minNotional,omitempty"`
+		Limit            int    `json:"limit,omitempty"`
+		MaxNumAlgoOrders int    `json:"maxNumAlgoOrders,omitempty"`
+	} `json:"filters"`
 }
