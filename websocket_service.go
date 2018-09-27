@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	baseURL = "wss://stream.binance.com:9443/ws"
+	baseURL         = "wss://stream.binance.com:9443/ws"
+	combinedBaseURL = "wss://stream.binance.com:9443/stream?streams="
 	// WebsocketTimeout is an interval for sending ping/pong messages if WebsocketKeepalive is enabled
 	WebsocketTimeout = time.Second * 60
 	// WebsocketKeepalive enables sending ping/pong messages to check the connection stability
@@ -55,6 +56,55 @@ func WsPartialDepthServe(symbol string, levels string, handler WsPartialDepthHan
 			event.Asks[i] = Ask{
 				Price:    item.GetIndex(0).MustString(),
 				Quantity: item.GetIndex(1).MustString(),
+			}
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+func WsCombinedPartialDepthServe(symbols []string, levels []string, handler WsPartialDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	if len(symbols) != len(levels) {
+		err = fmt.Errorf("symbols and levels must in same length")
+		return
+	}
+	endpoint := combinedBaseURL
+	for i := range symbols {
+		endpoint += fmt.Sprintf("%s@depth%s", strings.ToLower(symbols[i]), levels[i])
+		if i < len(symbols)-1 {
+			endpoint += "/"
+		}
+	}
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		j, err := newJSON(message)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		event := new(WsPartialDepthEvent)
+		stream := j.Get("stream").MustString()
+		symbol := strings.Split(stream, "@")[0]
+		event.Symbol = strings.ToUpper(symbol)
+		data := j.Get("data").MustMap()
+		event.LastUpdateID, _ = data["lastUpdateId"].(json.Number).Int64()
+		bidsLen := len(data["bids"].([]interface{}))
+		event.Bids = make([]Bid, bidsLen)
+		for i := 0; i < bidsLen; i++ {
+			item := data["bids"].([]interface{})[i].([]interface{})
+			event.Bids[i] = Bid{
+				Price:    item[0].(string),
+				Quantity: item[1].(string),
+			}
+		}
+		asksLen := len(data["asks"].([]interface{}))
+		event.Asks = make([]Ask, asksLen)
+		for i := 0; i < asksLen; i++ {
+
+			item := data["asks"].([]interface{})[i].([]interface{})
+			event.Asks[i] = Ask{
+				Price:    item[0].(string),
+				Quantity: item[1].(string),
 			}
 		}
 		handler(event)

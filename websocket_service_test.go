@@ -2,15 +2,16 @@ package binance
 
 import (
 	"errors"
-	"testing"
-
+	"fmt"
 	"github.com/stretchr/testify/suite"
+	"testing"
+	"time"
 )
 
 type websocketServiceTestSuite struct {
 	baseTestSuite
 	origWsServe func(*wsConfig, WsHandler, ErrHandler) (chan struct{}, chan struct{}, error)
-	serveCount  int
+	serveCount int
 }
 
 func TestWebsocketService(t *testing.T) {
@@ -96,6 +97,59 @@ func (s *websocketServiceTestSuite) TestPartialDepthServe() {
 			s.r().EqualError(err, fakeErrMsg)
 		})
 
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
+func (s *websocketServiceTestSuite) TestCombinedPartialDepthServe() {
+	data := []byte(`{
+      "stream":"ethusdt@depth5",
+      "data": {
+	    "lastUpdateId": 160,
+	    "bids": [
+	      [
+	        "0.0024",
+	        "10",
+	        []
+	      ]
+	    ],
+	    "asks": [
+	      [
+	        "0.0026",
+	        "100",
+	        []
+	      ]
+	    ]
+      }
+	}`)
+	symbols := []string{"BTCUSDT", "ETHUSDT"}
+	levels := []string{"5", "5"}
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+	doneC, stopC, err := WsCombinedPartialDepthServe(symbols, levels, func(event *WsPartialDepthEvent) {
+		e := &WsPartialDepthEvent{
+			Symbol:       "ETHUSDT",
+			LastUpdateID: 160,
+			Bids: []Bid{
+				{
+					Price:    "0.0024",
+					Quantity: "10",
+				},
+			},
+			Asks: []Ask{
+				{
+					Price:    "0.0026",
+					Quantity: "100",
+				},
+			},
+		}
+		s.assertWsPartialDepthEventEqual(e, event)
+	},
+		func(err error) {
+			s.r().EqualError(err, fakeErrMsg)
+		})
 	s.r().NoError(err)
 	stopC <- struct{}{}
 	<-doneC
