@@ -2,9 +2,8 @@ package binance
 
 import (
 	"errors"
-	"testing"
-
 	"github.com/stretchr/testify/suite"
+	"testing"
 )
 
 type websocketServiceTestSuite struct {
@@ -96,6 +95,61 @@ func (s *websocketServiceTestSuite) TestPartialDepthServe() {
 			s.r().EqualError(err, fakeErrMsg)
 		})
 
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
+func (s *websocketServiceTestSuite) TestCombinedPartialDepthServe() {
+	data := []byte(`{
+      "stream":"ethusdt@depth5",
+      "data": {
+	    "lastUpdateId": 160,
+	    "bids": [
+	      [
+	        "0.0024",
+	        "10",
+	        []
+	      ]
+	    ],
+	    "asks": [
+	      [
+	        "0.0026",
+	        "100",
+	        []
+	      ]
+	    ]
+      }
+	}`)
+	symbolLevels := map[string]string{
+		"BTCUSDT": "5",
+		"ETHUSDT": "5",
+	}
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+	doneC, stopC, err := WsCombinedPartialDepthServe(symbolLevels, func(event *WsPartialDepthEvent) {
+		e := &WsPartialDepthEvent{
+			Symbol:       "ETHUSDT",
+			LastUpdateID: 160,
+			Bids: []Bid{
+				{
+					Price:    "0.0024",
+					Quantity: "10",
+				},
+			},
+			Asks: []Ask{
+				{
+					Price:    "0.0026",
+					Quantity: "100",
+				},
+			},
+		}
+		s.assertWsPartialDepthEventEqual(e, event)
+	},
+		func(err error) {
+			s.r().EqualError(err, fakeErrMsg)
+		})
 	s.r().NoError(err)
 	stopC <- struct{}{}
 	<-doneC
