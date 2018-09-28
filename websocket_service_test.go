@@ -2,16 +2,14 @@ package binance
 
 import (
 	"errors"
-	"fmt"
 	"github.com/stretchr/testify/suite"
 	"testing"
-	"time"
 )
 
 type websocketServiceTestSuite struct {
 	baseTestSuite
 	origWsServe func(*wsConfig, WsHandler, ErrHandler) (chan struct{}, chan struct{}, error)
-	serveCount int
+	serveCount  int
 }
 
 func TestWebsocketService(t *testing.T) {
@@ -123,12 +121,14 @@ func (s *websocketServiceTestSuite) TestCombinedPartialDepthServe() {
 	    ]
       }
 	}`)
-	symbols := []string{"BTCUSDT", "ETHUSDT"}
-	levels := []string{"5", "5"}
+	symbolLevels := map[string]string{
+		"BTCUSDT": "5",
+		"ETHUSDT": "5",
+	}
 	fakeErrMsg := "fake error"
 	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
-	doneC, stopC, err := WsCombinedPartialDepthServe(symbols, levels, func(event *WsPartialDepthEvent) {
+	doneC, stopC, err := WsCombinedPartialDepthServe(symbolLevels, func(event *WsPartialDepthEvent) {
 		e := &WsPartialDepthEvent{
 			Symbol:       "ETHUSDT",
 			LastUpdateID: 160,

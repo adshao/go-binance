@@ -63,18 +63,13 @@ func WsPartialDepthServe(symbol string, levels string, handler WsPartialDepthHan
 	return wsServe(cfg, wsHandler, errHandler)
 }
 
-func WsCombinedPartialDepthServe(symbols []string, levels []string, handler WsPartialDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	if len(symbols) != len(levels) {
-		err = fmt.Errorf("symbols and levels must in same length")
-		return
-	}
+// WsCombinedPartialDepthServe is similar to WsPartialDepthServe, but it for multiple symbols
+func WsCombinedPartialDepthServe(symbolLevels map[string]string, handler WsPartialDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := combinedBaseURL
-	for i := range symbols {
-		endpoint += fmt.Sprintf("%s@depth%s", strings.ToLower(symbols[i]), levels[i])
-		if i < len(symbols)-1 {
-			endpoint += "/"
-		}
+	for s, l := range symbolLevels {
+		endpoint += fmt.Sprintf("%s@depth%s", strings.ToLower(s), l) + "/"
 	}
+	endpoint = endpoint[:len(endpoint)-1]
 	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		j, err := newJSON(message)
