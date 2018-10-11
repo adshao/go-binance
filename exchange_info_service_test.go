@@ -95,7 +95,7 @@ func (s *exchangeInfoServiceTestSuite) assertExchangeInfoEqual(e, a *ExchangeInf
 	r.Equal(e.Timezone, a.Timezone, "Timezone")
 	r.Equal(e.ServerTime, a.ServerTime, "ServerTime")
 
-	for i, _ := range a.RateLimits {
+	for i := range a.RateLimits {
 		r.Equal(e.RateLimits[i].RateLimitType, a.RateLimits[i].RateLimitType, "RateLimitType")
 		r.Equal(e.RateLimits[i].Limit, a.RateLimits[i].Limit, "Limit")
 		r.Equal(e.RateLimits[i].Interval, a.RateLimits[i].Interval, "Interval")
