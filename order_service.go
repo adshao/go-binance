@@ -181,7 +181,9 @@ func (s *ListOpenOrdersService) Do(ctx context.Context, opts ...RequestOption) (
 		endpoint: "/api/v3/openOrders",
 		secType:  secTypeSigned,
 	}
-	r.setParam("symbol", s.symbol)
+	if s.symbol != "" {
+		r.setParam("symbol", s.symbol)
+	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*Order{}, err
