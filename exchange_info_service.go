@@ -32,7 +32,18 @@ func (s *ExchangeInfoService) Do(ctx context.Context, opts ...RequestOption) (re
 
 // ExchangeInfo exchange info
 type ExchangeInfo struct {
-	Symbols []Symbol `json:"symbols"`
+	Timezone        string        `json:"timezone"`
+	ServerTime      int64         `json:"serverTime"`
+	RateLimits      []RateLimit   `json:"rateLimits"`
+	ExchangeFilters []interface{} `json:"exchangeFilters"`
+	Symbols         []Symbol      `json:"symbols"`
+}
+
+// RateLimit struct
+type RateLimit struct {
+	RateLimitType string `json:"rateLimitType"`
+	Interval      string `json:"interval"`
+	Limit         int64  `json:"limit"`
 }
 
 // Symbol market symbol

@@ -16,6 +16,26 @@ func TestExchangeInfoService(t *testing.T) {
 
 func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 	data := []byte(`{
+  		"timezone": "UTC",
+  		"serverTime": 1539281238296,
+  		"rateLimits": [
+    		{
+      			"rateLimitType": "REQUEST_WEIGHT",
+				"interval": "MINUTE",
+				"limit": 1200
+    		},
+    		{
+      			"rateLimitType": "ORDERS",
+      			"interval": "SECOND",
+      			"limit": 10
+    		},
+    		{
+      			"rateLimitType": "ORDERS",
+      			"interval": "DAY",
+      			"limit": 100000
+    		}
+  		],
+		"exchangeFilters": [],
 		"symbols": [
 			{
 				"symbol": "ETHBTC",
@@ -39,6 +59,14 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 	res, err := s.client.NewExchangeInfoService().Do(newContext())
 	s.r().NoError(err)
 	ei := &ExchangeInfo{
+		Timezone:   "UTC",
+		ServerTime: 1539281238296,
+		RateLimits: []RateLimit{
+			{RateLimitType: "REQUEST_WEIGHT", Interval: "MINUTE", Limit: 1200},
+			{RateLimitType: "ORDERS", Interval: "SECOND", Limit: 10},
+			{RateLimitType: "ORDERS", Interval: "DAY", Limit: 100000},
+		},
+		ExchangeFilters: []interface{}{},
 		Symbols: []Symbol{
 			{
 				Symbol:             "ETHBTC",
@@ -63,6 +91,18 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 
 func (s *exchangeInfoServiceTestSuite) assertExchangeInfoEqual(e, a *ExchangeInfo) {
 	r := s.r()
+
+	r.Equal(e.Timezone, a.Timezone, "Timezone")
+	r.Equal(e.ServerTime, a.ServerTime, "ServerTime")
+
+	for i := range a.RateLimits {
+		r.Equal(e.RateLimits[i].RateLimitType, a.RateLimits[i].RateLimitType, "RateLimitType")
+		r.Equal(e.RateLimits[i].Limit, a.RateLimits[i].Limit, "Limit")
+		r.Equal(e.RateLimits[i].Interval, a.RateLimits[i].Interval, "Interval")
+	}
+
+	r.Equal(e.ExchangeFilters, a.ExchangeFilters, "ExchangeFilters")
+
 	for i, currentSymbol := range a.Symbols {
 		if a.Symbols[i].Symbol == e.Symbols[0].Symbol {
 			r.Equal(e.Symbols[i].Status, currentSymbol.Status, "Status")
