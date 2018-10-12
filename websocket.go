@@ -1,8 +1,9 @@
 package binance
 
 import (
-	"github.com/gorilla/websocket"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 // WsHandler handle raw websocket message
@@ -47,10 +48,10 @@ var wsServe = func(cfg *wsConfig, handler WsHandler, errHandler ErrHandler) (don
 			default:
 				_, message, err := c.ReadMessage()
 				if err != nil {
-					go errHandler(err)
+					errHandler(err)
 					return
 				}
-				go handler(message)
+				handler(message)
 			}
 		}
 	}()
