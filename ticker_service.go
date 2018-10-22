@@ -77,7 +77,7 @@ type ListPricesService struct {
 func (s *ListPricesService) Do(ctx context.Context, opts ...RequestOption) (res []*SymbolPrice, err error) {
 	r := &request{
 		method:   "GET",
-		endpoint: "/api/v1/ticker/allPrices",
+		endpoint: "/api/v3/ticker/price",
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {

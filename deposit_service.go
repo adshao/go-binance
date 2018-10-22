@@ -41,8 +41,8 @@ func (s *ListDepositsService) EndTime(endTime int64) *ListDepositsService {
 // Do send request
 func (s *ListDepositsService) Do(ctx context.Context, opts ...RequestOption) (deposits []*Deposit, err error) {
 	r := &request{
-		method:   "POST",
-		endpoint: "/wapi/v1/getDepositHistory.html",
+		method:   "GET",
+		endpoint: "/wapi/v3/depositHistory.html",
 		secType:  secTypeSigned,
 	}
 	m := params{}
@@ -83,6 +83,48 @@ type Deposit struct {
 	InsertTime int64   `json:"insertTime"`
 	Amount     float64 `json:"amount"`
 	Asset      string  `json:"asset"`
-	Status     int     `json:"status"`
+	Address    string  `json:"address"`
+	AddressTag string  `json:"addressTag"`
 	TxID       string  `json:"txId"`
+	Status     int     `json:"status"`
+}
+
+// GetDepositAddressService get deposit address
+type GetDepositAddressService struct {
+	c     *Client
+	asset string
+}
+
+// Asset set asset
+func (s *GetDepositAddressService) Asset(asset string) *GetDepositAddressService {
+	s.asset = asset
+	return s
+}
+
+// Do send request
+func (s *GetDepositAddressService) Do(ctx context.Context, opts ...RequestOption) (res *DepositAddressResponse, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/wapi/v3/depositAddress.html",
+		secType:  secTypeSigned,
+	}
+	r.setParam("asset", s.asset)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(DepositAddressResponse)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// DepositAddressResponse deposit address
+type DepositAddressResponse struct {
+	Address    string `json:"address"`
+	Success    bool   `json:"success"`
+	AddressTag string `json:"addressTag"`
+	Asset      string `json:"asset"`
 }
