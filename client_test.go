@@ -17,6 +17,7 @@ type baseTestSuite struct {
 	client    *mockedClient
 	apiKey    string
 	secretKey string
+	baseURL   string
 }
 
 func (s *baseTestSuite) r() *require.Assertions {
@@ -26,7 +27,8 @@ func (s *baseTestSuite) r() *require.Assertions {
 func (s *baseTestSuite) SetupTest() {
 	s.apiKey = "dummyAPIKey"
 	s.secretKey = "dummySecretKey"
-	s.client = newMockedClient(s.apiKey, s.secretKey)
+	s.baseURL = "dummyBaseURL"
+	s.client = newMockedClient(s.apiKey, s.secretKey, s.baseURL)
 }
 
 func (s *baseTestSuite) mockDo(data []byte, err error, statusCode ...int) {
@@ -113,9 +115,9 @@ type mockedClient struct {
 	assertReq assertReqFunc
 }
 
-func newMockedClient(apiKey, secretKey string) *mockedClient {
+func newMockedClient(apiKey, secretKey, baseURL string) *mockedClient {
 	m := new(mockedClient)
-	m.Client = NewClient(apiKey, secretKey)
+	m.Client = NewClient(apiKey, secretKey, baseURL)
 	return m
 }
 
