@@ -41,8 +41,9 @@ Init client for API services. Get APIKey/SecretKey from your binance account.
 var (
     apiKey = "your api key"
     secretKey = "your secret key"
+    baseURL = "https://www.binance.com" // Can use your own mock environment for testing
 )
-client := binance.NewClient(apiKey, secretKey)
+client := binance.NewClient(apiKey, secretKey, baseURL)
 ```
 
 A service instance stands for a REST API endpoint and is initialized by client.NewXXXService function.
