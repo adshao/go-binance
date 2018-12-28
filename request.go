@@ -85,6 +85,7 @@ func WithRecvWindow(recvWindow int64) RequestOption {
 	}
 }
 
+// TimeDiffWithServer sets the request time given the offset timeDiff from local system time
 func TimeDiffWithServer(timeDiff int64) RequestOption {
 	return func(r *request) {
 		r.timeDiff = timeDiff
