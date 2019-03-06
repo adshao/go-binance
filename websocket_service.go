@@ -3,6 +3,7 @@ package binance
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/websocket"
 	"strings"
 	"time"
 )
@@ -14,6 +15,8 @@ var (
 	WebsocketTimeout = time.Second * 60
 	// WebsocketKeepalive enables sending ping/pong messages to check the connection stability
 	WebsocketKeepalive = false
+	// Websocket Dialer
+	Dialer *websocket.Dialer
 )
 
 // WsPartialDepthEvent define websocket partial depth book event

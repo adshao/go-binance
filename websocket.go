@@ -23,7 +23,11 @@ func newWsConfig(endpoint string) *wsConfig {
 }
 
 var wsServe = func(cfg *wsConfig, handler WsHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	c, _, err := websocket.DefaultDialer.Dial(cfg.endpoint, nil)
+	dialer := Dialer
+	if Dialer == nil {
+		dialer = websocket.DefaultDialer
+	}
+	c, _, err := dialer.Dial(cfg.endpoint, nil)
 	if err != nil {
 		return nil, nil, err
 	}
