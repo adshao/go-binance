@@ -381,8 +381,17 @@ func (s *CancelOrderService) Do(ctx context.Context, opts ...RequestOption) (res
 
 // CancelOrderResponse define response of canceling order
 type CancelOrderResponse struct {
-	Symbol            string `json:"symbol"`
-	OrigClientOrderID string `json:"origClientOrderId"`
-	OrderID           int64  `json:"orderId"`
-	ClientOrderID     string `json:"clientOrderId"`
+	Symbol             string `json:"symbol"`
+	OrigClientOrderID  string `json:"origClientOrderId"`
+	OrderID            int64  `json:"orderId"`
+	ClientOrderID      string `json:"clientOrderId"`
+	TransactTime       int64  `json:"transactTime"`
+	Price              string `json:"price"`
+	OrigQuantity       string `json:"origQty"`
+	ExecutedQuantity   string `json:"executedQty"`
+	CumulativeQuantity string `json:"cummulativeQuoteQty"`
+	Status             string `json:"status"`
+	TimeInForce        string `json:"timeInForce"`
+	Type               string `json:"type"`
+	Side               string `json:"side"`
 }
