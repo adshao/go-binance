@@ -27,7 +27,7 @@ func (s *withdrawServiceTestSuite) TestCreateWithdraw() {
 	amount := "0.01"
 	name := "eth"
 	s.assertReq(func(r *request) {
-		e := newSignedRequest().setFormParams(params{
+		e := newSignedRequest().setParams(params{
 			"asset":   asset,
 			"address": address,
 			"amount":  amount,
