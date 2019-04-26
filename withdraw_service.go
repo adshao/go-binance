@@ -42,18 +42,15 @@ func (s *CreateWithdrawService) Name(name string) *CreateWithdrawService {
 func (s *CreateWithdrawService) Do(ctx context.Context) (err error) {
 	r := &request{
 		method:   "POST",
-		endpoint: "/wapi/v1/withdraw.html",
+		endpoint: "/wapi/v3/withdraw.html",
 		secType:  secTypeSigned,
 	}
-	m := params{
-		"asset":   s.asset,
-		"address": s.address,
-		"amount":  s.amount,
-	}
+	r.setParam("asset", s.asset)
+	r.setParam("address", s.address)
+	r.setParam("amount", s.amount)
 	if s.name != nil {
-		m["name"] = *s.name
+		r.setParam("name", *s.name)
 	}
-	r.setFormParams(m)
 	_, err = s.c.callAPI(ctx, r)
 	return err
 }
