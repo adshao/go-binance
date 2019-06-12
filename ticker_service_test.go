@@ -262,6 +262,7 @@ func (s *tickerServiceTestSuite) TestListPriceChangeStats() {
 			HighPrice:          "100.00000000",
 			LowPrice:           "0.10000000",
 			Volume:             "8913.30000000",
+			QuoteVolume:        "15.30000000",
 			OpenTime:           1499783499040,
 			CloseTime:          1499869899040,
 			FristID:            28385,
