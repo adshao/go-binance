@@ -16,6 +16,12 @@ type CreateWithdrawService struct {
 	name       *string
 }
 
+type CreateWithdrawResponse struct {
+	Msg     string `json:"msg"`
+	Success bool   `json:"success"`
+	ID      string `json:"id"`
+}
+
 // Asset set asset
 func (s *CreateWithdrawService) Asset(asset string) *CreateWithdrawService {
 	s.asset = asset
@@ -53,7 +59,7 @@ func (s *CreateWithdrawService) RecvWindow(recvWindow int64) *CreateWithdrawServ
 }
 
 // Do send request
-func (s *CreateWithdrawService) Do(ctx context.Context) (err error) {
+func (s *CreateWithdrawService) Do(ctx context.Context) (withdraws *CreateWithdrawResponse, err error) {
 	r := &request{
 		method:   "POST",
 		endpoint: "/wapi/v3/withdraw.html",
@@ -71,8 +77,18 @@ func (s *CreateWithdrawService) Do(ctx context.Context) (err error) {
 	if s.recvWindow != nil {
 		r.setParam("recvWindow", *s.recvWindow)
 	}
-	_, err = s.c.callAPI(ctx, r)
-	return err
+	data, err := s.c.callAPI(ctx, r)
+	if err != nil {
+		return
+	}
+
+	res := new(CreateWithdrawResponse)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return
+	}
+
+	return res, err
 }
 
 // ListWithdrawsService list withdraws
