@@ -11,6 +11,7 @@ type CreateWithdrawService struct {
 	asset      string
 	address    string
 	addressTag *string
+	recvWindow *int64
 	amount     string
 	name       *string
 }
@@ -21,7 +22,7 @@ func (s *CreateWithdrawService) Asset(asset string) *CreateWithdrawService {
 	return s
 }
 
-// Name set name
+// AddressTag set addressTag
 func (s *CreateWithdrawService) AddressTag(addressTag string) *CreateWithdrawService {
 	s.addressTag = &addressTag
 	return s
@@ -45,6 +46,12 @@ func (s *CreateWithdrawService) Name(name string) *CreateWithdrawService {
 	return s
 }
 
+//RecvWindow set recvWindow
+func (s *CreateWithdrawService) RecvWindow(recvWindow int64) *CreateWithdrawService {
+	s.recvWindow = &recvWindow
+	return s
+}
+
 // Do send request
 func (s *CreateWithdrawService) Do(ctx context.Context) (err error) {
 	r := &request{
@@ -60,6 +67,9 @@ func (s *CreateWithdrawService) Do(ctx context.Context) (err error) {
 	}
 	if s.addressTag != nil {
 		r.setParam("addressTag", *s.addressTag)
+	}
+	if s.recvWindow != nil {
+		r.setParam("recvWindow", *s.recvWindow)
 	}
 	_, err = s.c.callAPI(ctx, r)
 	return err
