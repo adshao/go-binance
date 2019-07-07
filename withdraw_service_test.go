@@ -24,20 +24,24 @@ func (s *withdrawServiceTestSuite) TestCreateWithdraw() {
 
 	asset := "ETH"
 	address := "myaddress"
+	addressTag := "12345"
 	amount := "0.01"
 	name := "eth"
+	recvWindow := int64(5000)
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
-			"asset":   asset,
-			"address": address,
-			"amount":  amount,
-			"name":    name,
+			"asset":      asset,
+			"address":    address,
+			"addressTag": addressTag,
+			"amount":     amount,
+			"name":       name,
+			"recvWindow": recvWindow,
 		})
 		s.assertRequestEqual(e, r)
 	})
 
 	err := s.client.NewCreateWithdrawService().Asset(asset).
-		Address(address).Amount(amount).Name(name).Do(newContext())
+		Address(address).AddressTag(addressTag).RecvWindow(recvWindow).Amount(amount).Name(name).Do(newContext())
 	s.r().NoError(err)
 }
 
