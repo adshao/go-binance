@@ -11,7 +11,7 @@ type CreateOrderService struct {
 	symbol           string
 	side             SideType
 	orderType        OrderType
-	timeInForce      *TimeInForce
+	timeInForce      *TimeInForceType
 	newOrderRespType *NewOrderRespType
 	quantity         string
 	price            *string
@@ -39,7 +39,7 @@ func (s *CreateOrderService) Type(orderType OrderType) *CreateOrderService {
 }
 
 // TimeInForce set timeInForce
-func (s *CreateOrderService) TimeInForce(timeInForce TimeInForce) *CreateOrderService {
+func (s *CreateOrderService) TimeInForce(timeInForce TimeInForceType) *CreateOrderService {
 	s.timeInForce = &timeInForce
 	return s
 }
@@ -135,24 +135,24 @@ func (s *CreateOrderService) Do(ctx context.Context, opts ...RequestOption) (res
 // Test send test api to check if the request is valid
 func (s *CreateOrderService) Test(ctx context.Context, opts ...RequestOption) (err error) {
 	_, err = s.createOrder(ctx, "/api/v3/order/test", opts...)
-	return
+	return err
 }
 
 // CreateOrderResponse define create order response
 type CreateOrderResponse struct {
-	Symbol              string  `json:"symbol"`
-	OrderID             int64   `json:"orderId"`
-	ClientOrderID       string  `json:"clientOrderId"`
-	TransactTime        int64   `json:"transactTime"`
-	Price               string  `json:"price"`
-	OrigQuantity        string  `json:"origQty"`
-	ExecutedQuantity    string  `json:"executedQty"`
-	CummulativeQuoteQty string  `json:"cummulativeQuoteQty"`
-	Status              string  `json:"status"`
-	TimeInForce         string  `json:"timeInForce"`
-	Type                string  `json:"type"`
-	Side                string  `json:"side"`
-	Fills               []*Fill `json:"fills"`
+	Symbol                   string          `json:"symbol"`
+	OrderID                  int64           `json:"orderId"`
+	ClientOrderID            string          `json:"clientOrderId"`
+	TransactTime             int64           `json:"transactTime"`
+	Price                    string          `json:"price"`
+	OrigQuantity             string          `json:"origQty"`
+	ExecutedQuantity         string          `json:"executedQty"`
+	CummulativeQuoteQuantity string          `json:"cummulativeQuoteQty"`
+	Status                   OrderStatusType `json:"status"`
+	TimeInForce              TimeInForceType `json:"timeInForce"`
+	Type                     OrderType       `json:"type"`
+	Side                     SideType        `json:"side"`
+	Fills                    []*Fill         `json:"fills"`
 }
 
 // Fill may be returned in an array of fills in a CreateOrderResponse.
@@ -251,27 +251,32 @@ func (s *GetOrderService) Do(ctx context.Context, opts ...RequestOption) (res *O
 
 // Order define order info
 type Order struct {
-	Symbol           string `json:"symbol"`
-	OrderID          int64  `json:"orderId"`
-	ClientOrderID    string `json:"clientOrderId"`
-	Price            string `json:"price"`
-	OrigQuantity     string `json:"origQty"`
-	ExecutedQuantity string `json:"executedQty"`
-	Status           string `json:"status"`
-	TimeInForce      string `json:"timeInForce"`
-	Type             string `json:"type"`
-	Side             string `json:"side"`
-	StopPrice        string `json:"stopPrice"`
-	IcebergQuantity  string `json:"icebergQty"`
-	Time             int64  `json:"time"`
+	Symbol                   string          `json:"symbol"`
+	OrderID                  int64           `json:"orderId"`
+	ClientOrderID            string          `json:"clientOrderId"`
+	Price                    string          `json:"price"`
+	OrigQuantity             string          `json:"origQty"`
+	ExecutedQuantity         string          `json:"executedQty"`
+	CummulativeQuoteQuantity string          `json:"cummulativeQuoteQty"`
+	Status                   OrderStatusType `json:"status"`
+	TimeInForce              TimeInForceType `json:"timeInForce"`
+	Type                     OrderType       `json:"type"`
+	Side                     SideType        `json:"side"`
+	StopPrice                string          `json:"stopPrice"`
+	IcebergQuantity          string          `json:"icebergQty"`
+	Time                     int64           `json:"time"`
+	UpdateTime               int64           `json:"updateTime"`
+	IsWorking                bool            `json:"isWorking"`
 }
 
-// ListOrdersService list all orders
+// ListOrdersService all account orders; active, canceled, or filled
 type ListOrdersService struct {
-	c       *Client
-	symbol  string
-	orderID *int64
-	limit   *int
+	c         *Client
+	symbol    string
+	orderID   *int64
+	startTime *int64
+	endTime   *int64
+	limit     *int
 }
 
 // Symbol set symbol
@@ -283,6 +288,18 @@ func (s *ListOrdersService) Symbol(symbol string) *ListOrdersService {
 // OrderID set orderID
 func (s *ListOrdersService) OrderID(orderID int64) *ListOrdersService {
 	s.orderID = &orderID
+	return s
+}
+
+// StartTime set starttime
+func (s *ListOrdersService) StartTime(startTime int64) *ListOrdersService {
+	s.startTime = &startTime
+	return s
+}
+
+// EndTime set endtime
+func (s *ListOrdersService) EndTime(endTime int64) *ListOrdersService {
+	s.endTime = &endTime
 	return s
 }
 
@@ -302,6 +319,12 @@ func (s *ListOrdersService) Do(ctx context.Context, opts ...RequestOption) (res 
 	r.setParam("symbol", s.symbol)
 	if s.orderID != nil {
 		r.setParam("orderId", *s.orderID)
+	}
+	if s.startTime != nil {
+		r.setParam("startTime", *s.startTime)
+	}
+	if s.endTime != nil {
+		r.setParam("endTime", *s.endTime)
 	}
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
@@ -382,8 +405,17 @@ func (s *CancelOrderService) Do(ctx context.Context, opts ...RequestOption) (res
 
 // CancelOrderResponse define response of canceling order
 type CancelOrderResponse struct {
-	Symbol            string `json:"symbol"`
-	OrigClientOrderID string `json:"origClientOrderId"`
-	OrderID           int64  `json:"orderId"`
-	ClientOrderID     string `json:"clientOrderId"`
+	Symbol                   string          `json:"symbol"`
+	OrigClientOrderID        string          `json:"origClientOrderId"`
+	OrderID                  int64           `json:"orderId"`
+	ClientOrderID            string          `json:"clientOrderId"`
+	TransactTime             int64           `json:"transactTime"`
+	Price                    string          `json:"price"`
+	OrigQuantity             string          `json:"origQty"`
+	ExecutedQuantity         string          `json:"executedQty"`
+	CummulativeQuoteQuantity string          `json:"cummulativeQuoteQty"`
+	Status                   OrderStatusType `json:"status"`
+	TimeInForce              TimeInForceType `json:"timeInForce"`
+	Type                     OrderType       `json:"type"`
+	Side                     SideType        `json:"side"`
 }

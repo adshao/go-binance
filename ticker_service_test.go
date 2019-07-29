@@ -79,9 +79,10 @@ func (s *tickerServiceTestSuite) TestSingleBookTicker() {
 		s.assertRequestEqual(e, r)
 	})
 
-	ticker, err := s.client.NewBookTickerService().Symbol("LTCBTC").Do(newContext())
+	tickers, err := s.client.NewListBookTickersService().Symbol("LTCBTC").Do(newContext())
 	r := s.r()
 	r.NoError(err)
+	r.Len(tickers, 1)
 	e := &BookTicker{
 		Symbol:      "LTCBTC",
 		BidPrice:    "4.00000000",
@@ -89,7 +90,7 @@ func (s *tickerServiceTestSuite) TestSingleBookTicker() {
 		AskPrice:    "4.00000200",
 		AskQuantity: "9.00000000",
 	}
-	s.assertBookTickerEqual(e, ticker)
+	s.assertBookTickerEqual(e, tickers[0])
 }
 
 func (s *tickerServiceTestSuite) assertBookTickerEqual(e, a *BookTicker) {
@@ -136,6 +137,31 @@ func (s *tickerServiceTestSuite) TestListPrices() {
 	s.assertSymbolPriceEqual(e2, prices[1])
 }
 
+func (s *tickerServiceTestSuite) TestListSinglePrice() {
+	data := []byte(`{
+		"symbol": "LTCBTC",
+		"price": "4.00000200"
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	symbol := "LTCBTC"
+	s.assertReq(func(r *request) {
+		e := newRequest().setParam("symbol", symbol)
+		s.assertRequestEqual(e, r)
+	})
+
+	prices, err := s.client.NewListPricesService().Symbol(symbol).Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	r.Len(prices, 1)
+	e1 := &SymbolPrice{
+		Symbol: "LTCBTC",
+		Price:  "4.00000200",
+	}
+	s.assertSymbolPriceEqual(e1, prices[0])
+}
+
 func (s *tickerServiceTestSuite) assertSymbolPriceEqual(e, a *SymbolPrice) {
 	r := s.r()
 	r.Equal(e.Price, a.Price, "Price")
@@ -170,9 +196,10 @@ func (s *tickerServiceTestSuite) TestPriceChangeStats() {
 		e := newRequest().setParam("symbol", symbol)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewPriceChangeStatsService().Symbol(symbol).Do(newContext())
+	stats, err := s.client.NewListPriceChangeStatsService().Symbol(symbol).Do(newContext())
 	r := s.r()
 	r.NoError(err)
+	r.Len(stats, 1)
 	e := &PriceChangeStats{
 		Symbol:             "BNBBTC",
 		PriceChange:        "-94.99999800",
@@ -192,7 +219,7 @@ func (s *tickerServiceTestSuite) TestPriceChangeStats() {
 		LastID:             28460,
 		Count:              76,
 	}
-	s.assertPriceChangeStatsEqual(e, res)
+	s.assertPriceChangeStatsEqual(e, stats[0])
 }
 
 func (s *tickerServiceTestSuite) assertPriceChangeStatsEqual(e, a *PriceChangeStats) {
@@ -234,9 +261,9 @@ func (s *tickerServiceTestSuite) TestListPriceChangeStats() {
     	"quoteVolume": "15.30000000",
     	"openTime": 1499783499040,
     	"closeTime": 1499869899040,
-    	"firstId": 28385,  
+    	"firstId": 28385,
     	"lastId": 28460,
-    	"count": 76 
+    	"count": 76
   	}]`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
@@ -295,4 +322,33 @@ func (s *tickerServiceTestSuite) assertListPriceChangeStatsEqual(e, a []*PriceCh
 		r.Equal(e[i].Count, a[i].Count, "Count")
 	}
 
+}
+
+func (s *tickerServiceTestSuite) TestAveragePrice() {
+	data := []byte(`{
+		"mins": 5,
+		"price": "9.35751834"
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	symbol := "LTCBTC"
+	s.assertReq(func(r *request) {
+		e := newRequest().setParam("symbol", symbol)
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewAveragePriceService().Symbol(symbol).Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	e := &AvgPrice{
+		Mins:  5,
+		Price: "9.35751834",
+	}
+	s.assertAvgPrice(e, res)
+}
+
+func (s *tickerServiceTestSuite) assertAvgPrice(e, a *AvgPrice) {
+	s.r().Equal(e.Mins, a.Mins, "Mins")
+	s.r().Equal(e.Price, a.Price, "Price")
 }

@@ -23,34 +23,59 @@ type SideType string
 // OrderType define order type
 type OrderType string
 
-// TimeInForce define time in force type of order
-type TimeInForce string
+// TimeInForceType define time in force type of order
+type TimeInForceType string
 
 // NewOrderRespType define response JSON verbosity
 type NewOrderRespType string
+
+// OrderStatusType define order status type
+type OrderStatusType string
+
+// SymbolType define symbol type
+type SymbolType string
+
+// SymbolStatusType define symbol status type
+type SymbolStatusType string
 
 // Global enums
 const (
 	SideTypeBuy  SideType = "BUY"
 	SideTypeSell SideType = "SELL"
 
-	OrderTypeLimit      OrderType = "LIMIT"
-	OrderTypeMarket     OrderType = "MARKET"
-	OrderTypeLimitMaker OrderType = "LIMIT_MAKER"
-
-	OrderTypeStopLoss      OrderType = "STOP_LOSS"
-	OrderTypeStopLossLimit OrderType = "STOP_LOSS_LIMIT"
-
+	OrderTypeLimit           OrderType = "LIMIT"
+	OrderTypeMarket          OrderType = "MARKET"
+	OrderTypeLimitMaker      OrderType = "LIMIT_MAKER"
+	OrderTypeStopLoss        OrderType = "STOP_LOSS"
+	OrderTypeStopLossLimit   OrderType = "STOP_LOSS_LIMIT"
 	OrderTypeTakeProfit      OrderType = "TAKE_PROFIT"
 	OrderTypeTakeProfitLimit OrderType = "TAKE_PROFIT_LIMIT"
 
-	TimeInForceGTC TimeInForce = "GTC"
-	TimeInForceIOC TimeInForce = "IOC"
-	TimeInForceFOK TimeInForce = "FOK"
+	TimeInForceTypeGTC TimeInForceType = "GTC"
+	TimeInForceTypeIOC TimeInForceType = "IOC"
+	TimeInForceTypeFOK TimeInForceType = "FOK"
 
 	NewOrderRespTypeACK    NewOrderRespType = "ACK"
 	NewOrderRespTypeRESULT NewOrderRespType = "RESULT"
 	NewOrderRespTypeFULL   NewOrderRespType = "FULL"
+
+	OrderStatusTypeNew             OrderStatusType = "NEW"
+	OrderStatusTypePartiallyFilled OrderStatusType = "PARTIALLY_FILLED"
+	OrderStatusTypeFilled          OrderStatusType = "FILLED"
+	OrderStatusTypeCanceled        OrderStatusType = "CANCELED"
+	OrderStatusTypePendingCancel   OrderStatusType = "PENDING_CANCEL"
+	OrderStatusTypeRejected        OrderStatusType = "REJECTED"
+	OrderStatusTypeExpired         OrderStatusType = "EXPIRED"
+
+	SymbolTypeSpot SymbolType = "SPOT"
+
+	SymbolStatusTypePreTrading   SymbolStatusType = "PRE_TRADING"
+	SymbolStatusTypeTrading      SymbolStatusType = "TRADING"
+	SymbolStatusTypePostTrading  SymbolStatusType = "POST_TRADING"
+	SymbolStatusTypeEndOfDay     SymbolStatusType = "END_OF_DAY"
+	SymbolStatusTypeHalt         SymbolStatusType = "HALT"
+	SymbolStatusTypeAuctionMatch SymbolStatusType = "AUCTION_MATCH"
+	SymbolStatusTypeBreak        SymbolStatusType = "BREAK"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
@@ -192,6 +217,7 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 	}()
 	c.debug("response: %#v", res)
 	c.debug("response body: %s", string(data))
+	c.debug("response status code: %d", res.StatusCode)
 
 	if res.StatusCode >= 400 {
 		apiErr := new(APIError)
@@ -234,11 +260,6 @@ func (c *Client) NewKlinesService() *KlinesService {
 	return &KlinesService{c: c}
 }
 
-// NewPriceChangeStatsService init prices change stats service
-func (c *Client) NewPriceChangeStatsService() *PriceChangeStatsService {
-	return &PriceChangeStatsService{c: c}
-}
-
 // NewListPriceChangeStatsService init list prices change stats service
 func (c *Client) NewListPriceChangeStatsService() *ListPriceChangeStatsService {
 	return &ListPriceChangeStatsService{c: c}
@@ -247,11 +268,6 @@ func (c *Client) NewListPriceChangeStatsService() *ListPriceChangeStatsService {
 // NewListPricesService init listing prices service
 func (c *Client) NewListPricesService() *ListPricesService {
 	return &ListPricesService{c: c}
-}
-
-// NewBookTickerService init booking ticker service
-func (c *Client) NewBookTickerService() *BookTickerService {
-	return &BookTickerService{c: c}
 }
 
 // NewListBookTickersService init listing booking tickers service
@@ -337,4 +353,9 @@ func (c *Client) NewExchangeInfoService() *ExchangeInfoService {
 // NewGetWithdrawFeeService init get withdraw fee service
 func (c *Client) NewGetWithdrawFeeService() *GetWithdrawFeeService {
 	return &GetWithdrawFeeService{c: c}
+}
+
+// NewAveragePriceService init average price service
+func (c *Client) NewAveragePriceService() *AveragePriceService {
+	return &AveragePriceService{c: c}
 }

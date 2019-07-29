@@ -34,7 +34,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 	symbol := "LTCBTC"
 	side := SideTypeBuy
 	orderType := OrderTypeLimit
-	timeInForce := TimeInForceGTC
+	timeInForce := TimeInForceTypeGTC
 	quantity := "12.00"
 	price := "0.0001"
 	newClientOrderID := "myOrder1"
@@ -55,18 +55,18 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 		Price(price).NewClientOrderID(newClientOrderID).Do(newContext())
 	s.r().NoError(err)
 	e := &CreateOrderResponse{
-		Symbol:              "LTCBTC",
-		OrderID:             1,
-		ClientOrderID:       "myOrder1",
-		TransactTime:        1499827319559,
-		Price:               "0.0001",
-		OrigQuantity:        "12.00",
-		ExecutedQuantity:    "10.00",
-		CummulativeQuoteQty: "10.00",
-		Status:              "FILLED",
-		TimeInForce:         "GTC",
-		Type:                "LIMIT",
-		Side:                "BUY",
+		Symbol:                   "LTCBTC",
+		OrderID:                  1,
+		ClientOrderID:            "myOrder1",
+		TransactTime:             1499827319559,
+		Price:                    "0.0001",
+		OrigQuantity:             "12.00",
+		ExecutedQuantity:         "10.00",
+		CummulativeQuoteQuantity: "10.00",
+		Status:      OrderStatusTypeFilled,
+		TimeInForce: TimeInForceTypeGTC,
+		Type:        OrderTypeLimit,
+		Side:        SideTypeBuy,
 	}
 	s.assertCreateOrderResponseEqual(e, res)
 
@@ -105,7 +105,7 @@ func (s *orderServiceTestSuite) TestCreateOrderFull() {
 	symbol := "LTCBTC"
 	side := SideTypeBuy
 	orderType := OrderTypeLimit
-	timeInForce := TimeInForceGTC
+	timeInForce := TimeInForceTypeGTC
 	quantity := "12.00"
 	price := "0.0001"
 	newClientOrderID := "myOrder1"
@@ -129,18 +129,18 @@ func (s *orderServiceTestSuite) TestCreateOrderFull() {
 		NewOrderRespType(newOrderRespType).Do(newContext())
 	s.r().NoError(err)
 	e := &CreateOrderResponse{
-		Symbol:              "LTCBTC",
-		OrderID:             1,
-		ClientOrderID:       "myOrder1",
-		TransactTime:        1499827319559,
-		Price:               "0.0001",
-		OrigQuantity:        "12.00",
-		ExecutedQuantity:    "10.00",
-		CummulativeQuoteQty: "10.00",
-		Status:              "FILLED",
-		TimeInForce:         "GTC",
-		Type:                "LIMIT",
-		Side:                "BUY",
+		Symbol:                   "LTCBTC",
+		OrderID:                  1,
+		ClientOrderID:            "myOrder1",
+		TransactTime:             1499827319559,
+		Price:                    "0.0001",
+		OrigQuantity:             "12.00",
+		ExecutedQuantity:         "10.00",
+		CummulativeQuoteQuantity: "10.00",
+		Status:      OrderStatusTypeFilled,
+		TimeInForce: TimeInForceTypeGTC,
+		Type:        OrderTypeLimit,
+		Side:        SideTypeBuy,
 		Fills: []*Fill{
 			&Fill{
 				Price:           "0.00002991",
@@ -168,7 +168,7 @@ func (s *orderServiceTestSuite) assertCreateOrderResponseEqual(e, a *CreateOrder
 	r.Equal(e.Price, a.Price, "Price")
 	r.Equal(e.OrigQuantity, a.OrigQuantity, "OrigQuantity")
 	r.Equal(e.ExecutedQuantity, a.ExecutedQuantity, "ExecutedQuantity")
-	r.Equal(e.CummulativeQuoteQty, a.CummulativeQuoteQty, "CummulativeQuoteQty")
+	r.Equal(e.CummulativeQuoteQuantity, a.CummulativeQuoteQuantity, "CummulativeQuoteQuantity")
 	r.Equal(e.Status, a.Status, "Status")
 	r.Equal(e.TimeInForce, a.TimeInForce, "TimeInForce")
 	r.Equal(e.Type, a.Type, "Type")
@@ -203,7 +203,9 @@ func (s *orderServiceTestSuite) TestListOpenOrders() {
             "side": "BUY",
             "stopPrice": "0.0",
             "icebergQty": "0.0",
-            "time": 1499827319559
+			"time": 1499827319559,
+			"updateTime": 1499827319559,
+    		"isWorking": true
         }
     ]`)
 	s.mockDo(data, nil)
@@ -230,13 +232,15 @@ func (s *orderServiceTestSuite) TestListOpenOrders() {
 		Price:            "0.1",
 		OrigQuantity:     "1.0",
 		ExecutedQuantity: "0.0",
-		Status:           "NEW",
-		TimeInForce:      "GTC",
-		Type:             "LIMIT",
-		Side:             "BUY",
+		Status:           OrderStatusTypeNew,
+		TimeInForce:      TimeInForceTypeGTC,
+		Type:             OrderTypeLimit,
+		Side:             SideTypeBuy,
 		StopPrice:        "0.0",
 		IcebergQuantity:  "0.0",
 		Time:             1499827319559,
+		UpdateTime:       1499827319559,
+		IsWorking:        true,
 	}
 	s.assertOrderEqual(e, orders[0])
 }
@@ -249,6 +253,7 @@ func (s *orderServiceTestSuite) assertOrderEqual(e, a *Order) {
 	r.Equal(e.Price, a.Price, "Price")
 	r.Equal(e.OrigQuantity, a.OrigQuantity, "OrigQuantity")
 	r.Equal(e.ExecutedQuantity, a.ExecutedQuantity, "ExecutedQuantity")
+	r.Equal(e.CummulativeQuoteQuantity, a.CummulativeQuoteQuantity, "CummulativeQuoteQuantity")
 	r.Equal(e.Status, a.Status, "Status")
 	r.Equal(e.TimeInForce, a.TimeInForce, "TimeInForce")
 	r.Equal(e.Type, a.Type, "Type")
@@ -256,24 +261,29 @@ func (s *orderServiceTestSuite) assertOrderEqual(e, a *Order) {
 	r.Equal(e.StopPrice, a.StopPrice, "StopPrice")
 	r.Equal(e.IcebergQuantity, a.IcebergQuantity, "IcebergQuantity")
 	r.Equal(e.Time, e.Time, "Time")
+	r.Equal(e.UpdateTime, a.UpdateTime, "UpdateTime")
+	r.Equal(e.IsWorking, a.IsWorking, "IsWorking")
 }
 
 func (s *orderServiceTestSuite) TestGetOrder() {
 	data := []byte(`{
-        "symbol": "LTCBTC",
-        "orderId": 1,
-        "clientOrderId": "myOrder1",
-        "price": "0.1",
-        "origQty": "1.0",
-        "executedQty": "0.0",
-        "status": "NEW",
-        "timeInForce": "GTC",
-        "type": "LIMIT",
-        "side": "BUY",
-        "stopPrice": "0.0",
-        "icebergQty": "0.0",
-        "time": 1499827319559
-    }`)
+		"symbol": "LTCBTC",
+		"orderId": 1,
+		"clientOrderId": "myOrder1",
+		"price": "0.1",
+		"origQty": "1.0",
+		"executedQty": "0.0",
+		"cummulativeQuoteQty": "0.0",
+		"status": "NEW",
+		"timeInForce": "GTC",
+		"type": "LIMIT",
+		"side": "BUY",
+		"stopPrice": "0.0",
+		"icebergQty": "0.0",
+		"time": 1499827319559,
+		"updateTime": 1499827319559,
+		"isWorking": true
+	}`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
 
@@ -293,19 +303,22 @@ func (s *orderServiceTestSuite) TestGetOrder() {
 	r := s.r()
 	r.NoError(err)
 	e := &Order{
-		Symbol:           "LTCBTC",
-		OrderID:          1,
-		ClientOrderID:    "myOrder1",
-		Price:            "0.1",
-		OrigQuantity:     "1.0",
-		ExecutedQuantity: "0.0",
-		Status:           "NEW",
-		TimeInForce:      "GTC",
-		Type:             "LIMIT",
-		Side:             "BUY",
-		StopPrice:        "0.0",
-		IcebergQuantity:  "0.0",
-		Time:             1499827319559,
+		Symbol:                   "LTCBTC",
+		OrderID:                  1,
+		ClientOrderID:            "myOrder1",
+		Price:                    "0.1",
+		OrigQuantity:             "1.0",
+		ExecutedQuantity:         "0.0",
+		CummulativeQuoteQuantity: "0.0",
+		Status:          OrderStatusTypeNew,
+		TimeInForce:     TimeInForceTypeGTC,
+		Type:            OrderTypeLimit,
+		Side:            SideTypeBuy,
+		StopPrice:       "0.0",
+		IcebergQuantity: "0.0",
+		Time:            1499827319559,
+		UpdateTime:      1499827319559,
+		IsWorking:       true,
 	}
 	s.assertOrderEqual(e, order)
 }
@@ -325,7 +338,9 @@ func (s *orderServiceTestSuite) TestListOrders() {
             "side": "BUY",
             "stopPrice": "0.0",
             "icebergQty": "0.0",
-            "time": 1499827319559
+			"time": 1499827319559,
+			"updateTime": 1499827319559,
+			"isWorking": true
         }
     ]`)
 	s.mockDo(data, nil)
@@ -333,17 +348,22 @@ func (s *orderServiceTestSuite) TestListOrders() {
 	symbol := "LTCBTC"
 	orderID := int64(1)
 	limit := 3
+	startTime := int64(1499827319559)
+	endTime := int64(1499827319560)
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
-			"symbol":  symbol,
-			"orderId": orderID,
-			"limit":   limit,
+			"symbol":    symbol,
+			"orderId":   orderID,
+			"startTime": startTime,
+			"endTime":   endTime,
+			"limit":     limit,
 		})
 		s.assertRequestEqual(e, r)
 	})
 
 	orders, err := s.client.NewListOrdersService().Symbol(symbol).
-		OrderID(orderID).Limit(limit).Do(newContext())
+		OrderID(orderID).StartTime(startTime).EndTime(endTime).
+		Limit(limit).Do(newContext())
 	r := s.r()
 	r.NoError(err)
 	r.Len(orders, 1)
@@ -354,29 +374,40 @@ func (s *orderServiceTestSuite) TestListOrders() {
 		Price:            "0.1",
 		OrigQuantity:     "1.0",
 		ExecutedQuantity: "0.0",
-		Status:           "NEW",
-		TimeInForce:      "GTC",
-		Type:             "LIMIT",
-		Side:             "BUY",
+		Status:           OrderStatusTypeNew,
+		TimeInForce:      TimeInForceTypeGTC,
+		Type:             OrderTypeLimit,
+		Side:             SideTypeBuy,
 		StopPrice:        "0.0",
 		IcebergQuantity:  "0.0",
 		Time:             1499827319559,
+		UpdateTime:       1499827319559,
+		IsWorking:        true,
 	}
 	s.assertOrderEqual(e, orders[0])
 }
 
 func (s *orderServiceTestSuite) TestCancelOrder() {
 	data := []byte(`{
-        "symbol": "LTCBTC",
-        "origClientOrderId": "myOrder1",
-        "orderId": 1,
-        "clientOrderId": "cancelMyOrder1"
-    }`)
+		"symbol": "LTCBTC",
+		"orderId": 28,
+		"origClientOrderId": "myOrder1",
+		"clientOrderId": "cancelMyOrder1",
+		"transactTime": 1507725176595,
+		"price": "1.00000000",
+		"origQty": "10.00000000",
+		"executedQty": "8.00000000",
+		"cummulativeQuoteQty": "8.00000000",
+		"status": "CANCELED",
+		"timeInForce": "GTC",
+		"type": "LIMIT",
+		"side": "SELL"
+	}`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
 
 	symbol := "LTCBTC"
-	orderID := int64(1)
+	orderID := int64(28)
 	origClientOrderID := "myOrder1"
 	newClientOrderID := "cancelMyOrder1"
 	s.assertReq(func(r *request) {
@@ -395,10 +426,19 @@ func (s *orderServiceTestSuite) TestCancelOrder() {
 	r := s.r()
 	r.NoError(err)
 	e := &CancelOrderResponse{
-		Symbol:            "LTCBTC",
-		OrderID:           1,
-		OrigClientOrderID: "myOrder1",
-		ClientOrderID:     "cancelMyOrder1",
+		Symbol:                   "LTCBTC",
+		OrderID:                  28,
+		OrigClientOrderID:        "myOrder1",
+		ClientOrderID:            "cancelMyOrder1",
+		TransactTime:             1507725176595,
+		Price:                    "1.00000000",
+		OrigQuantity:             "10.00000000",
+		ExecutedQuantity:         "8.00000000",
+		CummulativeQuoteQuantity: "8.00000000",
+		Status:      OrderStatusTypeCanceled,
+		TimeInForce: TimeInForceTypeGTC,
+		Type:        OrderTypeLimit,
+		Side:        SideTypeSell,
 	}
 	s.assertCancelOrderResponseEqual(e, res)
 }
@@ -409,4 +449,13 @@ func (s *orderServiceTestSuite) assertCancelOrderResponseEqual(e, a *CancelOrder
 	r.Equal(e.OrderID, a.OrderID, "OrderID")
 	r.Equal(e.OrigClientOrderID, a.OrigClientOrderID, "OrigClientOrderID")
 	r.Equal(e.ClientOrderID, a.ClientOrderID, "ClientOrderID")
+	r.Equal(e.TransactTime, a.TransactTime, "TransactTime")
+	r.Equal(e.Price, a.Price, "Price")
+	r.Equal(e.OrigQuantity, a.OrigQuantity, "OrigQuantity")
+	r.Equal(e.ExecutedQuantity, a.ExecutedQuantity, "ExecutedQuantity")
+	r.Equal(e.CummulativeQuoteQuantity, a.CummulativeQuoteQuantity, "CummulativeQuoteQuantity")
+	r.Equal(e.Status, a.Status, "Status")
+	r.Equal(e.TimeInForce, a.TimeInForce, "TimeInForce")
+	r.Equal(e.Type, a.Type, "Type")
+	r.Equal(e.Side, a.Side, "Side")
 }

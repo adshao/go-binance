@@ -7,15 +7,29 @@ import (
 
 // ListTradesService list trades
 type ListTradesService struct {
-	c      *Client
-	symbol string
-	limit  *int
-	fromID *int64
+	c         *Client
+	symbol    string
+	startTime *int64
+	endTime   *int64
+	limit     *int
+	fromID    *int64
 }
 
 // Symbol set symbol
 func (s *ListTradesService) Symbol(symbol string) *ListTradesService {
 	s.symbol = symbol
+	return s
+}
+
+// StartTime set starttime
+func (s *ListTradesService) StartTime(startTime int64) *ListTradesService {
+	s.startTime = &startTime
+	return s
+}
+
+// EndTime set endtime
+func (s *ListTradesService) EndTime(endTime int64) *ListTradesService {
+	s.endTime = &endTime
 	return s
 }
 
@@ -41,6 +55,12 @@ func (s *ListTradesService) Do(ctx context.Context, opts ...RequestOption) (res 
 	r.setParam("symbol", s.symbol)
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
+	}
+	if s.startTime != nil {
+		r.setParam("startTime", *s.startTime)
+	}
+	if s.endTime != nil {
+		r.setParam("endTime", *s.endTime)
 	}
 	if s.fromID != nil {
 		r.setParam("fromId", *s.fromID)
@@ -123,9 +143,11 @@ type Trade struct {
 // TradeV3 define v3 trade info
 type TradeV3 struct {
 	ID              int64  `json:"id"`
+	Symbol          string `json:"symbol"`
 	OrderID         int64  `json:"orderId"`
 	Price           string `json:"price"`
 	Quantity        string `json:"qty"`
+	QuoteQuantity   string `json:"quoteQty"`
 	Commission      string `json:"commission"`
 	CommissionAsset string `json:"commissionAsset"`
 	Time            int64  `json:"time"`
