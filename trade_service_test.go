@@ -17,10 +17,12 @@ func TestTradeService(t *testing.T) {
 func (s *tradeServiceTestSuite) TestListTrades() {
 	data := []byte(`[
         {
+			"symbol": "BNBBTC",
             "id": 28457,
             "orderId": 12345,
             "price": "4.00000100",
-            "qty": "12.00000000",
+			"qty": "12.00000000",
+			"quoteQty": "48.000012",
             "commission": "10.10000000",
             "commissionAsset": "BNB",
             "time": 1499865549590,
@@ -32,28 +34,35 @@ func (s *tradeServiceTestSuite) TestListTrades() {
 	s.mockDo(data, nil)
 	defer s.assertDo()
 
-	symbol := "LTCBTC"
+	symbol := "BNBBTC"
 	limit := 3
 	fromID := int64(1)
+	startTime := int64(1499865549590)
+	endTime := int64(1499865549590)
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
-			"symbol": symbol,
-			"limit":  limit,
-			"fromId": fromID,
+			"symbol":    symbol,
+			"startTime": startTime,
+			"endTime":   endTime,
+			"limit":     limit,
+			"fromId":    fromID,
 		})
 		s.assertRequestEqual(e, r)
 	})
 
 	trades, err := s.client.NewListTradesService().Symbol(symbol).
+		StartTime(startTime).EndTime(endTime).
 		Limit(limit).FromID(fromID).Do(newContext())
 	r := s.r()
 	r.NoError(err)
 	r.Len(trades, 1)
 	e := &TradeV3{
 		ID:              28457,
+		Symbol:          "BNBBTC",
 		OrderID:         12345,
 		Price:           "4.00000100",
 		Quantity:        "12.00000000",
+		QuoteQuantity:   "48.000012",
 		Commission:      "10.10000000",
 		CommissionAsset: "BNB",
 		Time:            1499865549590,
@@ -67,9 +76,11 @@ func (s *tradeServiceTestSuite) TestListTrades() {
 func (s *tradeServiceTestSuite) assertTradeV3Equal(e, a *TradeV3) {
 	r := s.r()
 	r.Equal(e.ID, a.ID, "ID")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
 	r.Equal(e.OrderID, a.OrderID, "OrderID")
 	r.Equal(e.Price, a.Price, "Price")
 	r.Equal(e.Quantity, a.Quantity, "Quantity")
+	r.Equal(e.QuoteQuantity, a.QuoteQuantity, "QuoteQuantity")
 	r.Equal(e.Commission, a.Commission, "Commission")
 	r.Equal(e.CommissionAsset, a.CommissionAsset, "CommissionAsset")
 	r.Equal(e.Time, a.Time, "Time")

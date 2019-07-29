@@ -5,9 +5,16 @@ import (
 	"encoding/json"
 )
 
-// ListBookTickersService list all book tickers
+// ListBookTickersService list best price/qty on the order book for a symbol or symbols
 type ListBookTickersService struct {
-	c *Client
+	c      *Client
+	symbol *string
+}
+
+// Symbol set symbol
+func (s *ListBookTickersService) Symbol(symbol string) *ListBookTickersService {
+	s.symbol = &symbol
+	return s
 }
 
 // Do send request
@@ -16,7 +23,11 @@ func (s *ListBookTickersService) Do(ctx context.Context, opts ...RequestOption) 
 		method:   "GET",
 		endpoint: "/api/v3/ticker/bookTicker",
 	}
+	if s.symbol != nil {
+		r.setParam("symbol", *s.symbol)
+	}
 	data, err := s.c.callAPI(ctx, r, opts...)
+	data = toJSONList(data)
 	if err != nil {
 		return []*BookTicker{}, err
 	}
@@ -24,37 +35,6 @@ func (s *ListBookTickersService) Do(ctx context.Context, opts ...RequestOption) 
 	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return []*BookTicker{}, err
-	}
-	return res, nil
-}
-
-// BookTickerService list symbol's book ticker
-type BookTickerService struct {
-	c      *Client
-	symbol string
-}
-
-// Symbol set symbol
-func (s *BookTickerService) Symbol(symbol string) *BookTickerService {
-	s.symbol = symbol
-	return s
-}
-
-// Do send request
-func (s *BookTickerService) Do(ctx context.Context, opts ...RequestOption) (res *BookTicker, err error) {
-	r := &request{
-		method:   "GET",
-		endpoint: "/api/v3/ticker/bookTicker",
-	}
-	r.setParam("symbol", s.symbol)
-	data, err := s.c.callAPI(ctx, r, opts...)
-	if err != nil {
-		return nil, err
-	}
-	res = new(BookTicker)
-	err = json.Unmarshal(data, &res)
-	if err != nil {
-		return nil, err
 	}
 	return res, nil
 }
@@ -68,21 +48,32 @@ type BookTicker struct {
 	AskQuantity string `json:"askQty"`
 }
 
-// ListPricesService list all ticker prices
+// ListPricesService list latest price for a symbol or symbols
 type ListPricesService struct {
-	c *Client
+	c      *Client
+	symbol *string
+}
+
+// Symbol set symbol
+func (s *ListPricesService) Symbol(symbol string) *ListPricesService {
+	s.symbol = &symbol
+	return s
 }
 
 // Do send request
 func (s *ListPricesService) Do(ctx context.Context, opts ...RequestOption) (res []*SymbolPrice, err error) {
 	r := &request{
 		method:   "GET",
-		endpoint: "/api/v1/ticker/allPrices",
+		endpoint: "/api/v3/ticker/price",
+	}
+	if s.symbol != nil {
+		r.setParam("symbol", *s.symbol)
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*SymbolPrice{}, err
 	}
+	data = toJSONList(data)
 	res = make([]*SymbolPrice, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
@@ -97,40 +88,16 @@ type SymbolPrice struct {
 	Price  string `json:"price"`
 }
 
-// PriceChangeStatsService show stats of price change in last 24 hours
-type PriceChangeStatsService struct {
+// ListPriceChangeStatsService show stats of price change in last 24 hours for all symbols
+type ListPriceChangeStatsService struct {
 	c      *Client
-	symbol string
+	symbol *string
 }
 
 // Symbol set symbol
-func (s *PriceChangeStatsService) Symbol(symbol string) *PriceChangeStatsService {
-	s.symbol = symbol
+func (s *ListPriceChangeStatsService) Symbol(symbol string) *ListPriceChangeStatsService {
+	s.symbol = &symbol
 	return s
-}
-
-// Do send request
-func (s *PriceChangeStatsService) Do(ctx context.Context, opts ...RequestOption) (res *PriceChangeStats, err error) {
-	r := &request{
-		method:   "GET",
-		endpoint: "/api/v1/ticker/24hr",
-	}
-	r.setParam("symbol", s.symbol)
-	data, err := s.c.callAPI(ctx, r, opts...)
-	if err != nil {
-		return res, err
-	}
-	res = new(PriceChangeStats)
-	err = json.Unmarshal(data, res)
-	if err != nil {
-		return nil, err
-	}
-	return res, nil
-}
-
-// ListPriceChangeStatsService show stats of price change in last 24 hours for all symbols
-type ListPriceChangeStatsService struct {
-	c *Client
 }
 
 // Do send request
@@ -139,10 +106,14 @@ func (s *ListPriceChangeStatsService) Do(ctx context.Context, opts ...RequestOpt
 		method:   "GET",
 		endpoint: "/api/v1/ticker/24hr",
 	}
+	if s.symbol != nil {
+		r.setParam("symbol", *s.symbol)
+	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return res, err
 	}
+	data = toJSONList(data)
 	res = make([]*PriceChangeStats, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
@@ -171,4 +142,41 @@ type PriceChangeStats struct {
 	FristID            int64  `json:"firstId"`
 	LastID             int64  `json:"lastId"`
 	Count              int64  `json:"count"`
+}
+
+// AveragePriceService show current average price for a symbol
+type AveragePriceService struct {
+	c      *Client
+	symbol string
+}
+
+// Symbol set symbol
+func (s *AveragePriceService) Symbol(symbol string) *AveragePriceService {
+	s.symbol = symbol
+	return s
+}
+
+// Do send request
+func (s *AveragePriceService) Do(ctx context.Context, opts ...RequestOption) (res *AvgPrice, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/api/v3/avgPrice",
+	}
+	r.setParam("symbol", s.symbol)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return res, err
+	}
+	res = new(AvgPrice)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// AvgPrice define average price
+type AvgPrice struct {
+	Mins  int64  `json:"mins"`
+	Price string `json:"price"`
 }
