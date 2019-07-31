@@ -87,6 +87,29 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 		},
 	}
 	s.assertExchangeInfoEqual(ei, res)
+
+	eLotSizeFilter := &LotSizeFilter{
+		MaxQuantity: "100000.00000000",
+		MinQuantity: "0.00100000",
+		StepSize:    "0.00100000",
+	}
+	s.assertLotSizeFilterEqual(eLotSizeFilter, res.Symbols[0].LotSizeFilter())
+	ePriceFilter := &PriceFilter{
+		MaxPrice: "100000.00000000",
+		MinPrice: "0.00000100",
+		TickSize: "0.00000100",
+	}
+	s.assertPriceFilterEqual(ePriceFilter, res.Symbols[0].PriceFilter())
+	eMinNotionalFilter := &MinNotionalFilter{
+		MinNotional:      "0.00100000",
+		AveragePriceMins: 0,
+		ApplyToMarket:    false,
+	}
+	s.assertMinNotionalFilterEqual(eMinNotionalFilter, res.Symbols[0].MinNotionalFilter())
+	eMaxNumAlgoOrdersFilter := &MaxNumAlgoOrdersFilter{
+		MaxNumAlgoOrders: 5,
+	}
+	s.assertMaxNumAlgoOrdersFilterEqual(eMaxNumAlgoOrdersFilter, res.Symbols[0].MaxNumAlgoOrdersFilter())
 }
 
 func (s *exchangeInfoServiceTestSuite) assertExchangeInfoEqual(e, a *ExchangeInfo) {
@@ -136,4 +159,49 @@ func (s *exchangeInfoServiceTestSuite) assertExchangeInfoEqual(e, a *ExchangeInf
 
 	}
 	r.Fail("Symbol ETHBTC not found")
+}
+
+func (s *exchangeInfoServiceTestSuite) assertLotSizeFilterEqual(e, a *LotSizeFilter) {
+	r := s.r()
+	r.Equal(e.MaxQuantity, a.MaxQuantity, "MaxQuantity")
+	r.Equal(e.MinQuantity, a.MinQuantity, "MinQuantity")
+	r.Equal(e.StepSize, a.StepSize, "StepSize")
+}
+
+func (s *exchangeInfoServiceTestSuite) assertPriceFilterEqual(e, a *PriceFilter) {
+	r := s.r()
+	r.Equal(e.MaxPrice, a.MaxPrice, "MaxPrice")
+	r.Equal(e.MinPrice, a.MinPrice, "MinPrice")
+	r.Equal(e.TickSize, a.TickSize, "TickSize")
+}
+
+func (s *exchangeInfoServiceTestSuite) assertPercentPriceFilterEqual(e, a *PercentPriceFilter) {
+	r := s.r()
+	r.Equal(e.AveragePriceMins, a.AveragePriceMins, "AveragePriceMins")
+	r.Equal(e.MultiplierUp, a.MultiplierUp, "MultiplierUp")
+	r.Equal(e.MultiplierDown, a.MultiplierDown, "MultiplierDown")
+}
+
+func (s *exchangeInfoServiceTestSuite) assertMinNotionalFilterEqual(e, a *MinNotionalFilter) {
+	r := s.r()
+	r.Equal(e.MinNotional, a.MinNotional, "MinNotional")
+	r.Equal(e.AveragePriceMins, a.AveragePriceMins, "AveragePriceMins")
+	r.Equal(e.ApplyToMarket, a.ApplyToMarket, "ApplyToMarket")
+}
+
+func (s *exchangeInfoServiceTestSuite) assertIcebergPartsFilterEqual(e, a *IcebergPartsFilter) {
+	r := s.r()
+	r.Equal(e.Limit, a.Limit, "Limit")
+}
+
+func (s *exchangeInfoServiceTestSuite) assertMarketLotSizeFilterEqual(e, a *MarketLotSizeFilter) {
+	r := s.r()
+	r.Equal(e.MaxQuantity, a.MaxQuantity, "MaxQuantity")
+	r.Equal(e.MinQuantity, a.MinQuantity, "MinQuantity")
+	r.Equal(e.StepSize, a.StepSize, "StepSize")
+}
+
+func (s *exchangeInfoServiceTestSuite) assertMaxNumAlgoOrdersFilterEqual(e, a *MaxNumAlgoOrdersFilter) {
+	r := s.r()
+	r.Equal(e.MaxNumAlgoOrders, a.MaxNumAlgoOrders, "MaxNumAlgoOrders")
 }
