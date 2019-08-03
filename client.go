@@ -41,6 +41,9 @@ type SymbolStatusType string
 // SymbolFilterType define symbol filter type
 type SymbolFilterType string
 
+// MarginTransferType define margin transfer type
+type MarginTransferType int
+
 // Global enums
 const (
 	SideTypeBuy  SideType = "BUY"
@@ -88,6 +91,9 @@ const (
 	SymbolFilterTypeMarketLotSize    SymbolFilterType = "MARKET_LOT_SIZE"
 	SymbolFilterTypeMaxNumAlgoOrders SymbolFilterType = "MAX_NUM_ALGO_ORDERS"
 
+	MarginTransferTypeToMargin MarginTransferType = 1
+	MarginTransferTypeToMain   MarginTransferType = 2
+
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
 	recvWindowKey = "recvWindow"
@@ -112,7 +118,7 @@ func NewClient(apiKey, secretKey string) *Client {
 	return &Client{
 		APIKey:     apiKey,
 		SecretKey:  secretKey,
-		BaseURL:    "https://www.binance.com",
+		BaseURL:    "https://api.binance.com",
 		UserAgent:  "Binance/golang",
 		HTTPClient: http.DefaultClient,
 		Logger:     log.New(os.Stderr, "Binance-golang ", log.LstdFlags),
@@ -369,4 +375,29 @@ func (c *Client) NewGetWithdrawFeeService() *GetWithdrawFeeService {
 // NewAveragePriceService init average price service
 func (c *Client) NewAveragePriceService() *AveragePriceService {
 	return &AveragePriceService{c: c}
+}
+
+// NewMarginTransferService init margin account transfer service
+func (c *Client) NewMarginTransferService() *MarginTransferService {
+	return &MarginTransferService{c: c}
+}
+
+// NewMarginLoanService init margin account loan service
+func (c *Client) NewMarginLoanService() *MarginLoanService {
+	return &MarginLoanService{c: c}
+}
+
+// NewMarginRepayService init margin account repay service
+func (c *Client) NewMarginRepayService() *MarginRepayService {
+	return &MarginRepayService{c: c}
+}
+
+// NewCreateMarginOrderService init creating margin order service
+func (c *Client) NewCreateMarginOrderService() *CreateMarginOrderService {
+	return &CreateMarginOrderService{c: c}
+}
+
+// NewCancelMarginOrderService init cancel order service
+func (c *Client) NewCancelMarginOrderService() *CancelMarginOrderService {
+	return &CancelMarginOrderService{c: c}
 }

@@ -6,8 +6,12 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type orderServiceTestSuite struct {
+type baseOrderTestSuite struct {
 	baseTestSuite
+}
+
+type orderServiceTestSuite struct {
+	baseOrderTestSuite
 }
 
 func TestOrderService(t *testing.T) {
@@ -159,7 +163,7 @@ func (s *orderServiceTestSuite) TestCreateOrderFull() {
 	s.r().NoError(err)
 }
 
-func (s *orderServiceTestSuite) assertCreateOrderResponseEqual(e, a *CreateOrderResponse) {
+func (s *baseOrderTestSuite) assertCreateOrderResponseEqual(e, a *CreateOrderResponse) {
 	r := s.r()
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
 	r.Equal(e.OrderID, a.OrderID, "OrderID")
@@ -180,7 +184,7 @@ func (s *orderServiceTestSuite) assertCreateOrderResponseEqual(e, a *CreateOrder
 	}
 }
 
-func (s *orderServiceTestSuite) assertFillEqual(e, a *Fill) {
+func (s *baseOrderTestSuite) assertFillEqual(e, a *Fill) {
 	r := s.r()
 	r.Equal(e.Commission, a.Commission, "Commission")
 	r.Equal(e.CommissionAsset, a.CommissionAsset, "CommissionAsset")
@@ -245,7 +249,7 @@ func (s *orderServiceTestSuite) TestListOpenOrders() {
 	s.assertOrderEqual(e, orders[0])
 }
 
-func (s *orderServiceTestSuite) assertOrderEqual(e, a *Order) {
+func (s *baseOrderTestSuite) assertOrderEqual(e, a *Order) {
 	r := s.r()
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
 	r.Equal(e.OrderID, a.OrderID, "OrderID")
@@ -443,7 +447,7 @@ func (s *orderServiceTestSuite) TestCancelOrder() {
 	s.assertCancelOrderResponseEqual(e, res)
 }
 
-func (s *orderServiceTestSuite) assertCancelOrderResponseEqual(e, a *CancelOrderResponse) {
+func (s *baseOrderTestSuite) assertCancelOrderResponseEqual(e, a *CancelOrderResponse) {
 	r := s.r()
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
 	r.Equal(e.OrderID, a.OrderID, "OrderID")
