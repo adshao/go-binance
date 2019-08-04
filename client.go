@@ -44,6 +44,9 @@ type SymbolFilterType string
 // MarginTransferType define margin transfer type
 type MarginTransferType int
 
+// MarginLoanStatusType define margin loan status type
+type MarginLoanStatusType string
+
 // Global enums
 const (
 	SideTypeBuy  SideType = "BUY"
@@ -93,6 +96,10 @@ const (
 
 	MarginTransferTypeToMargin MarginTransferType = 1
 	MarginTransferTypeToMain   MarginTransferType = 2
+
+	MarginLoanStatusTypePending   MarginLoanStatusType = "PENDING"
+	MarginLoanStatusTypeConfirmed MarginLoanStatusType = "CONFIRMED"
+	MarginLoanStatusTypeFailed    MarginLoanStatusType = "FAILED"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
@@ -400,4 +407,9 @@ func (c *Client) NewCreateMarginOrderService() *CreateMarginOrderService {
 // NewCancelMarginOrderService init cancel order service
 func (c *Client) NewCancelMarginOrderService() *CancelMarginOrderService {
 	return &CancelMarginOrderService{c: c}
+}
+
+// NewListMarginLoansService init list margin loan service
+func (c *Client) NewListMarginLoansService() *ListMarginLoansService {
+	return &ListMarginLoansService{c: c}
 }

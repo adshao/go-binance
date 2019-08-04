@@ -146,3 +146,98 @@ func (s *MarginRepayService) Do(ctx context.Context, opts ...RequestOption) (res
 	}
 	return res, nil
 }
+
+// ListMarginLoansService list loan record
+type ListMarginLoansService struct {
+	c         *Client
+	asset     string
+	txID      *int64
+	startTime *int64
+	endTime   *int64
+	current   *int64
+	size      *int64
+}
+
+// Asset set asset
+func (s *ListMarginLoansService) Asset(asset string) *ListMarginLoansService {
+	s.asset = asset
+	return s
+}
+
+// TxID set transaction id
+func (s *ListMarginLoansService) TxID(txID int64) *ListMarginLoansService {
+	s.txID = &txID
+	return s
+}
+
+// StartTime set start time
+func (s *ListMarginLoansService) StartTime(startTime int64) *ListMarginLoansService {
+	s.startTime = &startTime
+	return s
+}
+
+// EndTime set end time
+func (s *ListMarginLoansService) EndTime(endTime int64) *ListMarginLoansService {
+	s.endTime = &endTime
+	return s
+}
+
+// Current currently querying page. Start from 1. Default:1
+func (s *ListMarginLoansService) Current(current int64) *ListMarginLoansService {
+	s.current = &current
+	return s
+}
+
+// Size default:10 max:100
+func (s *ListMarginLoansService) Size(size int64) *ListMarginLoansService {
+	s.size = &size
+	return s
+}
+
+// Do send request
+func (s *ListMarginLoansService) Do(ctx context.Context, opts ...RequestOption) (res *MarginLoanResponse, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/margin/loan",
+	}
+	r.setParam("asset", s.asset)
+	if s.txID != nil {
+		r.setParam("txId", *s.txID)
+	}
+	if s.startTime != nil {
+		r.setParam("startTime", *s.startTime)
+	}
+	if s.endTime != nil {
+		r.setParam("endTime", *s.endTime)
+	}
+	if s.current != nil {
+		r.setParam("current", *s.current)
+	}
+	if s.size != nil {
+		r.setParam("size", *s.size)
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(MarginLoanResponse)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// MarginLoanResponse define margin loan response
+type MarginLoanResponse struct {
+	Rows  []MarginLoan `json:"rows"`
+	Total int64        `json:"total"`
+}
+
+// MarginLoan define margin loan
+type MarginLoan struct {
+	Asset     string               `json:"asset"`
+	Principal string               `json:"principal"`
+	Timestamp int64                `json:"timestamp"`
+	Status    MarginLoanStatusType `json:"status"`
+}
