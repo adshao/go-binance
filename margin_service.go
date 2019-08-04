@@ -241,3 +241,147 @@ type MarginLoan struct {
 	Timestamp int64                `json:"timestamp"`
 	Status    MarginLoanStatusType `json:"status"`
 }
+
+// ListMarginRepaysService list repay record
+type ListMarginRepaysService struct {
+	c         *Client
+	asset     string
+	txID      *int64
+	startTime *int64
+	endTime   *int64
+	current   *int64
+	size      *int64
+}
+
+// Asset set asset
+func (s *ListMarginRepaysService) Asset(asset string) *ListMarginRepaysService {
+	s.asset = asset
+	return s
+}
+
+// TxID set transaction id
+func (s *ListMarginRepaysService) TxID(txID int64) *ListMarginRepaysService {
+	s.txID = &txID
+	return s
+}
+
+// StartTime set start time
+func (s *ListMarginRepaysService) StartTime(startTime int64) *ListMarginRepaysService {
+	s.startTime = &startTime
+	return s
+}
+
+// EndTime set end time
+func (s *ListMarginRepaysService) EndTime(endTime int64) *ListMarginRepaysService {
+	s.endTime = &endTime
+	return s
+}
+
+// Current currently querying page. Start from 1. Default:1
+func (s *ListMarginRepaysService) Current(current int64) *ListMarginRepaysService {
+	s.current = &current
+	return s
+}
+
+// Size default:10 max:100
+func (s *ListMarginRepaysService) Size(size int64) *ListMarginRepaysService {
+	s.size = &size
+	return s
+}
+
+// Do send request
+func (s *ListMarginRepaysService) Do(ctx context.Context, opts ...RequestOption) (res *MarginRepayResponse, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/margin/repay",
+	}
+	r.setParam("asset", s.asset)
+	if s.txID != nil {
+		r.setParam("txId", *s.txID)
+	}
+	if s.startTime != nil {
+		r.setParam("startTime", *s.startTime)
+	}
+	if s.endTime != nil {
+		r.setParam("endTime", *s.endTime)
+	}
+	if s.current != nil {
+		r.setParam("current", *s.current)
+	}
+	if s.size != nil {
+		r.setParam("size", *s.size)
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(MarginRepayResponse)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// MarginRepayResponse define margin repay response
+type MarginRepayResponse struct {
+	Rows  []MarginRepay `json:"rows"`
+	Total int64         `json:"total"`
+}
+
+// MarginRepay define margin repay
+type MarginRepay struct {
+	Asset     string                `json:"asset"`
+	Amount    string                `json:"amount"`
+	Interest  string                `json:"interest"`
+	Principal string                `json:"principal"`
+	Timestamp int64                 `json:"timestamp"`
+	Status    MarginRepayStatusType `json:"status"`
+	TxID      int64                 `json:"txId"`
+}
+
+// GetMarginAccountService get margin account info
+type GetMarginAccountService struct {
+	c *Client
+}
+
+// Do send request
+func (s *GetMarginAccountService) Do(ctx context.Context, opts ...RequestOption) (res *MarginAccount, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/margin/account",
+		secType:  secTypeSigned,
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(MarginAccount)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// MarginAccount define margin account info
+type MarginAccount struct {
+	BorrowEnabled       bool        `json:"borrowEnabled"`
+	MarginLevel         string      `json:"marginLevel"`
+	TotalAssetOfBTC     string      `json:"totalAssetOfBtc"`
+	TotalLiabilityOfBTC string      `json:"totalLiabilityOfBtc"`
+	TotalNetAssetOfBTC  string      `json:"totalNetAssetOfBtc"`
+	TradeEnabled        bool        `json:"tradeEnabled"`
+	TransferEnabled     bool        `json:"transferEnabled"`
+	UserAssets          []UserAsset `json:"userAssets"`
+}
+
+// UserAsset define user assets of margin account
+type UserAsset struct {
+	Asset    string `json:"asset"`
+	Borrowed string `json:"borrowed"`
+	Free     string `json:"free"`
+	Interest string `json:"interest"`
+	Locked   string `json:"locked"`
+	NetAsset string `json:"netAsset"`
+}

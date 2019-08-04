@@ -47,6 +47,9 @@ type MarginTransferType int
 // MarginLoanStatusType define margin loan status type
 type MarginLoanStatusType string
 
+// MarginRepayStatusType define margin repay status type
+type MarginRepayStatusType string
+
 // Global enums
 const (
 	SideTypeBuy  SideType = "BUY"
@@ -100,6 +103,10 @@ const (
 	MarginLoanStatusTypePending   MarginLoanStatusType = "PENDING"
 	MarginLoanStatusTypeConfirmed MarginLoanStatusType = "CONFIRMED"
 	MarginLoanStatusTypeFailed    MarginLoanStatusType = "FAILED"
+
+	MarginRepayStatusTypePending   MarginRepayStatusType = "PENDING"
+	MarginRepayStatusTypeConfirmed MarginRepayStatusType = "CONFIRMED"
+	MarginRepayStatusTypeFailed    MarginRepayStatusType = "FAILED"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
@@ -412,4 +419,14 @@ func (c *Client) NewCancelMarginOrderService() *CancelMarginOrderService {
 // NewListMarginLoansService init list margin loan service
 func (c *Client) NewListMarginLoansService() *ListMarginLoansService {
 	return &ListMarginLoansService{c: c}
+}
+
+// NewListMarginRepaysService init list margin repay service
+func (c *Client) NewListMarginRepaysService() *ListMarginRepaysService {
+	return &ListMarginRepaysService{c: c}
+}
+
+// NewGetMarginAccountService init get margin account service
+func (c *Client) NewGetMarginAccountService() *GetMarginAccountService {
+	return &GetMarginAccountService{c: c}
 }
