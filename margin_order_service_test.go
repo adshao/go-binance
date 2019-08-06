@@ -203,3 +203,61 @@ func (s *marginOrderServiceTestSuite) TestCancelOrder() {
 	}
 	s.assertCancelOrderResponseEqual(e, res)
 }
+
+func (s *marginOrderServiceTestSuite) TestGetOrder() {
+	data := []byte(`{
+		"symbol": "LTCBTC",
+		"orderId": 1,
+		"clientOrderId": "myOrder1",
+		"price": "0.1",
+		"origQty": "1.0",
+		"executedQty": "0.0",
+		"cummulativeQuoteQty": "0.0",
+		"status": "NEW",
+		"timeInForce": "GTC",
+		"type": "LIMIT",
+		"side": "BUY",
+		"stopPrice": "0.0",
+		"icebergQty": "0.0",
+		"time": 1499827319559,
+		"updateTime": 1499827319559,
+		"isWorking": true
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	symbol := "LTCBTC"
+	orderID := int64(1)
+	origClientOrderID := "myOrder1"
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"symbol":            symbol,
+			"orderId":           orderID,
+			"origClientOrderId": origClientOrderID,
+		})
+		s.assertRequestEqual(e, r)
+	})
+	order, err := s.client.NewGetMarginOrderService().Symbol(symbol).
+		OrderID(orderID).OrigClientOrderID(origClientOrderID).Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	e := &Order{
+		Symbol:                   "LTCBTC",
+		OrderID:                  1,
+		ClientOrderID:            "myOrder1",
+		Price:                    "0.1",
+		OrigQuantity:             "1.0",
+		ExecutedQuantity:         "0.0",
+		CummulativeQuoteQuantity: "0.0",
+		Status:          OrderStatusTypeNew,
+		TimeInForce:     TimeInForceTypeGTC,
+		Type:            OrderTypeLimit,
+		Side:            SideTypeBuy,
+		StopPrice:       "0.0",
+		IcebergQuantity: "0.0",
+		Time:            1499827319559,
+		UpdateTime:      1499827319559,
+		IsWorking:       true,
+	}
+	s.assertOrderEqual(e, order)
+}

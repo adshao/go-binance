@@ -355,3 +355,117 @@ func (s *marginTestSuite) assertUserAssetEqual(e, a UserAsset) {
 	r.Equal(e.Locked, a.Locked, "Locked")
 	r.Equal(e.NetAsset, a.NetAsset, "NetAsset")
 }
+
+func (s *marginTestSuite) TestGetMarginAsset() {
+	data := []byte(`{
+		"assetFullName": "Binance Coin",
+		"assetName": "BNB",
+		"isBorrowable": false,
+		"isMortgageable": true,
+		"userMinBorrow": "0.00000000",
+		"userMinRepay": "0.00000000"
+  	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	asset := "BNB"
+	s.assertReq(func(r *request) {
+		e := newRequest()
+		e.setParam("asset", asset)
+		s.assertRequestEqual(e, r)
+	})
+	res, err := s.client.NewGetMarginAssetService().Asset(asset).Do(newContext())
+	s.r().NoError(err)
+	e := &MarginAsset{
+		FullName:      "Binance Coin",
+		Name:          asset,
+		Borrowable:    false,
+		Mortgageable:  true,
+		UserMinBorrow: "0.00000000",
+		UserMinRepay:  "0.00000000",
+	}
+	s.assertMarginAssetEqual(e, res)
+}
+
+func (s *marginTestSuite) assertMarginAssetEqual(e, a *MarginAsset) {
+	r := s.r()
+	r.Equal(e.FullName, a.FullName, "FullName")
+	r.Equal(e.Name, a.Name, "Name")
+	r.Equal(e.Borrowable, a.Borrowable, "Borrowable")
+	r.Equal(e.Mortgageable, a.Mortgageable, "Mortgageable")
+	r.Equal(e.UserMinBorrow, a.UserMinBorrow, "UserMinBorrow")
+	r.Equal(e.UserMinRepay, a.UserMinRepay, "UserMinRepay")
+}
+
+func (s *marginTestSuite) TestGetMarginPair() {
+	data := []byte(`{
+		"id":323355778339572400,
+		"symbol":"BTCUSDT",
+		"base":"BTC",
+		"quote":"USDT",
+		"isMarginTrade":true,
+		"isBuyAllowed":true,
+		"isSellAllowed":true
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	symbol := "BTCUSDT"
+	s.assertReq(func(r *request) {
+		e := newRequest()
+		e.setParam("symbol", symbol)
+		s.assertRequestEqual(e, r)
+	})
+	res, err := s.client.NewGetMarginPairService().Symbol(symbol).Do(newContext())
+	s.r().NoError(err)
+	e := &MarginPair{
+		ID:            323355778339572400,
+		Symbol:        symbol,
+		Base:          "BTC",
+		Quote:         "USDT",
+		IsMarginTrade: true,
+		IsBuyAllowed:  true,
+		IsSellAllowed: true,
+	}
+	s.assertMarginPairEqual(e, res)
+}
+
+func (s *marginTestSuite) assertMarginPairEqual(e, a *MarginPair) {
+	r := s.r()
+	r.Equal(e.ID, a.ID, "ID")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.Base, a.Base, "Base")
+	r.Equal(e.Quote, a.Quote, "Quote")
+	r.Equal(e.IsMarginTrade, a.IsMarginTrade, "IsMarginTrade")
+	r.Equal(e.IsBuyAllowed, a.IsBuyAllowed, "IsBuyAllowed")
+	r.Equal(e.IsSellAllowed, a.IsSellAllowed, "IsSellAllowed")
+}
+
+func (s *marginTestSuite) TestGetMarginPriceIndex() {
+	data := []byte(`{
+		"calcTime": 1562046418000,
+		"price": "0.00333930",
+		"symbol": "BNBBTC"
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	symbol := "BNBBTC"
+	s.assertReq(func(r *request) {
+		e := newRequest()
+		e.setParam("symbol", symbol)
+		s.assertRequestEqual(e, r)
+	})
+	res, err := s.client.NewGetMarginPriceIndexService().Symbol(symbol).Do(newContext())
+	s.r().NoError(err)
+	e := &MarginPriceIndex{
+		CalcTime: 1562046418000,
+		Symbol:   symbol,
+		Price:    "0.00333930",
+	}
+	s.assertMarginPriceIndexEqual(e, res)
+}
+
+func (s *marginTestSuite) assertMarginPriceIndexEqual(e, a *MarginPriceIndex) {
+	r := s.r()
+	r.Equal(e.CalcTime, a.CalcTime, "CalcTime")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.Price, a.Price, "Price")
+}

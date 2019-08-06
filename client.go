@@ -416,6 +416,11 @@ func (c *Client) NewCancelMarginOrderService() *CancelMarginOrderService {
 	return &CancelMarginOrderService{c: c}
 }
 
+// NewGetMarginOrderService init get order service
+func (c *Client) NewGetMarginOrderService() *GetMarginOrderService {
+	return &GetMarginOrderService{c: c}
+}
+
 // NewListMarginLoansService init list margin loan service
 func (c *Client) NewListMarginLoansService() *ListMarginLoansService {
 	return &ListMarginLoansService{c: c}
@@ -429,4 +434,19 @@ func (c *Client) NewListMarginRepaysService() *ListMarginRepaysService {
 // NewGetMarginAccountService init get margin account service
 func (c *Client) NewGetMarginAccountService() *GetMarginAccountService {
 	return &GetMarginAccountService{c: c}
+}
+
+// NewGetMarginAssetService init get margin asset service
+func (c *Client) NewGetMarginAssetService() *GetMarginAssetService {
+	return &GetMarginAssetService{c: c}
+}
+
+// NewGetMarginPairService init get margin pair service
+func (c *Client) NewGetMarginPairService() *GetMarginPairService {
+	return &GetMarginPairService{c: c}
+}
+
+// NewGetMarginPriceIndexService init get margin price index service
+func (c *Client) NewGetMarginPriceIndexService() *GetMarginPriceIndexService {
+	return &GetMarginPriceIndexService{c: c}
 }

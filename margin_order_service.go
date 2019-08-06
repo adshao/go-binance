@@ -185,3 +185,55 @@ func (s *CancelMarginOrderService) Do(ctx context.Context, opts ...RequestOption
 	}
 	return res, nil
 }
+
+// GetMarginOrderService get an order
+type GetMarginOrderService struct {
+	c                 *Client
+	symbol            string
+	orderID           *int64
+	origClientOrderID *string
+}
+
+// Symbol set symbol
+func (s *GetMarginOrderService) Symbol(symbol string) *GetMarginOrderService {
+	s.symbol = symbol
+	return s
+}
+
+// OrderID set orderID
+func (s *GetMarginOrderService) OrderID(orderID int64) *GetMarginOrderService {
+	s.orderID = &orderID
+	return s
+}
+
+// OrigClientOrderID set origClientOrderID
+func (s *GetMarginOrderService) OrigClientOrderID(origClientOrderID string) *GetMarginOrderService {
+	s.origClientOrderID = &origClientOrderID
+	return s
+}
+
+// Do send request
+func (s *GetMarginOrderService) Do(ctx context.Context, opts ...RequestOption) (res *Order, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/margin/order",
+		secType:  secTypeSigned,
+	}
+	r.setParam("symbol", s.symbol)
+	if s.orderID != nil {
+		r.setParam("orderId", *s.orderID)
+	}
+	if s.origClientOrderID != nil {
+		r.setParam("origClientOrderId", *s.origClientOrderID)
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(Order)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}

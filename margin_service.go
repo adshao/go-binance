@@ -385,3 +385,127 @@ type UserAsset struct {
 	Locked   string `json:"locked"`
 	NetAsset string `json:"netAsset"`
 }
+
+// GetMarginAssetService get margin asset info
+type GetMarginAssetService struct {
+	c     *Client
+	asset string
+}
+
+// Asset set asset
+func (s *GetMarginAssetService) Asset(asset string) *GetMarginAssetService {
+	s.asset = asset
+	return s
+}
+
+// Do send request
+func (s *GetMarginAssetService) Do(ctx context.Context, opts ...RequestOption) (res *MarginAsset, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/margin/asset",
+		secType:  secTypeAPIKey,
+	}
+	r.setParam("asset", s.asset)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(MarginAsset)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// MarginAsset define margin asset info
+type MarginAsset struct {
+	FullName      string `json:"assetFullName"`
+	Name          string `json:"assetName"`
+	Borrowable    bool   `json:"isBorrowable"`
+	Mortgageable  bool   `json:"isMortgageable"`
+	UserMinBorrow string `json:"userMinBorrow"`
+	UserMinRepay  string `json:"userMinRepay"`
+}
+
+// GetMarginPairService get margin pair info
+type GetMarginPairService struct {
+	c      *Client
+	symbol string
+}
+
+// Symbol set symbol
+func (s *GetMarginPairService) Symbol(symbol string) *GetMarginPairService {
+	s.symbol = symbol
+	return s
+}
+
+// Do send request
+func (s *GetMarginPairService) Do(ctx context.Context, opts ...RequestOption) (res *MarginPair, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/margin/pair",
+		secType:  secTypeAPIKey,
+	}
+	r.setParam("symbol", s.symbol)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(MarginPair)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// MarginPair define margin pair info
+type MarginPair struct {
+	ID            int64  `json:"id"`
+	Symbol        string `json:"symbol"`
+	Base          string `json:"base"`
+	Quote         string `json:"quote"`
+	IsMarginTrade bool   `json:"isMarginTrade"`
+	IsBuyAllowed  bool   `json:"isBuyAllowed"`
+	IsSellAllowed bool   `json:"isSellAllowed"`
+}
+
+// GetMarginPriceIndexService get margin price index
+type GetMarginPriceIndexService struct {
+	c      *Client
+	symbol string
+}
+
+// Symbol set symbol
+func (s *GetMarginPriceIndexService) Symbol(symbol string) *GetMarginPriceIndexService {
+	s.symbol = symbol
+	return s
+}
+
+// Do send request
+func (s *GetMarginPriceIndexService) Do(ctx context.Context, opts ...RequestOption) (res *MarginPriceIndex, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/margin/priceIndex",
+		secType:  secTypeAPIKey,
+	}
+	r.setParam("symbol", s.symbol)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(MarginPriceIndex)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// MarginPriceIndex define margin price index
+type MarginPriceIndex struct {
+	CalcTime int64  `json:"calcTime"`
+	Price    string `json:"price"`
+	Symbol   string `json:"symbol"`
+}
