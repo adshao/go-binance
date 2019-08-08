@@ -142,3 +142,19 @@ func (m *mockedClient) do(req *http.Request) (*http.Response, error) {
 	args := m.Called(req)
 	return args.Get(0).(*http.Response), args.Error(1)
 }
+
+func (s *baseTestSuite) assertTradeV3Equal(e, a *TradeV3) {
+	r := s.r()
+	r.Equal(e.ID, a.ID, "ID")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.OrderID, a.OrderID, "OrderID")
+	r.Equal(e.Price, a.Price, "Price")
+	r.Equal(e.Quantity, a.Quantity, "Quantity")
+	r.Equal(e.QuoteQuantity, a.QuoteQuantity, "QuoteQuantity")
+	r.Equal(e.Commission, a.Commission, "Commission")
+	r.Equal(e.CommissionAsset, a.CommissionAsset, "CommissionAsset")
+	r.Equal(e.Time, a.Time, "Time")
+	r.Equal(e.IsBuyer, a.IsBuyer, "IsBuyer")
+	r.Equal(e.IsMaker, a.IsMaker, "IsMaker")
+	r.Equal(e.IsBestMatch, a.IsBestMatch, "IsBestMatch")
+}

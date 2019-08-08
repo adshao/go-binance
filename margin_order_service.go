@@ -237,3 +237,119 @@ func (s *GetMarginOrderService) Do(ctx context.Context, opts ...RequestOption) (
 	}
 	return res, nil
 }
+
+// ListMarginOpenOrdersService list margin open orders
+type ListMarginOpenOrdersService struct {
+	c      *Client
+	symbol string
+}
+
+// Symbol set symbol
+func (s *ListMarginOpenOrdersService) Symbol(symbol string) *ListMarginOpenOrdersService {
+	s.symbol = symbol
+	return s
+}
+
+// Do send request
+func (s *ListMarginOpenOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*Order, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/margin/openOrders",
+		secType:  secTypeSigned,
+	}
+	if s.symbol != "" {
+		r.setParam("symbol", s.symbol)
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []*Order{}, err
+	}
+	res = make([]*Order, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return []*Order{}, err
+	}
+	return res, nil
+}
+
+// ListMarginOrdersService all account orders; active, canceled, or filled
+type ListMarginOrdersService struct {
+	c         *Client
+	symbol    string
+	orderID   *int64
+	startTime *int64
+	endTime   *int64
+	limit     *int
+}
+
+// Symbol set symbol
+func (s *ListMarginOrdersService) Symbol(symbol string) *ListMarginOrdersService {
+	s.symbol = symbol
+	return s
+}
+
+// OrderID set orderID
+func (s *ListMarginOrdersService) OrderID(orderID int64) *ListMarginOrdersService {
+	s.orderID = &orderID
+	return s
+}
+
+// StartTime set starttime
+func (s *ListMarginOrdersService) StartTime(startTime int64) *ListMarginOrdersService {
+	s.startTime = &startTime
+	return s
+}
+
+// EndTime set endtime
+func (s *ListMarginOrdersService) EndTime(endTime int64) *ListMarginOrdersService {
+	s.endTime = &endTime
+	return s
+}
+
+// Limit set limit
+func (s *ListMarginOrdersService) Limit(limit int) *ListMarginOrdersService {
+	s.limit = &limit
+	return s
+}
+
+// Do send request
+func (s *ListMarginOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*MarginAllOrder, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/margin/allOrders",
+		secType:  secTypeSigned,
+	}
+	r.setParam("symbol", s.symbol)
+	if s.orderID != nil {
+		r.setParam("orderId", *s.orderID)
+	}
+	if s.startTime != nil {
+		r.setParam("startTime", *s.startTime)
+	}
+	if s.endTime != nil {
+		r.setParam("endTime", *s.endTime)
+	}
+	if s.limit != nil {
+		r.setParam("limit", *s.limit)
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []*MarginAllOrder{}, err
+	}
+	res = make([]*MarginAllOrder, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return []*MarginAllOrder{}, err
+	}
+	return res, nil
+}
+
+// MarginAllOrder define item of margin all orders
+type MarginAllOrder struct {
+	ID            int64  `json:"id"`
+	Price         string `json:"price"`
+	Quantity      string `json:"qty"`
+	QuoteQuantity string `json:"quoteQty"`
+	Symbol        string `json:"symbol"`
+	Time          int64  `json:"time"`
+}

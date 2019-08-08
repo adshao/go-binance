@@ -509,3 +509,112 @@ type MarginPriceIndex struct {
 	Price    string `json:"price"`
 	Symbol   string `json:"symbol"`
 }
+
+// ListMarginTradesService list trades
+type ListMarginTradesService struct {
+	c         *Client
+	symbol    string
+	startTime *int64
+	endTime   *int64
+	limit     *int
+	fromID    *int64
+}
+
+// Symbol set symbol
+func (s *ListMarginTradesService) Symbol(symbol string) *ListMarginTradesService {
+	s.symbol = symbol
+	return s
+}
+
+// StartTime set starttime
+func (s *ListMarginTradesService) StartTime(startTime int64) *ListMarginTradesService {
+	s.startTime = &startTime
+	return s
+}
+
+// EndTime set endtime
+func (s *ListMarginTradesService) EndTime(endTime int64) *ListMarginTradesService {
+	s.endTime = &endTime
+	return s
+}
+
+// Limit set limit
+func (s *ListMarginTradesService) Limit(limit int) *ListMarginTradesService {
+	s.limit = &limit
+	return s
+}
+
+// FromID set fromID
+func (s *ListMarginTradesService) FromID(fromID int64) *ListMarginTradesService {
+	s.fromID = &fromID
+	return s
+}
+
+// Do send request
+func (s *ListMarginTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*TradeV3, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/margin/myTrades",
+		secType:  secTypeSigned,
+	}
+	r.setParam("symbol", s.symbol)
+	if s.limit != nil {
+		r.setParam("limit", *s.limit)
+	}
+	if s.startTime != nil {
+		r.setParam("startTime", *s.startTime)
+	}
+	if s.endTime != nil {
+		r.setParam("endTime", *s.endTime)
+	}
+	if s.fromID != nil {
+		r.setParam("fromId", *s.fromID)
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []*TradeV3{}, err
+	}
+	res = make([]*TradeV3, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return []*TradeV3{}, err
+	}
+	return res, nil
+}
+
+// GetMaxBorrowableService get max borrowable of asset
+type GetMaxBorrowableService struct {
+	c     *Client
+	asset string
+}
+
+// Asset set asset
+func (s *GetMaxBorrowableService) Asset(asset string) *GetMaxBorrowableService {
+	s.asset = asset
+	return s
+}
+
+// Do send request
+func (s *GetMaxBorrowableService) Do(ctx context.Context, opts ...RequestOption) (res *MaxBorrowable, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/margin/maxBorrowable",
+		secType:  secTypeSigned,
+	}
+	r.setParam("asset", s.asset)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(MaxBorrowable)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// MaxBorrowable define max borrowable response
+type MaxBorrowable struct {
+	Amount string `json:"amount"`
+}

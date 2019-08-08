@@ -469,3 +469,115 @@ func (s *marginTestSuite) assertMarginPriceIndexEqual(e, a *MarginPriceIndex) {
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
 	r.Equal(e.Price, a.Price, "Price")
 }
+
+func (s *marginTestSuite) TestListMarginTrades() {
+	data := []byte(`[{
+		"commission": "0.00006000",
+		"commissionAsset": "BTC",
+		"id": 34,
+		"isBestMatch": true,
+		"isBuyer": false,
+		"isMaker": false,
+		"orderId": 39324,
+		"price": "0.02000000",
+		"qty": "3.00000000",
+		"symbol": "BNBBTC",
+		"time": 1561973357171
+	},{
+		"commission": "0.00002950",
+		"commissionAsset": "BTC",
+		"id": 32,
+		"isBestMatch": true,
+		"isBuyer": false,
+		"isMaker": true,
+		"orderId": 39319,
+		"price": "0.00590000",
+		"qty": "5.00000000",
+		"symbol": "BNBBTC",
+		"time": 1561964645345
+	}]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	symbol := "BNBBTC"
+	limit := 3
+	fromID := int64(1)
+	startTime := int64(1499865549590)
+	endTime := int64(1499865549590)
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"symbol":    symbol,
+			"startTime": startTime,
+			"endTime":   endTime,
+			"limit":     limit,
+			"fromId":    fromID,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	trades, err := s.client.NewListMarginTradesService().Symbol(symbol).
+		StartTime(startTime).EndTime(endTime).
+		Limit(limit).FromID(fromID).Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	r.Len(trades, 2)
+	e := []*TradeV3{
+		{
+			ID:              34,
+			Symbol:          "BNBBTC",
+			OrderID:         39324,
+			Price:           "0.02000000",
+			Quantity:        "3.00000000",
+			Commission:      "0.00006000",
+			CommissionAsset: "BTC",
+			Time:            1561973357171,
+			IsBuyer:         false,
+			IsMaker:         false,
+			IsBestMatch:     true,
+		},
+		{
+			ID:              32,
+			Symbol:          "BNBBTC",
+			OrderID:         39319,
+			Price:           "0.00590000",
+			Quantity:        "5.00000000",
+			Commission:      "0.00002950",
+			CommissionAsset: "BTC",
+			Time:            1561964645345,
+			IsBuyer:         false,
+			IsMaker:         true,
+			IsBestMatch:     true,
+		},
+	}
+	for i := 0; i < len(trades); i++ {
+		s.assertTradeV3Equal(e[i], trades[i])
+	}
+}
+
+func (s *marginTestSuite) TestGetMaxBorrowable() {
+	data := []byte(`{
+		"amount": "1.69248805"
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"asset": "BNBBTC",
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	borrowable, err := s.client.NewGetMaxBorrowableService().
+		Asset("BNBBTC").Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	e := &MaxBorrowable{
+		Amount: "1.69248805",
+	}
+	s.assertMaxBorrowableEqual(e, borrowable)
+}
+
+func (s *marginTestSuite) assertMaxBorrowableEqual(e, a *MaxBorrowable) {
+	s.r().Equal(e.Amount, a.Amount, "Amount")
+}

@@ -450,3 +450,23 @@ func (c *Client) NewGetMarginPairService() *GetMarginPairService {
 func (c *Client) NewGetMarginPriceIndexService() *GetMarginPriceIndexService {
 	return &GetMarginPriceIndexService{c: c}
 }
+
+// NewListMarginOpenOrdersService init list margin open orders service
+func (c *Client) NewListMarginOpenOrdersService() *ListMarginOpenOrdersService {
+	return &ListMarginOpenOrdersService{c: c}
+}
+
+// NewListMarginOrdersService init list margin all orders service
+func (c *Client) NewListMarginOrdersService() *ListMarginOrdersService {
+	return &ListMarginOrdersService{c: c}
+}
+
+// NewListMarginTradesService init list margin trades service
+func (c *Client) NewListMarginTradesService() *ListMarginTradesService {
+	return &ListMarginTradesService{c: c}
+}
+
+// NewGetMaxBorrowableService init get max borrowable service
+func (c *Client) NewGetMaxBorrowableService() *GetMaxBorrowableService {
+	return &GetMaxBorrowableService{c: c}
+}
