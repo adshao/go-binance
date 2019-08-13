@@ -13,6 +13,17 @@ For best compatibility, please use Go >= 1.8.
 
 Make sure you have read binance API document before continuing.
 
+### API List
+
+Name | Description | Status
+------------ | ------------ | ------------
+[rest-api.md](https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md) | Details on the Rest API (/api) | <input type="checkbox" checked> Implemented
+[web-socket-streams.md](https://github.com/binance-exchange/binance-official-api-docs/blob/master/web-socket-streams.md) | Details on available streams and payloads | <input type="checkbox" checked>  Implemented
+[user-data-stream.md](https://github.com/binance-exchange/binance-official-api-docs/blob/master/user-data-stream.md) | Details on the dedicated account stream | <input type="checkbox" checked>  Implemented
+[wapi-api.md](https://github.com/binance-exchange/binance-official-api-docs/blob/master/wapi-api.md) | Details on the Withdrawal API (/wapi) | <input type="checkbox" checked>  Partially Implemented
+[margin-api.md](https://github.com/binance-exchange/binance-official-api-docs/blob/master/margin-api.md) | Details on the Margin API (/sapi) | <input type="checkbox" checked>  Implemented
+
+
 ### Installation
 
 ```shell
@@ -56,7 +67,7 @@ Following are some simple examples, please refer to [godoc](https://godoc.org/gi
 ```golang
 order, err := client.NewCreateOrderService().Symbol("BNBETH").
         Side(binance.SideTypeBuy).Type(binance.OrderTypeLimit).
-        TimeInForce(binance.TimeInForceGTC).Quantity("5").
+        TimeInForce(binance.TimeInForceTypeGTC).Quantity("5").
         Price("0.0030000").Do(context.Background())
 if err != nil {
     fmt.Println(err)
