@@ -41,6 +41,15 @@ type SymbolStatusType string
 // SymbolFilterType define symbol filter type
 type SymbolFilterType string
 
+// MarginTransferType define margin transfer type
+type MarginTransferType int
+
+// MarginLoanStatusType define margin loan status type
+type MarginLoanStatusType string
+
+// MarginRepayStatusType define margin repay status type
+type MarginRepayStatusType string
+
 // Global enums
 const (
 	SideTypeBuy  SideType = "BUY"
@@ -88,6 +97,17 @@ const (
 	SymbolFilterTypeMarketLotSize    SymbolFilterType = "MARKET_LOT_SIZE"
 	SymbolFilterTypeMaxNumAlgoOrders SymbolFilterType = "MAX_NUM_ALGO_ORDERS"
 
+	MarginTransferTypeToMargin MarginTransferType = 1
+	MarginTransferTypeToMain   MarginTransferType = 2
+
+	MarginLoanStatusTypePending   MarginLoanStatusType = "PENDING"
+	MarginLoanStatusTypeConfirmed MarginLoanStatusType = "CONFIRMED"
+	MarginLoanStatusTypeFailed    MarginLoanStatusType = "FAILED"
+
+	MarginRepayStatusTypePending   MarginRepayStatusType = "PENDING"
+	MarginRepayStatusTypeConfirmed MarginRepayStatusType = "CONFIRMED"
+	MarginRepayStatusTypeFailed    MarginRepayStatusType = "FAILED"
+
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
 	recvWindowKey = "recvWindow"
@@ -112,7 +132,7 @@ func NewClient(apiKey, secretKey string) *Client {
 	return &Client{
 		APIKey:     apiKey,
 		SecretKey:  secretKey,
-		BaseURL:    "https://www.binance.com",
+		BaseURL:    "https://api.binance.com",
 		UserAgent:  "Binance/golang",
 		HTTPClient: http.DefaultClient,
 		Logger:     log.New(os.Stderr, "Binance-golang ", log.LstdFlags),
@@ -369,4 +389,84 @@ func (c *Client) NewGetWithdrawFeeService() *GetWithdrawFeeService {
 // NewAveragePriceService init average price service
 func (c *Client) NewAveragePriceService() *AveragePriceService {
 	return &AveragePriceService{c: c}
+}
+
+// NewMarginTransferService init margin account transfer service
+func (c *Client) NewMarginTransferService() *MarginTransferService {
+	return &MarginTransferService{c: c}
+}
+
+// NewMarginLoanService init margin account loan service
+func (c *Client) NewMarginLoanService() *MarginLoanService {
+	return &MarginLoanService{c: c}
+}
+
+// NewMarginRepayService init margin account repay service
+func (c *Client) NewMarginRepayService() *MarginRepayService {
+	return &MarginRepayService{c: c}
+}
+
+// NewCreateMarginOrderService init creating margin order service
+func (c *Client) NewCreateMarginOrderService() *CreateMarginOrderService {
+	return &CreateMarginOrderService{c: c}
+}
+
+// NewCancelMarginOrderService init cancel order service
+func (c *Client) NewCancelMarginOrderService() *CancelMarginOrderService {
+	return &CancelMarginOrderService{c: c}
+}
+
+// NewGetMarginOrderService init get order service
+func (c *Client) NewGetMarginOrderService() *GetMarginOrderService {
+	return &GetMarginOrderService{c: c}
+}
+
+// NewListMarginLoansService init list margin loan service
+func (c *Client) NewListMarginLoansService() *ListMarginLoansService {
+	return &ListMarginLoansService{c: c}
+}
+
+// NewListMarginRepaysService init list margin repay service
+func (c *Client) NewListMarginRepaysService() *ListMarginRepaysService {
+	return &ListMarginRepaysService{c: c}
+}
+
+// NewGetMarginAccountService init get margin account service
+func (c *Client) NewGetMarginAccountService() *GetMarginAccountService {
+	return &GetMarginAccountService{c: c}
+}
+
+// NewGetMarginAssetService init get margin asset service
+func (c *Client) NewGetMarginAssetService() *GetMarginAssetService {
+	return &GetMarginAssetService{c: c}
+}
+
+// NewGetMarginPairService init get margin pair service
+func (c *Client) NewGetMarginPairService() *GetMarginPairService {
+	return &GetMarginPairService{c: c}
+}
+
+// NewGetMarginPriceIndexService init get margin price index service
+func (c *Client) NewGetMarginPriceIndexService() *GetMarginPriceIndexService {
+	return &GetMarginPriceIndexService{c: c}
+}
+
+// NewListMarginOpenOrdersService init list margin open orders service
+func (c *Client) NewListMarginOpenOrdersService() *ListMarginOpenOrdersService {
+	return &ListMarginOpenOrdersService{c: c}
+}
+
+// NewListMarginOrdersService init list margin all orders service
+func (c *Client) NewListMarginOrdersService() *ListMarginOrdersService {
+	return &ListMarginOrdersService{c: c}
+}
+
+// NewListMarginTradesService init list margin trades service
+func (c *Client) NewListMarginTradesService() *ListMarginTradesService {
+	return &ListMarginTradesService{c: c}
+}
+
+// NewGetMaxBorrowableService init get max borrowable service
+func (c *Client) NewGetMaxBorrowableService() *GetMaxBorrowableService {
+	return &GetMaxBorrowableService{c: c}
 }
