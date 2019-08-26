@@ -470,3 +470,23 @@ func (c *Client) NewListMarginTradesService() *ListMarginTradesService {
 func (c *Client) NewGetMaxBorrowableService() *GetMaxBorrowableService {
 	return &GetMaxBorrowableService{c: c}
 }
+
+// NewGetMaxTransferableService init get max transferable service
+func (c *Client) NewGetMaxTransferableService() *GetMaxTransferableService {
+	return &GetMaxTransferableService{c: c}
+}
+
+// NewStartMarginUserStreamService init starting margin user stream service
+func (c *Client) NewStartMarginUserStreamService() *StartMarginUserStreamService {
+	return &StartMarginUserStreamService{c: c}
+}
+
+// NewKeepaliveMarginUserStreamService init keep alive margin user stream service
+func (c *Client) NewKeepaliveMarginUserStreamService() *KeepaliveMarginUserStreamService {
+	return &KeepaliveMarginUserStreamService{c: c}
+}
+
+// NewCloseMarginUserStreamService init closing margin user stream service
+func (c *Client) NewCloseMarginUserStreamService() *CloseMarginUserStreamService {
+	return &CloseMarginUserStreamService{c: c}
+}

@@ -581,3 +581,75 @@ func (s *marginTestSuite) TestGetMaxBorrowable() {
 func (s *marginTestSuite) assertMaxBorrowableEqual(e, a *MaxBorrowable) {
 	s.r().Equal(e.Amount, a.Amount, "Amount")
 }
+
+func (s *marginTestSuite) TestGetMaxTransferable() {
+	data := []byte(`{
+		"amount": "3.59498107"
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"asset": "BNBBTC",
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	transferable, err := s.client.NewGetMaxTransferableService().
+		Asset("BNBBTC").Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	e := &MaxTransferable{
+		Amount: "3.59498107",
+	}
+	s.assertMaxTransferableEqual(e, transferable)
+}
+
+func (s *marginTestSuite) assertMaxTransferableEqual(e, a *MaxTransferable) {
+	s.r().Equal(e.Amount, a.Amount, "Amount")
+}
+
+func (s *marginTestSuite) TestStartMarginUserStream() {
+	data := []byte(`{
+        "listenKey": "T3ee22BIYuWqmvne0HNq2A2WsFlEtLhvWCtItw6ffhhdmjifQ2tRbuKkTHhr"
+    }`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		s.assertRequestEqual(newRequest(), r)
+	})
+
+	listenKey, err := s.client.NewStartMarginUserStreamService().Do(newContext())
+	s.r().NoError(err)
+	s.r().Equal("T3ee22BIYuWqmvne0HNq2A2WsFlEtLhvWCtItw6ffhhdmjifQ2tRbuKkTHhr", listenKey)
+}
+
+func (s *marginTestSuite) TestKeepaliveMarginUserStream() {
+	data := []byte(`{}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	listenKey := "dummykey"
+	s.assertReq(func(r *request) {
+		s.assertRequestEqual(newRequest().setFormParam("listenKey", listenKey), r)
+	})
+
+	err := s.client.NewKeepaliveMarginUserStreamService().ListenKey(listenKey).Do(newContext())
+	s.r().NoError(err)
+}
+
+func (s *marginTestSuite) TestCloseMarginUserStream() {
+	data := []byte(`{}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	listenKey := "dummykey"
+	s.assertReq(func(r *request) {
+		s.assertRequestEqual(newRequest().setFormParam("listenKey", listenKey), r)
+	})
+
+	err := s.client.NewCloseMarginUserStreamService().ListenKey(listenKey).Do(newContext())
+	s.r().NoError(err)
+}

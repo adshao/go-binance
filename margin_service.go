@@ -618,3 +618,112 @@ func (s *GetMaxBorrowableService) Do(ctx context.Context, opts ...RequestOption)
 type MaxBorrowable struct {
 	Amount string `json:"amount"`
 }
+
+// GetMaxTransferableService get max transferable of asset
+type GetMaxTransferableService struct {
+	c     *Client
+	asset string
+}
+
+// Asset set asset
+func (s *GetMaxTransferableService) Asset(asset string) *GetMaxTransferableService {
+	s.asset = asset
+	return s
+}
+
+// Do send request
+func (s *GetMaxTransferableService) Do(ctx context.Context, opts ...RequestOption) (res *MaxTransferable, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/margin/maxTransferable",
+		secType:  secTypeSigned,
+	}
+	r.setParam("asset", s.asset)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(MaxTransferable)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// MaxTransferable define max transferable response
+type MaxTransferable struct {
+	Amount string `json:"amount"`
+}
+
+// StartMarginUserStreamService create listen key for margin user stream service
+type StartMarginUserStreamService struct {
+	c *Client
+}
+
+// Do send request
+func (s *StartMarginUserStreamService) Do(ctx context.Context, opts ...RequestOption) (listenKey string, err error) {
+	r := &request{
+		method:   "POST",
+		endpoint: "/sapi/v1/userDataStream",
+		secType:  secTypeAPIKey,
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return "", err
+	}
+	j, err := newJSON(data)
+	if err != nil {
+		return "", err
+	}
+	listenKey = j.Get("listenKey").MustString()
+	return listenKey, nil
+}
+
+// KeepaliveMarginUserStreamService update listen key
+type KeepaliveMarginUserStreamService struct {
+	c         *Client
+	listenKey string
+}
+
+// ListenKey set listen key
+func (s *KeepaliveMarginUserStreamService) ListenKey(listenKey string) *KeepaliveMarginUserStreamService {
+	s.listenKey = listenKey
+	return s
+}
+
+// Do send request
+func (s *KeepaliveMarginUserStreamService) Do(ctx context.Context, opts ...RequestOption) (err error) {
+	r := &request{
+		method:   "PUT",
+		endpoint: "/sapi/v1/userDataStream",
+		secType:  secTypeAPIKey,
+	}
+	r.setFormParam("listenKey", s.listenKey)
+	_, err = s.c.callAPI(ctx, r, opts...)
+	return err
+}
+
+// CloseMarginUserStreamService delete listen key
+type CloseMarginUserStreamService struct {
+	c         *Client
+	listenKey string
+}
+
+// ListenKey set listen key
+func (s *CloseMarginUserStreamService) ListenKey(listenKey string) *CloseMarginUserStreamService {
+	s.listenKey = listenKey
+	return s
+}
+
+// Do send request
+func (s *CloseMarginUserStreamService) Do(ctx context.Context, opts ...RequestOption) (err error) {
+	r := &request{
+		method:   "DELETE",
+		endpoint: "/sapi/v1/userDataStream",
+		secType:  secTypeAPIKey,
+	}
+	r.setFormParam("listenKey", s.listenKey)
+	_, err = s.c.callAPI(ctx, r, opts...)
+	return err
+}
