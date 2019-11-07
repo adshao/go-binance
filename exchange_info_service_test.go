@@ -82,7 +82,7 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 				IcebergAllowed:         true,
 				OcoAllowed:             true,
 				IsSpotTradingAllowed:   true,
-				IsMarginTradingAllowed: true,
+				IsMarginTradingAllowed: false,
 				Filters: []map[string]interface{}{
 					{"filterType": "PRICE_FILTER", "minPrice": "0.00000100", "maxPrice": "100000.00000000", "tickSize": "0.00000100"},
 					{"filterType": "LOT_SIZE", "minQty": "0.00100000", "maxQty": "100000.00000000", "stepSize": "0.00100000"},
