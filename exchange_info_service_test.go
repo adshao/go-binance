@@ -46,6 +46,9 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 				"quotePrecision": 8,
 				"orderTypes":["LIMIT","LIMIT_MAKER","MARKET","STOP_LOSS_LIMIT","TAKE_PROFIT_LIMIT"],
 				"icebergAllowed": true,
+				"ocoAllowed": true,
+				"isSpotTradingAllowed": true,
+				"isMarginTradingAllowed": false,
 				"filters":[{"filterType":"PRICE_FILTER","minPrice":"0.00000100","maxPrice":"100000.00000000","tickSize":"0.00000100"},{"filterType":"LOT_SIZE","minQty":"0.00100000","maxQty":"100000.00000000","stepSize":"0.00100000"},{"filterType":"MIN_NOTIONAL","minNotional":"0.00100000"},{"filterType": "MAX_NUM_ALGO_ORDERS", "maxNumAlgoOrders": 5}]
 			}
 		]
@@ -69,14 +72,17 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 		ExchangeFilters: []interface{}{},
 		Symbols: []Symbol{
 			{
-				Symbol:             "ETHBTC",
-				Status:             "TRADING",
-				BaseAsset:          "ETH",
-				BaseAssetPrecision: 8,
-				QuoteAsset:         "BTC",
-				QuotePrecision:     8,
-				OrderTypes:         []string{"LIMIT", "LIMIT_MAKER", "MARKET", "STOP_LOSS_LIMIT", "TAKE_PROFIT_LIMIT"},
-				IcebergAllowed:     true,
+				Symbol:                 "ETHBTC",
+				Status:                 "TRADING",
+				BaseAsset:              "ETH",
+				BaseAssetPrecision:     8,
+				QuoteAsset:             "BTC",
+				QuotePrecision:         8,
+				OrderTypes:             []string{"LIMIT", "LIMIT_MAKER", "MARKET", "STOP_LOSS_LIMIT", "TAKE_PROFIT_LIMIT"},
+				IcebergAllowed:         true,
+				OcoAllowed:             true,
+				IsSpotTradingAllowed:   true,
+				IsMarginTradingAllowed: false,
 				Filters: []map[string]interface{}{
 					{"filterType": "PRICE_FILTER", "minPrice": "0.00000100", "maxPrice": "100000.00000000", "tickSize": "0.00000100"},
 					{"filterType": "LOT_SIZE", "minQty": "0.00100000", "maxQty": "100000.00000000", "stepSize": "0.00100000"},
