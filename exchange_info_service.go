@@ -14,7 +14,7 @@ type ExchangeInfoService struct {
 func (s *ExchangeInfoService) Do(ctx context.Context, opts ...RequestOption) (res *ExchangeInfo, err error) {
 	r := &request{
 		method:   "GET",
-		endpoint: "/api/v1/exchangeInfo",
+		endpoint: "/api/v3/exchangeInfo",
 		secType:  secTypeNone,
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
@@ -48,15 +48,18 @@ type RateLimit struct {
 
 // Symbol market symbol
 type Symbol struct {
-	Symbol             string                   `json:"symbol"`
-	Status             string                   `json:"status"`
-	BaseAsset          string                   `json:"baseAsset"`
-	BaseAssetPrecision int                      `json:"baseAssetPrecision"`
-	QuoteAsset         string                   `json:"quoteAsset"`
-	QuotePrecision     int                      `json:"quotePrecision"`
-	OrderTypes         []string                 `json:"orderTypes"`
-	IcebergAllowed     bool                     `json:"icebergAllowed"`
-	Filters            []map[string]interface{} `json:"filters"`
+	Symbol                 string                   `json:"symbol"`
+	Status                 string                   `json:"status"`
+	BaseAsset              string                   `json:"baseAsset"`
+	BaseAssetPrecision     int                      `json:"baseAssetPrecision"`
+	QuoteAsset             string                   `json:"quoteAsset"`
+	QuotePrecision         int                      `json:"quotePrecision"`
+	OrderTypes             []string                 `json:"orderTypes"`
+	IcebergAllowed         bool                     `json:"icebergAllowed"`
+	OcoAllowed             bool                     `json:"ocoAllowed"`
+	IsSpotTradingAllowed   bool                     `json:"isSpotTradingAllowed"`
+	IsMarginTradingAllowed bool                     `json:"isMarginTradingAllowed"`
+	Filters                []map[string]interface{} `json:"filters"`
 }
 
 // LotSizeFilter define lot size filter of symbol
