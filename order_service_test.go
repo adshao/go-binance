@@ -67,10 +67,10 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 		OrigQuantity:             "12.00",
 		ExecutedQuantity:         "10.00",
 		CummulativeQuoteQuantity: "10.00",
-		Status:      OrderStatusTypeFilled,
-		TimeInForce: TimeInForceTypeGTC,
-		Type:        OrderTypeLimit,
-		Side:        SideTypeBuy,
+		Status:                   OrderStatusTypeFilled,
+		TimeInForce:              TimeInForceTypeGTC,
+		Type:                     OrderTypeLimit,
+		Side:                     SideTypeBuy,
 	}
 	s.assertCreateOrderResponseEqual(e, res)
 
@@ -141,10 +141,10 @@ func (s *orderServiceTestSuite) TestCreateOrderFull() {
 		OrigQuantity:             "12.00",
 		ExecutedQuantity:         "10.00",
 		CummulativeQuoteQuantity: "10.00",
-		Status:      OrderStatusTypeFilled,
-		TimeInForce: TimeInForceTypeGTC,
-		Type:        OrderTypeLimit,
-		Side:        SideTypeBuy,
+		Status:                   OrderStatusTypeFilled,
+		TimeInForce:              TimeInForceTypeGTC,
+		Type:                     OrderTypeLimit,
+		Side:                     SideTypeBuy,
 		Fills: []*Fill{
 			&Fill{
 				Price:           "0.00002991",
@@ -314,15 +314,15 @@ func (s *orderServiceTestSuite) TestGetOrder() {
 		OrigQuantity:             "1.0",
 		ExecutedQuantity:         "0.0",
 		CummulativeQuoteQuantity: "0.0",
-		Status:          OrderStatusTypeNew,
-		TimeInForce:     TimeInForceTypeGTC,
-		Type:            OrderTypeLimit,
-		Side:            SideTypeBuy,
-		StopPrice:       "0.0",
-		IcebergQuantity: "0.0",
-		Time:            1499827319559,
-		UpdateTime:      1499827319559,
-		IsWorking:       true,
+		Status:                   OrderStatusTypeNew,
+		TimeInForce:              TimeInForceTypeGTC,
+		Type:                     OrderTypeLimit,
+		Side:                     SideTypeBuy,
+		StopPrice:                "0.0",
+		IcebergQuantity:          "0.0",
+		Time:                     1499827319559,
+		UpdateTime:               1499827319559,
+		IsWorking:                true,
 	}
 	s.assertOrderEqual(e, order)
 }
@@ -439,10 +439,10 @@ func (s *orderServiceTestSuite) TestCancelOrder() {
 		OrigQuantity:             "10.00000000",
 		ExecutedQuantity:         "8.00000000",
 		CummulativeQuoteQuantity: "8.00000000",
-		Status:      OrderStatusTypeCanceled,
-		TimeInForce: TimeInForceTypeGTC,
-		Type:        OrderTypeLimit,
-		Side:        SideTypeSell,
+		Status:                   OrderStatusTypeCanceled,
+		TimeInForce:              TimeInForceTypeGTC,
+		Type:                     OrderTypeLimit,
+		Side:                     SideTypeSell,
 	}
 	s.assertCancelOrderResponseEqual(e, res)
 }

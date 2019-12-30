@@ -17,6 +17,7 @@ type CreateMarginOrderService struct {
 	newClientOrderID *string
 	icebergQuantity  *string
 	newOrderRespType *NewOrderRespType
+	sideEffectType   *SideEffectType
 	timeInForce      *TimeInForceType
 }
 
@@ -80,6 +81,12 @@ func (s *CreateMarginOrderService) NewOrderRespType(newOrderRespType NewOrderRes
 	return s
 }
 
+// SideEffectType set sideEffectType
+func (s *CreateMarginOrderService) SideEffectType(sideEffectType SideEffectType) *CreateMarginOrderService {
+	s.sideEffectType = &sideEffectType
+	return s
+}
+
 // Do send request
 func (s *CreateMarginOrderService) Do(ctx context.Context, opts ...RequestOption) (res *CreateOrderResponse, err error) {
 	r := &request{
@@ -110,6 +117,9 @@ func (s *CreateMarginOrderService) Do(ctx context.Context, opts ...RequestOption
 	}
 	if s.newOrderRespType != nil {
 		m["newOrderRespType"] = *s.newOrderRespType
+	}
+	if s.sideEffectType != nil {
+		m["sideEffectType"] = *s.sideEffectType
 	}
 	r.setFormParams(m)
 	res = new(CreateOrderResponse)

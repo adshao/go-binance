@@ -50,6 +50,9 @@ type MarginLoanStatusType string
 // MarginRepayStatusType define margin repay status type
 type MarginRepayStatusType string
 
+// SideEffectType define side effect type for orders
+type SideEffectType string
+
 // Global enums
 const (
 	SideTypeBuy  SideType = "BUY"
@@ -107,6 +110,10 @@ const (
 	MarginRepayStatusTypePending   MarginRepayStatusType = "PENDING"
 	MarginRepayStatusTypeConfirmed MarginRepayStatusType = "CONFIRMED"
 	MarginRepayStatusTypeFailed    MarginRepayStatusType = "FAILED"
+
+	SideEffectTypeNoSideEffect SideEffectType = "NO_SIDE_EFFECT"
+	SideEffectTypeMarginBuy    SideEffectType = "MARGIN_BUY"
+	SideEffectTypeAutoRepay    SideEffectType = "AUTO_REPAY"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
