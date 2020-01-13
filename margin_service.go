@@ -471,6 +471,41 @@ type MarginPair struct {
 	IsSellAllowed bool   `json:"isSellAllowed"`
 }
 
+// GetMarginAllPairsService get margin pair info
+type GetMarginAllPairsService struct {
+	c *Client
+}
+
+// Do send request
+func (s *GetMarginAllPairsService) Do(ctx context.Context, opts ...RequestOption) (res []*MarginAllPair, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/margin/allPairs",
+		secType:  secTypeAPIKey,
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []*MarginAllPair{}, err
+	}
+	res = make([]*MarginAllPair, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return []*MarginAllPair{}, err
+	}
+	return res, nil
+}
+
+// MarginAllPair define margin pair info
+type MarginAllPair struct {
+	ID            int64  `json:"id"`
+	Symbol        string `json:"symbol"`
+	Base          string `json:"base"`
+	Quote         string `json:"quote"`
+	IsMarginTrade bool   `json:"isMarginTrade"`
+	IsBuyAllowed  bool   `json:"isBuyAllowed"`
+	IsSellAllowed bool   `json:"isSellAllowed"`
+}
+
 // GetMarginPriceIndexService get margin price index
 type GetMarginPriceIndexService struct {
 	c      *Client

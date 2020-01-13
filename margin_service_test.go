@@ -439,6 +439,71 @@ func (s *marginTestSuite) assertMarginPairEqual(e, a *MarginPair) {
 	r.Equal(e.IsSellAllowed, a.IsSellAllowed, "IsSellAllowed")
 }
 
+func (s *marginTestSuite) TestGetMarginAllPairs() {
+	data := []byte(`[{
+		"id":323355778339572400,
+		"symbol":"BTCUSDT",
+		"base":"BTC",
+		"quote":"USDT",
+		"isMarginTrade":true,
+		"isBuyAllowed":true,
+		"isSellAllowed":true
+	},{
+		"id":351637150141315861,
+		"symbol":"BNBBTC",
+		"base":"BNB",
+		"quote":"BTC",
+		"isMarginTrade":true,
+		"isBuyAllowed":true,
+		"isSellAllowed":true
+	}]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newRequest()
+		s.assertRequestEqual(e, r)
+	})
+	res, err := s.client.NewGetMarginAllPairsService().
+		Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	r.Len(res, 2)
+	e := []*MarginAllPair{
+		{
+			ID:            323355778339572400,
+			Symbol:        "BTCUSDT",
+			Base:          "BTC",
+			Quote:         "USDT",
+			IsMarginTrade: true,
+			IsBuyAllowed:  true,
+			IsSellAllowed: true,
+		}, {
+			ID:            351637150141315861,
+			Symbol:        "BNBBTC",
+			Base:          "BNB",
+			Quote:         "BTC",
+			IsMarginTrade: true,
+			IsBuyAllowed:  true,
+			IsSellAllowed: true,
+		},
+	}
+	for i := 0; i < len(res); i++ {
+		s.assertMarginAllPairsEqual(e[i], res[i])
+	}
+}
+
+func (s *marginTestSuite) assertMarginAllPairsEqual(e, a *MarginAllPair) {
+	r := s.r()
+	r.Equal(e.ID, a.ID, "ID")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.Base, a.Base, "Base")
+	r.Equal(e.Quote, a.Quote, "Quote")
+	r.Equal(e.IsMarginTrade, a.IsMarginTrade, "IsMarginTrade")
+	r.Equal(e.IsBuyAllowed, a.IsBuyAllowed, "IsBuyAllowed")
+	r.Equal(e.IsSellAllowed, a.IsSellAllowed, "IsSellAllowed")
+}
+
 func (s *marginTestSuite) TestGetMarginPriceIndex() {
 	data := []byte(`{
 		"calcTime": 1562046418000,

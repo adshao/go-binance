@@ -453,6 +453,11 @@ func (c *Client) NewGetMarginPairService() *GetMarginPairService {
 	return &GetMarginPairService{c: c}
 }
 
+// NewGetMarginAllPairsService init get margin all pairs service
+func (c *Client) NewGetMarginAllPairsService() *GetMarginAllPairsService {
+	return &GetMarginAllPairsService{c: c}
+}
+
 // NewGetMarginPriceIndexService init get margin price index service
 func (c *Client) NewGetMarginPriceIndexService() *GetMarginPriceIndexService {
 	return &GetMarginPriceIndexService{c: c}
