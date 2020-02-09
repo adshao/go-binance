@@ -168,7 +168,7 @@ func (s *CancelMarginOrderService) NewClientOrderID(newClientOrderID string) *Ca
 }
 
 // Do send request
-func (s *CancelMarginOrderService) Do(ctx context.Context, opts ...RequestOption) (res *CancelOrderResponse, err error) {
+func (s *CancelMarginOrderService) Do(ctx context.Context, opts ...RequestOption) (res *CancelMarginOrderResponse, err error) {
 	r := &request{
 		method:   "DELETE",
 		endpoint: "/sapi/v1/margin/order",
@@ -188,7 +188,7 @@ func (s *CancelMarginOrderService) Do(ctx context.Context, opts ...RequestOption
 	if err != nil {
 		return nil, err
 	}
-	res = new(CancelOrderResponse)
+	res = new(CancelMarginOrderResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -362,4 +362,21 @@ type MarginAllOrder struct {
 	QuoteQuantity string `json:"quoteQty"`
 	Symbol        string `json:"symbol"`
 	Time          int64  `json:"time"`
+}
+
+// CancelMarginOrderResponse define response of canceling order
+type CancelMarginOrderResponse struct {
+	Symbol                   string          `json:"symbol"`
+	OrigClientOrderID        string          `json:"origClientOrderId"`
+	OrderID                  string          `json:"orderId"`
+	ClientOrderID            string          `json:"clientOrderId"`
+	TransactTime             int64           `json:"transactTime"`
+	Price                    string          `json:"price"`
+	OrigQuantity             string          `json:"origQty"`
+	ExecutedQuantity         string          `json:"executedQty"`
+	CummulativeQuoteQuantity string          `json:"cummulativeQuoteQty"`
+	Status                   OrderStatusType `json:"status"`
+	TimeInForce              TimeInForceType `json:"timeInForce"`
+	Type                     OrderType       `json:"type"`
+	Side                     SideType        `json:"side"`
 }
