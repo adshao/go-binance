@@ -153,7 +153,7 @@ func (s *marginOrderServiceTestSuite) TestCreateOrderFull() {
 func (s *marginOrderServiceTestSuite) TestCancelOrder() {
 	data := []byte(`{
 		"symbol": "LTCBTC",
-		"orderId": 28,
+		"orderId": "28",
 		"origClientOrderId": "myOrder1",
 		"clientOrderId": "cancelMyOrder1",
 		"transactTime": 1507725176595,
