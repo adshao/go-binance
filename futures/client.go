@@ -1,4 +1,4 @@
-package binance
+package futures
 
 import (
 	"bytes"
@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/adshao/go-binance/common"
-	"github.com/adshao/go-binance/futures"
 	"github.com/bitly/go-simplejson"
 )
 
@@ -43,40 +42,31 @@ type SymbolStatusType string
 // SymbolFilterType define symbol filter type
 type SymbolFilterType string
 
-// MarginTransferType define margin transfer type
-type MarginTransferType int
-
-// MarginLoanStatusType define margin loan status type
-type MarginLoanStatusType string
-
-// MarginRepayStatusType define margin repay status type
-type MarginRepayStatusType string
-
-// FuturesTransferStatusType define futures transfer status type
-type FuturesTransferStatusType string
-
 // SideEffectType define side effect type for orders
 type SideEffectType string
 
-// FuturesTransferType define futures transfer type
-type FuturesTransferType int
+// WorkingType define working type
+type WorkingType string
+
+// MarginType define margin type
+type MarginType string
 
 // Global enums
 const (
 	SideTypeBuy  SideType = "BUY"
 	SideTypeSell SideType = "SELL"
 
-	OrderTypeLimit           OrderType = "LIMIT"
-	OrderTypeMarket          OrderType = "MARKET"
-	OrderTypeLimitMaker      OrderType = "LIMIT_MAKER"
-	OrderTypeStopLoss        OrderType = "STOP_LOSS"
-	OrderTypeStopLossLimit   OrderType = "STOP_LOSS_LIMIT"
-	OrderTypeTakeProfit      OrderType = "TAKE_PROFIT"
-	OrderTypeTakeProfitLimit OrderType = "TAKE_PROFIT_LIMIT"
+	OrderTypeLimit            OrderType = "LIMIT"
+	OrderTypeMarket           OrderType = "MARKET"
+	OrderTypeStop             OrderType = "STOP"
+	OrderTypeStopMarket       OrderType = "STOP_MARKET"
+	OrderTypeTakeProfit       OrderType = "TAKE_PROFIT"
+	OrderTypeTakeProfitMarket OrderType = "TAKE_PROFIT_MARKET"
 
-	TimeInForceTypeGTC TimeInForceType = "GTC"
-	TimeInForceTypeIOC TimeInForceType = "IOC"
-	TimeInForceTypeFOK TimeInForceType = "FOK"
+	TimeInForceTypeGTC TimeInForceType = "GTC" // Good Till Cancel
+	TimeInForceTypeIOC TimeInForceType = "IOC" // Immediate or Cancel
+	TimeInForceTypeFOK TimeInForceType = "FOK" // Fill or Kill
+	TimeInForceTypeGTX TimeInForceType = "GTX" // Good Till Crossing (Post Only)
 
 	NewOrderRespTypeACK    NewOrderRespType = "ACK"
 	NewOrderRespTypeRESULT NewOrderRespType = "RESULT"
@@ -86,11 +76,13 @@ const (
 	OrderStatusTypePartiallyFilled OrderStatusType = "PARTIALLY_FILLED"
 	OrderStatusTypeFilled          OrderStatusType = "FILLED"
 	OrderStatusTypeCanceled        OrderStatusType = "CANCELED"
-	OrderStatusTypePendingCancel   OrderStatusType = "PENDING_CANCEL"
 	OrderStatusTypeRejected        OrderStatusType = "REJECTED"
 	OrderStatusTypeExpired         OrderStatusType = "EXPIRED"
 
-	SymbolTypeSpot SymbolType = "SPOT"
+	SymbolTypeFuture SymbolType = "FUTURE"
+
+	WorkingTypeMarkPrice     WorkingType = "MARK_PRICE"
+	WorkingTypeContractPrice WorkingType = "CONTRACT_PRICE"
 
 	SymbolStatusTypePreTrading   SymbolStatusType = "PRE_TRADING"
 	SymbolStatusTypeTrading      SymbolStatusType = "TRADING"
@@ -100,35 +92,18 @@ const (
 	SymbolStatusTypeAuctionMatch SymbolStatusType = "AUCTION_MATCH"
 	SymbolStatusTypeBreak        SymbolStatusType = "BREAK"
 
-	SymbolFilterTypeLotSize          SymbolFilterType = "LOT_SIZE"
-	SymbolFilterTypePriceFilter      SymbolFilterType = "PRICE_FILTER"
-	SymbolFilterTypePercentPrice     SymbolFilterType = "PERCENT_PRICE"
-	SymbolFilterTypeMinNotional      SymbolFilterType = "MIN_NOTIONAL"
-	SymbolFilterTypeIcebergParts     SymbolFilterType = "ICEBERG_PARTS"
-	SymbolFilterTypeMarketLotSize    SymbolFilterType = "MARKET_LOT_SIZE"
-	SymbolFilterTypeMaxNumAlgoOrders SymbolFilterType = "MAX_NUM_ALGO_ORDERS"
-
-	MarginTransferTypeToMargin MarginTransferType = 1
-	MarginTransferTypeToMain   MarginTransferType = 2
-
-	FuturesTransferTypeToFutures FuturesTransferType = 1
-	FuturesTransferTypeToMain    FuturesTransferType = 2
-
-	MarginLoanStatusTypePending   MarginLoanStatusType = "PENDING"
-	MarginLoanStatusTypeConfirmed MarginLoanStatusType = "CONFIRMED"
-	MarginLoanStatusTypeFailed    MarginLoanStatusType = "FAILED"
-
-	MarginRepayStatusTypePending   MarginRepayStatusType = "PENDING"
-	MarginRepayStatusTypeConfirmed MarginRepayStatusType = "CONFIRMED"
-	MarginRepayStatusTypeFailed    MarginRepayStatusType = "FAILED"
-
-	FuturesTransferStatusTypePending   FuturesTransferStatusType = "PENDING"
-	FuturesTransferStatusTypeConfirmed FuturesTransferStatusType = "CONFIRMED"
-	FuturesTransferStatusTypeFailed    FuturesTransferStatusType = "FAILED"
+	SymbolFilterTypeLotSize       SymbolFilterType = "LOT_SIZE"
+	SymbolFilterTypePrice         SymbolFilterType = "PRICE_FILTER"
+	SymbolFilterTypePercentPrice  SymbolFilterType = "PERCENT_PRICE"
+	SymbolFilterTypeMarketLotSize SymbolFilterType = "MARKET_LOT_SIZE"
+	SymbolFilterTypeMaxNumOrders  SymbolFilterType = "MAX_NUM_ORDERS"
 
 	SideEffectTypeNoSideEffect SideEffectType = "NO_SIDE_EFFECT"
 	SideEffectTypeMarginBuy    SideEffectType = "MARGIN_BUY"
 	SideEffectTypeAutoRepay    SideEffectType = "AUTO_REPAY"
+
+	MarginTypeIsolated MarginType = "ISOLATED"
+	MarginTypeCrossed  MarginType = "CROSSED"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
@@ -154,16 +129,11 @@ func NewClient(apiKey, secretKey string) *Client {
 	return &Client{
 		APIKey:     apiKey,
 		SecretKey:  secretKey,
-		BaseURL:    "https://api.binance.com",
+		BaseURL:    "https://fapi.binance.com",
 		UserAgent:  "Binance/golang",
 		HTTPClient: http.DefaultClient,
 		Logger:     log.New(os.Stderr, "Binance-golang ", log.LstdFlags),
 	}
-}
-
-// NewFuturesClient initialize client for futures API
-func NewFuturesClient(apiKey, secretKey string) *futures.Client {
-	return futures.NewClient(apiKey, secretKey)
 }
 
 type doFunc func(req *http.Request) (*http.Response, error)
@@ -348,6 +318,11 @@ func (c *Client) NewCancelOrderService() *CancelOrderService {
 	return &CancelOrderService{c: c}
 }
 
+// NewCancelAllOpenOrdersService init cancel all open orders service
+func (c *Client) NewCancelAllOpenOrdersService() *CancelAllOpenOrdersService {
+	return &CancelAllOpenOrdersService{c: c}
+}
+
 // NewListOpenOrdersService init list open orders service
 func (c *Client) NewListOpenOrdersService() *ListOpenOrdersService {
 	return &ListOpenOrdersService{c: c}
@@ -363,29 +338,14 @@ func (c *Client) NewGetAccountService() *GetAccountService {
 	return &GetAccountService{c: c}
 }
 
-// NewListTradesService init listing trades service
-func (c *Client) NewListTradesService() *ListTradesService {
-	return &ListTradesService{c: c}
+// NewGetBalanceService init getting balance service
+func (c *Client) NewGetBalanceService() *GetBalanceService {
+	return &GetBalanceService{c: c}
 }
 
 // NewHistoricalTradesService init listing trades service
 func (c *Client) NewHistoricalTradesService() *HistoricalTradesService {
 	return &HistoricalTradesService{c: c}
-}
-
-// NewListDepositsService init listing deposits service
-func (c *Client) NewListDepositsService() *ListDepositsService {
-	return &ListDepositsService{c: c}
-}
-
-// NewCreateWithdrawService init creating withdraw service
-func (c *Client) NewCreateWithdrawService() *CreateWithdrawService {
-	return &CreateWithdrawService{c: c}
-}
-
-// NewListWithdrawsService init listing withdraw service
-func (c *Client) NewListWithdrawsService() *ListWithdrawsService {
-	return &ListWithdrawsService{c: c}
 }
 
 // NewStartUserStreamService init starting user stream service
@@ -408,127 +368,32 @@ func (c *Client) NewExchangeInfoService() *ExchangeInfoService {
 	return &ExchangeInfoService{c: c}
 }
 
-// NewGetWithdrawFeeService init get withdraw fee service
-func (c *Client) NewGetWithdrawFeeService() *GetWithdrawFeeService {
-	return &GetWithdrawFeeService{c: c}
+// NewPremiumIndexService init premium index service
+func (c *Client) NewPremiumIndexService() *PremiumIndexService {
+	return &PremiumIndexService{c: c}
 }
 
-// NewAveragePriceService init average price service
-func (c *Client) NewAveragePriceService() *AveragePriceService {
-	return &AveragePriceService{c: c}
+// NewFundingRateService init funding rate service
+func (c *Client) NewFundingRateService() *FundingRateService {
+	return &FundingRateService{c: c}
 }
 
-// NewMarginTransferService init margin account transfer service
-func (c *Client) NewMarginTransferService() *MarginTransferService {
-	return &MarginTransferService{c: c}
+// NewListLiquidationOrdersService init funding rate service
+func (c *Client) NewListLiquidationOrdersService() *ListLiquidationOrdersService {
+	return &ListLiquidationOrdersService{c: c}
 }
 
-// NewMarginLoanService init margin account loan service
-func (c *Client) NewMarginLoanService() *MarginLoanService {
-	return &MarginLoanService{c: c}
+// NewChangeLeverageService init change leverage service
+func (c *Client) NewChangeLeverageService() *ChangeLeverageService {
+	return &ChangeLeverageService{c: c}
 }
 
-// NewMarginRepayService init margin account repay service
-func (c *Client) NewMarginRepayService() *MarginRepayService {
-	return &MarginRepayService{c: c}
+// NewChangeMarginTypeService init change margin type service
+func (c *Client) NewChangeMarginTypeService() *ChangeMarginTypeService {
+	return &ChangeMarginTypeService{c: c}
 }
 
-// NewCreateMarginOrderService init creating margin order service
-func (c *Client) NewCreateMarginOrderService() *CreateMarginOrderService {
-	return &CreateMarginOrderService{c: c}
-}
-
-// NewCancelMarginOrderService init cancel order service
-func (c *Client) NewCancelMarginOrderService() *CancelMarginOrderService {
-	return &CancelMarginOrderService{c: c}
-}
-
-// NewGetMarginOrderService init get order service
-func (c *Client) NewGetMarginOrderService() *GetMarginOrderService {
-	return &GetMarginOrderService{c: c}
-}
-
-// NewListMarginLoansService init list margin loan service
-func (c *Client) NewListMarginLoansService() *ListMarginLoansService {
-	return &ListMarginLoansService{c: c}
-}
-
-// NewListMarginRepaysService init list margin repay service
-func (c *Client) NewListMarginRepaysService() *ListMarginRepaysService {
-	return &ListMarginRepaysService{c: c}
-}
-
-// NewGetMarginAccountService init get margin account service
-func (c *Client) NewGetMarginAccountService() *GetMarginAccountService {
-	return &GetMarginAccountService{c: c}
-}
-
-// NewGetMarginAssetService init get margin asset service
-func (c *Client) NewGetMarginAssetService() *GetMarginAssetService {
-	return &GetMarginAssetService{c: c}
-}
-
-// NewGetMarginPairService init get margin pair service
-func (c *Client) NewGetMarginPairService() *GetMarginPairService {
-	return &GetMarginPairService{c: c}
-}
-
-// NewGetMarginAllPairsService init get margin all pairs service
-func (c *Client) NewGetMarginAllPairsService() *GetMarginAllPairsService {
-	return &GetMarginAllPairsService{c: c}
-}
-
-// NewGetMarginPriceIndexService init get margin price index service
-func (c *Client) NewGetMarginPriceIndexService() *GetMarginPriceIndexService {
-	return &GetMarginPriceIndexService{c: c}
-}
-
-// NewListMarginOpenOrdersService init list margin open orders service
-func (c *Client) NewListMarginOpenOrdersService() *ListMarginOpenOrdersService {
-	return &ListMarginOpenOrdersService{c: c}
-}
-
-// NewListMarginOrdersService init list margin all orders service
-func (c *Client) NewListMarginOrdersService() *ListMarginOrdersService {
-	return &ListMarginOrdersService{c: c}
-}
-
-// NewListMarginTradesService init list margin trades service
-func (c *Client) NewListMarginTradesService() *ListMarginTradesService {
-	return &ListMarginTradesService{c: c}
-}
-
-// NewGetMaxBorrowableService init get max borrowable service
-func (c *Client) NewGetMaxBorrowableService() *GetMaxBorrowableService {
-	return &GetMaxBorrowableService{c: c}
-}
-
-// NewGetMaxTransferableService init get max transferable service
-func (c *Client) NewGetMaxTransferableService() *GetMaxTransferableService {
-	return &GetMaxTransferableService{c: c}
-}
-
-// NewStartMarginUserStreamService init starting margin user stream service
-func (c *Client) NewStartMarginUserStreamService() *StartMarginUserStreamService {
-	return &StartMarginUserStreamService{c: c}
-}
-
-// NewKeepaliveMarginUserStreamService init keep alive margin user stream service
-func (c *Client) NewKeepaliveMarginUserStreamService() *KeepaliveMarginUserStreamService {
-	return &KeepaliveMarginUserStreamService{c: c}
-}
-
-// NewCloseMarginUserStreamService init closing margin user stream service
-func (c *Client) NewCloseMarginUserStreamService() *CloseMarginUserStreamService {
-	return &CloseMarginUserStreamService{c: c}
-}
-
-// NewFuturesTransferService init futures transfer service
-func (c *Client) NewFuturesTransferService() *FuturesTransferService {
-	return &FuturesTransferService{c: c}
-}
-
-// NewListFuturesTransferService init list futures transfer service
-func (c *Client) NewListFuturesTransferService() *ListFuturesTransferService {
-	return &ListFuturesTransferService{c: c}
+// NewUpdatePositionMarginService init update position margin
+func (c *Client) NewUpdatePositionMarginService() *UpdatePositionMarginService {
+	return &UpdatePositionMarginService{c: c}
 }
