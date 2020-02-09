@@ -1,4 +1,4 @@
-package binance
+package futures
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ type secType int
 const (
 	secTypeNone secType = iota
 	secTypeAPIKey
-	secTypeSigned // if the 'timestamp' parameter is required
+	secTypeSigned
 )
 
 type params map[string]interface{}

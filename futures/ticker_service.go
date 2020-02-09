@@ -1,4 +1,4 @@
-package binance
+package futures
 
 import (
 	"context"
@@ -23,7 +23,7 @@ func (s *ListBookTickersService) Symbol(symbol string) *ListBookTickersService {
 func (s *ListBookTickersService) Do(ctx context.Context, opts ...RequestOption) (res []*BookTicker, err error) {
 	r := &request{
 		method:   "GET",
-		endpoint: "/api/v3/ticker/bookTicker",
+		endpoint: "/fapi/v1/ticker/bookTicker",
 	}
 	if s.symbol != nil {
 		r.setParam("symbol", *s.symbol)
@@ -66,7 +66,7 @@ func (s *ListPricesService) Symbol(symbol string) *ListPricesService {
 func (s *ListPricesService) Do(ctx context.Context, opts ...RequestOption) (res []*SymbolPrice, err error) {
 	r := &request{
 		method:   "GET",
-		endpoint: "/api/v3/ticker/price",
+		endpoint: "/fapi/v1/ticker/price",
 	}
 	if s.symbol != nil {
 		r.setParam("symbol", *s.symbol)
@@ -106,7 +106,7 @@ func (s *ListPriceChangeStatsService) Symbol(symbol string) *ListPriceChangeStat
 func (s *ListPriceChangeStatsService) Do(ctx context.Context, opts ...RequestOption) (res []*PriceChangeStats, err error) {
 	r := &request{
 		method:   "GET",
-		endpoint: "/api/v1/ticker/24hr",
+		endpoint: "/fapi/v1/ticker/24hr",
 	}
 	if s.symbol != nil {
 		r.setParam("symbol", *s.symbol)
@@ -132,8 +132,7 @@ type PriceChangeStats struct {
 	WeightedAvgPrice   string `json:"weightedAvgPrice"`
 	PrevClosePrice     string `json:"prevClosePrice"`
 	LastPrice          string `json:"lastPrice"`
-	BidPrice           string `json:"bidPrice"`
-	AskPrice           string `json:"askPrice"`
+	LastQuantity       string `json:"lastQty"`
 	OpenPrice          string `json:"openPrice"`
 	HighPrice          string `json:"highPrice"`
 	LowPrice           string `json:"lowPrice"`
@@ -144,41 +143,4 @@ type PriceChangeStats struct {
 	FristID            int64  `json:"firstId"`
 	LastID             int64  `json:"lastId"`
 	Count              int64  `json:"count"`
-}
-
-// AveragePriceService show current average price for a symbol
-type AveragePriceService struct {
-	c      *Client
-	symbol string
-}
-
-// Symbol set symbol
-func (s *AveragePriceService) Symbol(symbol string) *AveragePriceService {
-	s.symbol = symbol
-	return s
-}
-
-// Do send request
-func (s *AveragePriceService) Do(ctx context.Context, opts ...RequestOption) (res *AvgPrice, err error) {
-	r := &request{
-		method:   "GET",
-		endpoint: "/api/v3/avgPrice",
-	}
-	r.setParam("symbol", s.symbol)
-	data, err := s.c.callAPI(ctx, r, opts...)
-	if err != nil {
-		return res, err
-	}
-	res = new(AvgPrice)
-	err = json.Unmarshal(data, res)
-	if err != nil {
-		return nil, err
-	}
-	return res, nil
-}
-
-// AvgPrice define average price
-type AvgPrice struct {
-	Mins  int64  `json:"mins"`
-	Price string `json:"price"`
 }
