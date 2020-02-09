@@ -1,4 +1,4 @@
-package binance
+package common
 
 import (
 	"testing"
