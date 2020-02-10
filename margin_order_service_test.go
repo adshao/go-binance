@@ -153,7 +153,7 @@ func (s *marginOrderServiceTestSuite) TestCreateOrderFull() {
 func (s *marginOrderServiceTestSuite) TestCancelOrder() {
 	data := []byte(`{
 		"symbol": "LTCBTC",
-		"orderId": 28,
+		"orderId": "28",
 		"origClientOrderId": "myOrder1",
 		"clientOrderId": "cancelMyOrder1",
 		"transactTime": 1507725176595,
@@ -183,14 +183,14 @@ func (s *marginOrderServiceTestSuite) TestCancelOrder() {
 		s.assertRequestEqual(e, r)
 	})
 
-	res, err := s.client.NewCancelOrderService().Symbol(symbol).
+	res, err := s.client.NewCancelMarginOrderService().Symbol(symbol).
 		OrderID(orderID).OrigClientOrderID(origClientOrderID).
 		NewClientOrderID(newClientOrderID).Do(newContext())
 	r := s.r()
 	r.NoError(err)
-	e := &CancelOrderResponse{
+	e := &CancelMarginOrderResponse{
 		Symbol:                   "LTCBTC",
-		OrderID:                  28,
+		OrderID:                  "28",
 		OrigClientOrderID:        "myOrder1",
 		ClientOrderID:            "cancelMyOrder1",
 		TransactTime:             1507725176595,
@@ -203,7 +203,7 @@ func (s *marginOrderServiceTestSuite) TestCancelOrder() {
 		Type:                     OrderTypeLimit,
 		Side:                     SideTypeSell,
 	}
-	s.assertCancelOrderResponseEqual(e, res)
+	s.assertCancelMarginOrderResponseEqual(e, res)
 }
 
 func (s *marginOrderServiceTestSuite) TestGetOrder() {
@@ -412,4 +412,21 @@ func (s *marginOrderServiceTestSuite) assertMarginAllOrderEqual(e, a *MarginAllO
 	r.Equal(e.QuoteQuantity, a.QuoteQuantity, "QuoteQuantity")
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
 	r.Equal(e.Time, a.Time, "Time")
+}
+
+func (s *baseOrderTestSuite) assertCancelMarginOrderResponseEqual(e, a *CancelMarginOrderResponse) {
+	r := s.r()
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.OrderID, a.OrderID, "OrderID")
+	r.Equal(e.OrigClientOrderID, a.OrigClientOrderID, "OrigClientOrderID")
+	r.Equal(e.ClientOrderID, a.ClientOrderID, "ClientOrderID")
+	r.Equal(e.TransactTime, a.TransactTime, "TransactTime")
+	r.Equal(e.Price, a.Price, "Price")
+	r.Equal(e.OrigQuantity, a.OrigQuantity, "OrigQuantity")
+	r.Equal(e.ExecutedQuantity, a.ExecutedQuantity, "ExecutedQuantity")
+	r.Equal(e.CummulativeQuoteQuantity, a.CummulativeQuoteQuantity, "CummulativeQuoteQuantity")
+	r.Equal(e.Status, a.Status, "Status")
+	r.Equal(e.TimeInForce, a.TimeInForce, "TimeInForce")
+	r.Equal(e.Type, a.Type, "Type")
+	r.Equal(e.Side, a.Side, "Side")
 }
