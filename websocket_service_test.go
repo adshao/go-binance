@@ -2,8 +2,9 @@ package binance
 
 import (
 	"errors"
-	"github.com/stretchr/testify/suite"
 	"testing"
+
+	"github.com/stretchr/testify/suite"
 )
 
 type websocketServiceTestSuite struct {
@@ -453,6 +454,37 @@ func (s *websocketServiceTestSuite) TestWsUserDataServe() {
             }
         ]
     }`))
+}
+
+func (s *websocketServiceTestSuite) testWsFutureUserDataServe(data []byte) {
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+
+	doneC, stopC, err := WsFutureUserDataServe("listenKey", func(event []byte) {
+		s.r().Equal(data, event)
+	}, func(err error) {
+		s.r().EqualError(err, fakeErrMsg)
+	})
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
+func (s *websocketServiceTestSuite) TestWsFutureUserDataServe() {
+	s.testWsFutureUserDataServe([]byte(`{
+		"e":"ACCOUNT_UPDATE",
+		"T":1581261432783,
+		"E":1581261432791,
+		"a":{
+			"B":[{
+				"a":"USDT",
+				"wb":"5.00000000",
+				"cw":"5.00000000"
+			}],
+			"P":[]
+		}
+	}`))
 }
 
 func (s *websocketServiceTestSuite) TestWsMarketStatServe() {
