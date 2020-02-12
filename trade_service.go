@@ -107,7 +107,7 @@ func (s *HistoricalTradesService) FromID(fromID int64) *HistoricalTradesService 
 func (s *HistoricalTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*Trade, err error) {
 	r := &request{
 		method:   "GET",
-		endpoint: "/api/v1/historicalTrades",
+		endpoint: "/api/v3/historicalTrades",
 		secType:  secTypeAPIKey,
 	}
 	r.setParam("symbol", s.symbol)
@@ -200,7 +200,7 @@ func (s *AggTradesService) Limit(limit int) *AggTradesService {
 func (s *AggTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*AggTrade, err error) {
 	r := &request{
 		method:   "GET",
-		endpoint: "/api/v1/aggTrades",
+		endpoint: "/api/v3/aggTrades",
 	}
 	r.setParam("symbol", s.symbol)
 	if s.fromID != nil {
