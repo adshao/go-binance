@@ -343,6 +343,11 @@ func (c *Client) NewGetBalanceService() *GetBalanceService {
 	return &GetBalanceService{c: c}
 }
 
+// NewGetPositionRiskService init getting position risk service
+func (c *Client) NewGetPositionRiskService() *GetPositionRiskService {
+	return &GetPositionRiskService{c: c}
+}
+
 // NewHistoricalTradesService init listing trades service
 func (c *Client) NewHistoricalTradesService() *HistoricalTradesService {
 	return &HistoricalTradesService{c: c}
