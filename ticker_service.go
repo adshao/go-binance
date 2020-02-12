@@ -106,7 +106,7 @@ func (s *ListPriceChangeStatsService) Symbol(symbol string) *ListPriceChangeStat
 func (s *ListPriceChangeStatsService) Do(ctx context.Context, opts ...RequestOption) (res []*PriceChangeStats, err error) {
 	r := &request{
 		method:   "GET",
-		endpoint: "/api/v1/ticker/24hr",
+		endpoint: "/api/v3/ticker/24hr",
 	}
 	if s.symbol != nil {
 		r.setParam("symbol", *s.symbol)
