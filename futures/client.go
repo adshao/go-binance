@@ -348,6 +348,11 @@ func (c *Client) NewGetPositionRiskService() *GetPositionRiskService {
 	return &GetPositionRiskService{c: c}
 }
 
+// NewGetPositionMarginHistoryService init getting position margin history service
+func (c *Client) NewGetPositionMarginHistoryService() *GetPositionMarginHistoryService {
+	return &GetPositionMarginHistoryService{c: c}
+}
+
 // NewHistoricalTradesService init listing trades service
 func (c *Client) NewHistoricalTradesService() *HistoricalTradesService {
 	return &HistoricalTradesService{c: c}
