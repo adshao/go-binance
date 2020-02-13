@@ -51,7 +51,7 @@ func (s *futuresTransferTestSuite) TestListFuturesTransfer() {
 			"asset": "USDT",
 			"tranId": 100000001,
 			"amount": "40.84624400",
-			"type": "1",
+			"type": 1,
 			"timestamp": 1555056425000,
 			"status": "CONFIRMED"
 		  }
@@ -78,7 +78,7 @@ func (s *futuresTransferTestSuite) TestListFuturesTransfer() {
 				Asset:     asset,
 				TranID:    int64(100000001),
 				Amount:    "40.84624400",
-				Type:      "1",
+				Type:      1,
 				Timestamp: int64(1555056425000),
 				Status:    FuturesTransferStatusTypeConfirmed,
 			},

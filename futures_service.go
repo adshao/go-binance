@@ -139,7 +139,7 @@ type FuturesTransfer struct {
 	Asset     string                    `json:"asset"`
 	TranID    int64                     `json:"tranId"`
 	Amount    string                    `json:"amount"`
-	Type      string                    `json:"type"`
+	Type      int64                     `json:"type"`
 	Timestamp int64                     `json:"timestamp"`
 	Status    FuturesTransferStatusType `json:"status"`
 }
