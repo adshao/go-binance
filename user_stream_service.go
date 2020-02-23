@@ -13,7 +13,7 @@ type StartUserStreamService struct {
 func (s *StartUserStreamService) Do(ctx context.Context, opts ...RequestOption) (listenKey string, err error) {
 	r := &request{
 		method:   "POST",
-		endpoint: "/api/v1/userDataStream",
+		endpoint: "/api/v3/userDataStream",
 		secType:  secTypeAPIKey,
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
@@ -44,7 +44,7 @@ func (s *KeepaliveUserStreamService) ListenKey(listenKey string) *KeepaliveUserS
 func (s *KeepaliveUserStreamService) Do(ctx context.Context, opts ...RequestOption) (err error) {
 	r := &request{
 		method:   "PUT",
-		endpoint: "/api/v1/userDataStream",
+		endpoint: "/api/v3/userDataStream",
 		secType:  secTypeAPIKey,
 	}
 	r.setFormParam("listenKey", s.listenKey)
@@ -68,7 +68,7 @@ func (s *CloseUserStreamService) ListenKey(listenKey string) *CloseUserStreamSer
 func (s *CloseUserStreamService) Do(ctx context.Context, opts ...RequestOption) (err error) {
 	r := &request{
 		method:   "DELETE",
-		endpoint: "/api/v1/userDataStream",
+		endpoint: "/api/v3/userDataStream",
 		secType:  secTypeAPIKey,
 	}
 	r.setFormParam("listenKey", s.listenKey)
