@@ -3,6 +3,8 @@ package futures
 import (
 	"context"
 	"encoding/json"
+
+	"github.com/adshao/go-binance/common"
 )
 
 // PremiumIndexService get premium index
@@ -145,18 +147,13 @@ func (s *GetLeverageBracketService) Do(ctx context.Context, opts ...RequestOptio
 	}
 
 	if s.symbol != "" {
-		var _res *LeverageBracket
-		err = json.Unmarshal(data, &_res)
-		if err != nil {
-			return []*LeverageBracket{}, err
-		}
-		res = append(res, _res)
-	} else {
-		res = make([]*LeverageBracket, 0)
-		err = json.Unmarshal(data, &res)
-		if err != nil {
-			return []*LeverageBracket{}, err
-		}
+		data = common.ToJSONList(data)
+	}
+
+	res = make([]*LeverageBracket, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return []*LeverageBracket{}, err
 	}
 
 	return res, nil
