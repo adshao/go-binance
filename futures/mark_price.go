@@ -115,3 +115,64 @@ type FundingRate struct {
 	FundingTime int64  `json:"fundingTime"`
 	Time        int64  `json:"time"`
 }
+
+// GetLeverageBracketService get funding rate
+type GetLeverageBracketService struct {
+	c      *Client
+	symbol string
+}
+
+// Symbol set symbol
+func (s *GetLeverageBracketService) Symbol(symbol string) *GetLeverageBracketService {
+	s.symbol = symbol
+	return s
+}
+
+// Do send request
+func (s *GetLeverageBracketService) Do(ctx context.Context, opts ...RequestOption) (res []*LeverageBracket, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/fapi/v1/leverageBracket",
+		secType:  secTypeSigned,
+	}
+	r.setParam("symbol", s.symbol)
+	if s.symbol != "" {
+		r.setParam("symbol", s.symbol)
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []*LeverageBracket{}, err
+	}
+
+	if s.symbol != "" {
+		var _res *LeverageBracket
+		err = json.Unmarshal(data, &_res)
+		if err != nil {
+			return []*LeverageBracket{}, err
+		}
+		res = append(res, _res)
+	} else {
+		res = make([]*LeverageBracket, 0)
+		err = json.Unmarshal(data, &res)
+		if err != nil {
+			return []*LeverageBracket{}, err
+		}
+	}
+
+	return res, nil
+}
+
+// LeverageBracket define the leverage bracket
+type LeverageBracket struct {
+	Symbol   string    `json:"symbol"`
+	Brackets []Bracket `json:"brackets"`
+}
+
+// Bracket define the bracket
+type Bracket struct {
+	Bracket          int     `json:"bracket"`
+	InitialLeverage  int     `json:"initialLeverage"`
+	NotionalCap      float64 `json:"notionalCap"`
+	NotionalFloor    float64 `json:"notionalFloor"`
+	MaintMarginRatio float64 `json:"maintMarginRatio"`
+}

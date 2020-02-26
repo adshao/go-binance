@@ -403,6 +403,11 @@ func (c *Client) NewChangeLeverageService() *ChangeLeverageService {
 	return &ChangeLeverageService{c: c}
 }
 
+// NewGetLeverageBracketService init change leverage service
+func (c *Client) NewGetLeverageBracketService() *GetLeverageBracketService {
+	return &GetLeverageBracketService{c: c}
+}
+
 // NewChangeMarginTypeService init change margin type service
 func (c *Client) NewChangeMarginTypeService() *ChangeMarginTypeService {
 	return &ChangeMarginTypeService{c: c}
