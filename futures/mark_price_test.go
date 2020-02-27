@@ -162,7 +162,6 @@ func (s *getLeverageBracketServiceTestSuite) TestGetLeverageBracket() {
 
 	s.r().NoError(err)
 
-	s.r().NoError(err)
 	e := []*LeverageBracket{
 		{
 			Symbol: symbol,
