@@ -9,7 +9,7 @@ import (
 
 type websocketServiceTestSuite struct {
 	baseTestSuite
-	origWsServe func(*wsConfig, WsHandler, ErrHandler) (chan struct{}, chan struct{}, error)
+	origWsServe func(*WsConfig, WsHandler, ErrHandler) (chan struct{}, chan struct{}, error)
 	serveCount  int
 }
 
@@ -27,7 +27,7 @@ func (s *websocketServiceTestSuite) TearDownTest() {
 }
 
 func (s *websocketServiceTestSuite) mockWsServe(data []byte, err error) {
-	wsServe = func(cfg *wsConfig, handler WsHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, innerErr error) {
+	wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, innerErr error) {
 		s.serveCount++
 		doneC = make(chan struct{})
 		stopC = make(chan struct{})
@@ -492,10 +492,12 @@ func (s *websocketServiceTestSuite) testWsFutureTestnetUserDataServe(data []byte
 	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
 
-	doneC, stopC, err := WsFutureTestnetUserDataServe("listenKey", func(event []byte) {
+	doneC, stopC, err := WsFutureUserDataServe("listenKey", func(event []byte) {
 		s.r().Equal(data, event)
 	}, func(err error) {
 		s.r().EqualError(err, fakeErrMsg)
+	}, &WsConfig{
+		Endpoint: "wss://stream.binancefuture.com/ws",
 	})
 	s.r().NoError(err)
 	stopC <- struct{}{}
