@@ -192,6 +192,198 @@ func (s *baseOrderTestSuite) assertFillEqual(e, a *Fill) {
 	r.Equal(e.Quantity, a.Quantity, "Quantity")
 }
 
+func (s *orderServiceTestSuite) TestCreateOCO() {
+	data := []byte(`{
+		"orderListId": 0,
+		"contingencyType": "OCO",
+		"listStatusType": "EXEC_STARTED",
+		"listOrderStatus": "EXECUTING",
+		"listClientOrderId": "C3wyj4WVEktd7u9aVBRXcN",
+		"transactionTime": 1574040868128,
+		"symbol": "LTCBTC",
+		"orders": [
+		  {
+			"symbol": "LTCBTC",
+			"orderId": 2,
+			"clientOrderId": "pO9ufTiFGg3nw2fOdgeOXa"
+		  },
+		  {
+			"symbol": "LTCBTC",
+			"orderId": 3,
+			"clientOrderId": "TXOvglzXuaubXAaENpaRCB"
+		  }
+		],
+		"orderReports": [
+		  {
+			"symbol": "LTCBTC",
+			"origClientOrderId": "pO9ufTiFGg3nw2fOdgeOXa",
+			"orderId": 2,
+			"orderListId": 0,
+			"clientOrderId": "unfWT8ig8i0uj6lPuYLez6",
+			"price": "1.00000000",
+			"origQty": "10.00000000",
+			"executedQty": "0.00000000",
+			"cummulativeQuoteQty": "0.00000000",
+			"status": "NEW",
+			"timeInForce": "GTC",
+			"type": "STOP_LOSS",
+			"side": "SELL",
+			"stopPrice": "1.00000000"
+		  },
+		  {
+			"symbol": "LTCBTC",
+			"origClientOrderId": "TXOvglzXuaubXAaENpaRCB",
+			"orderId": 3,
+			"orderListId": 0,
+			"clientOrderId": "unfWT8ig8i0uj6lPuYLez6",
+			"price": "3.00000000",
+			"origQty": "10.00000000",
+			"executedQty": "0.00000000",
+			"cummulativeQuoteQty": "0.00000000",
+			"status": "NEW",
+			"timeInForce": "GTC",
+			"type": "LIMIT_MAKER",
+			"side": "SELL"
+		  }
+		]
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	symbol := "LTCBTC"
+	side := SideTypeBuy
+	timeInForce := TimeInForceTypeGTC
+	quantity := "10"
+	price := "3"
+	stopPrice := "3.1"
+	stopLimitPrice := "3.2"
+	limitClientOrderID := "myOrder1"
+	newOrderRespType := NewOrderRespTypeFULL
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setFormParams(params{
+			"symbol":               symbol,
+			"side":                 side,
+			"quantity":             quantity,
+			"price":                price,
+			"stopPrice":            stopPrice,
+			"stopLimitPrice":       stopLimitPrice,
+			"stopLimitTimeInForce": timeInForce,
+			"limitClientOrderId":   limitClientOrderID,
+			"newOrderRespType":     newOrderRespType,
+		})
+		s.assertRequestEqual(e, r)
+	})
+	res, err := s.client.NewCreateOCOService().
+		Symbol(symbol).
+		Side(side).
+		Quantity(quantity).
+		Price(price).
+		StopPrice(stopPrice).
+		StopLimitPrice(stopLimitPrice).
+		StopLimitTimeInForce(timeInForce).
+		LimitClientOrderID(limitClientOrderID).
+		NewOrderRespType(newOrderRespType).
+		Do(newContext())
+
+	s.r().NoError(err)
+	e := &CreateOCOResponse{
+		OrderListID:       0,
+		ContingencyType:   "OCO",
+		ListStatusType:    "EXEC_STARTED",
+		ListOrderStatus:   "EXECUTING",
+		ListClientOrderID: "C3wyj4WVEktd7u9aVBRXcN",
+		TransactionTime:   1574040868128,
+		Symbol:            "LTCBTC",
+		Orders: []*OCOOrder{
+			&OCOOrder{
+				Symbol:        "LTCBTC",
+				OrderID:       2,
+				ClientOrderID: "pO9ufTiFGg3nw2fOdgeOXa",
+			},
+			&OCOOrder{
+				Symbol:        "LTCBTC",
+				OrderID:       3,
+				ClientOrderID: "TXOvglzXuaubXAaENpaRCB",
+			},
+		},
+		OrderReports: []*OCOOrderReport{
+			&OCOOrderReport{
+				Symbol:                   "LTCBTC",
+				OrderID:                  2,
+				OrderListID:              0,
+				ClientOrderID:            "unfWT8ig8i0uj6lPuYLez6",
+				Price:                    "1.00000000",
+				OrigQuantity:             "10.00000000",
+				ExecutedQuantity:         "0.00000000",
+				CummulativeQuoteQuantity: "0.00000000",
+				Status:                   OrderStatusTypeNew,
+				TimeInForce:              TimeInForceTypeGTC,
+				Type:                     OrderTypeStopLoss,
+				Side:                     SideTypeSell,
+				StopPrice:                "1.00000000",
+			},
+			&OCOOrderReport{
+				Symbol:                   "LTCBTC",
+				OrderID:                  3,
+				OrderListID:              0,
+				ClientOrderID:            "unfWT8ig8i0uj6lPuYLez6",
+				Price:                    "3.00000000",
+				OrigQuantity:             "10.00000000",
+				ExecutedQuantity:         "0.00000000",
+				CummulativeQuoteQuantity: "0.00000000",
+				Status:                   OrderStatusTypeNew,
+				TimeInForce:              TimeInForceTypeGTC,
+				Type:                     OrderTypeLimitMaker,
+				Side:                     SideTypeSell,
+			},
+		},
+	}
+	s.assertCreateOCOResponseEqual(e, res)
+}
+
+func (s *baseOrderTestSuite) assertCreateOCOResponseEqual(e, a *CreateOCOResponse) {
+	r := s.r()
+	r.Equal(e.ContingencyType, a.ContingencyType, "ContingencyType")
+	r.Equal(e.ListClientOrderID, a.ListClientOrderID, "ListClientOrderID")
+	r.Equal(e.ListOrderStatus, a.ListOrderStatus, "ListOrderStatus")
+	r.Equal(e.ListStatusType, a.ListStatusType, "ListStatusType")
+	r.Equal(e.OrderListID, a.OrderListID, "OrderListID")
+	r.Equal(e.TransactionTime, a.TransactionTime, "TransactionTime")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+
+	r.Len(a.OrderReports, len(e.OrderReports))
+	for idx, orderReport := range e.OrderReports {
+		s.assertOCOOrderReportEqual(orderReport, a.OrderReports[idx])
+	}
+
+	r.Len(a.Orders, len(e.Orders))
+	for idx, order := range e.Orders {
+		s.assertOCOOrderEqual(order, a.Orders[idx])
+	}
+}
+
+func (s *baseOrderTestSuite) assertOCOOrderReportEqual(e, a *OCOOrderReport) {
+	r := s.r()
+	r.Equal(e.ClientOrderID, a.ClientOrderID, "ClientOrderID")
+	r.Equal(e.CummulativeQuoteQuantity, a.CummulativeQuoteQuantity, "CummulativeQuoteQuantity")
+	r.Equal(e.ExecutedQuantity, a.ExecutedQuantity, "ExecutedQuantity")
+	r.Equal(e.OrderID, a.OrderID, "OrderID")
+	r.Equal(e.OrderListID, a.OrderListID, "OrderListID")
+	r.Equal(e.OrigQuantity, a.OrigQuantity, "OrigQuantity")
+	r.Equal(e.Price, a.Price, "Price")
+	r.Equal(e.Side, a.Side, "Side")
+	r.Equal(e.Status, a.Status, "Status")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	// r.Equal(e.TimeInForce, a.TimeInForce, "TimeInForce")
+	r.Equal(e.TransactionTime, a.TransactionTime, "TransactionTime")
+}
+
+func (s *baseOrderTestSuite) assertOCOOrderEqual(e, a *OCOOrder) {
+	r := s.r()
+	r.Equal(e.ClientOrderID, a.ClientOrderID, "ClientOrderID")
+	r.Equal(e.OrderID, a.OrderID, "OrderID")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+}
+
 func (s *orderServiceTestSuite) TestListOpenOrders() {
 	data := []byte(`[
         {
