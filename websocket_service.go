@@ -284,7 +284,10 @@ func WsUserDataServe(listenKey string, handler WsHandler, errHandler ErrHandler)
 }
 
 // WsFutureUserDataServe serve user data handler with listen key
-func WsFutureUserDataServe(listenKey string, handler WsHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+func WsFutureUserDataServe(listenKey string, handler WsHandler, errHandler ErrHandler, wsConfig ...*WsConfig) (doneC, stopC chan struct{}, err error) {
+	if len(wsConfig) > 0 {
+		baseFutureURL = wsConfig[0].Endpoint
+	}
 	endpoint := fmt.Sprintf("%s/%s", baseFutureURL, listenKey)
 	cfg := newWsConfig(endpoint)
 	return wsServe(cfg, handler, errHandler)
