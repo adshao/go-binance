@@ -338,6 +338,11 @@ func (c *Client) NewCreateOrderService() *CreateOrderService {
 	return &CreateOrderService{c: c}
 }
 
+// NewCreateOCOService init creating OCO service
+func (c *Client) NewCreateOCOService() *CreateOCOService {
+	return &CreateOCOService{c: c}
+}
+
 // NewGetOrderService init get order service
 func (c *Client) NewGetOrderService() *GetOrderService {
 	return &GetOrderService{c: c}
