@@ -124,3 +124,70 @@ func (s *fundingRateServiceTestSuite) assertFundingRateEqual(e, a *FundingRate) 
 	r.Equal(e.FundingTime, a.FundingTime, "FundingTime")
 	r.Equal(e.Time, a.Time, "Time")
 }
+
+type getLeverageBracketServiceTestSuite struct {
+	baseTestSuite
+}
+
+func TestGetLeverageBracketService(t *testing.T) {
+	suite.Run(t, new(getLeverageBracketServiceTestSuite))
+}
+
+func (s *getLeverageBracketServiceTestSuite) TestGetLeverageBracket() {
+	data := []byte(`{
+		"symbol": "ETHUSDT",
+		"brackets": [
+			{
+				"bracket": 1,
+				"initialLeverage": 75,
+				"notionalCap": 10000,
+				"notionalFloor": 0,
+				"maintMarginRatio": 0.0065
+			}
+		]
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	symbol := "ETHUSDT"
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"symbol": symbol,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewGetLeverageBracketService().Symbol(symbol).Do(newContext())
+
+	s.r().NoError(err)
+
+	e := []*LeverageBracket{
+		{
+			Symbol: symbol,
+			Brackets: []Bracket{
+				{
+					Bracket:          1,
+					InitialLeverage:  75,
+					NotionalCap:      10000,
+					NotionalFloor:    0,
+					MaintMarginRatio: 0.0065,
+				},
+			},
+		},
+	}
+	s.r().Len(res, len(e))
+	for i := 0; i < len(res); i++ {
+		s.assertLeverageBracketEqual(e[i], res[i])
+	}
+}
+
+func (s *getLeverageBracketServiceTestSuite) assertLeverageBracketEqual(e, a *LeverageBracket) {
+	r := s.r()
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.Brackets[0].Bracket, a.Brackets[0].Bracket, "Bracket")
+	r.Equal(e.Brackets[0].InitialLeverage, a.Brackets[0].InitialLeverage, "InitialLeverage")
+	r.Equal(e.Brackets[0].NotionalCap, a.Brackets[0].NotionalCap, "NotionalCap")
+	r.Equal(e.Brackets[0].NotionalFloor, a.Brackets[0].NotionalFloor, "NotionalFloor")
+	r.Equal(e.Brackets[0].MaintMarginRatio, a.Brackets[0].MaintMarginRatio, "MaintMarginRatio")
+}
