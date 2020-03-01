@@ -368,6 +368,11 @@ func (c *Client) NewGetAccountService() *GetAccountService {
 	return &GetAccountService{c: c}
 }
 
+// NewGetAccountSnapshotService init getting account snapshot service
+func (c *Client) NewGetAccountSnapshotService() *GetAccountSnapshotService {
+	return &GetAccountSnapshotService{c: c}
+}
+
 // NewListTradesService init listing trades service
 func (c *Client) NewListTradesService() *ListTradesService {
 	return &ListTradesService{c: c}

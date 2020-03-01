@@ -85,3 +85,84 @@ func (s *accountServiceTestSuite) assertAccountEqual(e, a *Account) {
 		r.Equal(e.Balances[i].Locked, a.Balances[i].Locked, "Locked")
 	}
 }
+
+func (s *accountServiceTestSuite) TestGetAccountSnapshot() {
+	data := []byte(`{
+		"code":200,
+		"msg":"",
+		"snapshotVos":[
+		   {
+			  "data":{
+				 "balances":[
+					{
+					   "asset":"BTC",
+					   "free":"0.09905021",
+					   "locked":"0.00000000"
+					}
+				 ],
+				 "totalAssetOfBtc":"0.09942700"
+			  },
+			  "type":"spot",
+			  "updateTime":1576281599000
+		   }
+		]
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	accountType := "SPOT"
+	startTime := int64(1498793709153)
+	endTime := int64(1498793709156)
+	limit := 1
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"type":      accountType,
+			"startTime": startTime,
+			"endTime":   endTime,
+			"limit":     limit,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	accSnapshot, err := s.client.NewGetAccountSnapshotService().Type(accountType).StartTime(startTime).EndTime(endTime).Limit(limit).
+		Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	e := &Snapshot{
+		Code: 200,
+		Msg:  "",
+		Snapshot: []*SnapshotVos{
+			&SnapshotVos{
+				Type:       "spot",
+				UpdateTime: 1576281599000,
+				Data: &SnapshotData{
+					TotalAssetOfBtc: "0.09942700",
+					Balances: []*SnapshotBalances{
+						&SnapshotBalances{
+							Asset:  "BTC",
+							Free:   "0.09905021",
+							Locked: "0.00000000",
+						},
+					},
+				},
+			},
+		},
+	}
+	s.assertSnapshotAccountEqual(e, accSnapshot)
+}
+
+func (s *accountServiceTestSuite) assertSnapshotAccountEqual(e, a *Snapshot) {
+	r := s.r()
+	r.Equal(e.Code, a.Code, "Code")
+	r.Equal(e.Msg, a.Msg, "Msg")
+	for i := 0; i < len(a.Snapshot); i++ {
+		r.Equal(e.Snapshot[i].Type, a.Snapshot[i].Type, "Type")
+		r.Equal(e.Snapshot[i].UpdateTime, a.Snapshot[i].UpdateTime, "UpdateTime")
+		r.Equal(e.Snapshot[i].Data.TotalAssetOfBtc, a.Snapshot[i].Data.TotalAssetOfBtc, "TotalAssetOfBtc")
+		for j := 0; j < len(a.Snapshot[i].Data.Balances); j++ {
+			r.Equal(e.Snapshot[i].Data.Balances[j].Asset, a.Snapshot[i].Data.Balances[j].Asset, "Asset")
+			r.Equal(e.Snapshot[i].Data.Balances[j].Free, a.Snapshot[i].Data.Balances[j].Free, "Free")
+			r.Equal(e.Snapshot[i].Data.Balances[j].Locked, a.Snapshot[i].Data.Balances[j].Locked, "Locked")
+		}
+	}
+}
