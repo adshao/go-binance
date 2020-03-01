@@ -3,6 +3,7 @@ module github.com/adshao/go-binance
 go 1.13
 
 require (
+	github.com/beevik/ntp v0.2.0
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/davecgh/go-spew v1.1.0 // indirect
@@ -11,4 +12,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/objx v0.1.0 // indirect
 	github.com/stretchr/testify v1.2.1
+	golang.org/x/net v0.0.0-20200301022130-244492dfa37a // indirect
+	golang.org/x/sys v0.0.0-20200301153931-2f85c7ec1e52 // indirect
 )

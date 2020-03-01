@@ -16,6 +16,7 @@ import (
 
 	"github.com/adshao/go-binance/common"
 	"github.com/adshao/go-binance/futures"
+	"github.com/beevik/ntp"
 	"github.com/bitly/go-simplejson"
 )
 
@@ -135,8 +136,12 @@ const (
 	recvWindowKey = "recvWindow"
 )
 
-func currentTimestamp() int64 {
-	return int64(time.Nanosecond) * time.Now().UnixNano() / int64(time.Millisecond)
+func currentTimestamp() (int64, error) {
+	ntpTime, err := ntp.Time("ntp.ubuntu.com")
+	if err != nil {
+		return -1, err
+	}
+	return int64(time.Nanosecond) * ntpTime.UnixNano() / int64(time.Millisecond), nil
 }
 
 func newJSON(data []byte) (j *simplejson.Json, err error) {
@@ -201,7 +206,11 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 		r.setParam(recvWindowKey, r.recvWindow)
 	}
 	if r.secType == secTypeSigned {
-		r.setParam(timestampKey, currentTimestamp())
+		curTime, err := currentTimestamp()
+		if err != nil {
+			return err
+		}
+		r.setParam(timestampKey, curTime)
 	}
 	queryString := r.query.Encode()
 	body := &bytes.Buffer{}
