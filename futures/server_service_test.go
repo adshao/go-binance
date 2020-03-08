@@ -89,3 +89,19 @@ func (s *serverServiceTestSuite) TestInvalidResponseBody() {
 	s.r().Error(err)
 	s.r().False(common.IsAPIError(err))
 }
+
+func (s *serverServiceTestSuite) TestSetServerTime() {
+	data := []byte(`1399827319559`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newRequest()
+		s.assertRequestEqual(e, r)
+	})
+
+	timeOffset, err := s.client.NewSetServerTimeService().Do(newContext())
+	s.r().NoError(err)
+	s.r().NotZero(s.client.TimeOffset)
+	s.r().EqualValues(timeOffset, s.client.TimeOffset)
+}

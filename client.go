@@ -177,6 +177,7 @@ type Client struct {
 	HTTPClient *http.Client
 	Debug      bool
 	Logger     *log.Logger
+	TimeOffset int64
 	do         doFunc
 }
 
@@ -201,7 +202,7 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 		r.setParam(recvWindowKey, r.recvWindow)
 	}
 	if r.secType == secTypeSigned {
-		r.setParam(timestampKey, currentTimestamp())
+		r.setParam(timestampKey, currentTimestamp()-c.TimeOffset)
 	}
 	queryString := r.query.Encode()
 	body := &bytes.Buffer{}
@@ -296,6 +297,11 @@ func (c *Client) NewPingService() *PingService {
 // NewServerTimeService init server time service
 func (c *Client) NewServerTimeService() *ServerTimeService {
 	return &ServerTimeService{c: c}
+}
+
+// NewSetServerTimeService init set server time service
+func (c *Client) NewSetServerTimeService() *SetServerTimeService {
+	return &SetServerTimeService{c: c}
 }
 
 // NewDepthService init depth service
