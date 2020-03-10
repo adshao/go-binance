@@ -132,6 +132,7 @@ type PriceChangeStats struct {
 	WeightedAvgPrice   string `json:"weightedAvgPrice"`
 	PrevClosePrice     string `json:"prevClosePrice"`
 	LastPrice          string `json:"lastPrice"`
+	LastQty            string `json:"lastQty"`
 	BidPrice           string `json:"bidPrice"`
 	AskPrice           string `json:"askPrice"`
 	OpenPrice          string `json:"openPrice"`
