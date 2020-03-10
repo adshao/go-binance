@@ -175,7 +175,8 @@ func (s *tickerServiceTestSuite) TestPriceChangeStats() {
         "priceChangePercent": "-95.960",
         "weightedAvgPrice": "0.29628482",
         "prevClosePrice": "0.10002000",
-        "lastPrice": "4.00000200",
+		"lastPrice": "4.00000200",
+		"lastQty": "200.00000000",
         "bidPrice": "4.00000000",
         "askPrice": "4.00000200",
         "openPrice": "99.00000000",
@@ -207,6 +208,7 @@ func (s *tickerServiceTestSuite) TestPriceChangeStats() {
 		WeightedAvgPrice:   "0.29628482",
 		PrevClosePrice:     "0.10002000",
 		LastPrice:          "4.00000200",
+		LastQty:            "200.00000000",
 		BidPrice:           "4.00000000",
 		AskPrice:           "4.00000200",
 		OpenPrice:          "99.00000000",
@@ -230,6 +232,7 @@ func (s *tickerServiceTestSuite) assertPriceChangeStatsEqual(e, a *PriceChangeSt
 	r.Equal(e.WeightedAvgPrice, a.WeightedAvgPrice, "WeightedAvgPrice")
 	r.Equal(e.PrevClosePrice, a.PrevClosePrice, "PrevClosePrice")
 	r.Equal(e.LastPrice, a.LastPrice, "LastPrice")
+	r.Equal(e.LastQty, a.LastQty, "LastQty")
 	r.Equal(e.BidPrice, a.BidPrice, "BidPrice")
 	r.Equal(e.AskPrice, a.AskPrice, "AskPrice")
 	r.Equal(e.OpenPrice, a.OpenPrice, "OpenPrice")
