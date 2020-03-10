@@ -56,12 +56,13 @@ const (
 	SideTypeBuy  SideType = "BUY"
 	SideTypeSell SideType = "SELL"
 
-	OrderTypeLimit            OrderType = "LIMIT"
-	OrderTypeMarket           OrderType = "MARKET"
-	OrderTypeStop             OrderType = "STOP"
-	OrderTypeStopMarket       OrderType = "STOP_MARKET"
-	OrderTypeTakeProfit       OrderType = "TAKE_PROFIT"
-	OrderTypeTakeProfitMarket OrderType = "TAKE_PROFIT_MARKET"
+	OrderTypeLimit              OrderType = "LIMIT"
+	OrderTypeMarket             OrderType = "MARKET"
+	OrderTypeStop               OrderType = "STOP"
+	OrderTypeStopMarket         OrderType = "STOP_MARKET"
+	OrderTypeTakeProfit         OrderType = "TAKE_PROFIT"
+	OrderTypeTakeProfitMarket   OrderType = "TAKE_PROFIT_MARKET"
+	OrderTypeTrailingStopMarket OrderType = "TRAILING_STOP_MARKET"
 
 	TimeInForceTypeGTC TimeInForceType = "GTC" // Good Till Cancel
 	TimeInForceTypeIOC TimeInForceType = "IOC" // Immediate or Cancel
