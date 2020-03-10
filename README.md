@@ -283,3 +283,18 @@ if err != nil {
 }
 <-doneC
 ```
+
+#### Setting Server Time
+
+Your system time may be incorrect and you may use following function to set the time offset based off Binance Server Time:
+
+```golang
+// use the client future for Futures
+client.NewSetServerTimeService().Do(context.Background())
+```
+
+Or you can also overwrite the `TimeOffset` yourself:
+
+```golang
+client.TimeOffset = 123
+```
