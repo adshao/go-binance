@@ -41,3 +41,19 @@ func (s *ServerTimeService) Do(ctx context.Context, opts ...RequestOption) (serv
 	serverTime = j.Get("serverTime").MustInt64()
 	return serverTime, nil
 }
+
+// SetServerTimeService set server time
+type SetServerTimeService struct {
+	c *Client
+}
+
+// Do send request
+func (s *SetServerTimeService) Do(ctx context.Context, opts ...RequestOption) (timeOffset int64, err error) {
+	serverTime, err := s.c.NewServerTimeService().Do(ctx)
+	if err != nil {
+		return 0, err
+	}
+	timeOffset = currentTimestamp() - serverTime
+	s.c.TimeOffset = timeOffset
+	return timeOffset, nil
+}
