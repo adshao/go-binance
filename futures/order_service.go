@@ -18,6 +18,8 @@ type CreateOrderService struct {
 	newClientOrderID *string
 	stopPrice        *string
 	workingType      *WorkingType
+	activationPrice  *string
+	callbackRate     *string
 }
 
 // Symbol set symbol
@@ -80,6 +82,18 @@ func (s *CreateOrderService) WorkingType(workingType WorkingType) *CreateOrderSe
 	return s
 }
 
+// ActivationPrice set activationPrice
+func (s *CreateOrderService) ActivationPrice(activationPrice string) *CreateOrderService {
+	s.activationPrice = &activationPrice
+	return s
+}
+
+// CallbackRate set callbackRate
+func (s *CreateOrderService) CallbackRate(callbackRate string) *CreateOrderService {
+	s.callbackRate = &callbackRate
+	return s
+}
+
 func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, err error) {
 	r := &request{
 		method:   "POST",
@@ -109,6 +123,12 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 	}
 	if s.workingType != nil {
 		m["workingType"] = *s.workingType
+	}
+	if s.activationPrice != nil {
+		m["activationPrice"] = *s.activationPrice
+	}
+	if s.callbackRate != nil {
+		m["callbackRate"] = *s.callbackRate
 	}
 	r.setFormParams(m)
 	data, err = s.c.callAPI(ctx, r, opts...)
@@ -149,6 +169,9 @@ type CreateOrderResponse struct {
 	Side             SideType        `json:"side"`
 	UpdateTime       int64           `json:"updateTime"`
 	WorkingType      WorkingType     `json:"workingType"`
+	ActivatePrice    string          `json:"activatePrice"`
+	PriceRate        string          `json:"priceRate"`
+	AvgPrice         string          `json:"avgPrice"`
 }
 
 // ListOpenOrdersService list opened orders
@@ -256,6 +279,10 @@ type Order struct {
 	Time             int64           `json:"time"`
 	UpdateTime       int64           `json:"updateTime"`
 	WorkingType      WorkingType     `json:"workingType"`
+	ActivatePrice    string          `json:"activatePrice"`
+	PriceRate        string          `json:"priceRate"`
+	AvgPrice         string          `json:"avgPrice"`
+	OrigType         string          `json:"origType"`
 }
 
 // ListOrdersService all account orders; active, canceled, or filled
@@ -400,6 +427,9 @@ type CancelOrderResponse struct {
 	Type             OrderType       `json:"type"`
 	UpdateTime       int64           `json:"updateTime"`
 	WorkingType      WorkingType     `json:"workingType"`
+	ActivatePrice    string          `json:"activatePrice"`
+	PriceRate        string          `json:"priceRate"`
+	OrigType         string          `json:"origType"`
 }
 
 // CancelAllOpenOrdersService cancel all open orders
