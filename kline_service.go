@@ -49,7 +49,7 @@ func (s *KlinesService) EndTime(endTime int64) *KlinesService {
 func (s *KlinesService) Do(ctx context.Context, opts ...RequestOption) (res []*Kline, err error) {
 	r := &request{
 		method:   "GET",
-		endpoint: "/api/v1/klines",
+		endpoint: "/api/v3/klines",
 	}
 	r.setParam("symbol", s.symbol)
 	r.setParam("interval", s.interval)
