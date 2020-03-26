@@ -40,6 +40,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 	orderType := OrderTypeLimit
 	timeInForce := TimeInForceTypeGTC
 	quantity := "12.00"
+	quoteOrderQty := "10.00"
 	price := "0.0001"
 	newClientOrderID := "myOrder1"
 	s.assertReq(func(r *request) {
@@ -49,13 +50,14 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 			"type":             orderType,
 			"timeInForce":      timeInForce,
 			"quantity":         quantity,
+			"quoteOrderQty":    quoteOrderQty,
 			"price":            price,
 			"newClientOrderId": newClientOrderID,
 		})
 		s.assertRequestEqual(e, r)
 	})
 	res, err := s.client.NewCreateOrderService().Symbol(symbol).Side(side).
-		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).
+		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).QuoteOrderQty(quoteOrderQty).
 		Price(price).NewClientOrderID(newClientOrderID).Do(newContext())
 	s.r().NoError(err)
 	e := &CreateOrderResponse{
@@ -75,7 +77,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 	s.assertCreateOrderResponseEqual(e, res)
 
 	err = s.client.NewCreateOrderService().Symbol(symbol).Side(side).
-		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).
+		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).QuoteOrderQty(quoteOrderQty).
 		Price(price).NewClientOrderID(newClientOrderID).Test(newContext())
 	s.r().NoError(err)
 }
@@ -111,6 +113,7 @@ func (s *orderServiceTestSuite) TestCreateOrderFull() {
 	orderType := OrderTypeLimit
 	timeInForce := TimeInForceTypeGTC
 	quantity := "12.00"
+	quoteOrderQty := "10.00"
 	price := "0.0001"
 	newClientOrderID := "myOrder1"
 	newOrderRespType := NewOrderRespTypeFULL
@@ -121,6 +124,7 @@ func (s *orderServiceTestSuite) TestCreateOrderFull() {
 			"type":             orderType,
 			"timeInForce":      timeInForce,
 			"quantity":         quantity,
+			"quoteOrderQty":    quoteOrderQty,
 			"price":            price,
 			"newClientOrderId": newClientOrderID,
 			"newOrderRespType": newOrderRespType,
@@ -128,7 +132,7 @@ func (s *orderServiceTestSuite) TestCreateOrderFull() {
 		s.assertRequestEqual(e, r)
 	})
 	res, err := s.client.NewCreateOrderService().Symbol(symbol).Side(side).
-		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).
+		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).QuoteOrderQty(quoteOrderQty).
 		Price(price).NewClientOrderID(newClientOrderID).
 		NewOrderRespType(newOrderRespType).Do(newContext())
 	s.r().NoError(err)
@@ -157,7 +161,7 @@ func (s *orderServiceTestSuite) TestCreateOrderFull() {
 	s.assertCreateOrderResponseEqual(e, res)
 
 	err = s.client.NewCreateOrderService().Symbol(symbol).Side(side).
-		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).
+		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).QuoteOrderQty(quoteOrderQty).
 		Price(price).NewClientOrderID(newClientOrderID).
 		NewOrderRespType(newOrderRespType).Test(newContext())
 	s.r().NoError(err)
