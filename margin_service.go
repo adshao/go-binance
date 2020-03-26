@@ -199,6 +199,7 @@ func (s *ListMarginLoansService) Do(ctx context.Context, opts ...RequestOption) 
 	r := &request{
 		method:   "GET",
 		endpoint: "/sapi/v1/margin/loan",
+		secType:  secTypeSigned,
 	}
 	r.setParam("asset", s.asset)
 	if s.txID != nil {
@@ -294,6 +295,7 @@ func (s *ListMarginRepaysService) Do(ctx context.Context, opts ...RequestOption)
 	r := &request{
 		method:   "GET",
 		endpoint: "/sapi/v1/margin/repay",
+		secType:  secTypeSigned,
 	}
 	r.setParam("asset", s.asset)
 	if s.txID != nil {

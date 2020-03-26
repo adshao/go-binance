@@ -113,7 +113,7 @@ func (s *marginTestSuite) TestListMarginLoans() {
 	current := int64(1)
 	size := int64(10)
 	s.assertReq(func(r *request) {
-		e := newRequest().setParams(params{
+		e := newSignedRequest().setParams(params{
 			"asset":     asset,
 			"txId":      txID,
 			"startTime": startTime,
@@ -182,7 +182,7 @@ func (s *marginTestSuite) TestListMarginRepays() {
 	current := int64(1)
 	size := int64(10)
 	s.assertReq(func(r *request) {
-		e := newRequest().setParams(params{
+		e := newSignedRequest().setParams(params{
 			"asset":     asset,
 			"txId":      txID,
 			"startTime": startTime,
