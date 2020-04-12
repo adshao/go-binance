@@ -73,17 +73,52 @@ func (s *positionServiceTestSuite) TestUpdatePositionMargin() {
 	s.mockDo(data, nil)
 	defer s.assertDo()
 	symbol := "BTCUSDT"
+	positionSide := PositionSideLong
+
 	amount := "100.0"
 	actionType := 1
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setFormParams(params{
-			"symbol": symbol,
-			"amount": amount,
-			"type":   actionType,
+			"symbol":       symbol,
+			"positionSide": positionSide,
+			"amount":       amount,
+			"type":         actionType,
 		})
 		s.assertRequestEqual(e, r)
 	})
 	err := s.client.NewUpdatePositionMarginService().Symbol(symbol).
-		Amount(amount).Type(actionType).Do(newContext())
+		PositionSide(positionSide).Amount(amount).Type(actionType).Do(newContext())
 	s.r().NoError(err)
+}
+
+func (s *positionServiceTestSuite) TestChangePositionMode() {
+	data := []byte(`{
+		"code": 200,
+		"msg": "success"
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setFormParams(params{
+			"dualSidePosition": "true",
+		})
+		s.assertRequestEqual(e, r)
+	})
+	err := s.client.NewChangePositionModeService().DualSide(true).Do(newContext())
+	s.r().NoError(err)
+}
+
+func (s *positionServiceTestSuite) TestGetPositionMode() {
+	data := []byte(`{
+		"dualSidePosition": true
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setFormParams(params{})
+		s.assertRequestEqual(e, r)
+	})
+	res, err := s.client.NewGetPositionModeService().Do(newContext())
+	s.r().NoError(err)
+	s.r().Equal(res.DualSidePosition, true)
 }

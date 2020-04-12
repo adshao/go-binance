@@ -21,6 +21,9 @@ import (
 // SideType define side type of order
 type SideType string
 
+// PositionSideType define position side type of order
+type PositionSideType string
+
 // OrderType define order type
 type OrderType string
 
@@ -55,6 +58,10 @@ type MarginType string
 const (
 	SideTypeBuy  SideType = "BUY"
 	SideTypeSell SideType = "SELL"
+
+	PositionSideBoth  PositionSideType = "BOTH"
+	PositionSideLong  PositionSideType = "LONG"
+	PositionSideShort PositionSideType = "SHORT"
 
 	OrderTypeLimit              OrderType = "LIMIT"
 	OrderTypeMarket             OrderType = "MARKET"
@@ -130,7 +137,7 @@ func NewClient(apiKey, secretKey string) *Client {
 	return &Client{
 		APIKey:     apiKey,
 		SecretKey:  secretKey,
-		BaseURL:    "https://testnet.binancefuture.com",
+		BaseURL:    "https://fapi.binance.com",
 		UserAgent:  "Binance/golang",
 		HTTPClient: http.DefaultClient,
 		Logger:     log.New(os.Stderr, "Binance-golang ", log.LstdFlags),
@@ -428,4 +435,9 @@ func (c *Client) NewUpdatePositionMarginService() *UpdatePositionMarginService {
 // ChangePositionModeService init change position mode service
 func (c *Client) NewChangePositionModeService() *ChangePositionModeService {
 	return &ChangePositionModeService{c: c}
+}
+
+// GetPositionModeService init get position mode service
+func (c *Client) NewGetPositionModeService() *GetPositionModeService {
+	return &GetPositionModeService{c: c}
 }
