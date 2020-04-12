@@ -130,7 +130,7 @@ func NewClient(apiKey, secretKey string) *Client {
 	return &Client{
 		APIKey:     apiKey,
 		SecretKey:  secretKey,
-		BaseURL:    "https://fapi.binance.com",
+		BaseURL:    "https://testnet.binancefuture.com",
 		UserAgent:  "Binance/golang",
 		HTTPClient: http.DefaultClient,
 		Logger:     log.New(os.Stderr, "Binance-golang ", log.LstdFlags),
@@ -423,4 +423,9 @@ func (c *Client) NewChangeMarginTypeService() *ChangeMarginTypeService {
 // NewUpdatePositionMarginService init update position margin
 func (c *Client) NewUpdatePositionMarginService() *UpdatePositionMarginService {
 	return &UpdatePositionMarginService{c: c}
+}
+
+// ChangePositionModeService init change position mode service
+func (c *Client) NewChangePositionModeService() *ChangePositionModeService {
+	return &ChangePositionModeService{c: c}
 }

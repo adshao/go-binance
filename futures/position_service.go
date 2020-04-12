@@ -135,3 +135,36 @@ func (s *UpdatePositionMarginService) Do(ctx context.Context, opts ...RequestOpt
 	}
 	return nil
 }
+
+// ChangePositionModeService change user's position mode
+type ChangePositionModeService struct {
+	c        *Client
+	dualSide string
+}
+
+// Change user's position mode: true - Hedge Mode, false - One-way Mode
+func (s *ChangePositionModeService) DualSide(dualSide bool) *ChangePositionModeService {
+	if dualSide {
+		s.dualSide = "true"
+	} else {
+		s.dualSide = "false"
+	}
+	return s
+}
+
+// Do send request
+func (s *ChangePositionModeService) Do(ctx context.Context, opts ...RequestOption) (err error) {
+	r := &request{
+		method:   "POST",
+		endpoint: " /fapi/v1/positionSide/dual",
+		secType:  secTypeSigned,
+	}
+	r.setFormParams(params{
+		"dualSidePosition": s.dualSide,
+	})
+	_, err = s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return err
+	}
+	return nil
+}
