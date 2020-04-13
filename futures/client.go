@@ -21,6 +21,9 @@ import (
 // SideType define side type of order
 type SideType string
 
+// PositionSideType define position side type of order
+type PositionSideType string
+
 // OrderType define order type
 type OrderType string
 
@@ -55,6 +58,10 @@ type MarginType string
 const (
 	SideTypeBuy  SideType = "BUY"
 	SideTypeSell SideType = "SELL"
+
+	PositionSideBoth  PositionSideType = "BOTH"
+	PositionSideLong  PositionSideType = "LONG"
+	PositionSideShort PositionSideType = "SHORT"
 
 	OrderTypeLimit              OrderType = "LIMIT"
 	OrderTypeMarket             OrderType = "MARKET"
@@ -423,4 +430,14 @@ func (c *Client) NewChangeMarginTypeService() *ChangeMarginTypeService {
 // NewUpdatePositionMarginService init update position margin
 func (c *Client) NewUpdatePositionMarginService() *UpdatePositionMarginService {
 	return &UpdatePositionMarginService{c: c}
+}
+
+// ChangePositionModeService init change position mode service
+func (c *Client) NewChangePositionModeService() *ChangePositionModeService {
+	return &ChangePositionModeService{c: c}
+}
+
+// GetPositionModeService init get position mode service
+func (c *Client) NewGetPositionModeService() *GetPositionModeService {
+	return &GetPositionModeService{c: c}
 }

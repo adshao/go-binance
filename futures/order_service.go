@@ -10,6 +10,7 @@ type CreateOrderService struct {
 	c                *Client
 	symbol           string
 	side             SideType
+	positionSide     *PositionSideType
 	orderType        OrderType
 	timeInForce      *TimeInForceType
 	quantity         string
@@ -31,6 +32,12 @@ func (s *CreateOrderService) Symbol(symbol string) *CreateOrderService {
 // Side set side
 func (s *CreateOrderService) Side(side SideType) *CreateOrderService {
 	s.side = side
+	return s
+}
+
+// Side set side
+func (s *CreateOrderService) PositionSide(positionSide PositionSideType) *CreateOrderService {
+	s.positionSide = &positionSide
 	return s
 }
 
@@ -105,6 +112,9 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 		"side":     s.side,
 		"type":     s.orderType,
 		"quantity": s.quantity,
+	}
+	if s.positionSide != nil {
+		m["positionSide"] = *s.positionSide
 	}
 	if s.timeInForce != nil {
 		m["timeInForce"] = *s.timeInForce

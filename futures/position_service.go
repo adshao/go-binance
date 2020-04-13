@@ -93,15 +93,22 @@ func (s *ChangeMarginTypeService) Do(ctx context.Context, opts ...RequestOption)
 
 // UpdatePositionMarginService update isolated position margin
 type UpdatePositionMarginService struct {
-	c          *Client
-	symbol     string
-	amount     string
-	actionType int
+	c            *Client
+	symbol       string
+	positionSide *PositionSideType
+	amount       string
+	actionType   int
 }
 
 // Symbol set symbol
 func (s *UpdatePositionMarginService) Symbol(symbol string) *UpdatePositionMarginService {
 	s.symbol = symbol
+	return s
+}
+
+// Side set side
+func (s *UpdatePositionMarginService) PositionSide(positionSide PositionSideType) *UpdatePositionMarginService {
+	s.positionSide = &positionSide
 	return s
 }
 
@@ -124,14 +131,82 @@ func (s *UpdatePositionMarginService) Do(ctx context.Context, opts ...RequestOpt
 		endpoint: "/fapi/v1/positionMargin",
 		secType:  secTypeSigned,
 	}
-	r.setFormParams(params{
+	m := params{
 		"symbol": s.symbol,
 		"amount": s.amount,
 		"type":   s.actionType,
+	}
+	if s.positionSide != nil {
+		m["positionSide"] = *s.positionSide
+	}
+	r.setFormParams(m)
+
+	_, err = s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// ChangePositionModeService change user's position mode
+type ChangePositionModeService struct {
+	c        *Client
+	dualSide string
+}
+
+// Change user's position mode: true - Hedge Mode, false - One-way Mode
+func (s *ChangePositionModeService) DualSide(dualSide bool) *ChangePositionModeService {
+	if dualSide {
+		s.dualSide = "true"
+	} else {
+		s.dualSide = "false"
+	}
+	return s
+}
+
+// Do send request
+func (s *ChangePositionModeService) Do(ctx context.Context, opts ...RequestOption) (err error) {
+	r := &request{
+		method:   "POST",
+		endpoint: "/fapi/v1/positionSide/dual",
+		secType:  secTypeSigned,
+	}
+	r.setFormParams(params{
+		"dualSidePosition": s.dualSide,
 	})
 	_, err = s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+// GetPositionModeService get user's position mode
+type GetPositionModeService struct {
+	c *Client
+}
+
+// Response of user's position mode
+type PositionMode struct {
+	DualSidePosition bool `json:"dualSidePosition"`
+}
+
+// Do send request
+func (s *GetPositionModeService) Do(ctx context.Context, opts ...RequestOption) (res *PositionMode, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/fapi/v1/positionSide/dual",
+		secType:  secTypeSigned,
+	}
+	r.setFormParams(params{})
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = &PositionMode{}
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
