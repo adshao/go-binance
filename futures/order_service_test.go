@@ -36,7 +36,8 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 		"updateTime": 1566818724722,
 		"workingType": "CONTRACT_PRICE",
 		"activatePrice": "1000",
-		"priceRate": "0.1"
+		"priceRate": "0.1",
+		"positionSide": "BOTH"
 	}`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
@@ -44,6 +45,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 	side := SideTypeSell
 	orderType := OrderTypeLimit
 	timeInForce := TimeInForceTypeGTC
+	positionSide := PositionSideTypeBoth
 	quantity := "10"
 	price := "10000"
 	newClientOrderID := "testOrder"
@@ -58,6 +60,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 			"side":             side,
 			"type":             orderType,
 			"timeInForce":      timeInForce,
+			"positionSide":     positionSide,
 			"quantity":         quantity,
 			"reduceOnly":       reduceOnly,
 			"price":            price,
@@ -73,7 +76,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).
 		ReduceOnly(reduceOnly).Price(price).NewClientOrderID(newClientOrderID).
 		StopPrice(stopPrice).WorkingType(workingType).ActivationPrice(activationPrice).
-		CallbackRate(callbackRate).Do(newContext())
+		CallbackRate(callbackRate).PositionSide(positionSide).Do(newContext())
 	s.r().NoError(err)
 	e := &CreateOrderResponse{
 		ClientOrderID:    newClientOrderID,
@@ -81,6 +84,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 		ExecutedQuantity: "0",
 		OrderID:          22542179,
 		OrigQuantity:     "10",
+		PositionSide:     positionSide,
 		Price:            "10000",
 		ReduceOnly:       false,
 		Side:             SideTypeSell,
@@ -104,6 +108,7 @@ func (s *baseOrderTestSuite) assertCreateOrderResponseEqual(e, a *CreateOrderRes
 	r.Equal(e.ExecutedQuantity, a.ExecutedQuantity, "ExecutedQuantity")
 	r.Equal(e.OrderID, a.OrderID, "OrderID")
 	r.Equal(e.OrigQuantity, a.OrigQuantity, "OrigQuantity")
+	r.Equal(e.PositionSide, a.PositionSide, "PositionSide")
 	r.Equal(e.Price, a.Price, "Price")
 	r.Equal(e.ReduceOnly, a.ReduceOnly, "ReduceOnly")
 	r.Equal(e.Side, a.Side, "Side")
@@ -138,7 +143,8 @@ func (s *orderServiceTestSuite) TestListOpenOrders() {
 		  "updateTime": 1499827319559,
 		  "workingType": "CONTRACT_PRICE",
 		  "activatePrice": "10000",
-		  "priceRate":"0.1"
+		  "priceRate":"0.1",
+		  "positionSide":"BOTH"
 		}
 	]`)
 	s.mockDo(data, nil)
@@ -177,6 +183,7 @@ func (s *orderServiceTestSuite) TestListOpenOrders() {
 		WorkingType:   WorkingTypeContractPrice,
 		ActivatePrice: "10000",
 		PriceRate:     "0.1",
+		PositionSide:  "BOTH",
 	}
 	s.assertOrderEqual(e, orders[0])
 }
@@ -202,6 +209,7 @@ func (s *baseOrderTestSuite) assertOrderEqual(e, a *Order) {
 	r.Equal(e.WorkingType, a.WorkingType, "WorkingType")
 	r.Equal(e.ActivatePrice, a.ActivatePrice, "ActivatePrice")
 	r.Equal(e.PriceRate, a.PriceRate, "PriceRate")
+	r.Equal(e.PositionSide, a.PositionSide, "PositionSide")
 }
 
 func (s *orderServiceTestSuite) TestGetOrder() {
@@ -223,7 +231,8 @@ func (s *orderServiceTestSuite) TestGetOrder() {
 		"updateTime": 1499827319559,
 		"workingType": "CONTRACT_PRICE",
 		"activatePrice": "10000",
-		"priceRate":"0.1"
+		"priceRate":"0.1",
+		"positionSide": "BOTH"
 	}`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
@@ -262,6 +271,7 @@ func (s *orderServiceTestSuite) TestGetOrder() {
 		WorkingType:      WorkingTypeContractPrice,
 		ActivatePrice:    "10000",
 		PriceRate:        "0.1",
+		PositionSide:     "BOTH",
 	}
 	s.assertOrderEqual(e, order)
 }
@@ -355,7 +365,8 @@ func (s *orderServiceTestSuite) TestCancelOrder() {
 		"updateTime": 1571110484038,
 		"workingType": "CONTRACT_PRICE",
 		"activatePrice": "10000",
-		"priceRate":"0.1"
+		"priceRate":"0.1",
+		"positionSide":"BOTH"
 	}`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
@@ -396,6 +407,7 @@ func (s *orderServiceTestSuite) TestCancelOrder() {
 		WorkingType:      WorkingTypeContractPrice,
 		ActivatePrice:    "10000",
 		PriceRate:        "0.1",
+		PositionSide:     "BOTH",
 	}
 	s.assertCancelOrderResponseEqual(e, res)
 }
@@ -420,6 +432,7 @@ func (s *orderServiceTestSuite) assertCancelOrderResponseEqual(e, a *CancelOrder
 	r.Equal(e.WorkingType, a.WorkingType, "WorkingType")
 	r.Equal(e.ActivatePrice, a.ActivatePrice, "ActivatePrice")
 	r.Equal(e.PriceRate, a.PriceRate, "PriceRate")
+	r.Equal(e.PositionSide, a.PositionSide, "PositionSide")
 }
 
 func (s *orderServiceTestSuite) TestCancelAllOpenOrders() {

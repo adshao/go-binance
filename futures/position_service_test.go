@@ -73,7 +73,7 @@ func (s *positionServiceTestSuite) TestUpdatePositionMargin() {
 	s.mockDo(data, nil)
 	defer s.assertDo()
 	symbol := "BTCUSDT"
-	positionSide := PositionSideLong
+	positionSide := PositionSideTypeLong
 
 	amount := "100.0"
 	actionType := 1

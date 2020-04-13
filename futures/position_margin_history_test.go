@@ -25,7 +25,8 @@ func (s *positionMarginHistoryServiceTestSuite) TestPositionMarginHistory() {
 			"asset": "USDT",
 			"symbol": "BTCUSDT",
 			"time": 1578047897183,
-			"type": 1
+			"type": 1,
+			"positionSide": "BOTH"
 		}
 	]`)
 	s.mockDo(data, nil)
@@ -46,11 +47,12 @@ func (s *positionMarginHistoryServiceTestSuite) TestPositionMarginHistory() {
 	r.NoError(err)
 	r.Len(orders, 1)
 	e := &PositionMarginHistory{
-		Amount: "23.36332311",
-		Asset:  "USDT",
-		Symbol: "BTCUSDT",
-		Time:   1578047897183,
-		Type:   1,
+		Amount:       "23.36332311",
+		Asset:        "USDT",
+		Symbol:       "BTCUSDT",
+		Time:         1578047897183,
+		Type:         1,
+		PositionSide: "BOTH",
 	}
 	s.assertOrderEqual(e, orders[0])
 }
@@ -62,4 +64,5 @@ func (s *positionMarginHistoryServiceTestSuite) assertOrderEqual(e, a *PositionM
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
 	r.Equal(e.Time, e.Time, "Time")
 	r.Equal(e.Type, a.Type, "Type")
+	r.Equal(e.PositionSide, a.PositionSide, "PositionSide")
 }

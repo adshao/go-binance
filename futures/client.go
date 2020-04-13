@@ -59,9 +59,9 @@ const (
 	SideTypeBuy  SideType = "BUY"
 	SideTypeSell SideType = "SELL"
 
-	PositionSideBoth  PositionSideType = "BOTH"
-	PositionSideLong  PositionSideType = "LONG"
-	PositionSideShort PositionSideType = "SHORT"
+	PositionSideTypeBoth  PositionSideType = "BOTH"
+	PositionSideTypeLong  PositionSideType = "LONG"
+	PositionSideTypeShort PositionSideType = "SHORT"
 
 	OrderTypeLimit              OrderType = "LIMIT"
 	OrderTypeMarket             OrderType = "MARKET"
