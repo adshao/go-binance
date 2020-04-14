@@ -42,4 +42,5 @@ type PositionRisk struct {
 	PositionAmt      string `json:"positionAmt"`
 	Symbol           string `json:"symbol"`
 	UnRealizedProfit string `json:"unRealizedProfit"`
+	PositionSide     string `json:"positionSide"`
 }
