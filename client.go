@@ -136,7 +136,12 @@ const (
 )
 
 func currentTimestamp() int64 {
-	return int64(time.Nanosecond) * time.Now().UnixNano() / int64(time.Millisecond)
+	return FormatTimestamp(time.Now())
+}
+
+// FormatTimestamp formats a time into Unix timestamp in milliseconds, as requested by Binance.
+func FormatTimestamp(t time.Time) int64 {
+	return t.UnixNano() / int64(time.Millisecond)
 }
 
 func newJSON(data []byte) (j *simplejson.Json, err error) {
