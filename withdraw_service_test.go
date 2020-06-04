@@ -42,26 +42,37 @@ func (s *withdrawServiceTestSuite) TestCreateWithdraw() {
 }
 
 func (s *withdrawServiceTestSuite) TestListWithdraws() {
-	data := []byte(`{
-        "withdrawList": [
-            {
-                "amount": 1,
-                "address": "0x6915f16f8791d0a1cc2bf47c13a6b2a92000504b",
-                "asset": "ETH",
-                "applyTime": 1508198532000,
-                "status": 4
-            },
-            {
-                "amount": 0.005,
-                "address": "0x6915f16f8791d0a1cc2bf47c13a6b2a92000504b",
-                "txId": "0x80aaabed54bdab3f6de5868f89929a2371ad21d666f20f7393d1a3389fad95a1",
-                "asset": "ETH",
-                "applyTime": 1508198532000,
-                "status": 4
-            }
-        ],
-        "success": true
-    }`)
+	data := []byte(`
+	{
+		"withdrawList": [
+			{
+				"id":"7213fea8e94b4a5593d507237e5a555b",
+				"withdrawOrderId": "",    
+				"amount": 0.99,
+				"transactionFee": 0.01,
+				"address": "0x6915f16f8791d0a1cc2bf47c13a6b2a92000504b",
+				"asset": "USDT",
+				"txId": "0xdf33b22bdb2b28b1f75ccd201a4a4m6e7g83jy5fc5d5a9d1340961598cfcb0a1",
+				"applyTime": 1508198532000,
+				"network": "ETH",
+				"status": 4
+			},
+			{
+				"id":"7213fea8e94b4a5534ggsd237e5a555b",
+				"withdrawOrderId": "withdrawtest", 
+				"amount": 999.9999,
+				"transactionFee": 0.0001,
+				"address": "463tWEBn5XZJSxLU34r6g7h8jtxuNcDbjLSjkn3XAXHCbLrTTErJrBWYgHJQyrCwkNgYvyV3z8zctJLPCZy24jvb3NiTcTJ",
+				"addressTag": "342341222",
+				"txId": "b3c6219639c8ae3f9cf010cdc24fw7f7yt8j1e063f9b4bd1a05cb44c4b6e2509",
+				"asset": "XMR",
+				"applyTime": 1508198532000,
+				"status": 4
+			}
+		],
+		"success": true
+	}
+	`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
 
@@ -79,29 +90,41 @@ func (s *withdrawServiceTestSuite) TestListWithdraws() {
 		s.assertRequestEqual(e, r)
 	})
 
-	withdraws, err := s.client.NewListWithdrawsService().Asset(asset).
-		Status(status).StartTime(startTime).EndTime(endTime).
+	withdraws, err := s.client.NewListWithdrawsService().
+		Asset(asset).
+		Status(status).
+		StartTime(startTime).
+		EndTime(endTime).
 		Do(newContext())
 	r := s.r()
 	r.NoError(err)
+
 	s.Len(withdraws, 2)
-	e1 := &Withdraw{
-		Amount:    1,
-		Address:   "0x6915f16f8791d0a1cc2bf47c13a6b2a92000504b",
-		Asset:     "ETH",
-		ApplyTime: 1508198532000,
-		Status:    4,
-	}
-	e2 := &Withdraw{
-		Amount:    0.005,
-		Address:   "0x6915f16f8791d0a1cc2bf47c13a6b2a92000504b",
-		TxID:      "0x80aaabed54bdab3f6de5868f89929a2371ad21d666f20f7393d1a3389fad95a1",
-		Asset:     "ETH",
-		ApplyTime: 1508198532000,
-		Status:    4,
-	}
-	s.assertWithdrawEqual(e1, withdraws[0])
-	s.assertWithdrawEqual(e2, withdraws[1])
+	s.assertWithdrawEqual(&Withdraw{
+		ID:              "7213fea8e94b4a5593d507237e5a555b",
+		WithdrawOrderID: "",
+		Amount:          0.99,
+		TransactionFee:  0.01,
+		Address:         "0x6915f16f8791d0a1cc2bf47c13a6b2a92000504b",
+		AddressTag:      "",
+		Asset:           "USDT",
+		TxID:            "0xdf33b22bdb2b28b1f75ccd201a4a4m6e7g83jy5fc5d5a9d1340961598cfcb0a1",
+		ApplyTime:       1508198532000,
+		Network:         "ETH",
+		Status:          4,
+	}, withdraws[0])
+	s.assertWithdrawEqual(&Withdraw{
+		ID:              "7213fea8e94b4a5534ggsd237e5a555b",
+		WithdrawOrderID: "withdrawOrderId",
+		Amount:          999.9999,
+		TransactionFee:  0.0001,
+		Address:         "463tWEBn5XZJSxLU34r6g7h8jtxuNcDbjLSjkn3XAXHCbLrTTErJrBWYgHJQyrCwkNgYvyV3z8zctJLPCZy24jvb3NiTcTJ",
+		AddressTag:      "342341222",
+		TxID:            "b3c6219639c8ae3f9cf010cdc24fw7f7yt8j1e063f9b4bd1a05cb44c4b6e2509",
+		Asset:           "XMR",
+		ApplyTime:       1508198532000,
+		Status:          4,
+	}, withdraws[1])
 }
 
 func (s *withdrawServiceTestSuite) assertWithdrawEqual(e, a *Withdraw) {

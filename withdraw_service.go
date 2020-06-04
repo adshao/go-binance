@@ -64,35 +64,37 @@ type ListWithdrawsService struct {
 	endTime   *int64
 }
 
-// Asset set asset
+// Asset sets the asset parameter.
 func (s *ListWithdrawsService) Asset(asset string) *ListWithdrawsService {
 	s.asset = &asset
 	return s
 }
 
-// Status set status
+// Status sets the status parameter.
 func (s *ListWithdrawsService) Status(status int) *ListWithdrawsService {
 	s.status = &status
 	return s
 }
 
-// StartTime set startTime
+// StartTime sets the startTime parameter.
+// If present, EndTime MUST be specified. The difference between EndTime - StartTime MUST be between 0-90 days.
 func (s *ListWithdrawsService) StartTime(startTime int64) *ListWithdrawsService {
 	s.startTime = &startTime
 	return s
 }
 
-// EndTime set endTime
+// EndTime sets the endTime parameter.
+// If present, StartTime MUST be specified. The difference between EndTime - StartTime MUST be between 0-90 days.
 func (s *ListWithdrawsService) EndTime(endTime int64) *ListWithdrawsService {
 	s.endTime = &endTime
 	return s
 }
 
-// Do send request
+// Do sends the request.
 func (s *ListWithdrawsService) Do(ctx context.Context) (withdraws []*Withdraw, err error) {
 	r := &request{
-		method:   "POST",
-		endpoint: "/wapi/v1/getWithdrawHistory.html",
+		method:   "GET",
+		endpoint: "/wapi/v3/withdrawHistory.html",
 		secType:  secTypeSigned,
 	}
 	if s.asset != nil {
@@ -119,20 +121,25 @@ func (s *ListWithdrawsService) Do(ctx context.Context) (withdraws []*Withdraw, e
 	return res.Withdraws, nil
 }
 
-// WithdrawHistoryResponse define withdraw history response
+// WithdrawHistoryResponse represents a response from ListWithdrawsService.
 type WithdrawHistoryResponse struct {
 	Withdraws []*Withdraw `json:"withdrawList"`
 	Success   bool        `json:"success"`
 }
 
-// Withdraw define withdraw info
+// Withdraw represents a single withdraw entry.
 type Withdraw struct {
-	Amount    float64 `json:"amount"`
-	Address   string  `json:"address"`
-	Asset     string  `json:"asset"`
-	TxID      string  `json:"txId"`
-	ApplyTime int64   `json:"applyTime"`
-	Status    int     `json:"status"`
+	ID              string  `json:"id"`
+	WithdrawOrderID string  `json:"withdrawOrderId"`
+	Amount          float64 `json:"amount"`
+	TransactionFee  float64 `json:"transactionFee"`
+	Address         string  `json:"address"`
+	AddressTag      string  `json:"addressTag"`
+	TxID            string  `json:"txId"`
+	Asset           string  `json:"asset"`
+	ApplyTime       int64   `json:"applyTime"`
+	Network         string  `json:"network"`
+	Status          int     `json:"status"`
 }
 
 // GetWithdrawFeeService get withdraw fee
