@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 )
 
-// CreateWithdrawService create withdraw
+// CreateWithdrawService submits a withdraw request.
+//
+// See https://binance-docs.github.io/apidocs/spot/en/#withdraw
 type CreateWithdrawService struct {
 	c       *Client
 	asset   string
@@ -14,32 +16,32 @@ type CreateWithdrawService struct {
 	name    *string
 }
 
-// Asset set asset
+// Asset sets asset parameter (MANDATORY).
 func (s *CreateWithdrawService) Asset(asset string) *CreateWithdrawService {
 	s.asset = asset
 	return s
 }
 
-// Address set address
+// Address sets the address parameter (MANDATORY).
 func (s *CreateWithdrawService) Address(address string) *CreateWithdrawService {
 	s.address = address
 	return s
 }
 
-// Amount set amount
+// Amount sets the amount parameter (MANDATORY).
 func (s *CreateWithdrawService) Amount(amount string) *CreateWithdrawService {
 	s.amount = amount
 	return s
 }
 
-// Name set name
+// Name sets the name parameter.
 func (s *CreateWithdrawService) Name(name string) *CreateWithdrawService {
 	s.name = &name
 	return s
 }
 
-// Do send request
-func (s *CreateWithdrawService) Do(ctx context.Context) (err error) {
+// Do sends the request.
+func (s *CreateWithdrawService) Do(ctx context.Context) (*CreateWithdrawResponse, error) {
 	r := &request{
 		method:   "POST",
 		endpoint: "/wapi/v3/withdraw.html",
@@ -51,11 +53,30 @@ func (s *CreateWithdrawService) Do(ctx context.Context) (err error) {
 	if s.name != nil {
 		r.setParam("name", *s.name)
 	}
-	_, err = s.c.callAPI(ctx, r)
-	return err
+
+	data, err := s.c.callAPI(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &CreateWithdrawResponse{}
+	if err := json.Unmarshal(data, res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
-// ListWithdrawsService list withdraws
+// CreateWithdrawResponse represents a response from CreateWithdrawService.
+type CreateWithdrawResponse struct {
+	ID      string `json:"id"`
+	Msg     string `json:"msg"`
+	Success bool   `json:"success"`
+}
+
+// ListWithdrawsService fetches withdraw history.
+//
+// See https://binance-docs.github.io/apidocs/spot/en/#withdraw-history-supporting-network-user_data
 type ListWithdrawsService struct {
 	c         *Client
 	asset     *string

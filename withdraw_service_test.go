@@ -15,10 +15,13 @@ func TestWithdrawService(t *testing.T) {
 }
 
 func (s *withdrawServiceTestSuite) TestCreateWithdraw() {
-	data := []byte(`{
-        "msg": "success",
-        "success": true
-    }`)
+	data := []byte(`
+	{
+		"msg": "success",
+		"success": true,
+		"id":"7213fea8e94b4a5593d507237e5a555b"
+	}
+	`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
 
@@ -36,9 +39,18 @@ func (s *withdrawServiceTestSuite) TestCreateWithdraw() {
 		s.assertRequestEqual(e, r)
 	})
 
-	err := s.client.NewCreateWithdrawService().Asset(asset).
-		Address(address).Amount(amount).Name(name).Do(newContext())
-	s.r().NoError(err)
+	res, err := s.client.NewCreateWithdrawService().
+		Asset(asset).
+		Address(address).
+		Amount(amount).
+		Name(name).
+		Do(newContext())
+
+	r := s.r()
+	r.NoError(err)
+	r.Equal("7213fea8e94b4a5593d507237e5a555b", res.ID)
+	r.Equal("success", res.Msg)
+	r.True(res.Success)
 }
 
 func (s *withdrawServiceTestSuite) TestListWithdraws() {
