@@ -121,7 +121,7 @@ func (s *ListWithdrawsService) Do(ctx context.Context) (withdraws []*Withdraw, e
 	return res.Withdraws, nil
 }
 
-// DepositHistoryResponse represents a response from ListWithdrawsService.
+// WithdrawHistoryResponse represents a response from ListWithdrawsService.
 type WithdrawHistoryResponse struct {
 	Withdraws []*Withdraw `json:"withdrawList"`
 	Success   bool        `json:"success"`
