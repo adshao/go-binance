@@ -9,16 +9,32 @@ import (
 //
 // See https://binance-docs.github.io/apidocs/spot/en/#withdraw
 type CreateWithdrawService struct {
-	c       *Client
-	asset   string
-	address string
-	amount  string
-	name    *string
+	c                  *Client
+	asset              string
+	withdrawOrderID    *string
+	network            *string
+	address            string
+	addressTag         *string
+	amount             string
+	transactionFeeFlag *bool
+	name               *string
 }
 
-// Asset sets asset parameter (MANDATORY).
-func (s *CreateWithdrawService) Asset(asset string) *CreateWithdrawService {
-	s.asset = asset
+// Asset sets the asset parameter (MANDATORY).
+func (s *CreateWithdrawService) Asset(v string) *CreateWithdrawService {
+	s.asset = v
+	return s
+}
+
+// WithdrawOrderID sets the withdrawOrderID parameter.
+func (s *CreateWithdrawService) WithdrawOrderID(v string) *CreateWithdrawService {
+	s.withdrawOrderID = &v
+	return s
+}
+
+// Network sets the network parameter.
+func (s *CreateWithdrawService) Network(v string) *CreateWithdrawService {
+	s.network = &v
 	return s
 }
 
@@ -28,15 +44,27 @@ func (s *CreateWithdrawService) Address(address string) *CreateWithdrawService {
 	return s
 }
 
+// AddressTag sets the addressTag parameter.
+func (s *CreateWithdrawService) AddressTag(v string) *CreateWithdrawService {
+	s.addressTag = &v
+	return s
+}
+
 // Amount sets the amount parameter (MANDATORY).
-func (s *CreateWithdrawService) Amount(amount string) *CreateWithdrawService {
-	s.amount = amount
+func (s *CreateWithdrawService) Amount(v string) *CreateWithdrawService {
+	s.amount = v
+	return s
+}
+
+// TransactionFeeFlag sets the transactionFeeFlag parameter.
+func (s *CreateWithdrawService) TransactionFeeFlag(v bool) *CreateWithdrawService {
+	s.transactionFeeFlag = &v
 	return s
 }
 
 // Name sets the name parameter.
-func (s *CreateWithdrawService) Name(name string) *CreateWithdrawService {
-	s.name = &name
+func (s *CreateWithdrawService) Name(v string) *CreateWithdrawService {
+	s.name = &v
 	return s
 }
 
@@ -50,8 +78,20 @@ func (s *CreateWithdrawService) Do(ctx context.Context) (*CreateWithdrawResponse
 	r.setParam("asset", s.asset)
 	r.setParam("address", s.address)
 	r.setParam("amount", s.amount)
-	if s.name != nil {
-		r.setParam("name", *s.name)
+	if v := s.withdrawOrderID; v != nil {
+		r.setParam("withdrawOrderId", *v)
+	}
+	if v := s.network; v != nil {
+		r.setParam("network", *v)
+	}
+	if v := s.addressTag; v != nil {
+		r.setParam("addressTag", *v)
+	}
+	if v := s.transactionFeeFlag; v != nil {
+		r.setParam("transactionFeeFlag", *v)
+	}
+	if v := s.name; v != nil {
+		r.setParam("name", *v)
 	}
 
 	data, err := s.c.callAPI(ctx, r)
@@ -151,7 +191,7 @@ type WithdrawHistoryResponse struct {
 // Withdraw represents a single withdraw entry.
 type Withdraw struct {
 	ID              string  `json:"id"`
-	WithdrawOrderID string  `json:"withdrawOrderId"`
+	WithdrawOrderID string  `json:"withdrawOrderID"`
 	Amount          float64 `json:"amount"`
 	TransactionFee  float64 `json:"transactionFee"`
 	Address         string  `json:"address"`

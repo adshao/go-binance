@@ -25,24 +25,36 @@ func (s *withdrawServiceTestSuite) TestCreateWithdraw() {
 	s.mockDo(data, nil)
 	defer s.assertDo()
 
-	asset := "ETH"
+	asset := "USDT"
+	withdrawOrderID := "testID"
+	network := "ETH"
 	address := "myaddress"
+	addressTag := "xyz"
 	amount := "0.01"
+	transactionFeeFlag := true
 	name := "eth"
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
-			"asset":   asset,
-			"address": address,
-			"amount":  amount,
-			"name":    name,
+			"asset":              asset,
+			"withdrawOrderId":    withdrawOrderID,
+			"network":            network,
+			"address":            address,
+			"addressTag":         addressTag,
+			"amount":             amount,
+			"transactionFeeFlag": transactionFeeFlag,
+			"name":               name,
 		})
 		s.assertRequestEqual(e, r)
 	})
 
 	res, err := s.client.NewCreateWithdrawService().
 		Asset(asset).
+		WithdrawOrderID(withdrawOrderID).
+		Network(network).
 		Address(address).
+		AddressTag(addressTag).
 		Amount(amount).
+		TransactionFeeFlag(transactionFeeFlag).
 		Name(name).
 		Do(newContext())
 
@@ -59,7 +71,7 @@ func (s *withdrawServiceTestSuite) TestListWithdraws() {
 		"withdrawList": [
 			{
 				"id":"7213fea8e94b4a5593d507237e5a555b",
-				"withdrawOrderId": "",    
+				"withdrawOrderID": "",    
 				"amount": 0.99,
 				"transactionFee": 0.01,
 				"address": "0x6915f16f8791d0a1cc2bf47c13a6b2a92000504b",
@@ -71,7 +83,7 @@ func (s *withdrawServiceTestSuite) TestListWithdraws() {
 			},
 			{
 				"id":"7213fea8e94b4a5534ggsd237e5a555b",
-				"withdrawOrderId": "withdrawtest", 
+				"withdrawOrderID": "withdrawtest", 
 				"amount": 999.9999,
 				"transactionFee": 0.0001,
 				"address": "463tWEBn5XZJSxLU34r6g7h8jtxuNcDbjLSjkn3XAXHCbLrTTErJrBWYgHJQyrCwkNgYvyV3z8zctJLPCZy24jvb3NiTcTJ",
@@ -127,7 +139,7 @@ func (s *withdrawServiceTestSuite) TestListWithdraws() {
 	}, withdraws[0])
 	s.assertWithdrawEqual(&Withdraw{
 		ID:              "7213fea8e94b4a5534ggsd237e5a555b",
-		WithdrawOrderID: "withdrawOrderId",
+		WithdrawOrderID: "withdrawOrderID",
 		Amount:          999.9999,
 		TransactionFee:  0.0001,
 		Address:         "463tWEBn5XZJSxLU34r6g7h8jtxuNcDbjLSjkn3XAXHCbLrTTErJrBWYgHJQyrCwkNgYvyV3z8zctJLPCZy24jvb3NiTcTJ",
