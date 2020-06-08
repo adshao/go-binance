@@ -5,41 +5,71 @@ import (
 	"encoding/json"
 )
 
-// CreateWithdrawService create withdraw
+// CreateWithdrawService submits a withdraw request.
+//
+// See https://binance-docs.github.io/apidocs/spot/en/#withdraw
 type CreateWithdrawService struct {
-	c       *Client
-	asset   string
-	address string
-	amount  string
-	name    *string
+	c                  *Client
+	asset              string
+	withdrawOrderID    *string
+	network            *string
+	address            string
+	addressTag         *string
+	amount             string
+	transactionFeeFlag *bool
+	name               *string
 }
 
-// Asset set asset
-func (s *CreateWithdrawService) Asset(asset string) *CreateWithdrawService {
-	s.asset = asset
+// Asset sets the asset parameter (MANDATORY).
+func (s *CreateWithdrawService) Asset(v string) *CreateWithdrawService {
+	s.asset = v
 	return s
 }
 
-// Address set address
+// WithdrawOrderID sets the withdrawOrderID parameter.
+func (s *CreateWithdrawService) WithdrawOrderID(v string) *CreateWithdrawService {
+	s.withdrawOrderID = &v
+	return s
+}
+
+// Network sets the network parameter.
+func (s *CreateWithdrawService) Network(v string) *CreateWithdrawService {
+	s.network = &v
+	return s
+}
+
+// Address sets the address parameter (MANDATORY).
 func (s *CreateWithdrawService) Address(address string) *CreateWithdrawService {
 	s.address = address
 	return s
 }
 
-// Amount set amount
-func (s *CreateWithdrawService) Amount(amount string) *CreateWithdrawService {
-	s.amount = amount
+// AddressTag sets the addressTag parameter.
+func (s *CreateWithdrawService) AddressTag(v string) *CreateWithdrawService {
+	s.addressTag = &v
 	return s
 }
 
-// Name set name
-func (s *CreateWithdrawService) Name(name string) *CreateWithdrawService {
-	s.name = &name
+// Amount sets the amount parameter (MANDATORY).
+func (s *CreateWithdrawService) Amount(v string) *CreateWithdrawService {
+	s.amount = v
 	return s
 }
 
-// Do send request
-func (s *CreateWithdrawService) Do(ctx context.Context) (err error) {
+// TransactionFeeFlag sets the transactionFeeFlag parameter.
+func (s *CreateWithdrawService) TransactionFeeFlag(v bool) *CreateWithdrawService {
+	s.transactionFeeFlag = &v
+	return s
+}
+
+// Name sets the name parameter.
+func (s *CreateWithdrawService) Name(v string) *CreateWithdrawService {
+	s.name = &v
+	return s
+}
+
+// Do sends the request.
+func (s *CreateWithdrawService) Do(ctx context.Context) (*CreateWithdrawResponse, error) {
 	r := &request{
 		method:   "POST",
 		endpoint: "/wapi/v3/withdraw.html",
@@ -48,14 +78,45 @@ func (s *CreateWithdrawService) Do(ctx context.Context) (err error) {
 	r.setParam("asset", s.asset)
 	r.setParam("address", s.address)
 	r.setParam("amount", s.amount)
-	if s.name != nil {
-		r.setParam("name", *s.name)
+	if v := s.withdrawOrderID; v != nil {
+		r.setParam("withdrawOrderId", *v)
 	}
-	_, err = s.c.callAPI(ctx, r)
-	return err
+	if v := s.network; v != nil {
+		r.setParam("network", *v)
+	}
+	if v := s.addressTag; v != nil {
+		r.setParam("addressTag", *v)
+	}
+	if v := s.transactionFeeFlag; v != nil {
+		r.setParam("transactionFeeFlag", *v)
+	}
+	if v := s.name; v != nil {
+		r.setParam("name", *v)
+	}
+
+	data, err := s.c.callAPI(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &CreateWithdrawResponse{}
+	if err := json.Unmarshal(data, res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
-// ListWithdrawsService list withdraws
+// CreateWithdrawResponse represents a response from CreateWithdrawService.
+type CreateWithdrawResponse struct {
+	ID      string `json:"id"`
+	Msg     string `json:"msg"`
+	Success bool   `json:"success"`
+}
+
+// ListWithdrawsService fetches withdraw history.
+//
+// See https://binance-docs.github.io/apidocs/spot/en/#withdraw-history-supporting-network-user_data
 type ListWithdrawsService struct {
 	c         *Client
 	asset     *string
@@ -130,7 +191,7 @@ type WithdrawHistoryResponse struct {
 // Withdraw represents a single withdraw entry.
 type Withdraw struct {
 	ID              string  `json:"id"`
-	WithdrawOrderID string  `json:"withdrawOrderId"`
+	WithdrawOrderID string  `json:"withdrawOrderID"`
 	Amount          float64 `json:"amount"`
 	TransactionFee  float64 `json:"transactionFee"`
 	Address         string  `json:"address"`
