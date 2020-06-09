@@ -39,8 +39,8 @@ func (s *CreateWithdrawService) Network(v string) *CreateWithdrawService {
 }
 
 // Address sets the address parameter (MANDATORY).
-func (s *CreateWithdrawService) Address(address string) *CreateWithdrawService {
-	s.address = address
+func (s *CreateWithdrawService) Address(v string) *CreateWithdrawService {
+	s.address = v
 	return s
 }
 

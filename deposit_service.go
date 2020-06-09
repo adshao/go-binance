@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 )
 
-// ListDepositsService list deposits
+// ListDepositsService fetches deposit history.
+//
+// See https://binance-docs.github.io/apidocs/spot/en/#deposit-history-user_data
 type ListDepositsService struct {
 	c         *Client
 	asset     *string
@@ -87,4 +89,59 @@ type Deposit struct {
 	AddressTag string  `json:"addressTag"`
 	TxID       string  `json:"txId"`
 	Status     int     `json:"status"`
+}
+
+// GetDepositsAddressService retrieves the details of a deposit address.
+//
+// See https://binance-docs.github.io/apidocs/spot/en/#deposit-address-supporting-network-user_data
+type GetDepositsAddressService struct {
+	c      *Client
+	asset  string
+	status *bool
+}
+
+// Asset sets the asset parameter (MANDATORY).
+func (s *GetDepositsAddressService) Asset(v string) *GetDepositsAddressService {
+	s.asset = v
+	return s
+}
+
+// Status sets the status parameter.
+func (s *GetDepositsAddressService) Status(v bool) *GetDepositsAddressService {
+	s.status = &v
+	return s
+}
+
+// Do sends the request.
+func (s *GetDepositsAddressService) Do(ctx context.Context) (*GetDepositAddressResponse, error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/wapi/v3/depositAddress.html",
+		secType:  secTypeSigned,
+	}
+	r.setParam("asset", s.asset)
+	if v := s.status; v != nil {
+		r.setParam("status", *v)
+	}
+
+	data, err := s.c.callAPI(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &GetDepositAddressResponse{}
+	if err := json.Unmarshal(data, res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+// GetDepositAddressResponse represents a response from GetDepositsAddressService.
+type GetDepositAddressResponse struct {
+	Success    bool   `json:"success"`
+	Address    string `json:"address"`
+	AddressTag string `json:"addressTag"`
+	Asset      string `json:"asset"`
+	URL        string `json:"url"`
 }
