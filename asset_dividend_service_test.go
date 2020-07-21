@@ -46,7 +46,7 @@ func (s *assetDividendServiceTestSuite) TestListAssetDividend() {
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
 			`asset`:     asset,
-			`limit`:    2,
+			`limit`:     2,
 			`startTime`: startTime,
 			`endTime`:   endTime,
 		})
@@ -65,18 +65,18 @@ func (s *assetDividendServiceTestSuite) TestListAssetDividend() {
 
 	s.Len(rows, 2)
 	s.assertDividendEqual(&DividendResponse{
-		Amount:          `10.00000000`,
-		Asset:           `BHFT`,
-		Time:            1563189166000,
-		Info:            `BHFT distribution`,
-		TranID:         2968885920,
+		Amount: `10.00000000`,
+		Asset:  `BHFT`,
+		Time:   1563189166000,
+		Info:   `BHFT distribution`,
+		TranID: 2968885920,
 	}, &rows[0])
 	s.assertDividendEqual(&DividendResponse{
-		Amount:          `10.00000000`,
-		Asset:           `BHFT`,
-		Time:            1563189165000,
-		Info:            `BHFT distribution`,
-		TranID:         2968885920,
+		Amount: `10.00000000`,
+		Asset:  `BHFT`,
+		Time:   1563189165000,
+		Info:   `BHFT distribution`,
+		TranID: 2968885920,
 	}, &rows[1])
 }
 
