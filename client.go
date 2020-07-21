@@ -558,3 +558,8 @@ func (c *Client) NewFuturesTransferService() *FuturesTransferService {
 func (c *Client) NewListFuturesTransferService() *ListFuturesTransferService {
 	return &ListFuturesTransferService{c: c}
 }
+
+// NewAssetDividendService init the asset dividend list service
+func (c *Client) NewAssetDividendService() *AssetDividendService {
+	return &AssetDividendService{c: c}
+}
