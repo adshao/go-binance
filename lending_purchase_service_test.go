@@ -16,30 +16,25 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type lendingInterestServiceTestSuite struct {
+type lendingPurchaseServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestLendingInterestService(t *testing.T) {
-	suite.Run(t, new(lendingInterestServiceTestSuite))
+func TestLendingPurchaseService(t *testing.T) {
+	suite.Run(t, new(lendingPurchaseServiceTestSuite))
 }
 
-func (s *lendingInterestServiceTestSuite) TestListLendingInterestService() {
+func (s *lendingPurchaseServiceTestSuite) TestListLendingPurchaseService() {
 	data := []byte(`
 	[
 		{
+			"amount": "100.00000000",
 			"asset": "USDT",
-			"interest": "0.00006408",
+			"createTime": 1575018510000,
 			"lendingType": "DAILY",
 			"productName": "USDT",
-			"time": 1577233578000
-		},
-		{
-			"asset": "USDT",
-			"interest": "0.00687654",
-			"lendingType": "DAILY",
-			"productName": "USDT",
-			"time": 1577233562000
+			"purchaseId": 26055,
+			"status": "SUCCESS"
 		}
 	]
 	`)
@@ -52,7 +47,7 @@ func (s *lendingInterestServiceTestSuite) TestListLendingInterestService() {
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
 			`asset`:     asset,
-			`size`:     2,
+			`size`:     1,
 			`current`: 1,
 			`lendingType`: `DAILY`,
 			`startTime`: startTime,
@@ -62,9 +57,9 @@ func (s *lendingInterestServiceTestSuite) TestListLendingInterestService() {
 		s.assertRequestEqual(e, r)
 	})
 
-	results, err := s.client.NewListLendingInterestService().
+	results, err := s.client.NewListLendingPurchaseService().
 		Asset(asset).
-		Size(2).
+		Size(1).
 		Current(1).
 		LendingType(`DAILY`).
 		StartTime(startTime).
@@ -74,28 +69,25 @@ func (s *lendingInterestServiceTestSuite) TestListLendingInterestService() {
 	r.NoError(err)
 	resultArr := *results
 
-	s.Len(resultArr, 2)
-	s.assertInterestEqual(&LendingInterestResponse{
-		Time:   1577233578000,
+	s.Len(resultArr, 1)
+	s.assertPurchaseEqual(&LendingPurchaseResponse{
+		Amount: `100.00000000`,
 		Asset:  `USDT`,
-		ProductName: `USDT`,
-		Interest: `0.00006408`,
+		CreateTime:   1575018510000,
 		LendingType:   `DAILY`,
+		ProductName: `USDT`,
+		PurchaseID: 26055,
+		Status: `SUCCESS`,
 	}, &resultArr[0])
-	s.assertInterestEqual(&LendingInterestResponse{
-		Time:   1577233562000,
-		Asset:  `USDT`,
-		ProductName: `USDT`,
-		Interest: `0.00687654`,
-		LendingType:   `DAILY`,
-	}, &resultArr[1])
 }
 
-func (s *lendingInterestServiceTestSuite) assertInterestEqual(e, a *LendingInterestResponse) {
+func (s *lendingPurchaseServiceTestSuite) assertPurchaseEqual(e, a *LendingPurchaseResponse) {
 	r := s.r()
-	r.Equal(e.Interest, a.Interest, `Interest`)
-	r.Equal(e.LendingType, a.LendingType, `LendingType`)
+	r.Equal(e.Amount, a.Amount, `Amount`)
 	r.Equal(e.Asset, a.Asset, `Asset`)
-	r.Equal(e.Time, a.Time, `Time`)
+	r.Equal(e.CreateTime, a.CreateTime, `CreateTime`)
+	r.Equal(e.LendingType, a.LendingType, `LendingType`)
 	r.Equal(e.ProductName, a.ProductName, `ProductName`)
+	r.Equal(e.PurchaseID, a.PurchaseID, `PurchaseID`)
+	r.Equal(e.Status, a.Status, `Status`)
 }

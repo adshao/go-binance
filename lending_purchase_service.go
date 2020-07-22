@@ -22,7 +22,7 @@ func (s *ListLendingPurchaseService) Asset(asset string) *ListLendingPurchaseSer
 	return s
 }
 
-// Current sets the current parameter.
+// Current set the currently querying page. Start from 1. Default:1
 func (s *ListLendingPurchaseService) Current(current int) *ListLendingPurchaseService {
 	s.current = &current
 	return s
@@ -104,6 +104,6 @@ type LendingPurchaseResponse struct {
 	LendingType string `json:"lendingType"`
 	ProductName string `json:"productName"`
 	PurchaseID  int    `json:"purchaseId"`
-	Principal   string `json:"principal"`
+	Lot         int    `json:"lot"` //When lendingType == REGULAR
 	Status      string `json:"status"`
 }
