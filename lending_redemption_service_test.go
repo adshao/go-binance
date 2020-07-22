@@ -1,12 +1,3 @@
-/*******************************************************************************
-** @Author:					Thomas Bouder <Tbouder>
-** @Email:					Tbouder@protonmail.com
-** @Date:					Wednesday 22 July 2020 - 10:58:17
-** @Filename:				asset_dividend_service_test copy.go
-**
-** @Last modified by:		Tbouder
-*******************************************************************************/
-
 package binance
 
 import (
