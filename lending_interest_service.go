@@ -28,7 +28,7 @@ func (s *ListLendingInterestService) Size(size int) *ListLendingInterestService 
 	return s
 }
 
-// Current sets the current parameter.
+// Current set the currently querying page. Start from 1. Default:1
 func (s *ListLendingInterestService) Current(current int) *ListLendingInterestService {
 	s.current = &current
 	return s
