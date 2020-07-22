@@ -46,13 +46,13 @@ func (s *lendingPurchaseServiceTestSuite) TestListLendingPurchaseService() {
 	endTime := int64(1508198532001)
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
-			`asset`:     asset,
-			`size`:     1,
-			`current`: 1,
+			`asset`:       asset,
+			`size`:        1,
+			`current`:     1,
 			`lendingType`: `DAILY`,
-			`startTime`: startTime,
-			`endTime`:   endTime,
-			`recvWindow`: 60000,
+			`startTime`:   startTime,
+			`endTime`:     endTime,
+			`recvWindow`:  60000,
 		})
 		s.assertRequestEqual(e, r)
 	})
@@ -71,13 +71,13 @@ func (s *lendingPurchaseServiceTestSuite) TestListLendingPurchaseService() {
 
 	s.Len(resultArr, 1)
 	s.assertPurchaseEqual(&LendingPurchaseResponse{
-		Amount: `100.00000000`,
-		Asset:  `USDT`,
-		CreateTime:   1575018510000,
-		LendingType:   `DAILY`,
+		Amount:      `100.00000000`,
+		Asset:       `USDT`,
+		CreateTime:  1575018510000,
+		LendingType: `DAILY`,
 		ProductName: `USDT`,
-		PurchaseID: 26055,
-		Status: `SUCCESS`,
+		PurchaseID:  26055,
+		Status:      `SUCCESS`,
 	}, &resultArr[0])
 }
 

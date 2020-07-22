@@ -47,13 +47,13 @@ func (s *lendingRedemptionServiceTestSuite) TestListLendingRedemptionService() {
 	endTime := int64(1508198532001)
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
-			`asset`:     asset,
-			`size`:     1,
-			`current`: 1,
+			`asset`:       asset,
+			`size`:        1,
+			`current`:     1,
 			`lendingType`: `DAILY`,
-			`startTime`: startTime,
-			`endTime`:   endTime,
-			`recvWindow`: 60000,
+			`startTime`:   startTime,
+			`endTime`:     endTime,
+			`recvWindow`:  60000,
 		})
 		s.assertRequestEqual(e, r)
 	})
@@ -72,14 +72,14 @@ func (s *lendingRedemptionServiceTestSuite) TestListLendingRedemptionService() {
 
 	s.Len(resultArr, 1)
 	s.assertRedemptionEqual(&LendingRedemptionResponse{
-		Amount: `10.54000000`,
-		Asset:  `USDT`,
-		CreateTime:   1577257222000,
-		Principal: `10.54000000`,
-		ProjectID: `USDT001`,
+		Amount:      `10.54000000`,
+		Asset:       `USDT`,
+		CreateTime:  1577257222000,
+		Principal:   `10.54000000`,
+		ProjectID:   `USDT001`,
 		ProjectName: `USDT`,
-		Type:   `FAST`,
-		Status: `PAID`,
+		Type:        `FAST`,
+		Status:      `PAID`,
 	}, &resultArr[0])
 }
 

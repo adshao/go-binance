@@ -51,13 +51,13 @@ func (s *lendingInterestServiceTestSuite) TestListLendingInterestService() {
 	endTime := int64(1508198532001)
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
-			`asset`:     asset,
-			`size`:     2,
-			`current`: 1,
+			`asset`:       asset,
+			`size`:        2,
+			`current`:     1,
 			`lendingType`: `DAILY`,
-			`startTime`: startTime,
-			`endTime`:   endTime,
-			`recvWindow`: 60000,
+			`startTime`:   startTime,
+			`endTime`:     endTime,
+			`recvWindow`:  60000,
 		})
 		s.assertRequestEqual(e, r)
 	})
@@ -76,18 +76,18 @@ func (s *lendingInterestServiceTestSuite) TestListLendingInterestService() {
 
 	s.Len(resultArr, 2)
 	s.assertInterestEqual(&LendingInterestResponse{
-		Time:   1577233578000,
-		Asset:  `USDT`,
+		Time:        1577233578000,
+		Asset:       `USDT`,
 		ProductName: `USDT`,
-		Interest: `0.00006408`,
-		LendingType:   `DAILY`,
+		Interest:    `0.00006408`,
+		LendingType: `DAILY`,
 	}, &resultArr[0])
 	s.assertInterestEqual(&LendingInterestResponse{
-		Time:   1577233562000,
-		Asset:  `USDT`,
+		Time:        1577233562000,
+		Asset:       `USDT`,
 		ProductName: `USDT`,
-		Interest: `0.00687654`,
-		LendingType:   `DAILY`,
+		Interest:    `0.00687654`,
+		LendingType: `DAILY`,
 	}, &resultArr[1])
 }
 
