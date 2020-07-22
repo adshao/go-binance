@@ -564,6 +564,11 @@ func (c *Client) NewAssetDividendService() *AssetDividendService {
 	return &AssetDividendService{c: c}
 }
 
+// NewListDustLogService init list dust log service
+func (c *Client) NewListDustLogService() *ListDustLogService {
+	return &ListDustLogService{c: c}
+}
+
 // NewListLendingPurchaseService init lending purchase service
 func (c *Client) NewListLendingPurchaseService() *ListLendingPurchaseService {
 	return &ListLendingPurchaseService{c: c}
