@@ -101,6 +101,7 @@ type LendingRedemptionResponse struct {
 	CreateTime  int64  `json:"createTime"`
 	Amount      string `json:"amount"`
 	Asset       string `json:"asset"`
+	Interest    string `json:"interest"` //lendingType == REGULAR
 	Status      string `json:"status"`
 	Type        string `json:"type"`
 	ProjectName string `json:"projectName"`
