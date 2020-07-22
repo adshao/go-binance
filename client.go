@@ -563,3 +563,18 @@ func (c *Client) NewListFuturesTransferService() *ListFuturesTransferService {
 func (c *Client) NewAssetDividendService() *AssetDividendService {
 	return &AssetDividendService{c: c}
 }
+
+// NewListLendingPurchaseService init lending purchase service
+func (c *Client) NewListLendingPurchaseService() *ListLendingPurchaseService {
+	return &ListLendingPurchaseService{c: c}
+}
+
+// NewListLendingRedemptionService init lending redemption service
+func (c *Client) NewListLendingRedemptionService() *ListLendingRedemptionService {
+	return &ListLendingRedemptionService{c: c}
+}
+
+// NewListLendingInterestService init lending interest service
+func (c *Client) NewListLendingInterestService() *ListLendingInterestService {
+	return &ListLendingInterestService{c: c}
+}
