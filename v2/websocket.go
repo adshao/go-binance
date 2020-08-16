@@ -77,7 +77,7 @@ func keepAlive(c *websocket.Conn, timeout time.Duration) {
 				return
 			}
 			<-ticker.C
-			if time.Now().Sub(lastResponse) > timeout {
+			if time.Since(lastResponse) > timeout {
 				c.Close()
 				return
 			}
