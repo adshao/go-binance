@@ -144,7 +144,8 @@ func (s *orderServiceTestSuite) TestListOpenOrders() {
 		  "workingType": "CONTRACT_PRICE",
 		  "activatePrice": "10000",
 		  "priceRate":"0.1",
-		  "positionSide":"BOTH"
+		  "positionSide":"BOTH",
+		  "closePosition": false
 		}
 	]`)
 	s.mockDo(data, nil)
@@ -184,6 +185,7 @@ func (s *orderServiceTestSuite) TestListOpenOrders() {
 		ActivatePrice: "10000",
 		PriceRate:     "0.1",
 		PositionSide:  "BOTH",
+		ClosePosition: false,
 	}
 	s.assertOrderEqual(e, orders[0])
 }
@@ -232,7 +234,8 @@ func (s *orderServiceTestSuite) TestGetOrder() {
 		"workingType": "CONTRACT_PRICE",
 		"activatePrice": "10000",
 		"priceRate":"0.1",
-		"positionSide": "BOTH"
+		"positionSide": "BOTH",
+		"closePosition": false
 	}`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
@@ -272,6 +275,7 @@ func (s *orderServiceTestSuite) TestGetOrder() {
 		ActivatePrice:    "10000",
 		PriceRate:        "0.1",
 		PositionSide:     "BOTH",
+		ClosePosition:    false,
 	}
 	s.assertOrderEqual(e, order)
 }
@@ -296,7 +300,8 @@ func (s *orderServiceTestSuite) TestListOrders() {
 		  "updateTime": 1499827319559,
 		  "workingType": "CONTRACT_PRICE",
 		  "activatePrice": "10000",
-		  "priceRate":"0.1"
+		  "priceRate":"0.1",
+		  "closePosition": false
 		}
 	  ]`)
 	s.mockDo(data, nil)
@@ -342,6 +347,7 @@ func (s *orderServiceTestSuite) TestListOrders() {
 		WorkingType:      WorkingTypeContractPrice,
 		ActivatePrice:    "10000",
 		PriceRate:        "0.1",
+		ClosePosition:    false,
 	}
 	s.assertOrderEqual(e, orders[0])
 }
