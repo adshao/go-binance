@@ -212,6 +212,7 @@ func (s *baseOrderTestSuite) assertOrderEqual(e, a *Order) {
 	r.Equal(e.ActivatePrice, a.ActivatePrice, "ActivatePrice")
 	r.Equal(e.PriceRate, a.PriceRate, "PriceRate")
 	r.Equal(e.PositionSide, a.PositionSide, "PositionSide")
+	r.Equal(e.ClosePosition, a.ClosePosition, "ClosePosition")
 }
 
 func (s *orderServiceTestSuite) TestGetOrder() {
