@@ -31,29 +31,31 @@ var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (don
 	doneC = make(chan struct{})
 	stopC = make(chan struct{})
 	go func() {
-		defer func() {
-			cerr := c.Close()
-			if cerr != nil {
-				errHandler(cerr)
-			}
-		}()
+		// This function will exit either on error from
+		// websocket.Conn.ReadMessage() or when the stopC
+		// channel is closed by the client.
 		defer close(doneC)
 		if WebsocketKeepalive {
 			keepAlive(c, WebsocketTimeout)
 		}
-
+		// In a separate goroutine (because ReadMessage() is a
+		// blocking operation) wait for the stopC channel to
+		// be closed, then shut down the connection.
+		stopped := false
+		go func() {
+			<-stopC
+			stopped = true
+			c.Close()
+		}()
 		for {
-			select {
-			case <-stopC:
-				return
-			default:
-				_, message, err := c.ReadMessage()
-				if err != nil {
+			_, message, err := c.ReadMessage()
+			if err != nil {
+				if !stopped {
 					errHandler(err)
-					return
 				}
-				handler(message)
+				return
 			}
+			handler(message)
 		}
 	}()
 	return
