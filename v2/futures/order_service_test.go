@@ -57,20 +57,20 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 	newOrderResponseType := NewOrderRespTypeRESULT
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setFormParams(params{
-			"symbol":               symbol,
-			"side":                 side,
-			"type":                 orderType,
-			"timeInForce":          timeInForce,
-			"positionSide":         positionSide,
-			"quantity":             quantity,
-			"reduceOnly":           reduceOnly,
-			"price":                price,
-			"newClientOrderId":     newClientOrderID,
-			"stopPrice":            stopPrice,
-			"workingType":          workingType,
-			"activationPrice":      activationPrice,
-			"callbackRate":         callbackRate,
-			"newOrderResponseType": newOrderResponseType,
+			"symbol":           symbol,
+			"side":             side,
+			"type":             orderType,
+			"timeInForce":      timeInForce,
+			"positionSide":     positionSide,
+			"quantity":         quantity,
+			"reduceOnly":       reduceOnly,
+			"price":            price,
+			"newClientOrderId": newClientOrderID,
+			"stopPrice":        stopPrice,
+			"workingType":      workingType,
+			"activationPrice":  activationPrice,
+			"callbackRate":     callbackRate,
+			"newOrderRespType": newOrderResponseType,
 		})
 		s.assertRequestEqual(e, r)
 	})

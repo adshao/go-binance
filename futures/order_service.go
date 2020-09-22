@@ -115,11 +115,11 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 		secType:  secTypeSigned,
 	}
 	m := params{
-		"symbol":               s.symbol,
-		"side":                 s.side,
-		"type":                 s.orderType,
-		"quantity":             s.quantity,
-		"newOrderResponseType": s.newOrderRespType,
+		"symbol":           s.symbol,
+		"side":             s.side,
+		"type":             s.orderType,
+		"quantity":         s.quantity,
+		"newOrderRespType": s.newOrderRespType,
 	}
 	if s.positionSide != nil {
 		m["positionSide"] = *s.positionSide
