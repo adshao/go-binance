@@ -70,7 +70,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 			"workingType":          workingType,
 			"activationPrice":      activationPrice,
 			"callbackRate":         callbackRate,
-			"newOrderResponseType": NewOrderRespTypeRESULT,
+			"newOrderResponseType": newOrderResponseType,
 		})
 		s.assertRequestEqual(e, r)
 	})
