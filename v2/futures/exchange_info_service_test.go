@@ -76,6 +76,8 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 					"TAKE_PROFIT"
 				],
 				"symbol": "BTCUSDT",
+				"quoteAsset": "USDT",
+				"baseAsset": "BTC",
 				"timeInForce": [
 					"GTC",
 					"IOC",
@@ -105,6 +107,8 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 		Symbols: []Symbol{
 			{
 				Symbol:                "BTCUSDT",
+				BaseAsset:             "BTC",
+				QuoteAsset:            "USDT",
 				Status:                "TRADING",
 				MaintMarginPercent:    "2.5000",
 				PricePrecision:        2,
@@ -171,6 +175,8 @@ func (s *exchangeInfoServiceTestSuite) assertExchangeInfoEqual(e, a *ExchangeInf
 
 	for i := range a.Symbols {
 		r.Equal(e.Symbols[i].Symbol, a.Symbols[i].Symbol, "Symbol")
+		r.Equal(e.Symbols[i].BaseAsset, a.Symbols[i].BaseAsset, "BaseAsset")
+		r.Equal(e.Symbols[i].QuoteAsset, a.Symbols[i].QuoteAsset, "QuoteAsset")
 		r.Equal(e.Symbols[i].Status, a.Symbols[i].Status, "Status")
 		r.Equal(e.Symbols[i].MaintMarginPercent, a.Symbols[i].MaintMarginPercent, "MaintMarginPercent")
 		r.Equal(e.Symbols[i].PricePrecision, a.Symbols[i].PricePrecision, "PricePrecision")
