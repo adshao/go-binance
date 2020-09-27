@@ -54,6 +54,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 	activationPrice := "1000"
 	callbackRate := "0.1"
 	workingType := WorkingTypeContractPrice
+	newOrderResponseType := NewOrderRespTypeRESULT
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setFormParams(params{
 			"symbol":           symbol,
@@ -69,6 +70,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 			"workingType":      workingType,
 			"activationPrice":  activationPrice,
 			"callbackRate":     callbackRate,
+			"newOrderRespType": newOrderResponseType,
 		})
 		s.assertRequestEqual(e, r)
 	})
@@ -76,7 +78,8 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).
 		ReduceOnly(reduceOnly).Price(price).NewClientOrderID(newClientOrderID).
 		StopPrice(stopPrice).WorkingType(workingType).ActivationPrice(activationPrice).
-		CallbackRate(callbackRate).PositionSide(positionSide).Do(newContext())
+		CallbackRate(callbackRate).PositionSide(positionSide).NewOrderResponseType(newOrderResponseType).
+		Do(newContext())
 	s.r().NoError(err)
 	e := &CreateOrderResponse{
 		ClientOrderID:    newClientOrderID,

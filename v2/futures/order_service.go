@@ -21,6 +21,7 @@ type CreateOrderService struct {
 	workingType      *WorkingType
 	activationPrice  *string
 	callbackRate     *string
+	newOrderRespType NewOrderRespType
 }
 
 // Symbol set symbol
@@ -101,6 +102,12 @@ func (s *CreateOrderService) CallbackRate(callbackRate string) *CreateOrderServi
 	return s
 }
 
+// NewOrderResponseType set newOrderResponseType
+func (s *CreateOrderService) NewOrderResponseType(newOrderResponseType NewOrderRespType) *CreateOrderService {
+	s.newOrderRespType = newOrderResponseType
+	return s
+}
+
 func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, err error) {
 	r := &request{
 		method:   "POST",
@@ -108,10 +115,11 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 		secType:  secTypeSigned,
 	}
 	m := params{
-		"symbol":   s.symbol,
-		"side":     s.side,
-		"type":     s.orderType,
-		"quantity": s.quantity,
+		"symbol":           s.symbol,
+		"side":             s.side,
+		"type":             s.orderType,
+		"quantity":         s.quantity,
+		"newOrderRespType": s.newOrderRespType,
 	}
 	if s.positionSide != nil {
 		m["positionSide"] = *s.positionSide
