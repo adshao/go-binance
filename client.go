@@ -61,6 +61,9 @@ type SideEffectType string
 // FuturesTransferType define futures transfer type
 type FuturesTransferType int
 
+// IsIsolatedType defines if the margin order is a isolated margin order.
+type IsIsolatedType string
+
 // Global enums
 const (
 	SideTypeBuy  SideType = "BUY"
@@ -129,6 +132,9 @@ const (
 	SideEffectTypeNoSideEffect SideEffectType = "NO_SIDE_EFFECT"
 	SideEffectTypeMarginBuy    SideEffectType = "MARGIN_BUY"
 	SideEffectTypeAutoRepay    SideEffectType = "AUTO_REPAY"
+
+	IsIsolatedTypeTrue  IsIsolatedType = "TRUE"
+	IsIsolatedTypeFalse IsIsolatedType = "FALSE"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"

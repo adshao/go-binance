@@ -153,6 +153,7 @@ func (s *CreateOrderService) Test(ctx context.Context, opts ...RequestOption) (e
 // CreateOrderResponse define create order response
 type CreateOrderResponse struct {
 	Symbol                   string          `json:"symbol"`
+	IsIsolated               bool            `json:"isIsolated"`
 	OrderID                  int64           `json:"orderId"`
 	ClientOrderID            string          `json:"clientOrderId"`
 	TransactTime             int64           `json:"transactTime"`
@@ -452,6 +453,7 @@ func (s *GetOrderService) Do(ctx context.Context, opts ...RequestOption) (res *O
 // Order define order info
 type Order struct {
 	Symbol                   string          `json:"symbol"`
+	IsIsolated               bool            `json:"isIsolated"`
 	OrderID                  int64           `json:"orderId"`
 	ClientOrderID            string          `json:"clientOrderId"`
 	Price                    string          `json:"price"`
