@@ -14,7 +14,7 @@ type GetBalanceService struct {
 func (s *GetBalanceService) Do(ctx context.Context, opts ...RequestOption) (res []*Balance, err error) {
 	r := &request{
 		method:   "GET",
-		endpoint: "/fapi/v1/balance",
+		endpoint: "/fapi/v2/balance",
 		secType:  secTypeSigned,
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
