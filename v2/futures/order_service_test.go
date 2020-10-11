@@ -37,7 +37,8 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 		"workingType": "CONTRACT_PRICE",
 		"activatePrice": "1000",
 		"priceRate": "0.1",
-		"positionSide": "BOTH"
+		"positionSide": "BOTH",
+		"closePosition": false
 	}`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
@@ -55,6 +56,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 	callbackRate := "0.1"
 	workingType := WorkingTypeContractPrice
 	newOrderResponseType := NewOrderRespTypeRESULT
+	closePosition := false
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setFormParams(params{
 			"symbol":           symbol,
@@ -71,11 +73,12 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 			"activationPrice":  activationPrice,
 			"callbackRate":     callbackRate,
 			"newOrderRespType": newOrderResponseType,
+			"closePosition":    closePosition,
 		})
 		s.assertRequestEqual(e, r)
 	})
 	res, err := s.client.NewCreateOrderService().Symbol(symbol).Side(side).
-		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).
+		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).ClosePosition(closePosition).
 		ReduceOnly(reduceOnly).Price(price).NewClientOrderID(newClientOrderID).
 		StopPrice(stopPrice).WorkingType(workingType).ActivationPrice(activationPrice).
 		CallbackRate(callbackRate).PositionSide(positionSide).NewOrderResponseType(newOrderResponseType).
@@ -100,6 +103,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 		WorkingType:      WorkingTypeContractPrice,
 		ActivatePrice:    activationPrice,
 		PriceRate:        callbackRate,
+		ClosePosition:    false,
 	}
 	s.assertCreateOrderResponseEqual(e, res)
 }
@@ -124,6 +128,7 @@ func (s *baseOrderTestSuite) assertCreateOrderResponseEqual(e, a *CreateOrderRes
 	r.Equal(e.WorkingType, a.WorkingType, "WorkingType")
 	r.Equal(e.ActivatePrice, a.ActivatePrice, "ActivatePrice")
 	r.Equal(e.PriceRate, a.PriceRate, "PriceRate")
+	r.Equal(e.ClosePosition, a.ClosePosition, "ClosePosition")
 }
 
 func (s *orderServiceTestSuite) TestListOpenOrders() {
