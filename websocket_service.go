@@ -293,6 +293,36 @@ func WsFutureUserDataServe(listenKey string, handler WsHandler, errHandler ErrHa
 	return wsServe(cfg, handler, errHandler)
 }
 
+// WsMarkPriceHandler handles websocket mark price event.
+type WsMarkPriceHandler func(event *WsMarkPriceEvent)
+
+// WsMarkPriceServe serves websocket mark price events for a symbol.
+func WsMarkPriceServe(symbol string, handler WsMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/%s@markPrice", baseFutureURL, strings.ToLower(symbol))
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		event := new(WsMarkPriceEvent)
+		err := json.Unmarshal(message, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+// WsMarkPriceEvent defines the websocket mark price event structure.
+type WsMarkPriceEvent struct {
+	Event                 string `json:"e"`
+	Time                  int64  `json:"E"`
+	Symbol                string `json:"s"`
+	MarkPrice             string  `json:"p"`
+	IndexPrice            string `json:"i"`
+	FundingRate           string `json:"r"`
+	NextFundingTime       int64  `json:"T"`
+}
+
 // WsMarketStatHandler handle websocket that push single market statistics for 24hr
 type WsMarketStatHandler func(event *WsMarketStatEvent)
 
