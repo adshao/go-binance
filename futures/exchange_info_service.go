@@ -58,6 +58,8 @@ type Symbol struct {
 	OrderType             []OrderType              `json:"OrderType"`
 	TimeInForce           []TimeInForceType        `json:"timeInForce"`
 	Filters               []map[string]interface{} `json:"filters"`
+	QuoteAsset            string                   `json:"quoteAsset"`
+	BaseAsset             string                   `json:"baseAsset"`
 }
 
 // LotSizeFilter define lot size filter of symbol
