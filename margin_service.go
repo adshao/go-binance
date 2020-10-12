@@ -549,13 +549,13 @@ type MarginPriceIndex struct {
 
 // ListMarginTradesService list trades
 type ListMarginTradesService struct {
-	c         *Client
-	symbol    string
+	c          *Client
+	symbol     string
 	isIsolated *IsIsolatedType
-	startTime *int64
-	endTime   *int64
-	limit     *int
-	fromID    *int64
+	startTime  *int64
+	endTime    *int64
+	limit      *int
+	fromID     *int64
 }
 
 // Symbol set symbol
