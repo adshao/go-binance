@@ -395,3 +395,32 @@ type WsMiniMarketsStatEvent struct {
 	BaseVolume  string `json:"v"`
 	QuoteVolume string `json:"q"`
 }
+
+// WsBookTickerServeHandler handle websocket that push any update to the best bid or ask's price or quantity in real-time for a specified symbol
+type WsBookTickerServeHandler func(event *WsBookTickerEvent)
+
+// WsBookTickerServe serve websocket that push any update to the best bid or ask's price or quantity in real-time for a specified symbol
+func WsBookTickerServe(symbol string, handler WsBookTickerServeHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/%s@bookTicker", baseURL, strings.ToLower(symbol))
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		event := new(WsBookTickerEvent)
+		err := json.Unmarshal(message, &event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+// WsBookTickerEvent define websocket book-ticker event
+type WsBookTickerEvent struct {
+	UpdateID     int64  `json:"u"`
+	Symbol       string `json:"s"`
+	BestBidPrice string `json:"b"`
+	BestBidQty   string `json:"B"`
+	BestAskPrice string `json:"a"`
+	BestAskQty   string `json:"A"`
+}
