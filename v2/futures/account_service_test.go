@@ -20,7 +20,10 @@ func (s *accountServiceTestSuite) TestGetBalance() {
 			"accountAlias": "SgsR",
 			"asset": "USDT",
 			"balance": "122607.35137903",
-			"withdrawAvailable": "102333.54137903"
+			"crossWalletBalance": "23.72469206",
+			"crossUnPnl": "0.00000000",
+			"availableBalance": "23.72469206",
+			"maxWithdrawAmount": "23.72469206"
 		}
 	]`)
 	s.mockDo(data, nil)
@@ -34,10 +37,13 @@ func (s *accountServiceTestSuite) TestGetBalance() {
 	s.r().NoError(err)
 	s.r().Len(res, 1)
 	e := &Balance{
-		AccountAlias:      "SgsR",
-		Asset:             "USDT",
-		Balance:           "122607.35137903",
-		WithdrawAvailable: "102333.54137903",
+		AccountAlias:       "SgsR",
+		Asset:              "USDT",
+		Balance:            "122607.35137903",
+		CrossWalletBalance: "23.72469206",
+		CrossUnPnl:         "0.00000000",
+		AvailableBalance:   "23.72469206",
+		MaxWithdrawAmount:  "23.72469206",
 	}
 	s.assertBalanceEqual(e, res[0])
 }
@@ -47,7 +53,10 @@ func (s *accountServiceTestSuite) assertBalanceEqual(e, a *Balance) {
 	r.Equal(e.AccountAlias, a.AccountAlias, "AccountAlias")
 	r.Equal(e.Asset, a.Asset, "Asset")
 	r.Equal(e.Balance, a.Balance, "Balance")
-	r.Equal(e.WithdrawAvailable, a.WithdrawAvailable, "WithdrawAvailable")
+	r.Equal(e.CrossWalletBalance, a.CrossWalletBalance, "CrossWalletBalance")
+	r.Equal(e.CrossUnPnl, a.CrossUnPnl, "CrossUnPnl")
+	r.Equal(e.AvailableBalance, a.AvailableBalance, "AvailableBalance")
+	r.Equal(e.MaxWithdrawAmount, a.MaxWithdrawAmount, "MaxWithdrawAmount")
 }
 
 func (s *accountServiceTestSuite) TestGetAccount() {
