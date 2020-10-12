@@ -866,3 +866,45 @@ func (s *websocketServiceTestSuite) assertWsMiniMarketsStatEventEqual(e, a *WsMi
 	r.Equal(e.BaseVolume, a.BaseVolume, "BaseVolume")
 	r.Equal(e.QuoteVolume, a.QuoteVolume, "QuoteVolume")
 }
+
+func (s *websocketServiceTestSuite) TestWsBookTickerServe() {
+	data := []byte(`{
+        "u":400900217,
+        "s":"BNBUSDT",
+        "b":"25.35190000",
+        "B":"31.21000000",
+        "a":"25.36520000",
+        "A":"40.66000000"
+	}
+	`)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+
+	doneC, stopC, err := WsBookTickerServe("BNBUSDT", func(event *WsBookTickerEvent) {
+		e := &WsBookTickerEvent{
+			UpdateID:     400900217,
+			Symbol:       "BNBUSDT",
+			BestBidPrice: "25.35190000",
+			BestBidQty:   "31.21000000",
+			BestAskPrice: "25.36520000",
+			BestAskQty:   "40.66000000",
+		}
+		s.assertWsBookTickerEventEqual(e, event)
+	}, func(err error) {
+		s.r().EqualError(err, fakeErrMsg)
+	})
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
+func (s *websocketServiceTestSuite) assertWsBookTickerEventEqual(e, a *WsBookTickerEvent) {
+	r := s.r()
+	r.Equal(e.UpdateID, a.UpdateID, "UpdateID")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.BestBidPrice, a.BestBidPrice, "BestBidPrice")
+	r.Equal(e.BestBidQty, a.BestBidQty, "BestBidQty")
+	r.Equal(e.BestAskPrice, a.BestAskPrice, "BestAskPrice")
+	r.Equal(e.BestAskQty, a.BestAskQty, "BestAskQty")
+}
