@@ -376,9 +376,9 @@ func (c *Client) NewHistoricalTradesService() *HistoricalTradesService {
 	return &HistoricalTradesService{c: c}
 }
 
-// NewAccountTradeListService init account trade list service
-func (c *Client) NewAccountTradeListService() *AccountTradeListService {
-	return &AccountTradeListService{c: c}
+// NewListAccountTradeService init account trade list service
+func (c *Client) NewListAccountTradeService() *ListAccountTradeService {
+	return &ListAccountTradeService{c: c}
 }
 
 // NewStartUserStreamService init starting user stream service

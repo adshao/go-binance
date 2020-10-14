@@ -203,7 +203,7 @@ func (s *tradeServiceTestSuite) TestAccountTradeList() {
 		s.assertRequestEqual(e, r)
 	})
 
-	trades, err := s.client.NewAccountTradeListService().Symbol(symbol).
+	trades, err := s.client.NewListAccountTradeService().Symbol(symbol).
 		StartTime(startTime).EndTime(endTime).FromID(fromID).Limit(limit).Do(newContext())
 	r := s.r()
 	r.NoError(err)

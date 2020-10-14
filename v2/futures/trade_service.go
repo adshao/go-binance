@@ -207,8 +207,8 @@ func (s *RecentTradesService) Do(ctx context.Context, opts ...RequestOption) (re
 	return res, nil
 }
 
-// AccountTradeListService define account trade list service
-type AccountTradeListService struct {
+// ListAccountTradeService define account trade list service
+type ListAccountTradeService struct {
 	c         *Client
 	symbol    string
 	startTime *int64
@@ -218,37 +218,37 @@ type AccountTradeListService struct {
 }
 
 // Symbol set symbol
-func (s *AccountTradeListService) Symbol(symbol string) *AccountTradeListService {
+func (s *ListAccountTradeService) Symbol(symbol string) *ListAccountTradeService {
 	s.symbol = symbol
 	return s
 }
 
 // StartTime set startTime
-func (s *AccountTradeListService) StartTime(startTime int64) *AccountTradeListService {
+func (s *ListAccountTradeService) StartTime(startTime int64) *ListAccountTradeService {
 	s.startTime = &startTime
 	return s
 }
 
 // EndTime set endTime
-func (s *AccountTradeListService) EndTime(endTime int64) *AccountTradeListService {
+func (s *ListAccountTradeService) EndTime(endTime int64) *ListAccountTradeService {
 	s.endTime = &endTime
 	return s
 }
 
 // FromID set fromID
-func (s *AccountTradeListService) FromID(fromID int64) *AccountTradeListService {
+func (s *ListAccountTradeService) FromID(fromID int64) *ListAccountTradeService {
 	s.fromID = &fromID
 	return s
 }
 
 // Limit set limit
-func (s *AccountTradeListService) Limit(limit int) *AccountTradeListService {
+func (s *ListAccountTradeService) Limit(limit int) *ListAccountTradeService {
 	s.limit = &limit
 	return s
 }
 
 // Do send request
-func (s *AccountTradeListService) Do(ctx context.Context, opts ...RequestOption) (res []*AccountTrade, err error) {
+func (s *ListAccountTradeService) Do(ctx context.Context, opts ...RequestOption) (res []*AccountTrade, err error) {
 	r := &request{
 		method:   "GET",
 		endpoint: "/fapi/v1/userTrades",
