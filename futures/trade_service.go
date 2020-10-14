@@ -206,3 +206,92 @@ func (s *RecentTradesService) Do(ctx context.Context, opts ...RequestOption) (re
 	}
 	return res, nil
 }
+
+// AccountTradeListService define account trade list service
+type AccountTradeListService struct {
+	c         *Client
+	symbol    string
+	startTime *int64
+	endTime   *int64
+	fromID    *int64
+	limit     *int
+}
+
+// Symbol set symbol
+func (s *AccountTradeListService) Symbol(symbol string) *AccountTradeListService {
+	s.symbol = symbol
+	return s
+}
+
+// StartTime set startTime
+func (s *AccountTradeListService) StartTime(startTime int64) *AccountTradeListService {
+	s.startTime = &startTime
+	return s
+}
+
+// EndTime set endTime
+func (s *AccountTradeListService) EndTime(endTime int64) *AccountTradeListService {
+	s.endTime = &endTime
+	return s
+}
+
+// FromID set fromID
+func (s *AccountTradeListService) FromID(fromID int64) *AccountTradeListService {
+	s.fromID = &fromID
+	return s
+}
+
+// Limit set limit
+func (s *AccountTradeListService) Limit(limit int) *AccountTradeListService {
+	s.limit = &limit
+	return s
+}
+
+// Do send request
+func (s *AccountTradeListService) Do(ctx context.Context, opts ...RequestOption) (res []*AccountTrade, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/fapi/v1/userTrades",
+	}
+	r.setParam("symbol", s.symbol)
+	if s.startTime != nil {
+		r.setParam("startTime", *s.startTime)
+	}
+	if s.endTime != nil {
+		r.setParam("endTime", *s.endTime)
+	}
+	if s.fromID != nil {
+		r.setParam("fromID", *s.fromID)
+	}
+	if s.limit != nil {
+		r.setParam("limit", *s.limit)
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []*AccountTrade{}, err
+	}
+	res = make([]*AccountTrade, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return []*AccountTrade{}, err
+	}
+	return res, nil
+}
+
+// AccountTrade define account trade
+type AccountTrade struct {
+	Buyer           bool             `json:"buyer"`
+	Commission      string           `json:"commission"`
+	CommissionAsset string           `json:"commissionAsset"`
+	ID              int64            `json:"id"`
+	Maker           bool             `json:"maker"`
+	OrderID         int64            `json:"orderId"`
+	Price           string           `json:"price"`
+	Quantity        string           `json:"qty"`
+	QuoteQuantity   string           `json:"quoteQty"`
+	RealizedPnl     string           `json:"realizedPnl"`
+	Side            SideType         `json:"side"`
+	PositionSide    PositionSideType `json:"positionSide"`
+	Symbol          string           `json:"symbol"`
+	Time            int64            `json:"time"`
+}
