@@ -252,6 +252,7 @@ func (s *AccountTradeListService) Do(ctx context.Context, opts ...RequestOption)
 	r := &request{
 		method:   "GET",
 		endpoint: "/fapi/v1/userTrades",
+		secType:  secTypeSigned,
 	}
 	r.setParam("symbol", s.symbol)
 	if s.startTime != nil {

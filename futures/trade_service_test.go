@@ -193,7 +193,7 @@ func (s *tradeServiceTestSuite) TestAccountTradeList() {
 	fromID := int64(698759)
 	limit := 3
 	s.assertReq(func(r *request) {
-		e := newRequest().setParams(params{
+		e := newSignedRequest().setParams(params{
 			"symbol":    symbol,
 			"startTime": startTime,
 			"endTime":   endTime,
