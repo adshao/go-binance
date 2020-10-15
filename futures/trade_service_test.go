@@ -164,3 +164,83 @@ func (s *tradeServiceTestSuite) assertTradeEqual(e, a *Trade) {
 	r.Equal(e.Time, a.Time, "Time")
 	r.Equal(e.IsBuyerMaker, a.IsBuyerMaker, "IsBuyerMaker")
 }
+
+func (s *tradeServiceTestSuite) TestAccountTradeList() {
+	data := []byte(`[
+		{
+			"buyer": false,
+			"commission": "-0.07819010",
+			"commissionAsset": "USDT",
+			"id": 698759,
+			"maker": false,
+			"orderId": 25851813,
+			"price": "7819.01",
+			"qty": "0.002",
+			"quoteQty": "15.63802",
+			"realizedPnl": "-0.91539999",
+			"side": "SELL",
+			"positionSide": "SHORT",
+			"symbol": "BTCUSDT",
+			"time": 1569514978020
+		}
+	]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	symbol := "BTCUSDT"
+	startTime := int64(1569514978020)
+	endTime := int64(1569514978021)
+	fromID := int64(698759)
+	limit := 3
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"symbol":    symbol,
+			"startTime": startTime,
+			"endTime":   endTime,
+			"fromID":    fromID,
+			"limit":     limit,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	trades, err := s.client.NewListAccountTradeService().Symbol(symbol).
+		StartTime(startTime).EndTime(endTime).FromID(fromID).Limit(limit).Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	r.Len(trades, 1)
+	e := &AccountTrade{
+		Buyer:           false,
+		Commission:      "-0.07819010",
+		CommissionAsset: "USDT",
+		ID:              698759,
+		Maker:           false,
+		OrderID:         25851813,
+		Price:           "7819.01",
+		Quantity:        "0.002",
+		QuoteQuantity:   "15.63802",
+		RealizedPnl:     "-0.91539999",
+		Side:            SideTypeSell,
+		PositionSide:    PositionSideTypeShort,
+		Symbol:          symbol,
+		Time:            1569514978020,
+	}
+	s.assertAccountTradeEqual(e, trades[0])
+}
+
+func (s *tradeServiceTestSuite) assertAccountTradeEqual(e, a *AccountTrade) {
+	r := s.r()
+	r.Equal(e.ID, a.ID, "ID")
+	r.Equal(e.Buyer, a.Buyer, "Buyer")
+	r.Equal(e.Commission, a.Commission, "Commission")
+	r.Equal(e.CommissionAsset, a.CommissionAsset, "CommissionAsset")
+	r.Equal(e.Maker, a.Maker, "Maker")
+	r.Equal(e.OrderID, a.OrderID, "OrderID")
+	r.Equal(e.Price, a.Price, "Price")
+	r.Equal(e.Quantity, a.Quantity, "Quantity")
+	r.Equal(e.QuoteQuantity, a.QuoteQuantity, "QuoteQuantity")
+	r.Equal(e.RealizedPnl, a.RealizedPnl, "RealizedPnl")
+	r.Equal(e.Side, a.Side, "Side")
+	r.Equal(e.PositionSide, a.PositionSide, "PositionSide")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.Time, a.Time, "Time")
+}
