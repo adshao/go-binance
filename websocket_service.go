@@ -314,13 +314,13 @@ func WsMarkPriceServe(symbol string, handler WsMarkPriceHandler, errHandler ErrH
 
 // WsMarkPriceEvent defines the websocket mark price event structure.
 type WsMarkPriceEvent struct {
-	Event                 string `json:"e"`
-	Time                  int64  `json:"E"`
-	Symbol                string `json:"s"`
-	MarkPrice             string  `json:"p"`
-	IndexPrice            string `json:"i"`
-	FundingRate           string `json:"r"`
-	NextFundingTime       int64  `json:"T"`
+	Event           string `json:"e"`
+	Time            int64  `json:"E"`
+	Symbol          string `json:"s"`
+	MarkPrice       string `json:"p"`
+	IndexPrice      string `json:"i"`
+	FundingRate     string `json:"r"`
+	NextFundingTime int64  `json:"T"`
 }
 
 // WsMarketStatHandler handle websocket that push single market statistics for 24hr
