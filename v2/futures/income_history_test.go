@@ -26,7 +26,9 @@ func (s *incomeHistoryServiceTestSuite) TestIncomeHistory() {
 			"income": "-0.01000000",
 			"asset": "USDT",
 			"info":"",  
-			"time": 1570636800000
+			"time": 1570636800000,
+			"tranId":"9689322392",
+			"tradeId":"2059192"
 		}
 	]`)
 	s.mockDo(data, nil)
@@ -53,6 +55,8 @@ func (s *incomeHistoryServiceTestSuite) TestIncomeHistory() {
 		Symbol:     "BTCUSDT",
 		Time:       1578047897183,
 		IncomeType: "COMMISSION",
+		TranID:     "9689322392",
+		TradeID:    "2059192",
 	}
 	s.assertOrderEqual(e, orders[0])
 }
@@ -65,4 +69,6 @@ func (s *incomeHistoryServiceTestSuite) assertOrderEqual(e, a *IncomeHistory) {
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
 	r.Equal(e.Time, e.Time, "Time")
 	r.Equal(e.IncomeType, a.IncomeType, "IncomeType")
+	r.Equal(e.TranID, a.TranID, "TranID")
+	r.Equal(e.TradeID, a.TradeID, "TradeID")
 }
