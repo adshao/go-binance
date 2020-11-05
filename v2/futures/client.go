@@ -376,6 +376,11 @@ func (c *Client) NewHistoricalTradesService() *HistoricalTradesService {
 	return &HistoricalTradesService{c: c}
 }
 
+// NewListAccountTradeService init account trade list service
+func (c *Client) NewListAccountTradeService() *ListAccountTradeService {
+	return &ListAccountTradeService{c: c}
+}
+
 // NewStartUserStreamService init starting user stream service
 func (c *Client) NewStartUserStreamService() *StartUserStreamService {
 	return &StartUserStreamService{c: c}
@@ -431,12 +436,12 @@ func (c *Client) NewUpdatePositionMarginService() *UpdatePositionMarginService {
 	return &UpdatePositionMarginService{c: c}
 }
 
-// ChangePositionModeService init change position mode service
+// NewChangePositionModeService init change position mode service
 func (c *Client) NewChangePositionModeService() *ChangePositionModeService {
 	return &ChangePositionModeService{c: c}
 }
 
-// GetPositionModeService init get position mode service
+// NewGetPositionModeService init get position mode service
 func (c *Client) NewGetPositionModeService() *GetPositionModeService {
 	return &GetPositionModeService{c: c}
 }
