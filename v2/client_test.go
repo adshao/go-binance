@@ -70,7 +70,7 @@ func (s *baseTestSuite) assertURLValuesEqual(e, a url.Values) {
 			r.NotEmpty(a.Get(k))
 			continue
 		}
-		r.Equal(e.Get(k), a.Get(k), k)
+		r.Equal(e[k], a[k], k)
 	}
 }
 

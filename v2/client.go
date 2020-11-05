@@ -558,3 +558,13 @@ func (c *Client) NewFuturesTransferService() *FuturesTransferService {
 func (c *Client) NewListFuturesTransferService() *ListFuturesTransferService {
 	return &ListFuturesTransferService{c: c}
 }
+
+// NewListDustLogService init list dust log service
+func (c *Client) NewListDustLogService() *ListDustLogService {
+	return &ListDustLogService{c: c}
+}
+
+// NewDustTransferService init dust transfer service
+func (c *Client) NewDustTransferService() *DustTransferService {
+	return &DustTransferService{c: c}
+}

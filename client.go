@@ -575,6 +575,11 @@ func (c *Client) NewListDustLogService() *ListDustLogService {
 	return &ListDustLogService{c: c}
 }
 
+// NewDustTransferService init dust transfer service
+func (c *Client) NewDustTransferService() *DustTransferService {
+	return &DustTransferService{c: c}
+}
+
 // NewListLendingPurchaseService init lending purchase service
 func (c *Client) NewListLendingPurchaseService() *ListLendingPurchaseService {
 	return &ListLendingPurchaseService{c: c}
