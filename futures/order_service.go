@@ -22,6 +22,7 @@ type CreateOrderService struct {
 	activationPrice  *string
 	callbackRate     *string
 	newOrderRespType NewOrderRespType
+	closePosition    *bool
 }
 
 // Symbol set symbol
@@ -108,6 +109,12 @@ func (s *CreateOrderService) NewOrderResponseType(newOrderResponseType NewOrderR
 	return s
 }
 
+// ClosePosition set closePosition
+func (s *CreateOrderService) ClosePosition(closePosition bool) *CreateOrderService {
+	s.closePosition = &closePosition
+	return s
+}
+
 func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, err error) {
 	r := &request{
 		method:   "POST",
@@ -147,6 +154,9 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 	}
 	if s.callbackRate != nil {
 		m["callbackRate"] = *s.callbackRate
+	}
+	if s.closePosition != nil {
+		m["closePosition"] = *s.closePosition
 	}
 	r.setFormParams(m)
 	data, err = s.c.callAPI(ctx, r, opts...)
@@ -191,6 +201,7 @@ type CreateOrderResponse struct {
 	PriceRate        string           `json:"priceRate"`
 	AvgPrice         string           `json:"avgPrice"`
 	PositionSide     PositionSideType `json:"positionSide"`
+	ClosePosition    bool             `json:"closePosition"`
 }
 
 // ListOpenOrdersService list opened orders

@@ -9,6 +9,7 @@ import (
 type CreateMarginOrderService struct {
 	c                *Client
 	symbol           string
+	isIsolated       *IsIsolatedType
 	side             SideType
 	orderType        OrderType
 	quantity         string
@@ -24,6 +25,12 @@ type CreateMarginOrderService struct {
 // Symbol set symbol
 func (s *CreateMarginOrderService) Symbol(symbol string) *CreateMarginOrderService {
 	s.symbol = symbol
+	return s
+}
+
+// IsIsolated set isIsolated
+func (s *CreateMarginOrderService) IsIsolated(isIsolated IsIsolatedType) *CreateMarginOrderService {
+	s.isIsolated = &isIsolated
 	return s
 }
 
@@ -100,6 +107,9 @@ func (s *CreateMarginOrderService) Do(ctx context.Context, opts ...RequestOption
 		"type":     s.orderType,
 		"quantity": s.quantity,
 	}
+	if s.isIsolated != nil {
+		m["isIsolated"] = *s.isIsolated
+	}
 	if s.timeInForce != nil {
 		m["timeInForce"] = *s.timeInForce
 	}
@@ -138,6 +148,7 @@ func (s *CreateMarginOrderService) Do(ctx context.Context, opts ...RequestOption
 type CancelMarginOrderService struct {
 	c                 *Client
 	symbol            string
+	isIsolated        *IsIsolatedType
 	orderID           *int64
 	origClientOrderID *string
 	newClientOrderID  *string
@@ -146,6 +157,12 @@ type CancelMarginOrderService struct {
 // Symbol set symbol
 func (s *CancelMarginOrderService) Symbol(symbol string) *CancelMarginOrderService {
 	s.symbol = symbol
+	return s
+}
+
+// IsIsolated set isIsolated
+func (s *CancelMarginOrderService) IsIsolated(isIsolated IsIsolatedType) *CancelMarginOrderService {
+	s.isIsolated = &isIsolated
 	return s
 }
 
@@ -175,6 +192,9 @@ func (s *CancelMarginOrderService) Do(ctx context.Context, opts ...RequestOption
 		secType:  secTypeSigned,
 	}
 	r.setFormParam("symbol", s.symbol)
+	if s.isIsolated != nil {
+		r.setFormParam("isIsolated", *s.isIsolated)
+	}
 	if s.orderID != nil {
 		r.setFormParam("orderId", *s.orderID)
 	}
@@ -200,6 +220,7 @@ func (s *CancelMarginOrderService) Do(ctx context.Context, opts ...RequestOption
 type GetMarginOrderService struct {
 	c                 *Client
 	symbol            string
+	isIsolated        *IsIsolatedType
 	orderID           *int64
 	origClientOrderID *string
 }
@@ -207,6 +228,12 @@ type GetMarginOrderService struct {
 // Symbol set symbol
 func (s *GetMarginOrderService) Symbol(symbol string) *GetMarginOrderService {
 	s.symbol = symbol
+	return s
+}
+
+// IsIsolated set isIsolated
+func (s *GetMarginOrderService) IsIsolated(isIsolated IsIsolatedType) *GetMarginOrderService {
+	s.isIsolated = &isIsolated
 	return s
 }
 
@@ -230,6 +257,9 @@ func (s *GetMarginOrderService) Do(ctx context.Context, opts ...RequestOption) (
 		secType:  secTypeSigned,
 	}
 	r.setParam("symbol", s.symbol)
+	if s.isIsolated != nil {
+		r.setParam("isIsolated", *s.isIsolated)
+	}
 	if s.orderID != nil {
 		r.setParam("orderId", *s.orderID)
 	}
@@ -250,13 +280,20 @@ func (s *GetMarginOrderService) Do(ctx context.Context, opts ...RequestOption) (
 
 // ListMarginOpenOrdersService list margin open orders
 type ListMarginOpenOrdersService struct {
-	c      *Client
-	symbol string
+	c          *Client
+	symbol     string
+	isIsolated *IsIsolatedType
 }
 
 // Symbol set symbol
 func (s *ListMarginOpenOrdersService) Symbol(symbol string) *ListMarginOpenOrdersService {
 	s.symbol = symbol
+	return s
+}
+
+// IsIsolated set isIsolated
+func (s *ListMarginOpenOrdersService) IsIsolated(isIsolated IsIsolatedType) *ListMarginOpenOrdersService {
+	s.isIsolated = &isIsolated
 	return s
 }
 
@@ -284,17 +321,24 @@ func (s *ListMarginOpenOrdersService) Do(ctx context.Context, opts ...RequestOpt
 
 // ListMarginOrdersService all account orders; active, canceled, or filled
 type ListMarginOrdersService struct {
-	c         *Client
-	symbol    string
-	orderID   *int64
-	startTime *int64
-	endTime   *int64
-	limit     *int
+	c          *Client
+	symbol     string
+	isIsolated *IsIsolatedType
+	orderID    *int64
+	startTime  *int64
+	endTime    *int64
+	limit      *int
 }
 
 // Symbol set symbol
 func (s *ListMarginOrdersService) Symbol(symbol string) *ListMarginOrdersService {
 	s.symbol = symbol
+	return s
+}
+
+// IsIsolated set isIsolated
+func (s *ListMarginOrdersService) IsIsolated(isIsolated IsIsolatedType) *ListMarginOrdersService {
+	s.isIsolated = &isIsolated
 	return s
 }
 
@@ -330,6 +374,9 @@ func (s *ListMarginOrdersService) Do(ctx context.Context, opts ...RequestOption)
 		secType:  secTypeSigned,
 	}
 	r.setParam("symbol", s.symbol)
+	if s.isIsolated != nil {
+		r.setParam("isIsolated", *s.isIsolated)
+	}
 	if s.orderID != nil {
 		r.setParam("orderId", *s.orderID)
 	}
@@ -357,6 +404,7 @@ func (s *ListMarginOrdersService) Do(ctx context.Context, opts ...RequestOption)
 // MarginAllOrder define item of margin all orders
 type MarginAllOrder struct {
 	ID            int64  `json:"id"`
+	IsIsolated    bool   `json:"isIsolated"`
 	Price         string `json:"price"`
 	Quantity      string `json:"qty"`
 	QuoteQuantity string `json:"quoteQty"`
@@ -367,6 +415,7 @@ type MarginAllOrder struct {
 // CancelMarginOrderResponse define response of canceling order
 type CancelMarginOrderResponse struct {
 	Symbol                   string          `json:"symbol"`
+	IsIsolated               bool            `json:"isIsolated"`
 	OrigClientOrderID        string          `json:"origClientOrderId"`
 	OrderID                  string          `json:"orderId"`
 	ClientOrderID            string          `json:"clientOrderId"`

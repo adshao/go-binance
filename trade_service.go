@@ -144,6 +144,7 @@ type Trade struct {
 type TradeV3 struct {
 	ID              int64  `json:"id"`
 	Symbol          string `json:"symbol"`
+	IsIsolated      bool   `json:"isIsolated"`
 	OrderID         int64  `json:"orderId"`
 	Price           string `json:"price"`
 	Quantity        string `json:"qty"`
