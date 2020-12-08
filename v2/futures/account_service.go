@@ -106,4 +106,8 @@ type AccountPosition struct {
 	PositionInitialMargin  string `json:"positionInitialMargin"`
 	Symbol                 string `json:"symbol"`
 	UnrealizedProfit       string `json:"unrealizedProfit"`
+	EntryPrice             string `json:"entryPrice"`
+	MaxNotional            string `json:"maxNotional"`
+	PositionSide           string `json:"positionSide"`
+	PositionAmt            string `json:"positionAmt"`
 }
