@@ -351,6 +351,7 @@ type OCOOrderReport struct {
 	OrderID                  int64           `json:"orderId"`
 	OrderListID              int64           `json:"orderListId"`
 	ClientOrderID            string          `json:"clientOrderId"`
+	OrigClientOrderID        string          `json:"origClientOrderId"`
 	TransactionTime          int64           `json:"transactionTime"`
 	Price                    string          `json:"price"`
 	OrigQuantity             string          `json:"origQty"`
@@ -361,6 +362,7 @@ type OCOOrderReport struct {
 	Type                     OrderType       `json:"type"`
 	Side                     SideType        `json:"side"`
 	StopPrice                string          `json:"stopPrice"`
+	IcebergQuantity          string          `json:"icebergQty"`
 }
 
 // ListOpenOrdersService list opened orders
@@ -603,11 +605,67 @@ func (s *CancelOrderService) Do(ctx context.Context, opts ...RequestOption) (res
 	return res, nil
 }
 
-// CancelOrderResponse define response of canceling order
+// CancelOpenOrdersService cancel all active orders on a symbol.
+type CancelOpenOrdersService struct {
+	c      *Client
+	symbol string
+}
+
+// Symbol set symbol
+func (s *CancelOpenOrdersService) Symbol(symbol string) *CancelOpenOrdersService {
+	s.symbol = symbol
+	return s
+}
+
+// Do send request
+func (s *CancelOpenOrdersService) Do(ctx context.Context, opts ...RequestOption) (res *CancelOpenOrdersResponse, err error) {
+	r := &request{
+		method:   "DELETE",
+		endpoint: "/api/v3/openOrders",
+		secType:  secTypeSigned,
+	}
+	r.setParam("symbol", s.symbol)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return &CancelOpenOrdersResponse{}, err
+	}
+	rawMessages := make([]*json.RawMessage, 0)
+	err = json.Unmarshal(data, &rawMessages)
+	if err != nil {
+		return &CancelOpenOrdersResponse{}, err
+	}
+	cancelOpenOrdersResponse := new(CancelOpenOrdersResponse)
+	for _, j := range rawMessages {
+		o := new(CancelOrderResponse)
+		if err := json.Unmarshal(*j, o); err != nil {
+			return &CancelOpenOrdersResponse{}, err
+		}
+		// Non-OCO orders guaranteed to have order list ID of -1
+		if o.OrderListID == -1 {
+			cancelOpenOrdersResponse.Orders = append(cancelOpenOrdersResponse.Orders, o)
+			continue
+		}
+		oco := new(CancelOCOResponse)
+		if err := json.Unmarshal(*j, oco); err != nil {
+			return &CancelOpenOrdersResponse{}, err
+		}
+		cancelOpenOrdersResponse.OCOOrders = append(cancelOpenOrdersResponse.OCOOrders, oco)
+	}
+	return cancelOpenOrdersResponse, nil
+}
+
+// CancelOpenOrdersResponse defines cancel open orders response.
+type CancelOpenOrdersResponse struct {
+	Orders    []*CancelOrderResponse
+	OCOOrders []*CancelOCOResponse
+}
+
+// CancelOrderResponse may be returned included in a CancelOpenOrdersResponse.
 type CancelOrderResponse struct {
 	Symbol                   string          `json:"symbol"`
 	OrigClientOrderID        string          `json:"origClientOrderId"`
 	OrderID                  int64           `json:"orderId"`
+	OrderListID              int64           `json:"orderListId"`
 	ClientOrderID            string          `json:"clientOrderId"`
 	TransactTime             int64           `json:"transactTime"`
 	Price                    string          `json:"price"`
@@ -618,4 +676,17 @@ type CancelOrderResponse struct {
 	TimeInForce              TimeInForceType `json:"timeInForce"`
 	Type                     OrderType       `json:"type"`
 	Side                     SideType        `json:"side"`
+}
+
+// CancelOCOResponse may be returned included in a CancelOpenOrdersResponse.
+type CancelOCOResponse struct {
+	OrderListID       int64             `json:"orderListId"`
+	ContingencyType   string            `json:"contingencyType"`
+	ListStatusType    string            `json:"listStatusType"`
+	ListOrderStatus   string            `json:"listOrderStatus"`
+	ListClientOrderID string            `json:"listClientOrderId"`
+	TransactionTime   int64             `json:"transactionTime"`
+	Symbol            string            `json:"symbol"`
+	Orders            []*OCOOrder       `json:"orders"`
+	OrderReports      []*OCOOrderReport `json:"orderReports"`
 }

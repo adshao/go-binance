@@ -643,6 +643,172 @@ func (s *orderServiceTestSuite) TestCancelOrder() {
 	s.assertCancelOrderResponseEqual(e, res)
 }
 
+func (s *orderServiceTestSuite) TestCancelOpenOrders() {
+	data := []byte(`[
+		{
+			"symbol": "BTCUSDT",
+			"origClientOrderId": "E6APeyTJvkMvLMYMqu1KQ4",
+			"orderId": 11,
+			"orderListId": -1,
+			"clientOrderId": "pXLV6Hz6mprAcVYpVMTGgx",
+			"price": "0.089853",
+			"origQty": "0.178622",
+			"executedQty": "0.000000",
+			"cummulativeQuoteQty": "0.000000",
+			"status": "CANCELED",
+			"timeInForce": "GTC",
+			"type": "LIMIT",
+			"side": "BUY"
+		  },
+		  {
+			"orderListId": 1929,
+			"contingencyType": "OCO",
+			"listStatusType": "ALL_DONE",
+			"listOrderStatus": "ALL_DONE",
+			"listClientOrderId": "2inzWQdDvZLHbbAmAozX2N",
+			"transactionTime": 1585230948299,
+			"symbol": "BTCUSDT",
+			"orders": [
+				{
+					"symbol": "BTCUSDT",
+					"orderId": 20,
+					"clientOrderId": "CwOOIPHSmYywx6jZX77TdL"
+				},
+				{
+					"symbol": "BTCUSDT",
+					"orderId": 21,
+					"clientOrderId": "461cPg51vQjV3zIMOXNz39"
+				}
+			],
+			"orderReports": [
+				{
+					"symbol": "BTCUSDT",
+					"origClientOrderId": "CwOOIPHSmYywx6jZX77TdL",
+					"orderId": 20,
+					"orderListId": 1929,
+					"clientOrderId": "pXLV6Hz6mprAcVYpVMTGgx",
+					"price": "0.668611",
+					"origQty": "0.690354",
+					"executedQty": "0.000000",
+					"cummulativeQuoteQty": "0.000000",
+					"status": "CANCELED",
+					"timeInForce": "GTC",
+					"type": "STOP_LOSS_LIMIT",
+					"side": "BUY",
+					"stopPrice": "0.378131",
+					"icebergQty": "0.017083"
+				},
+				{
+					"symbol": "BTCUSDT",
+					"origClientOrderId": "461cPg51vQjV3zIMOXNz39",
+					"orderId": 21,
+					"orderListId": 1929,
+					"clientOrderId": "pXLV6Hz6mprAcVYpVMTGgx",
+					"price": "0.008791",
+					"origQty": "0.690354",
+					"executedQty": "0.000000",
+					"cummulativeQuoteQty": "0.000000",
+					"status": "CANCELED",
+					"timeInForce": "GTC",
+					"type": "LIMIT_MAKER",
+					"side": "BUY",
+					"icebergQty": "0.639962"
+				}
+			]
+		}
+	]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	symbol := "BTCUSDT"
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"symbol": symbol,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewCancelOpenOrdersService().Symbol(symbol).Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	r.Len(res.Orders, 1)
+	eo := &CancelOrderResponse{
+		Symbol:                   "BTCUSDT",
+		OrigClientOrderID:        "E6APeyTJvkMvLMYMqu1KQ4",
+		OrderID:                  11,
+		ClientOrderID:            "pXLV6Hz6mprAcVYpVMTGgx",
+		Price:                    "0.089853",
+		OrigQuantity:             "0.178622",
+		ExecutedQuantity:         "0.000000",
+		CummulativeQuoteQuantity: "0.000000",
+		Status:                   OrderStatusTypeCanceled,
+		TimeInForce:              TimeInForceTypeGTC,
+		Type:                     OrderTypeLimit,
+		Side:                     SideTypeBuy,
+		TransactTime:             0,
+	}
+	s.assertCancelOrderResponseEqual(eo, res.Orders[0])
+
+	r.Len(res.OCOOrders, 1)
+	eoco := &CancelOCOResponse{
+		OrderListID:       1929,
+		ContingencyType:   "OCO",
+		ListStatusType:    "ALL_DONE",
+		ListOrderStatus:   "ALL_DONE",
+		ListClientOrderID: "2inzWQdDvZLHbbAmAozX2N",
+		TransactionTime:   1585230948299,
+		Symbol:            "BTCUSDT",
+		Orders: []*OCOOrder{
+			{
+				Symbol:        "BTCUSDT",
+				OrderID:       20,
+				ClientOrderID: "CwOOIPHSmYywx6jZX77TdL",
+			},
+			{
+				Symbol:        "BTCUSDT",
+				OrderID:       21,
+				ClientOrderID: "461cPg51vQjV3zIMOXNz39",
+			},
+		},
+		OrderReports: []*OCOOrderReport{
+			{
+				Symbol:                   "BTCUSDT",
+				OrigClientOrderID:        "CwOOIPHSmYywx6jZX77TdL",
+				OrderID:                  20,
+				OrderListID:              1929,
+				ClientOrderID:            "pXLV6Hz6mprAcVYpVMTGgx",
+				Price:                    "0.668611",
+				OrigQuantity:             "0.690354",
+				ExecutedQuantity:         "0.000000",
+				CummulativeQuoteQuantity: "0.000000",
+				Status:                   OrderStatusTypeCanceled,
+				TimeInForce:              TimeInForceTypeGTC,
+				Type:                     OrderTypeStopLossLimit,
+				Side:                     SideTypeBuy,
+				StopPrice:                "0.378131",
+				IcebergQuantity:          "0.017083",
+			},
+			{
+				Symbol:                   "BTCUSDT",
+				OrigClientOrderID:        "461cPg51vQjV3zIMOXNz39",
+				OrderID:                  21,
+				OrderListID:              1929,
+				ClientOrderID:            "pXLV6Hz6mprAcVYpVMTGgx",
+				Price:                    "0.008791",
+				OrigQuantity:             "0.690354",
+				ExecutedQuantity:         "0.000000",
+				CummulativeQuoteQuantity: "0.000000",
+				Status:                   OrderStatusTypeCanceled,
+				TimeInForce:              TimeInForceTypeGTC,
+				Type:                     OrderTypeLimitMaker,
+				Side:                     SideTypeBuy,
+				IcebergQuantity:          "0.639962",
+			},
+		},
+	}
+	s.assertCancelOCOResponseEqual(eoco, res.OCOOrders[0])
+}
+
 func (s *baseOrderTestSuite) assertCancelOrderResponseEqual(e, a *CancelOrderResponse) {
 	r := s.r()
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
@@ -658,4 +824,25 @@ func (s *baseOrderTestSuite) assertCancelOrderResponseEqual(e, a *CancelOrderRes
 	r.Equal(e.TimeInForce, a.TimeInForce, "TimeInForce")
 	r.Equal(e.Type, a.Type, "Type")
 	r.Equal(e.Side, a.Side, "Side")
+}
+
+func (s *baseOrderTestSuite) assertCancelOCOResponseEqual(e, a *CancelOCOResponse) {
+	r := s.r()
+	r.Equal(e.OrderListID, a.OrderListID, "OrderListID")
+	r.Equal(e.ContingencyType, a.ContingencyType, "ContingencyType")
+	r.Equal(e.ListStatusType, a.ListStatusType, "ListStatusType")
+	r.Equal(e.ListOrderStatus, a.ListOrderStatus, "ListOrderStatus")
+	r.Equal(e.ListClientOrderID, a.ListClientOrderID, "ListClientOrderID")
+	r.Equal(e.TransactionTime, a.TransactionTime, "TransactionTime")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+
+	r.Len(a.OrderReports, len(e.OrderReports))
+	for idx, orderReport := range e.OrderReports {
+		s.assertOCOOrderReportEqual(orderReport, a.OrderReports[idx])
+	}
+
+	r.Len(a.Orders, len(e.Orders))
+	for idx, order := range e.Orders {
+		s.assertOCOOrderEqual(order, a.Orders[idx])
+	}
 }
