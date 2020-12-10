@@ -88,7 +88,11 @@ func (s *accountServiceTestSuite) TestGetAccount() {
 				"openOrderInitialMargin": "0.00000",
 				"positionInitialMargin": "0.33683",
 				"symbol": "BTCUSDT",
-				"unrealizedProfit": "-0.44537584"
+				"unrealizedProfit": "-0.44537584",
+				"entryPrice": "8950.5",
+				"maxNotional": "250000",
+				"positionSide": "BOTH",
+				"positionAmt": "0.436"
 			 }
 		 ],
 		 "totalInitialMargin": "0.33683000",
@@ -138,6 +142,10 @@ func (s *accountServiceTestSuite) TestGetAccount() {
 				PositionInitialMargin:  "0.33683",
 				Symbol:                 "BTCUSDT",
 				UnrealizedProfit:       "-0.44537584",
+				EntryPrice:             "8950.5",
+				MaxNotional:            "250000",
+				PositionSide:           "BOTH",
+				PositionAmt:            "0.436",
 			},
 		},
 		TotalInitialMargin:          "0.33683000",
@@ -191,5 +199,9 @@ func (s *accountServiceTestSuite) assertAccountEqual(e, a *Account) {
 		r.Equal(e.Positions[i].PositionInitialMargin, a.Positions[i].PositionInitialMargin, "PositionInitialMargin")
 		r.Equal(e.Positions[i].Symbol, a.Positions[i].Symbol, "Symbol")
 		r.Equal(e.Positions[i].UnrealizedProfit, a.Positions[i].UnrealizedProfit, "UnrealizedProfit")
+		r.Equal(e.Positions[i].EntryPrice, a.Positions[i].EntryPrice, "EntryPrice")
+		r.Equal(e.Positions[i].MaxNotional, a.Positions[i].MaxNotional, "MaxNotional")
+		r.Equal(e.Positions[i].PositionSide, a.Positions[i].PositionSide, "PositionSide")
+		r.Equal(e.Positions[i].PositionAmt, a.Positions[i].PositionAmt, "PositionAmt")
 	}
 }
