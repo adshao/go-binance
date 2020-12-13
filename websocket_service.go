@@ -28,9 +28,20 @@ type WsPartialDepthEvent struct {
 // WsPartialDepthHandler handle websocket partial depth event
 type WsPartialDepthHandler func(event *WsPartialDepthEvent)
 
-// WsPartialDepthServe serve websocket partial depth handler with a symbol
+// WsPartialDepthServe serve websocket partial depth handler with a symbol, using 1sec updates
 func WsPartialDepthServe(symbol string, levels string, handler WsPartialDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := fmt.Sprintf("%s/%s@depth%s", baseURL, strings.ToLower(symbol), levels)
+	return wsPartialDepthServe(endpoint, symbol, handler, errHandler)
+}
+
+// WsPartialDepthServe100Ms serve websocket partial depth handler with a symbol, using 100msec updates
+func WsPartialDepthServe100Ms(symbol string, levels string, handler WsPartialDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/%s@depth%s@100ms", baseURL, strings.ToLower(symbol), levels)
+	return wsPartialDepthServe(endpoint, symbol, handler, errHandler)
+}
+
+// wsPartialDepthServe serve websocket partial depth handler with an arbitrary endpoint address
+func wsPartialDepthServe(endpoint string, symbol string, handler WsPartialDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		j, err := newJSON(message)
@@ -64,7 +75,7 @@ func WsPartialDepthServe(symbol string, levels string, handler WsPartialDepthHan
 	return wsServe(cfg, wsHandler, errHandler)
 }
 
-// WsCombinedPartialDepthServe is similar to WsPartialDepthServe, but it for multiple symbols
+// WsCombinedPartialDepthServe is similar to WsPartialDepthServe, but for multiple symbols and 1sec updates only
 func WsCombinedPartialDepthServe(symbolLevels map[string]string, handler WsPartialDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := combinedBaseURL
 	for s, l := range symbolLevels {
@@ -111,9 +122,20 @@ func WsCombinedPartialDepthServe(symbolLevels map[string]string, handler WsParti
 // WsDepthHandler handle websocket depth event
 type WsDepthHandler func(event *WsDepthEvent)
 
-// WsDepthServe serve websocket depth handler with a symbol
+// WsDepthServe serve websocket depth handler with a symbol, using 1sec updates
 func WsDepthServe(symbol string, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := fmt.Sprintf("%s/%s@depth", baseURL, strings.ToLower(symbol))
+	return wsDepthServe(endpoint, handler, errHandler)
+}
+
+// WsDepthServe100Ms serve websocket depth handler with a symbol, using 100msec updates
+func WsDepthServe100Ms(symbol string, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/%s@depth@100ms", baseURL, strings.ToLower(symbol))
+	return wsDepthServe(endpoint, handler, errHandler)
+}
+
+// WsDepthServe serve websocket depth handler with an arbitrary endpoint address
+func wsDepthServe(endpoint string, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		j, err := newJSON(message)
