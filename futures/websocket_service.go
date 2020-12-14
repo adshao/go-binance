@@ -266,6 +266,7 @@ func WsAllMarketTickerServe(handler WsAllMarketTickerHandler, errHandler ErrHand
 
 // WsBookTickerEvent define websocket best book ticker event.
 type WsBookTickerEvent struct {
+	Event           string `json:"e"`
 	UpdateID        int64  `json:"u"`
 	Time            int64  `json:"E"`
 	TransactionTime int64  `json:"T"`
