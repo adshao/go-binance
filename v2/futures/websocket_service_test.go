@@ -501,6 +501,7 @@ func (s *websocketServiceTestSuite) assertWsMarketTickerEvent(e, a *WsMarketTick
 
 func (s *websocketServiceTestSuite) TestBookTickerServe() {
 	data := []byte(`{
+		"e":"bookTicker",    
 		"u":400900217,
 		"E": 1568014460893,
 		"T": 1568014460891,
@@ -516,6 +517,7 @@ func (s *websocketServiceTestSuite) TestBookTickerServe() {
 
 	doneC, stopC, err := WsBookTickerServe("BNBUSDT", func(event *WsBookTickerEvent) {
 		e := &WsBookTickerEvent{
+			Event:           "bookTicker",
 			UpdateID:        400900217,
 			Time:            1568014460893,
 			TransactionTime: 1568014460891,
@@ -538,6 +540,7 @@ func (s *websocketServiceTestSuite) TestBookTickerServe() {
 
 func (s *websocketServiceTestSuite) TestAllBookTickerServe() {
 	data := []byte(`{
+		"e":"bookTicker",    
 		"u":400900217,
 		"E": 1568014460893,
 		"T": 1568014460891,
@@ -553,6 +556,7 @@ func (s *websocketServiceTestSuite) TestAllBookTickerServe() {
 
 	doneC, stopC, err := WsAllBookTickerServe(func(event *WsBookTickerEvent) {
 		e := &WsBookTickerEvent{
+			Event:           "bookTicker",
 			UpdateID:        400900217,
 			Time:            1568014460893,
 			TransactionTime: 1568014460891,
@@ -575,6 +579,7 @@ func (s *websocketServiceTestSuite) TestAllBookTickerServe() {
 
 func (s *websocketServiceTestSuite) assertWsBookTickerEvent(e, a *WsBookTickerEvent) {
 	r := s.r()
+	r.Equal(e.Event, a.Event, "Event")
 	r.Equal(e.UpdateID, a.UpdateID, "UpdateID")
 	r.Equal(e.Time, a.Time, "Time")
 	r.Equal(e.TransactionTime, a.TransactionTime, "TransactionTime")
