@@ -101,6 +101,56 @@ func (s *websocketServiceTestSuite) TestPartialDepthServe() {
 	<-doneC
 }
 
+func (s *websocketServiceTestSuite) TestPartialDepthServe100Ms() {
+	data := []byte(`{
+	  "lastUpdateId": 160,
+	  "bids": [
+	    [
+	      "0.0024",
+	      "10",
+	      []
+	    ]
+	  ],
+	  "asks": [
+	    [
+	      "0.0026",
+	      "100",
+	      []
+	    ]
+	  ]
+	}`)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+
+	doneC, stopC, err := WsPartialDepthServe100Ms("ETHBTC", "5", func(event *WsPartialDepthEvent) {
+		e := &WsPartialDepthEvent{
+			Symbol:       "ETHBTC",
+			LastUpdateID: 160,
+			Bids: []Bid{
+				{
+					Price:    "0.0024",
+					Quantity: "10",
+				},
+			},
+			Asks: []Ask{
+				{
+					Price:    "0.0026",
+					Quantity: "100",
+				},
+			},
+		}
+		s.assertWsPartialDepthEventEqual(e, event)
+	},
+		func(err error) {
+			s.r().EqualError(err, fakeErrMsg)
+		})
+
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
 func (s *websocketServiceTestSuite) TestCombinedPartialDepthServe() {
 	data := []byte(`{
       "stream":"ethusdt@depth5",
@@ -207,6 +257,79 @@ func (s *websocketServiceTestSuite) TestDepthServe() {
 	defer s.assertWsServe()
 
 	doneC, stopC, err := WsDepthServe("ETHBTC", func(event *WsDepthEvent) {
+		e := &WsDepthEvent{
+			Event:         "depthUpdate",
+			Time:          1499404630606,
+			Symbol:        "ETHBTC",
+			UpdateID:      7913455,
+			FirstUpdateID: 7913452,
+			Bids: []Bid{
+				{
+					Price:    "0.10376590",
+					Quantity: "59.15767010",
+				},
+			},
+			Asks: []Ask{
+				{
+					Price:    "0.10376586",
+					Quantity: "159.15767010",
+				},
+				{
+					Price:    "0.10383109",
+					Quantity: "345.86845230",
+				},
+				{
+					Price:    "0.10490700",
+					Quantity: "0.00000000",
+				},
+			},
+		}
+		s.assertWsDepthEventEqual(e, event)
+	}, func(err error) {
+		s.r().EqualError(err, fakeErrMsg)
+	})
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
+func (s *websocketServiceTestSuite) TestDepthServe100Ms() {
+	data := []byte(`{
+        "e": "depthUpdate",
+        "E": 1499404630606,
+        "s": "ETHBTC",
+        "u": 7913455,
+        "U": 7913452,
+        "b": [
+            [
+                "0.10376590",
+                "59.15767010",
+                []
+            ]
+        ],
+        "a": [
+            [
+                "0.10376586",
+                "159.15767010",
+                []
+            ],
+            [
+                "0.10383109",
+                "345.86845230",
+                []
+            ],
+            [
+                "0.10490700",
+                "0.00000000",
+                []
+            ]
+        ]
+    }`)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+
+	doneC, stopC, err := WsDepthServe100Ms("ETHBTC", func(event *WsDepthEvent) {
 		e := &WsDepthEvent{
 			Event:         "depthUpdate",
 			Time:          1499404630606,
