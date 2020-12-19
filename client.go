@@ -14,6 +14,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/adshao/go-binance/coinM"
 	"github.com/adshao/go-binance/common"
 	"github.com/adshao/go-binance/futures"
 	"github.com/bitly/go-simplejson"
@@ -175,6 +176,11 @@ func NewClient(apiKey, secretKey string) *Client {
 // NewFuturesClient initialize client for futures API
 func NewFuturesClient(apiKey, secretKey string) *futures.Client {
 	return futures.NewClient(apiKey, secretKey)
+}
+
+// NewCoinMClient initialize client for coin-M futures API
+func NewCoinMClient(apiKey, secretKey string) *coinM.Client {
+	return coinM.NewClient(apiKey, secretKey)
 }
 
 type doFunc func(req *http.Request) (*http.Response, error)

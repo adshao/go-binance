@@ -23,6 +23,7 @@ Name | Description | Status
 [wapi-api.md](https://github.com/binance-exchange/binance-official-api-docs/blob/master/wapi-api.md) | Details on the Withdrawal API (/wapi) | <input type="checkbox" checked>  Partially Implemented
 [margin-api.md](https://github.com/binance-exchange/binance-official-api-docs/blob/master/margin-api.md) | Details on the Margin API (/sapi) | <input type="checkbox" checked>  Implemented
 [futures-api.md](https://binance-docs.github.io/apidocs/futures/en/#general-info) | Details on the Futures API (/fapi) | <input type="checkbox" checked>  Partially Implemented
+[futures-api.md](https://binance-docs.github.io/apidocs/delivery/en/#general-info) | Details on the Coin-M Futures API (/dapi) | <input type="checkbox" checked>  Partially Implemented
 
 ### Installation
 
@@ -55,6 +56,7 @@ var (
 )
 client := binance.NewClient(apiKey, secretKey)
 futuresClient := binance.NewFuturesClient(apiKey, secretKey)
+coinMClient := binance.NewCoinMClient(apiKey, secretKey)
 ```
 
 A service instance stands for a REST API endpoint and is initialized by client.NewXXXService function.
