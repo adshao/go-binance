@@ -270,3 +270,38 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 func (c *Client) NewExchangeInfoService() *ExchangeInfoService {
 	return &ExchangeInfoService{c: c}
 }
+
+// NewCreateOrderService init creating order service
+func (c *Client) NewCreateOrderService() *CreateOrderService {
+	return &CreateOrderService{c: c}
+}
+
+// NewGetOrderService init get order service
+func (c *Client) NewGetOrderService() *GetOrderService {
+	return &GetOrderService{c: c}
+}
+
+// NewCancelOrderService init cancel order service
+func (c *Client) NewCancelOrderService() *CancelOrderService {
+	return &CancelOrderService{c: c}
+}
+
+// NewCancelAllOpenOrdersService init cancel all open orders service
+func (c *Client) NewCancelAllOpenOrdersService() *CancelAllOpenOrdersService {
+	return &CancelAllOpenOrdersService{c: c}
+}
+
+// NewListOpenOrdersService init list open orders service
+func (c *Client) NewListOpenOrdersService() *ListOpenOrdersService {
+	return &ListOpenOrdersService{c: c}
+}
+
+// NewListOrdersService init listing orders service
+func (c *Client) NewListOrdersService() *ListOrdersService {
+	return &ListOrdersService{c: c}
+}
+
+// NewListLiquidationOrdersService init funding rate service
+func (c *Client) NewListLiquidationOrdersService() *ListLiquidationOrdersService {
+	return &ListLiquidationOrdersService{c: c}
+}
