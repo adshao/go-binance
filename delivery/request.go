@@ -1,4 +1,4 @@
-package coinM
+package delivery
 
 import (
 	"fmt"
