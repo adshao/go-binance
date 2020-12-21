@@ -178,8 +178,8 @@ func NewFuturesClient(apiKey, secretKey string) *futures.Client {
 	return futures.NewClient(apiKey, secretKey)
 }
 
-// NewCoinMClient initialize client for coin-M futures API
-func NewCoinMClient(apiKey, secretKey string) *delivery.Client {
+// NewDeliveryClient initialize client for coin-M futures API
+func NewDeliveryClient(apiKey, secretKey string) *delivery.Client {
 	return delivery.NewClient(apiKey, secretKey)
 }
 
