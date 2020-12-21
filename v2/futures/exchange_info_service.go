@@ -50,15 +50,26 @@ type RateLimit struct {
 // Symbol market symbol
 type Symbol struct {
 	Symbol                string                   `json:"symbol"`
+	Pair                  string                   `json:"pair"`
+	ContractType          ContractType             `json:"contractType"`
+	DeliveryDate          int64                    `json:"deliveryDate"`
+	OnboardDate           int64                    `json:"onboardDate"`
 	Status                string                   `json:"status"`
 	MaintMarginPercent    string                   `json:"maintMarginPercent"`
+	RequiredMarginPercent string                   `json:"requiredMarginPercent"`
 	PricePrecision        int                      `json:"pricePrecision"`
 	QuantityPrecision     int                      `json:"quantityPrecision"`
-	RequiredMarginPercent string                   `json:"requiredMarginPercent"`
+	BaseAssetPrecision    int                      `json:"baseAssetPrecision"`
+	QuotePrecision        int                      `json:"quotePrecision"`
+	UnderlyingType        string                   `json:"underlyingType"`
+	UnderlyingSubType     []string                 `json:"underlyingSubType"`
+	SettlePlan            int                      `json:"settlePlan"`
+	TriggerProtect        string                   `json:"triggerProtect"`
 	OrderType             []OrderType              `json:"OrderType"`
 	TimeInForce           []TimeInForceType        `json:"timeInForce"`
 	Filters               []map[string]interface{} `json:"filters"`
 	QuoteAsset            string                   `json:"quoteAsset"`
+	MarginAsset           string                   `json:"marginAsset"`
 	BaseAsset             string                   `json:"baseAsset"`
 }
 
@@ -92,6 +103,11 @@ type MarketLotSizeFilter struct {
 
 // MaxNumOrdersFilter define max num orders filter of symbol
 type MaxNumOrdersFilter struct {
+	Limit int64 `json:"limit"`
+}
+
+// MaxNumAlgoOrdersFilter define max num algo orders filter of symbol
+type MaxNumAlgoOrdersFilter struct {
 	Limit int64 `json:"limit"`
 }
 
@@ -180,6 +196,20 @@ func (s *Symbol) MaxNumOrdersFilter() *MaxNumOrdersFilter {
 	for _, filter := range s.Filters {
 		if filter["filterType"].(string) == string(SymbolFilterTypeMaxNumOrders) {
 			f := &MaxNumOrdersFilter{}
+			if i, ok := filter["limit"]; ok {
+				f.Limit = int64(i.(float64))
+			}
+			return f
+		}
+	}
+	return nil
+}
+
+// MaxNumAlgoOrdersFilter return max num orders filter of symbol
+func (s *Symbol) MaxNumAlgoOrdersFilter() *MaxNumAlgoOrdersFilter {
+	for _, filter := range s.Filters {
+		if filter["filterType"].(string) == string(SymbolFilterTypeMaxNumAlgoOrders) {
+			f := &MaxNumAlgoOrdersFilter{}
 			if i, ok := filter["limit"]; ok {
 				f.Limit = int64(i.(float64))
 			}
