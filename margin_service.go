@@ -705,16 +705,34 @@ type MaxTransferable struct {
 
 // StartMarginUserStreamService create listen key for margin user stream service
 type StartMarginUserStreamService struct {
-	c *Client
+	c              *Client
+	isolated       bool
+	isolatedSymbol string
+}
+
+func (s *StartMarginUserStreamService) Isolated(symbol string) *StartMarginUserStreamService {
+	s.isolated = true
+	s.isolatedSymbol = symbol
+	return s
 }
 
 // Do send request
 func (s *StartMarginUserStreamService) Do(ctx context.Context, opts ...RequestOption) (listenKey string, err error) {
+	endpoint := "/sapi/v1/userDataStream"
+	if s.isolated {
+		endpoint = "/sapi/v1/userDataStream/isolated"
+	}
+
 	r := &request{
 		method:   "POST",
-		endpoint: "/sapi/v1/userDataStream",
+		endpoint: endpoint,
 		secType:  secTypeAPIKey,
 	}
+
+	if s.isolated {
+		r.setFormParam("symbol", s.isolatedSymbol)
+	}
+
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return "", err
@@ -729,8 +747,16 @@ func (s *StartMarginUserStreamService) Do(ctx context.Context, opts ...RequestOp
 
 // KeepaliveMarginUserStreamService update listen key
 type KeepaliveMarginUserStreamService struct {
-	c         *Client
-	listenKey string
+	c              *Client
+	listenKey      string
+	isolated       bool
+	isolatedSymbol string
+}
+
+func (s *KeepaliveMarginUserStreamService) Isolated(symbol string) *KeepaliveMarginUserStreamService {
+	s.isolated = true
+	s.isolatedSymbol = symbol
+	return s
 }
 
 // ListenKey set listen key
@@ -741,12 +767,20 @@ func (s *KeepaliveMarginUserStreamService) ListenKey(listenKey string) *Keepaliv
 
 // Do send request
 func (s *KeepaliveMarginUserStreamService) Do(ctx context.Context, opts ...RequestOption) (err error) {
+	endpoint := "/sapi/v1/userDataStream"
+	if s.isolated {
+		endpoint = "/sapi/v1/userDataStream/isolated"
+	}
+
 	r := &request{
 		method:   "PUT",
-		endpoint: "/sapi/v1/userDataStream",
+		endpoint: endpoint,
 		secType:  secTypeAPIKey,
 	}
 	r.setFormParam("listenKey", s.listenKey)
+	if s.isolated {
+		r.setFormParam("symbol", s.isolatedSymbol)
+	}
 	_, err = s.c.callAPI(ctx, r, opts...)
 	return err
 }
@@ -755,6 +789,9 @@ func (s *KeepaliveMarginUserStreamService) Do(ctx context.Context, opts ...Reque
 type CloseMarginUserStreamService struct {
 	c         *Client
 	listenKey string
+
+	isolated       bool
+	isolatedSymbol string
 }
 
 // ListenKey set listen key
@@ -763,14 +800,31 @@ func (s *CloseMarginUserStreamService) ListenKey(listenKey string) *CloseMarginU
 	return s
 }
 
+func (s *CloseMarginUserStreamService) Isolated(symbol string) *CloseMarginUserStreamService {
+	s.isolated = true
+	s.isolatedSymbol = symbol
+	return s
+}
+
 // Do send request
 func (s *CloseMarginUserStreamService) Do(ctx context.Context, opts ...RequestOption) (err error) {
+	endpoint := "/sapi/v1/userDataStream"
+	if s.isolated {
+		endpoint = "/sapi/v1/userDataStream/isolated"
+	}
+
 	r := &request{
 		method:   "DELETE",
-		endpoint: "/sapi/v1/userDataStream",
+		endpoint: endpoint,
 		secType:  secTypeAPIKey,
 	}
+
 	r.setFormParam("listenKey", s.listenKey)
+
+	if s.isolated {
+		r.setFormParam("symbol", s.isolatedSymbol)
+	}
+
 	_, err = s.c.callAPI(ctx, r, opts...)
 	return err
 }
