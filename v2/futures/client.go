@@ -54,6 +54,9 @@ type WorkingType string
 // MarginType define margin type
 type MarginType string
 
+// ContractType define contract type
+type ContractType string
+
 // Global enums
 const (
 	SideTypeBuy  SideType = "BUY"
@@ -99,11 +102,12 @@ const (
 	SymbolStatusTypeAuctionMatch SymbolStatusType = "AUCTION_MATCH"
 	SymbolStatusTypeBreak        SymbolStatusType = "BREAK"
 
-	SymbolFilterTypeLotSize       SymbolFilterType = "LOT_SIZE"
-	SymbolFilterTypePrice         SymbolFilterType = "PRICE_FILTER"
-	SymbolFilterTypePercentPrice  SymbolFilterType = "PERCENT_PRICE"
-	SymbolFilterTypeMarketLotSize SymbolFilterType = "MARKET_LOT_SIZE"
-	SymbolFilterTypeMaxNumOrders  SymbolFilterType = "MAX_NUM_ORDERS"
+	SymbolFilterTypeLotSize          SymbolFilterType = "LOT_SIZE"
+	SymbolFilterTypePrice            SymbolFilterType = "PRICE_FILTER"
+	SymbolFilterTypePercentPrice     SymbolFilterType = "PERCENT_PRICE"
+	SymbolFilterTypeMarketLotSize    SymbolFilterType = "MARKET_LOT_SIZE"
+	SymbolFilterTypeMaxNumOrders     SymbolFilterType = "MAX_NUM_ORDERS"
+	SymbolFilterTypeMaxNumAlgoOrders SymbolFilterType = "MAX_NUM_ALGO_ORDERS"
 
 	SideEffectTypeNoSideEffect SideEffectType = "NO_SIDE_EFFECT"
 	SideEffectTypeMarginBuy    SideEffectType = "MARGIN_BUY"
@@ -111,6 +115,8 @@ const (
 
 	MarginTypeIsolated MarginType = "ISOLATED"
 	MarginTypeCrossed  MarginType = "CROSSED"
+
+	ContractTypePerpetual ContractType = "PERPETUAL"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
