@@ -364,7 +364,7 @@ func (s *GetIsolatedMarginAccountService) Do(ctx context.Context, opts ...Reques
 		secType:  secTypeSigned,
 	}
 
-	r.setFormParam("symbols", strings.Join(s.symbols, ","))
+	r.setParam("symbols", strings.Join(s.symbols, ","))
 
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
