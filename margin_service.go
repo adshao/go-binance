@@ -710,6 +710,7 @@ type StartMarginUserStreamService struct {
 	isolatedSymbol string
 }
 
+// Isolated sets the user stream to isolated margin user stream
 func (s *StartMarginUserStreamService) Isolated(symbol string) *StartMarginUserStreamService {
 	s.isolated = true
 	s.isolatedSymbol = symbol
@@ -753,6 +754,7 @@ type KeepaliveMarginUserStreamService struct {
 	isolatedSymbol string
 }
 
+// Isolated set isolated margin to the keepalive request
 func (s *KeepaliveMarginUserStreamService) Isolated(symbol string) *KeepaliveMarginUserStreamService {
 	s.isolated = true
 	s.isolatedSymbol = symbol
@@ -800,6 +802,7 @@ func (s *CloseMarginUserStreamService) ListenKey(listenKey string) *CloseMarginU
 	return s
 }
 
+// Isolated set isolated margin to the user stream close request
 func (s *CloseMarginUserStreamService) Isolated(symbol string) *CloseMarginUserStreamService {
 	s.isolated = true
 	s.isolatedSymbol = symbol
