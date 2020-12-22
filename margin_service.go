@@ -3,6 +3,7 @@ package binance
 import (
 	"context"
 	"encoding/json"
+	"strings"
 )
 
 // MarginTransferService transfer between spot account and margin account
@@ -340,6 +341,80 @@ type MarginRepay struct {
 	Timestamp int64                 `json:"timestamp"`
 	Status    MarginRepayStatusType `json:"status"`
 	TxID      int64                 `json:"txId"`
+}
+
+// GetIsolatedMarginAccountService gets isolated margin account info
+type GetIsolatedMarginAccountService struct {
+	c *Client
+
+	symbols []string
+}
+
+// Symbols set symbols to the isolated margin account
+func (s *GetIsolatedMarginAccountService) Symbols(symbols ...string) *GetIsolatedMarginAccountService {
+	s.symbols = symbols
+	return s
+}
+
+// Do send request
+func (s *GetIsolatedMarginAccountService) Do(ctx context.Context, opts ...RequestOption) (res *IsolatedMarginAccount, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/margin/isolated/account",
+		secType:  secTypeSigned,
+	}
+
+	r.setFormParam("symbols", strings.Join(s.symbols, ","))
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(IsolatedMarginAccount)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// IsolatedMarginAccount defines isolated user assets of margin account
+type IsolatedMarginAccount struct {
+	TotalAssetOfBTC     string                `json:"totalAssetOfBtc"`
+	TotalLiabilityOfBTC string                `json:"totalLiabilityOfBtc"`
+	TotalNetAssetOfBTC  string                `json:"totalNetAssetOfBtc"`
+	Assets              []IsolatedMarginAsset `json:"assets"`
+}
+
+// IsolatedMarginAsset defines isolated margin asset information, like margin level, liquidation price... etc
+type IsolatedMarginAsset struct {
+	Symbol     string            `json:"symbol"`
+	QuoteAsset IsolatedUserAsset `json:"quoteAsset"`
+	BaseAsset  IsolatedUserAsset `json:"baseAsset"`
+
+	IsolatedCreated   bool   `json:"isolatedCreated"`
+	MarginLevel       string `json:"marginLevel"`
+	MarginLevelStatus string `json:"marginLevelStatus"`
+	MarginRatio       string `json:"marginRatio"`
+	IndexPrice        string `json:"indexPrice"`
+	LiquidatePrice    string `json:"liquidatePrice"`
+	LiquidateRate     string `json:"liquidateRate"`
+	TradeEnabled      bool   `json:"tradeEnabled"`
+}
+
+// IsolatedUserAsset defines isolated user assets of the margin account
+type IsolatedUserAsset struct {
+	Asset    string `json:"asset"`
+	Borrowed string `json:"borrowed"`
+	Free     string `json:"free"`
+	Interest string `json:"interest"`
+	Locked   string `json:"locked"`
+	NetAsset string `json:"netAsset"`
+
+	BorrowEnabled bool   `json:"borrowEnabled"`
+	NetAssetInBtc string `json:"netAssetInBtc"`
+	RepayEnabled  bool   `json:"repayEnabled"`
+	TotalAsset    string `json:"totalAsset"`
 }
 
 // GetMarginAccountService get margin account info
