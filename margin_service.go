@@ -778,35 +778,119 @@ type MaxTransferable struct {
 	Amount string `json:"amount"`
 }
 
-// StartMarginUserStreamService create listen key for margin user stream service
-type StartMarginUserStreamService struct {
-	c              *Client
-	isolated       bool
-	isolatedSymbol string
+// StartIsolatedMarginUserStreamService create listen key for margin user stream service
+type StartIsolatedMarginUserStreamService struct {
+	c      *Client
+	symbol string
 }
 
-// Isolated sets the user stream to isolated margin user stream
-func (s *StartMarginUserStreamService) Isolated(symbol string) *StartMarginUserStreamService {
-	s.isolated = true
-	s.isolatedSymbol = symbol
+// Symbol sets the user stream to isolated margin user stream
+func (s *StartIsolatedMarginUserStreamService) Symbol(symbol string) *StartIsolatedMarginUserStreamService {
+	s.symbol = symbol
 	return s
 }
 
 // Do send request
-func (s *StartMarginUserStreamService) Do(ctx context.Context, opts ...RequestOption) (listenKey string, err error) {
-	endpoint := "/sapi/v1/userDataStream"
-	if s.isolated {
-		endpoint = "/sapi/v1/userDataStream/isolated"
-	}
-
+func (s *StartIsolatedMarginUserStreamService) Do(ctx context.Context, opts ...RequestOption) (listenKey string, err error) {
 	r := &request{
 		method:   "POST",
-		endpoint: endpoint,
+		endpoint: "/sapi/v1/userDataStream/isolated",
 		secType:  secTypeAPIKey,
 	}
 
-	if s.isolated {
-		r.setFormParam("symbol", s.isolatedSymbol)
+	r.setFormParam("symbol", s.symbol)
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return "", err
+	}
+	j, err := newJSON(data)
+	if err != nil {
+		return "", err
+	}
+	listenKey = j.Get("listenKey").MustString()
+	return listenKey, nil
+}
+
+// KeepaliveIsolatedMarginUserStreamService updates listen key for isolated margin user data stream
+type KeepaliveIsolatedMarginUserStreamService struct {
+	c         *Client
+	listenKey string
+	symbol    string
+}
+
+// Symbol set symbol to the isolated margin keepalive request
+func (s *KeepaliveIsolatedMarginUserStreamService) Symbol(symbol string) *KeepaliveIsolatedMarginUserStreamService {
+	s.symbol = symbol
+	return s
+}
+
+// ListenKey set listen key
+func (s *KeepaliveIsolatedMarginUserStreamService) ListenKey(listenKey string) *KeepaliveIsolatedMarginUserStreamService {
+	s.listenKey = listenKey
+	return s
+}
+
+// Do send request
+func (s *KeepaliveIsolatedMarginUserStreamService) Do(ctx context.Context, opts ...RequestOption) (err error) {
+	r := &request{
+		method:   "PUT",
+		endpoint: "/sapi/v1/userDataStream/isolated",
+		secType:  secTypeAPIKey,
+	}
+	r.setFormParam("listenKey", s.listenKey)
+	r.setFormParam("symbol", s.symbol)
+
+	_, err = s.c.callAPI(ctx, r, opts...)
+	return err
+}
+
+// CloseIsolatedMarginUserStreamService delete listen key
+type CloseIsolatedMarginUserStreamService struct {
+	c         *Client
+	listenKey string
+
+	symbol string
+}
+
+// ListenKey set listen key
+func (s *CloseIsolatedMarginUserStreamService) ListenKey(listenKey string) *CloseIsolatedMarginUserStreamService {
+	s.listenKey = listenKey
+	return s
+}
+
+// Symbol set symbol to the isolated margin user stream close request
+func (s *CloseIsolatedMarginUserStreamService) Symbol(symbol string) *CloseIsolatedMarginUserStreamService {
+	s.symbol = symbol
+	return s
+}
+
+// Do send request
+func (s *CloseIsolatedMarginUserStreamService) Do(ctx context.Context, opts ...RequestOption) (err error) {
+	r := &request{
+		method:   "DELETE",
+		endpoint: "/sapi/v1/userDataStream/isolated",
+		secType:  secTypeAPIKey,
+	}
+
+	r.setFormParam("listenKey", s.listenKey)
+	r.setFormParam("symbol", s.symbol)
+
+	_, err = s.c.callAPI(ctx, r, opts...)
+	return err
+}
+
+// StartMarginUserStreamService create listen key for margin user stream service
+type StartMarginUserStreamService struct {
+	c *Client
+}
+
+// Do send request
+func (s *StartMarginUserStreamService) Do(ctx context.Context, opts ...RequestOption) (listenKey string, err error) {
+	r := &request{
+		method:   "POST",
+		endpoint: "/sapi/v1/userDataStream",
+		secType:  secTypeAPIKey,
 	}
 
 	data, err := s.c.callAPI(ctx, r, opts...)
@@ -823,17 +907,8 @@ func (s *StartMarginUserStreamService) Do(ctx context.Context, opts ...RequestOp
 
 // KeepaliveMarginUserStreamService update listen key
 type KeepaliveMarginUserStreamService struct {
-	c              *Client
-	listenKey      string
-	isolated       bool
-	isolatedSymbol string
-}
-
-// Isolated set isolated margin to the keepalive request
-func (s *KeepaliveMarginUserStreamService) Isolated(symbol string) *KeepaliveMarginUserStreamService {
-	s.isolated = true
-	s.isolatedSymbol = symbol
-	return s
+	c         *Client
+	listenKey string
 }
 
 // ListenKey set listen key
@@ -844,20 +919,12 @@ func (s *KeepaliveMarginUserStreamService) ListenKey(listenKey string) *Keepaliv
 
 // Do send request
 func (s *KeepaliveMarginUserStreamService) Do(ctx context.Context, opts ...RequestOption) (err error) {
-	endpoint := "/sapi/v1/userDataStream"
-	if s.isolated {
-		endpoint = "/sapi/v1/userDataStream/isolated"
-	}
-
 	r := &request{
 		method:   "PUT",
-		endpoint: endpoint,
+		endpoint: "/sapi/v1/userDataStream",
 		secType:  secTypeAPIKey,
 	}
 	r.setFormParam("listenKey", s.listenKey)
-	if s.isolated {
-		r.setFormParam("symbol", s.isolatedSymbol)
-	}
 	_, err = s.c.callAPI(ctx, r, opts...)
 	return err
 }
@@ -866,9 +933,6 @@ func (s *KeepaliveMarginUserStreamService) Do(ctx context.Context, opts ...Reque
 type CloseMarginUserStreamService struct {
 	c         *Client
 	listenKey string
-
-	isolated       bool
-	isolatedSymbol string
 }
 
 // ListenKey set listen key
@@ -877,31 +941,15 @@ func (s *CloseMarginUserStreamService) ListenKey(listenKey string) *CloseMarginU
 	return s
 }
 
-// Isolated set isolated margin to the user stream close request
-func (s *CloseMarginUserStreamService) Isolated(symbol string) *CloseMarginUserStreamService {
-	s.isolated = true
-	s.isolatedSymbol = symbol
-	return s
-}
-
 // Do send request
 func (s *CloseMarginUserStreamService) Do(ctx context.Context, opts ...RequestOption) (err error) {
-	endpoint := "/sapi/v1/userDataStream"
-	if s.isolated {
-		endpoint = "/sapi/v1/userDataStream/isolated"
-	}
-
 	r := &request{
 		method:   "DELETE",
-		endpoint: endpoint,
+		endpoint: "/sapi/v1/userDataStream",
 		secType:  secTypeAPIKey,
 	}
 
 	r.setFormParam("listenKey", s.listenKey)
-
-	if s.isolated {
-		r.setFormParam("symbol", s.isolatedSymbol)
-	}
 
 	_, err = s.c.callAPI(ctx, r, opts...)
 	return err
