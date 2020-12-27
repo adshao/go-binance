@@ -14,10 +14,11 @@ import (
 	"os"
 	"time"
 
+	"github.com/bitly/go-simplejson"
+
 	"github.com/adshao/go-binance/common"
 	"github.com/adshao/go-binance/delivery"
 	"github.com/adshao/go-binance/futures"
-	"github.com/bitly/go-simplejson"
 )
 
 // SideType define side type of order
@@ -499,6 +500,11 @@ func (c *Client) NewListMarginRepaysService() *ListMarginRepaysService {
 // NewGetMarginAccountService init get margin account service
 func (c *Client) NewGetMarginAccountService() *GetMarginAccountService {
 	return &GetMarginAccountService{c: c}
+}
+
+// NewGetIsolatedMarginAccountService init get isolated margin asset service
+func (c *Client) NewGetIsolatedMarginAccountService() *GetIsolatedMarginAccountService {
+	return &GetIsolatedMarginAccountService{c: c}
 }
 
 // NewGetMarginAssetService init get margin asset service
