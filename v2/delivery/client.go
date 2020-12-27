@@ -266,6 +266,11 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 	return data, nil
 }
 
+// NewKlinesService init klines service
+func (c *Client) NewKlinesService() *KlinesService {
+	return &KlinesService{c: c}
+}
+
 // NewStartUserStreamService init starting user stream service
 func (c *Client) NewStartUserStreamService() *StartUserStreamService {
 	return &StartUserStreamService{c: c}
