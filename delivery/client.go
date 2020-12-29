@@ -325,3 +325,8 @@ func (c *Client) NewListOrdersService() *ListOrdersService {
 func (c *Client) NewListLiquidationOrdersService() *ListLiquidationOrdersService {
 	return &ListLiquidationOrdersService{c: c}
 }
+
+// NewGetPositionRiskService init getting position risk service
+func (c *Client) NewGetPositionRiskService() *GetPositionRiskService {
+	return &GetPositionRiskService{c: c}
+}
