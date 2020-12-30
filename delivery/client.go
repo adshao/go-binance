@@ -266,6 +266,21 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 	return data, nil
 }
 
+// NewPingService init ping service
+func (c *Client) NewPingService() *PingService {
+	return &PingService{c: c}
+}
+
+// NewServerTimeService init server time service
+func (c *Client) NewServerTimeService() *ServerTimeService {
+	return &ServerTimeService{c: c}
+}
+
+// NewSetServerTimeService init set server time service
+func (c *Client) NewSetServerTimeService() *SetServerTimeService {
+	return &SetServerTimeService{c: c}
+}
+
 // NewKlinesService init klines service
 func (c *Client) NewKlinesService() *KlinesService {
 	return &KlinesService{c: c}
@@ -324,4 +339,9 @@ func (c *Client) NewListOrdersService() *ListOrdersService {
 // NewListLiquidationOrdersService init funding rate service
 func (c *Client) NewListLiquidationOrdersService() *ListLiquidationOrdersService {
 	return &ListLiquidationOrdersService{c: c}
+}
+
+// NewGetPositionRiskService init getting position risk service
+func (c *Client) NewGetPositionRiskService() *GetPositionRiskService {
+	return &GetPositionRiskService{c: c}
 }
