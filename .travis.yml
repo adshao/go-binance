@@ -10,6 +10,7 @@ before_install:
   - test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*"))"
   - go get -u golang.org/x/lint/golint
   - golint -set_exit_status .
+  - cd v2
   - go vet ./...
   - go get -t -v ./...
 

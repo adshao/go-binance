@@ -28,14 +28,20 @@ Name | Description | Status
 ### Installation
 
 ```shell
-go get github.com/adshao/go-binance
+go get github.com/adshao/go-binance/v2
+```
+
+For v1 API, it has been moved to `v1` branch, please use:
+
+```shell
+go get github.com/adshao/go-binance/v1
 ```
 
 ### Importing
 
 ```golang
 import (
-    "github.com/adshao/go-binance"
+    "github.com/adshao/go-binance/v2"
 )
 ```
 
