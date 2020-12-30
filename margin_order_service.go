@@ -307,6 +307,9 @@ func (s *ListMarginOpenOrdersService) Do(ctx context.Context, opts ...RequestOpt
 	if s.symbol != "" {
 		r.setParam("symbol", s.symbol)
 	}
+	if s.isIsolated != nil {
+		r.setParam("isIsolated", *s.isIsolated)
+	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*Order{}, err
