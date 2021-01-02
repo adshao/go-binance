@@ -487,7 +487,7 @@ func (s *websocketServiceTestSuite) TestWsAggTradeServe() {
 	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
 
-	doneC, stopC, err := WsAggTradeServe("ETHBTC", func(event *WsAggTradeEvent) {
+	doneC, stopC, err := WsAggTradeServe([]string{"ETHBTC"}, func(event *WsAggTradeEvent) {
 		e := &WsAggTradeEvent{
 			Event:                 "aggTrade",
 			Time:                  1499405254326,
