@@ -500,6 +500,11 @@ func (c *Client) NewGetMarginAccountService() *GetMarginAccountService {
 	return &GetMarginAccountService{c: c}
 }
 
+// NewGetIsolatedMarginAccountService init get isolated margin asset service
+func (c *Client) NewGetIsolatedMarginAccountService() *GetIsolatedMarginAccountService {
+	return &GetIsolatedMarginAccountService{c: c}
+}
+
 // NewGetMarginAssetService init get margin asset service
 func (c *Client) NewGetMarginAssetService() *GetMarginAssetService {
 	return &GetMarginAssetService{c: c}
