@@ -159,19 +159,3 @@ func (s *withdrawServiceTestSuite) assertWithdrawEqual(e, a *Withdraw) {
 	r.Equal(e.ApplyTime, a.ApplyTime, "ApplyTime")
 	r.Equal(e.Status, a.Status, "Status")
 }
-
-func (s *withdrawServiceTestSuite) TestGetWithdrawFee() {
-	data := []byte(`{"success": true,"withdrawFee": 0.00050}`)
-	s.mockDo(data, nil)
-	defer s.assertDo()
-
-	asset := "BTC"
-	s.assertReq(func(r *request) {
-		e := newSignedRequest().setParam("asset", asset)
-		s.assertRequestEqual(e, r)
-	})
-
-	res, err := s.client.NewGetWithdrawFeeService().Asset(asset).Do(newContext())
-	s.r().NoError(err)
-	s.r().Equal(res.Fee, 0.0005, "Fee")
-}
