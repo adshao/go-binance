@@ -147,6 +147,136 @@ func WsKlineServe(symbol string, interval string, handler WsKlineHandler, errHan
 	return wsServe(cfg, wsHandler, errHandler)
 }
 
+// WsContinuousKlineEvent define websocket continuous kline event
+type WsContinuousKlineEvent struct {
+	Event        string            `json:"e"`
+	Time         int64             `json:"E"`
+	Pair         string            `json:"ps"`
+	ContractType string            `json:"ct"`
+	Kline        WsContinuousKline `json:"k"`
+}
+
+// WsContinuousKline define websocket continuous kline
+type WsContinuousKline struct {
+	StartTime            int64  `json:"t"`
+	EndTime              int64  `json:"T"`
+	Interval             string `json:"i"`
+	FirstTradeID         int64  `json:"f"`
+	LastTradeID          int64  `json:"L"`
+	Open                 string `json:"o"`
+	Close                string `json:"c"`
+	High                 string `json:"h"`
+	Low                  string `json:"l"`
+	Volume               string `json:"v"`
+	TradeNum             int64  `json:"n"`
+	IsFinal              bool   `json:"x"`
+	QuoteVolume          string `json:"q"`
+	ActiveBuyVolume      string `json:"V"`
+	ActiveBuyQuoteVolume string `json:"Q"`
+}
+
+// WsContinuousKlineHandler handle websocket continuous kline event
+type WsContinuousKlineHandler func(event *WsContinuousKlineEvent)
+
+// WsContinuousKlineServe serve websocket kline handler with a pair, a contract type and interval like 15m, 30s
+func WsContinuousKlineServe(pair string, contractType string, interval string, handler WsContinuousKlineHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/%s_%s@continuousKline_%s", baseURL, strings.ToLower(pair), strings.ToLower(contractType), interval)
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		event := new(WsContinuousKlineEvent)
+		err := json.Unmarshal(message, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+// WsIndexPriceKlineEvent define websocket index price kline event
+type WsIndexPriceKlineEvent struct {
+	Event string            `json:"e"`
+	Time  int64             `json:"E"`
+	Pair  string            `json:"ps"`
+	Kline WsIndexPriceKline `json:"k"`
+}
+
+// WsIndexPriceKline define websocket index price kline
+type WsIndexPriceKline struct {
+	StartTime   int64  `json:"t"`
+	EndTime     int64  `json:"T"`
+	Interval    string `json:"i"`
+	LastTradeId int64  `json:"L"` // LastTradeId Ignore
+	Open        string `json:"o"`
+	Close       string `json:"c"`
+	High        string `json:"h"`
+	Low         string `json:"l"`
+	TradeNum    int64  `json:"n"`
+	IsFinal     bool   `json:"x"`
+}
+
+// WsIndexPriceKlineHandler handle websocket index kline event
+type WsIndexPriceKlineHandler func(event *WsIndexPriceKlineEvent)
+
+// WsIndexPriceKlineServe serve websocket kline handler with a pair and interval like 15m, 30s
+func WsIndexPriceKlineServe(pair string, interval string, handler WsIndexPriceKlineHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/%s@indexPriceKline_%s", baseURL, strings.ToLower(pair), interval)
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		event := new(WsIndexPriceKlineEvent)
+		err := json.Unmarshal(message, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+// WsMarkPriceKlineEvent define websocket market price kline event
+type WsMarkPriceKlineEvent struct {
+	Event string           `json:"e"`
+	Time  int64            `json:"E"`
+	Pair  string           `json:"ps"`
+	Kline WsMarkPriceKline `json:"k"`
+}
+
+// WsMarkPriceKline define websocket market price kline
+type WsMarkPriceKline struct {
+	StartTime   int64  `json:"t"`
+	EndTime     int64  `json:"T"`
+	Symbol      string `json:"s"`
+	Interval    string `json:"i"`
+	LastTradeID int64  `json:"L"` // LastTradeID Ignore
+	Open        string `json:"o"`
+	Close       string `json:"c"`
+	High        string `json:"h"`
+	Low         string `json:"l"`
+	TradeNum    int64  `json:"n"`
+	IsFinal     bool   `json:"x"`
+}
+
+// WsMarkPriceKlineHandler handle websocket market price kline event
+type WsMarkPriceKlineHandler func(event *WsMarkPriceKlineEvent)
+
+// WsMarkPriceKlineServe serve websocket kline handler with a symbol and interval like 15m, 30s
+func WsMarkPriceKlineServe(symbol string, interval string, handler WsMarkPriceKlineHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/%s@markPriceKline_%s", baseURL, strings.ToLower(symbol), interval)
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		event := new(WsMarkPriceKlineEvent)
+		err := json.Unmarshal(message, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
 // WsMiniMarketTickerEvent define websocket mini market ticker event.
 type WsMiniMarketTickerEvent struct {
 	Event       string `json:"e"`
