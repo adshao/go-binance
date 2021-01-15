@@ -19,11 +19,18 @@ type CreateMarginOrderService struct {
 	newOrderRespType *NewOrderRespType
 	sideEffectType   *SideEffectType
 	timeInForce      *TimeInForceType
+	isIsolated       *bool
 }
 
 // Symbol set symbol
 func (s *CreateMarginOrderService) Symbol(symbol string) *CreateMarginOrderService {
 	s.symbol = symbol
+	return s
+}
+
+// IsIsolated sets the order to isolated margin
+func (s *CreateMarginOrderService) IsIsolated(isIsolated bool) *CreateMarginOrderService {
+	s.isIsolated = &isIsolated
 	return s
 }
 
@@ -99,6 +106,14 @@ func (s *CreateMarginOrderService) Do(ctx context.Context, opts ...RequestOption
 		"side":     s.side,
 		"type":     s.orderType,
 		"quantity": s.quantity,
+	}
+
+	if s.isIsolated != nil {
+		if *s.isIsolated {
+			m["isIsolated"] = "TRUE"
+		} else {
+			m["isIsolated"] = "FALSE"
+		}
 	}
 	if s.timeInForce != nil {
 		m["timeInForce"] = *s.timeInForce
