@@ -626,17 +626,24 @@ type MarginPriceIndex struct {
 
 // ListMarginTradesService list trades
 type ListMarginTradesService struct {
-	c         *Client
-	symbol    string
-	startTime *int64
-	endTime   *int64
-	limit     *int
-	fromID    *int64
+	c          *Client
+	symbol     string
+	startTime  *int64
+	endTime    *int64
+	limit      *int
+	fromID     *int64
+	isIsolated bool
 }
 
 // Symbol set symbol
 func (s *ListMarginTradesService) Symbol(symbol string) *ListMarginTradesService {
 	s.symbol = symbol
+	return s
+}
+
+// IsIsolated set isIsolated
+func (s *ListMarginTradesService) IsIsolated(isIsolated bool) *ListMarginTradesService {
+	s.isIsolated = isIsolated
 	return s
 }
 
@@ -683,6 +690,9 @@ func (s *ListMarginTradesService) Do(ctx context.Context, opts ...RequestOption)
 	}
 	if s.fromID != nil {
 		r.setParam("fromId", *s.fromID)
+	}
+	if s.isIsolated {
+		r.setParam("isIsolated", "TRUE")
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {

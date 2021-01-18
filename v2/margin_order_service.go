@@ -217,6 +217,13 @@ type GetMarginOrderService struct {
 	symbol            string
 	orderID           *int64
 	origClientOrderID *string
+	isIsolated        bool
+}
+
+// IsIsolated set isIsolated
+func (s *GetMarginOrderService) IsIsolated(isIsolated bool) *GetMarginOrderService {
+	s.isIsolated = isIsolated
+	return s
 }
 
 // Symbol set symbol
@@ -251,6 +258,10 @@ func (s *GetMarginOrderService) Do(ctx context.Context, opts ...RequestOption) (
 	if s.origClientOrderID != nil {
 		r.setParam("origClientOrderId", *s.origClientOrderID)
 	}
+	if s.isIsolated {
+		r.setParam("isIsolated", "TRUE")
+	}
+
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
@@ -310,17 +321,24 @@ func (s *ListMarginOpenOrdersService) Do(ctx context.Context, opts ...RequestOpt
 
 // ListMarginOrdersService all account orders; active, canceled, or filled
 type ListMarginOrdersService struct {
-	c         *Client
-	symbol    string
-	orderID   *int64
-	startTime *int64
-	endTime   *int64
-	limit     *int
+	c          *Client
+	symbol     string
+	orderID    *int64
+	startTime  *int64
+	endTime    *int64
+	limit      *int
+	isIsolated bool
 }
 
 // Symbol set symbol
 func (s *ListMarginOrdersService) Symbol(symbol string) *ListMarginOrdersService {
 	s.symbol = symbol
+	return s
+}
+
+// IsIsolated set isIsolated
+func (s *ListMarginOrdersService) IsIsolated(isIsolated bool) *ListMarginOrdersService {
+	s.isIsolated = isIsolated
 	return s
 }
 
@@ -368,6 +386,10 @@ func (s *ListMarginOrdersService) Do(ctx context.Context, opts ...RequestOption)
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
 	}
+	if s.isIsolated {
+		r.setParam("isIsolated", "TRUE")
+	}
+
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*MarginAllOrder{}, err
