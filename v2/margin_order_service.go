@@ -156,11 +156,18 @@ type CancelMarginOrderService struct {
 	orderID           *int64
 	origClientOrderID *string
 	newClientOrderID  *string
+	isIsolated        bool
 }
 
 // Symbol set symbol
 func (s *CancelMarginOrderService) Symbol(symbol string) *CancelMarginOrderService {
 	s.symbol = symbol
+	return s
+}
+
+// IsIsolated set isIsolated
+func (s *CancelMarginOrderService) IsIsolated(isIsolated bool) *CancelMarginOrderService {
+	s.isIsolated = isIsolated
 	return s
 }
 
@@ -199,6 +206,10 @@ func (s *CancelMarginOrderService) Do(ctx context.Context, opts ...RequestOption
 	if s.newClientOrderID != nil {
 		r.setFormParam("newClientOrderId", *s.newClientOrderID)
 	}
+	if s.isIsolated {
+		r.setFormParam("isIsolated", "TRUE")
+	}
+
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
