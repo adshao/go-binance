@@ -155,6 +155,7 @@ type TradeV3 struct {
 	IsBuyer         bool   `json:"isBuyer"`
 	IsMaker         bool   `json:"isMaker"`
 	IsBestMatch     bool   `json:"isBestMatch"`
+	IsIsolated      bool   `json:"isIsolated"`
 }
 
 // AggTradesService list aggregate trades
