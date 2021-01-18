@@ -445,9 +445,9 @@ func (c *Client) NewExchangeInfoService() *ExchangeInfoService {
 	return &ExchangeInfoService{c: c}
 }
 
-// NewGetWithdrawFeeService init get withdraw fee service
-func (c *Client) NewGetWithdrawFeeService() *GetWithdrawFeeService {
-	return &GetWithdrawFeeService{c: c}
+// NewGetAssetDetailService init get asset detail service
+func (c *Client) NewGetAssetDetailService() *GetAssetDetailService {
+	return &GetAssetDetailService{c: c}
 }
 
 // NewAveragePriceService init average price service
@@ -498,6 +498,11 @@ func (c *Client) NewListMarginRepaysService() *ListMarginRepaysService {
 // NewGetMarginAccountService init get margin account service
 func (c *Client) NewGetMarginAccountService() *GetMarginAccountService {
 	return &GetMarginAccountService{c: c}
+}
+
+// NewGetIsolatedMarginAccountService init get isolated margin asset service
+func (c *Client) NewGetIsolatedMarginAccountService() *GetIsolatedMarginAccountService {
+	return &GetIsolatedMarginAccountService{c: c}
 }
 
 // NewGetMarginAssetService init get margin asset service

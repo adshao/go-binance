@@ -331,6 +331,99 @@ func (s *marginTestSuite) TestGetMarginAccount() {
 	s.assertMarginAccountEqual(e, res)
 }
 
+func (s *marginTestSuite) TestGetIsolatedMarginAccount() {
+	data := []byte(`{
+      "assets": [
+      	{
+        "baseAsset": {
+          "asset": "BTC",
+          "borrowEnabled": true,
+          "borrowed": "0.00000000",
+          "free": "0.00000000",
+          "interest": "0.00000000",
+          "locked": "0.00000000",
+          "netAsset": "0.00000000",
+          "netAssetOfBtc": "0.00000000",
+          "repayEnabled": true,
+          "totalAsset": "0.00000000"
+        },
+        "quoteAsset": {
+          "asset": "USDT",
+          "borrowEnabled": true,
+          "borrowed": "0.00000000",
+          "free": "0.00000000",
+          "interest": "0.00000000",
+          "locked": "0.00000000",
+          "netAsset": "0.00000000",
+          "netAssetOfBtc": "0.00000000",
+          "repayEnabled": true,
+          "totalAsset": "0.00000000"
+        },
+        "symbol": "BTCUSDT",
+        "isolatedCreated": true, 
+        "marginLevel": "0.00000000", 
+        "marginLevelStatus": "EXCESSIVE",
+        "marginRatio": "0.00000000",
+        "indexPrice": "10000.00000000",
+        "liquidatePrice": "1000.00000000",
+        "liquidateRate": "1.00000000",
+        "tradeEnabled": true
+      }
+    ],
+    "totalAssetOfBtc": "0.00000000",
+    "totalLiabilityOfBtc": "0.00000000",
+    "totalNetAssetOfBtc": "0.00000000" 
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	s.assertReq(func(r *request) {
+		e := newSignedRequest()
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewGetIsolatedMarginAccountService().Do(newContext())
+	s.r().NoError(err)
+
+	e := &IsolatedMarginAccount{
+		TotalAssetOfBTC:     "0.00000000",
+		TotalLiabilityOfBTC: "0.00000000",
+		TotalNetAssetOfBTC:  "0.00000000",
+		Assets: []IsolatedMarginAsset{
+			{
+				Symbol:            "BTCUSDT",
+				IsolatedCreated:   true,
+				MarginLevel:       "0.00000000",
+				MarginLevelStatus: "EXCESSIVE",
+				MarginRatio:       "0.00000000",
+				IndexPrice:        "10000.00000000",
+				LiquidatePrice:    "1000.00000000",
+				TradeEnabled:      true,
+			},
+		},
+	}
+	s.assertIsolatedMarginAccountEqual(e, res)
+}
+
+func (s *marginTestSuite) assertIsolatedMarginAccountEqual(e, a *IsolatedMarginAccount) {
+	r := s.r()
+	r.Equal(e.TotalAssetOfBTC, a.TotalAssetOfBTC, "TotalAssetOfBTC")
+	r.Equal(e.TotalNetAssetOfBTC, a.TotalNetAssetOfBTC, "TotalNetAssetOfBTC")
+	r.Equal(e.TotalLiabilityOfBTC, a.TotalLiabilityOfBTC, "TotalLiabilityOfBTC")
+	for i := 0; i < len(a.Assets); i++ {
+		s.assertIsolatedMarginAssetEqual(e.Assets[i], a.Assets[i])
+	}
+}
+
+func (s *marginTestSuite) assertIsolatedMarginAssetEqual(e, a IsolatedMarginAsset) {
+	r := s.r()
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.IndexPrice, a.IndexPrice, "IndexPrice")
+	r.Equal(e.LiquidatePrice, a.LiquidatePrice, "LiquidatePrice")
+	r.Equal(e.MarginLevel, a.MarginLevel, "MarginLevel")
+	r.Equal(e.MarginLevelStatus, a.MarginLevelStatus, "MarginLevelStatus")
+	r.Equal(e.MarginRatio, a.MarginRatio, "MarginRatio")
+}
+
 func (s *marginTestSuite) assertMarginAccountEqual(e, a *MarginAccount) {
 	r := s.r()
 	r.Equal(e.BorrowEnabled, a.BorrowEnabled, "BorrowEnabled")
