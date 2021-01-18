@@ -406,15 +406,15 @@ type IsolatedMarginAsset struct {
 
 // IsolatedUserAsset defines isolated user assets of the margin account
 type IsolatedUserAsset struct {
-	Asset    string `json:"asset"`
-	Borrowed string `json:"borrowed"`
-	Free     string `json:"free"`
-	Interest string `json:"interest"`
-	Locked   string `json:"locked"`
-	NetAsset string `json:"netAsset"`
+	Asset         string `json:"asset"`
+	Borrowed      string `json:"borrowed"`
+	Free          string `json:"free"`
+	Interest      string `json:"interest"`
+	Locked        string `json:"locked"`
+	NetAsset      string `json:"netAsset"`
+	NetAssetOfBtc string `json:"netAssetOfBtc"`
 
 	BorrowEnabled bool   `json:"borrowEnabled"`
-	NetAssetInBtc string `json:"netAssetInBtc"`
 	RepayEnabled  bool   `json:"repayEnabled"`
 	TotalAsset    string `json:"totalAsset"`
 }
