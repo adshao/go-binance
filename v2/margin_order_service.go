@@ -265,13 +265,20 @@ func (s *GetMarginOrderService) Do(ctx context.Context, opts ...RequestOption) (
 
 // ListMarginOpenOrdersService list margin open orders
 type ListMarginOpenOrdersService struct {
-	c      *Client
-	symbol string
+	c          *Client
+	symbol     string
+	isIsolated bool
 }
 
 // Symbol set symbol
 func (s *ListMarginOpenOrdersService) Symbol(symbol string) *ListMarginOpenOrdersService {
 	s.symbol = symbol
+	return s
+}
+
+// IsIsolated set isIsolated
+func (s *ListMarginOpenOrdersService) IsIsolated(isIsolated bool) *ListMarginOpenOrdersService {
+	s.isIsolated = isIsolated
 	return s
 }
 
@@ -285,6 +292,10 @@ func (s *ListMarginOpenOrdersService) Do(ctx context.Context, opts ...RequestOpt
 	if s.symbol != "" {
 		r.setParam("symbol", s.symbol)
 	}
+	if s.isIsolated {
+		r.setParam("isIsolated", "TRUE")
+	}
+
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*Order{}, err
