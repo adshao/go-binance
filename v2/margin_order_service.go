@@ -378,7 +378,7 @@ func (s *ListMarginOrdersService) Limit(limit int) *ListMarginOrdersService {
 }
 
 // Do send request
-func (s *ListMarginOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*MarginAllOrder, err error) {
+func (s *ListMarginOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*Order, err error) {
 	r := &request{
 		method:   "GET",
 		endpoint: "/sapi/v1/margin/allOrders",
@@ -403,24 +403,14 @@ func (s *ListMarginOrdersService) Do(ctx context.Context, opts ...RequestOption)
 
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return []*MarginAllOrder{}, err
+		return []*Order{}, err
 	}
-	res = make([]*MarginAllOrder, 0)
+	res = make([]*Order, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
-		return []*MarginAllOrder{}, err
+		return []*Order{}, err
 	}
 	return res, nil
-}
-
-// MarginAllOrder define item of margin all orders
-type MarginAllOrder struct {
-	ID            int64  `json:"id"`
-	Price         string `json:"price"`
-	Quantity      string `json:"qty"`
-	QuoteQuantity string `json:"quoteQty"`
-	Symbol        string `json:"symbol"`
-	Time          int64  `json:"time"`
 }
 
 // CancelMarginOrderResponse define response of canceling order
