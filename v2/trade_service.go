@@ -138,6 +138,7 @@ type Trade struct {
 	Time         int64  `json:"time"`
 	IsBuyerMaker bool   `json:"isBuyerMaker"`
 	IsBestMatch  bool   `json:"isBestMatch"`
+	IsIsolated   bool   `json:"isIsolated"`
 }
 
 // TradeV3 define v3 trade info
@@ -154,6 +155,7 @@ type TradeV3 struct {
 	IsBuyer         bool   `json:"isBuyer"`
 	IsMaker         bool   `json:"isMaker"`
 	IsBestMatch     bool   `json:"isBestMatch"`
+	IsIsolated      bool   `json:"isIsolated"`
 }
 
 // AggTradesService list aggregate trades

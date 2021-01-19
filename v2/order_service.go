@@ -152,19 +152,25 @@ func (s *CreateOrderService) Test(ctx context.Context, opts ...RequestOption) (e
 
 // CreateOrderResponse define create order response
 type CreateOrderResponse struct {
-	Symbol                   string          `json:"symbol"`
-	OrderID                  int64           `json:"orderId"`
-	ClientOrderID            string          `json:"clientOrderId"`
-	TransactTime             int64           `json:"transactTime"`
-	Price                    string          `json:"price"`
-	OrigQuantity             string          `json:"origQty"`
-	ExecutedQuantity         string          `json:"executedQty"`
-	CummulativeQuoteQuantity string          `json:"cummulativeQuoteQty"`
-	Status                   OrderStatusType `json:"status"`
-	TimeInForce              TimeInForceType `json:"timeInForce"`
-	Type                     OrderType       `json:"type"`
-	Side                     SideType        `json:"side"`
-	Fills                    []*Fill         `json:"fills"`
+	Symbol                   string `json:"symbol"`
+	OrderID                  int64  `json:"orderId"`
+	ClientOrderID            string `json:"clientOrderId"`
+	TransactTime             int64  `json:"transactTime"`
+	Price                    string `json:"price"`
+	OrigQuantity             string `json:"origQty"`
+	ExecutedQuantity         string `json:"executedQty"`
+	CummulativeQuoteQuantity string `json:"cummulativeQuoteQty"`
+	IsIsolated               bool   `json:"isIsolated"` // for isolated margin
+
+	Status      OrderStatusType `json:"status"`
+	TimeInForce TimeInForceType `json:"timeInForce"`
+	Type        OrderType       `json:"type"`
+	Side        SideType        `json:"side"`
+
+	// for order response is set to FULL
+	Fills                 []*Fill `json:"fills"`
+	MarginBuyBorrowAmount string  `json:"marginBuyBorrowAmount"` // for margin
+	MarginBuyBorrowAsset  string  `json:"marginBuyBorrowAsset"`
 }
 
 // Fill may be returned in an array of fills in a CreateOrderResponse.
@@ -469,6 +475,7 @@ type Order struct {
 	Time                     int64           `json:"time"`
 	UpdateTime               int64           `json:"updateTime"`
 	IsWorking                bool            `json:"isWorking"`
+	IsIsolated               bool            `json:"isIsolated"`
 }
 
 // ListOrdersService all account orders; active, canceled, or filled
