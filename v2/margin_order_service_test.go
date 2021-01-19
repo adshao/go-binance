@@ -326,26 +326,26 @@ func (s *marginOrderServiceTestSuite) TestListMarginOpenOrders() {
 func (s *marginOrderServiceTestSuite) TestListMarginOrders() {
 	data := []byte(`[
 		{
-			"id": 43123876,
+			"orderId": 43123876,
 			"price": "0.00395740",
-			"qty": "4.06000000",
-			"quoteQty": "0.01606704",
+			"origQty": "4.06000000",
+			"cummulativeQuoteQty": "0.01606704",
 			"symbol": "BNBBTC",
 			"time": 1556089977693
 		},
 		{
-			"id": 43123877,
+			"orderId": 43123877,
 			"price": "0.00395740",
-			"qty": "0.77000000",
-			"quoteQty": "0.00304719",
+			"origQty": "0.77000000",
+			"cummulativeQuoteQty": "0.00304719",
 			"symbol": "BNBBTC",
 			"time": 1556089977693
 		},
 		{
-			"id": 43253549,
+			"orderId": 43253549,
 			"price": "0.00428930",
-			"qty": "23.30000000",
-			"quoteQty": "0.09994069",
+			"origQty": "23.30000000",
+			"cummulativeQuoteQty": "0.09994069",
 			"symbol": "BNBBTC",
 			"time": 1556163963504
 		}
@@ -372,30 +372,30 @@ func (s *marginOrderServiceTestSuite) TestListMarginOrders() {
 	r := s.r()
 	r.NoError(err)
 	r.Len(orders, 3)
-	e := []*MarginAllOrder{
+	e := []*Order{
 		{
-			ID:            43123876,
-			Price:         "0.00395740",
-			Quantity:      "4.06000000",
-			QuoteQuantity: "0.01606704",
-			Symbol:        "BNBBTC",
-			Time:          1556089977693,
+			OrderID:                  43123876,
+			Price:                    "0.00395740",
+			OrigQuantity:             "4.06000000",
+			CummulativeQuoteQuantity: "0.01606704",
+			Symbol:                   "BNBBTC",
+			Time:                     1556089977693,
 		},
 		{
-			ID:            43123877,
-			Price:         "0.00395740",
-			Quantity:      "0.77000000",
-			QuoteQuantity: "0.00304719",
-			Symbol:        "BNBBTC",
-			Time:          1556089977693,
+			OrderID:                  43123877,
+			Price:                    "0.00395740",
+			OrigQuantity:             "0.77000000",
+			CummulativeQuoteQuantity: "0.00304719",
+			Symbol:                   "BNBBTC",
+			Time:                     1556089977693,
 		},
 		{
-			ID:            43253549,
-			Price:         "0.00428930",
-			Quantity:      "23.30000000",
-			QuoteQuantity: "0.09994069",
-			Symbol:        "BNBBTC",
-			Time:          1556163963504,
+			OrderID:                  43253549,
+			Price:                    "0.00428930",
+			OrigQuantity:             "23.30000000",
+			CummulativeQuoteQuantity: "0.09994069",
+			Symbol:                   "BNBBTC",
+			Time:                     1556163963504,
 		},
 	}
 	s.r().Len(orders, len(e))
@@ -404,12 +404,12 @@ func (s *marginOrderServiceTestSuite) TestListMarginOrders() {
 	}
 }
 
-func (s *marginOrderServiceTestSuite) assertMarginAllOrderEqual(e, a *MarginAllOrder) {
+func (s *marginOrderServiceTestSuite) assertMarginAllOrderEqual(e, a *Order) {
 	r := s.r()
-	r.Equal(e.ID, a.ID, "ID")
+	r.Equal(e.OrderID, a.OrderID, "OrderID")
 	r.Equal(e.Price, a.Price, "Price")
-	r.Equal(e.Quantity, a.Quantity, "Quantity")
-	r.Equal(e.QuoteQuantity, a.QuoteQuantity, "QuoteQuantity")
+	r.Equal(e.OrigQuantity, a.OrigQuantity, "OrigQuantity")
+	r.Equal(e.CummulativeQuoteQuantity, a.CummulativeQuoteQuantity, "CummulativeQuoteQuantity")
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
 	r.Equal(e.Time, a.Time, "Time")
 }
