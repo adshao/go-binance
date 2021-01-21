@@ -565,6 +565,21 @@ func (c *Client) NewCloseMarginUserStreamService() *CloseMarginUserStreamService
 	return &CloseMarginUserStreamService{c: c}
 }
 
+// NewStartIsolatedMarginUserStreamService init starting margin user stream service
+func (c *Client) NewStartIsolatedMarginUserStreamService() *StartIsolatedMarginUserStreamService {
+	return &StartIsolatedMarginUserStreamService{c: c}
+}
+
+// NewKeepaliveIsolatedMarginUserStreamService init keep alive margin user stream service
+func (c *Client) NewKeepaliveIsolatedMarginUserStreamService() *KeepaliveIsolatedMarginUserStreamService {
+	return &KeepaliveIsolatedMarginUserStreamService{c: c}
+}
+
+// NewCloseIsolatedMarginUserStreamService init closing margin user stream service
+func (c *Client) NewCloseIsolatedMarginUserStreamService() *CloseIsolatedMarginUserStreamService {
+	return &CloseIsolatedMarginUserStreamService{c: c}
+}
+
 // NewFuturesTransferService init futures transfer service
 func (c *Client) NewFuturesTransferService() *FuturesTransferService {
 	return &FuturesTransferService{c: c}
