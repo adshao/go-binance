@@ -47,6 +47,9 @@ type SymbolFilterType string
 // MarginTransferType define margin transfer type
 type MarginTransferType int
 
+// IsolatedMarginTransferType define isolated margin transfer type
+type IsolatedMarginTransferType string
+
 // MarginLoanStatusType define margin loan status type
 type MarginLoanStatusType string
 
@@ -111,6 +114,9 @@ const (
 
 	MarginTransferTypeToMargin MarginTransferType = 1
 	MarginTransferTypeToMain   MarginTransferType = 2
+
+	IsolatedMarginTransferTypeSpot     IsolatedMarginTransferType = "SPOT"
+	IsolatedMarginTransferTypeIsolated IsolatedMarginTransferType = "ISOLATED_MARGIN"
 
 	FuturesTransferTypeToFutures FuturesTransferType = 1
 	FuturesTransferTypeToMain    FuturesTransferType = 2
@@ -458,6 +464,11 @@ func (c *Client) NewAveragePriceService() *AveragePriceService {
 // NewMarginTransferService init margin account transfer service
 func (c *Client) NewMarginTransferService() *MarginTransferService {
 	return &MarginTransferService{c: c}
+}
+
+// NewIsolatedMarginTransferService init isolated margin account transfer service
+func (c *Client) NewIsolatedMarginTransferService() *IsolatedMarginTransferService {
+	return &IsolatedMarginTransferService{c: c}
 }
 
 // NewMarginLoanService init margin account loan service
