@@ -62,16 +62,97 @@ type TransactionResponse struct {
 	TranID int64 `json:"tranId"`
 }
 
+// IsolatedMarginTransferService transfer between spot account and isolated margin account
+type IsolatedMarginTransferService struct {
+	c         *Client
+	asset     string
+	symbol    string
+	amount    string
+	transFrom string
+	transTo   string
+}
+
+// Asset set asset being transferred, e.g., BTC
+func (s *IsolatedMarginTransferService) Asset(asset string) *IsolatedMarginTransferService {
+	s.asset = asset
+	return s
+}
+
+// Symbol set isolated symbol
+func (s *IsolatedMarginTransferService) Symbol(symbol string) *IsolatedMarginTransferService {
+	s.symbol = symbol
+	return s
+}
+
+// Amount the amount to be transferred
+func (s *IsolatedMarginTransferService) Amount(amount string) *IsolatedMarginTransferService {
+	s.amount = amount
+	return s
+}
+
+// TransFrom sets transfer from account
+func (s *IsolatedMarginTransferService) TransFrom(transferType IsolatedMarginTransferType) *IsolatedMarginTransferService {
+	s.transFrom = string(transferType)
+	return s
+}
+
+// TransTo sets transfer to account
+func (s *IsolatedMarginTransferService) TransTo(transferType IsolatedMarginTransferType) *IsolatedMarginTransferService {
+	s.transTo = string(transferType)
+	return s
+}
+
+// Do send request
+func (s *IsolatedMarginTransferService) Do(ctx context.Context, opts ...RequestOption) (res *TransactionResponse, err error) {
+	r := &request{
+		method:   "POST",
+		endpoint: "/sapi/v1/margin/isolated/transfer",
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"asset":     s.asset,
+		"symbol":    s.symbol,
+		"amount":    s.amount,
+		"transFrom": s.transFrom,
+		"transTo":   s.transTo,
+	}
+	r.setFormParams(m)
+	res = new(TransactionResponse)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
 // MarginLoanService apply for a loan
 type MarginLoanService struct {
-	c      *Client
-	asset  string
-	amount string
+	c          *Client
+	asset      string
+	amount     string
+	symbol     *string
+	isIsolated bool
 }
 
 // Asset set asset being transferred, e.g., BTC
 func (s *MarginLoanService) Asset(asset string) *MarginLoanService {
 	s.asset = asset
+	return s
+}
+
+// Symbol set isolated symbol
+func (s *MarginLoanService) Symbol(symbol string) *MarginLoanService {
+	s.symbol = &symbol
+	return s
+}
+
+// IsIsolated set isIsolated
+func (s *MarginLoanService) IsIsolated(isIsolated bool) *MarginLoanService {
+	s.isIsolated = isIsolated
 	return s
 }
 
@@ -93,6 +174,12 @@ func (s *MarginLoanService) Do(ctx context.Context, opts ...RequestOption) (res 
 		"amount": s.amount,
 	}
 	r.setFormParams(m)
+	if s.isIsolated {
+		r.setParam("isIsolated", "TRUE")
+	}
+	if s.symbol != nil {
+		r.setParam("symbol", *s.symbol)
+	}
 	res = new(TransactionResponse)
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
@@ -107,14 +194,28 @@ func (s *MarginLoanService) Do(ctx context.Context, opts ...RequestOption) (res 
 
 // MarginRepayService repay loan for margin account
 type MarginRepayService struct {
-	c      *Client
-	asset  string
-	amount string
+	c          *Client
+	asset      string
+	amount     string
+	symbol     *string
+	isIsolated bool
 }
 
 // Asset set asset being transferred, e.g., BTC
 func (s *MarginRepayService) Asset(asset string) *MarginRepayService {
 	s.asset = asset
+	return s
+}
+
+// Symbol set isolated symbol
+func (s *MarginRepayService) Symbol(symbol string) *MarginRepayService {
+	s.symbol = &symbol
+	return s
+}
+
+// IsIsolated set isIsolated
+func (s *MarginRepayService) IsIsolated(isIsolated bool) *MarginRepayService {
+	s.isIsolated = isIsolated
 	return s
 }
 
@@ -136,6 +237,12 @@ func (s *MarginRepayService) Do(ctx context.Context, opts ...RequestOption) (res
 		"amount": s.amount,
 	}
 	r.setFormParams(m)
+	if s.isIsolated {
+		r.setParam("isIsolated", "TRUE")
+	}
+	if s.symbol != nil {
+		r.setParam("symbol", *s.symbol)
+	}
 	res = new(TransactionResponse)
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
