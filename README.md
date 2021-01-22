@@ -311,10 +311,29 @@ client.TimeOffset = 123
 
 ### Testnet
 
-You can use the testnet (only available in delivery for now) by enabling the `delivery.UseTestnet` flag.
+You can use the testnet (only available for futures and delivery) by enabling the corresponding flag.
+
+> Note that you can't use your regular Api and Secret keys for the testnet. You have to create an account on
+> the testnet website : [https://testnet.binancefuture.com/](https://testnet.binancefuture.com/).
+
+#### Futures (usd(s)-m futures)
+
+Use the `futures.UseTestnet` flag before calling the client creation and the websockets methods
 
 ```go
+import (
+    "github.com/adshao/go-binance/v2/futures"
+)
 
+futures.UseTestnet = true
+BinanceClient = futures.NewClient(ApiKey, SecretKey)
+```
+
+#### Delivery (coin-m futures)
+
+Use the `delivery.UseTestnet` flag before calling the client creation and the websockets methods
+
+```go
 import (
     "github.com/adshao/go-binance/v2/delivery"
 )
@@ -323,7 +342,3 @@ delivery.UseTestnet = true
 BinanceClient = delivery.NewClient(ApiKey, SecretKey)
 ```
 
-When the flag is enabled, the API client and WS used after will target the testnet.
-
-> Note that you can't use your regular Api and Secret keys for the testnet. You have to create an account on 
-> the testnet website : [https://testnet.binancefuture.com/](https://testnet.binancefuture.com/).

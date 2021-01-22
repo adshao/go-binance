@@ -57,6 +57,12 @@ type MarginType string
 // ContractType define contract type
 type ContractType string
 
+// Endpoints
+const (
+	baseApiMainUrl    = "https://fapi.binance.com"
+	baseApiTestnetUrl = "https://testnet.binancefuture.com"
+)
+
 // Global enums
 const (
 	SideTypeBuy  SideType = "BUY"
@@ -135,6 +141,14 @@ func newJSON(data []byte) (j *simplejson.Json, err error) {
 	return j, nil
 }
 
+// getApiEndpoint return the base endpoint of the WS according the UseTestnet flag
+func getApiEndpoint() string {
+	if UseTestnet {
+		return baseApiTestnetUrl
+	}
+	return baseApiMainUrl
+}
+
 // NewClient initialize an API client instance with API key and secret key.
 // You should always call this function before using this SDK.
 // Services will be created by the form client.NewXXXService().
@@ -142,7 +156,7 @@ func NewClient(apiKey, secretKey string) *Client {
 	return &Client{
 		APIKey:     apiKey,
 		SecretKey:  secretKey,
-		BaseURL:    "https://fapi.binance.com",
+		BaseURL:    getApiEndpoint(),
 		UserAgent:  "Binance/golang",
 		HTTPClient: http.DefaultClient,
 		Logger:     log.New(os.Stderr, "Binance-golang ", log.LstdFlags),
