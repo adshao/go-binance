@@ -3,6 +3,7 @@ package futures
 import (
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/suite"
 )
@@ -120,7 +121,7 @@ func (s *websocketServiceTestSuite) TestMarkPriceServe() {
 	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
 
-	doneC, stopC, err := WsMarkPriceServe("BTCUSDT", func(event *WsMarkPriceEvent) {
+	doneC, stopC, err := WsMarkPriceServe("BTCUSDT", time.Second, func(event *WsMarkPriceEvent) {
 		e := &WsMarkPriceEvent{
 			Event:           "markPriceUpdate",
 			Time:            1562305380000,
@@ -155,7 +156,7 @@ func (s *websocketServiceTestSuite) TestAllMarkPriceServe() {
 	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
 
-	doneC, stopC, err := WsAllMarkPriceServe(func(event WsAllMarkPriceEvent) {
+	doneC, stopC, err := WsAllMarkPriceServe(time.Second, func(event WsAllMarkPriceEvent) {
 		e := WsAllMarkPriceEvent{{
 			Event:           "markPriceUpdate",
 			Time:            1562305380000,
@@ -736,7 +737,7 @@ func (s *websocketServiceTestSuite) TestPartialDepthServe() {
 	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
 
-	doneC, stopC, err := WsPartialDepthServe("BTCUSDT", 5, func(event *WsDepthEvent) {
+	doneC, stopC, err := WsPartialDepthServe("BTCUSDT", 5, 100*time.Millisecond, func(event *WsDepthEvent) {
 		e := &WsDepthEvent{
 			Event:            "depthUpdate",
 			Time:             1571889248277,
@@ -785,7 +786,7 @@ func (s *websocketServiceTestSuite) TestDiffDepthServe() {
 	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
 
-	doneC, stopC, err := WsPartialDepthServe("BTCUSDT", 5, func(event *WsDepthEvent) {
+	doneC, stopC, err := WsPartialDepthServe("BTCUSDT", 5, 100*time.Millisecond, func(event *WsDepthEvent) {
 		e := &WsDepthEvent{
 			Event:            "depthUpdate",
 			Time:             123456789,
