@@ -1283,6 +1283,28 @@ func (s *websocketServiceTestSuite) TestWsUserDataServeOrderTradeUpdate() {
 	s.testWsUserDataServe(data, expectedEvent)
 }
 
+func (s *websocketServiceTestSuite) TestWsUserDataServeAccountConfigUpdate() {
+	data := []byte(`{
+		"e":"ACCOUNT_CONFIG_UPDATE",
+		"E":1611646737479,
+		"T":1611646737476,
+		"ac":{
+		"s":"BTCUSDT",
+		"l":25
+		}
+	}`)
+	expectedEvent := &WsUserDataEvent{
+		Event:           "ACCOUNT_CONFIG_UPDATE",
+		Time:            1611646737479,
+		TransactionTime: 1611646737476,
+		AccountConfigUpdate: WsAccountConfigUpdate{
+			Symbol:   "BTCUSDT",
+			Leverage: 25,
+		},
+	}
+	s.testWsUserDataServe(data, expectedEvent)
+}
+
 func (s *websocketServiceTestSuite) assertUserDataEvent(e, a *WsUserDataEvent) {
 	r := s.r()
 	r.Equal(e.Event, a.Event, "Event")
@@ -1295,6 +1317,7 @@ func (s *websocketServiceTestSuite) assertUserDataEvent(e, a *WsUserDataEvent) {
 	r.Equal(e.TransactionTime, a.TransactionTime, "TransactionTime")
 	s.assertAccountUpdate(e.AccountUpdate, a.AccountUpdate)
 	s.assertOrderTradeUpdate(e.OrderTradeUpdate, a.OrderTradeUpdate)
+	s.assertAccountConfigUpdate(e.AccountConfigUpdate, a.AccountConfigUpdate)
 }
 
 func (s *websocketServiceTestSuite) assertPosition(e, a WsPosition) {
@@ -1358,4 +1381,10 @@ func (s *websocketServiceTestSuite) assertOrderTradeUpdate(e, a WsOrderTradeUpda
 	r.Equal(e.ActivationPrice, a.ActivationPrice, "ActivationPrice")
 	r.Equal(e.CallbackRate, a.CallbackRate, "CallbackRate")
 	r.Equal(e.RealizedPnL, a.RealizedPnL, "RealizedPnL")
+}
+
+func (s *websocketServiceTestSuite) assertAccountConfigUpdate(e, a WsAccountConfigUpdate) {
+	r := s.r()
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.Leverage, a.Leverage, "Leverage")
 }
