@@ -998,7 +998,7 @@ func (s *websocketServiceTestSuite) TestBookTickerServe() {
   		"b":"9548.1",
   		"B":"52",
   		"a":"9548.5",
-  		"A":"11",
+  		"A":"11"
 	  }`)
 	fakeErrMsg := "fake error"
 	s.mockWsServe(data, errors.New(fakeErrMsg))
@@ -1032,7 +1032,7 @@ func (s *websocketServiceTestSuite) TestAllBookTickerServe() {
   		"b":"9548.1",
   		"B":"52",
   		"a":"9548.5",
-  		"A":"11",
+  		"A":"11"
 	  }`)
 	fakeErrMsg := "fake error"
 	s.mockWsServe(data, errors.New(fakeErrMsg))
