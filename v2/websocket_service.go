@@ -417,3 +417,48 @@ type WsMiniMarketsStatEvent struct {
 	BaseVolume  string `json:"v"`
 	QuoteVolume string `json:"q"`
 }
+
+// WsBookTickerEvent define websocket best book ticker event.
+type WsBookTickerEvent struct {
+	UpdateID     int64  `json:"u"`
+	Symbol       string `json:"s"`
+	BestBidPrice string `json:"b"`
+	BestBidQty   string `json:"B"`
+	BestAskPrice string `json:"a"`
+	BestAskQty   string `json:"A"`
+}
+
+// WsBookTickerHandler handle websocket that pushes updates to the best bid or ask price or quantity in real-time for a specified symbol.
+type WsBookTickerHandler func(event *WsBookTickerEvent)
+
+// WsBookTickerServe serve websocket that pushes updates to the best bid or ask price or quantity in real-time for a specified symbol.
+func WsBookTickerServe(symbol string, handler WsBookTickerHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/%s@bookTicker", baseURL, strings.ToLower(symbol))
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		event := new(WsBookTickerEvent)
+		err := json.Unmarshal(message, &event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+// WsAllBookTickerServe serve websocket that pushes updates to the best bid or ask price or quantity in real-time for all symbols.
+func WsAllBookTickerServe(handler WsBookTickerHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/!bookTicker", baseURL)
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		event := new(WsBookTickerEvent)
+		err := json.Unmarshal(message, &event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}

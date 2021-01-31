@@ -989,3 +989,81 @@ func (s *websocketServiceTestSuite) assertWsMiniMarketsStatEventEqual(e, a *WsMi
 	r.Equal(e.BaseVolume, a.BaseVolume, "BaseVolume")
 	r.Equal(e.QuoteVolume, a.QuoteVolume, "QuoteVolume")
 }
+
+// https://binance-docs.github.io/apidocs/spot/en/#individual-symbol-book-ticker-streams
+func (s *websocketServiceTestSuite) TestBookTickerServe() {
+	data := []byte(`{
+  		"u":17242169,
+  		"s":"BTCUSD_200626",
+  		"b":"9548.1",
+  		"B":"52",
+  		"a":"9548.5",
+  		"A":"11"
+	  }`)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+
+	doneC, stopC, err := WsBookTickerServe("BTCUSD_200626", func(event *WsBookTickerEvent) {
+		e := &WsBookTickerEvent{
+			UpdateID:     17242169,
+			Symbol:       "BTCUSD_200626",
+			BestBidPrice: "9548.1",
+			BestBidQty:   "52",
+			BestAskPrice: "9548.5",
+			BestAskQty:   "11",
+		}
+		s.assertWsBookTickerEvent(e, event)
+	},
+		func(err error) {
+			s.r().EqualError(err, fakeErrMsg)
+		})
+
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
+// https://binance-docs.github.io/apidocs/spot/en/#all-book-tickers-stream
+func (s *websocketServiceTestSuite) TestAllBookTickerServe() {
+	data := []byte(`{
+  		"u":17242169,
+  		"s":"BTCUSD_200626",
+  		"b":"9548.1",
+  		"B":"52",
+  		"a":"9548.5",
+  		"A":"11"
+	  }`)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+
+	doneC, stopC, err := WsAllBookTickerServe(func(event *WsBookTickerEvent) {
+		e := &WsBookTickerEvent{
+			UpdateID:     17242169,
+			Symbol:       "BTCUSD_200626",
+			BestBidPrice: "9548.1",
+			BestBidQty:   "52",
+			BestAskPrice: "9548.5",
+			BestAskQty:   "11",
+		}
+		s.assertWsBookTickerEvent(e, event)
+	},
+		func(err error) {
+			s.r().EqualError(err, fakeErrMsg)
+		})
+
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
+func (s *websocketServiceTestSuite) assertWsBookTickerEvent(e, a *WsBookTickerEvent) {
+	r := s.r()
+	r.Equal(e.UpdateID, a.UpdateID, "UpdateID")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.BestBidPrice, a.BestBidPrice, "BestBidPrice")
+	r.Equal(e.BestBidQty, a.BestBidQty, "BestBidQty")
+	r.Equal(e.BestAskPrice, a.BestAskPrice, "BestAskPrice")
+	r.Equal(e.BestAskQty, a.BestAskQty, "BestAskQty")
+}
