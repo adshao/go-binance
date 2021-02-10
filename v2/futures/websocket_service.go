@@ -119,18 +119,7 @@ type WsAllMarkPriceEvent []*WsMarkPriceEvent
 // WsAllMarkPriceHandler handle websocket that pushes price and funding rate for all symbol.
 type WsAllMarkPriceHandler func(event WsAllMarkPriceEvent)
 
-// WsAllMarkPriceServe serve websocket that pushes price and funding rate for all symbol.
-func WsAllMarkPriceServe(rate time.Duration, handler WsAllMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	var rateStr string
-	switch rate {
-	case 3 * time.Second:
-		rateStr = ""
-	case 1 * time.Second:
-		rateStr = "@1s"
-	default:
-		return nil, nil, errors.New("Invalid rate")
-	}
-	endpoint := fmt.Sprintf("%s/!markPrice@arr%s", getWsEndpoint(), rateStr)
+func wsAllMarkPriceServe(endpoint string, handler WsAllMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		var event WsAllMarkPriceEvent
@@ -142,6 +131,27 @@ func WsAllMarkPriceServe(rate time.Duration, handler WsAllMarkPriceHandler, errH
 		handler(event)
 	}
 	return wsServe(cfg, wsHandler, errHandler)
+}
+
+// WsAllMarkPriceServe serve websocket that pushes price and funding rate for all symbol.
+func WsAllMarkPriceServe(handler WsAllMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/!markPrice@arr", getWsEndpoint())
+	return wsAllMarkPriceServe(endpoint, handler, errHandler)
+}
+
+// WsAllMarkPriceServeWithRate serve websocket that pushes price and funding rate for all symbol and rate.
+func WsAllMarkPriceServeWithRate(rate time.Duration, handler WsAllMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	var rateStr string
+	switch rate {
+	case 3 * time.Second:
+		rateStr = ""
+	case 1 * time.Second:
+		rateStr = "@1s"
+	default:
+		return nil, nil, errors.New("Invalid rate")
+	}
+	endpoint := fmt.Sprintf("%s/!markPrice@arr%s", getWsEndpoint(), rateStr)
+	return wsAllMarkPriceServe(endpoint, handler, errHandler)
 }
 
 // WsKlineEvent define websocket kline event

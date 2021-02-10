@@ -184,7 +184,7 @@ func (s *websocketServiceTestSuite) TestMarkPriceServeWithInvalidRate() {
 	}
 }
 
-func (s *websocketServiceTestSuite) TestAllMarkPriceServe() {
+func (s *websocketServiceTestSuite) testAllMarkPriceServe(rate *time.Duration, expectedErr error, expectedServeCnt int) {
 	data := []byte(`[{
 		"e": "markPriceUpdate",
 		"E": 1562305380000,
@@ -194,11 +194,10 @@ func (s *websocketServiceTestSuite) TestAllMarkPriceServe() {
 		"r": "0.00038167",
 		"T": 1562306400000  
 	  }]`)
-	fakeErrMsg := "fake error"
-	s.mockWsServe(data, errors.New(fakeErrMsg))
-	defer s.assertWsServe()
+	s.mockWsServe(data, expectedErr)
+	defer s.assertWsServe(expectedServeCnt)
 
-	doneC, stopC, err := WsAllMarkPriceServe(time.Second, func(event WsAllMarkPriceEvent) {
+	handler := func(event WsAllMarkPriceEvent) {
 		e := WsAllMarkPriceEvent{{
 			Event:           "markPriceUpdate",
 			Time:            1562305380000,
@@ -209,14 +208,29 @@ func (s *websocketServiceTestSuite) TestAllMarkPriceServe() {
 			NextFundingTime: 1562306400000,
 		}}
 		s.assertWsMarkPriceEvent(e[0], event[0])
-	},
-		func(err error) {
-			s.r().EqualError(err, fakeErrMsg)
-		})
+	}
+	errHandler := func(err error) {}
 
-	s.r().NoError(err)
-	stopC <- struct{}{}
-	<-doneC
+	var doneC, stopC chan struct{}
+	var err error
+	if rate == nil {
+		doneC, stopC, err = WsAllMarkPriceServe(handler, errHandler)
+	} else {
+		doneC, stopC, err = WsAllMarkPriceServeWithRate(*rate, handler, errHandler)
+	}
+
+	if expectedErr == nil {
+		s.r().NoError(err)
+	} else {
+		s.r().EqualError(err, expectedErr.Error())
+	}
+
+	if stopC != nil {
+		stopC <- struct{}{}
+	}
+	if doneC != nil {
+		<-doneC
+	}
 }
 
 func (s *websocketServiceTestSuite) assertWsMarkPriceEvent(e, a *WsMarkPriceEvent) {
@@ -228,6 +242,32 @@ func (s *websocketServiceTestSuite) assertWsMarkPriceEvent(e, a *WsMarkPriceEven
 	r.Equal(e.IndexPrice, a.IndexPrice, "IndexPrice")
 	r.Equal(e.FundingRate, a.FundingRate, "FundingRate")
 	r.Equal(e.NextFundingTime, a.NextFundingTime, "NextFundingTime")
+}
+
+func (s *websocketServiceTestSuite) TestAllMarkPriceServe() {
+	s.testMarkPriceServe(nil, nil, 1)
+}
+
+func (s *websocketServiceTestSuite) TestAllMarkPriceServeWithValidRate() {
+	rate := 3 * time.Second
+	s.testMarkPriceServe(&rate, nil, 1)
+	rate = time.Second
+	s.testMarkPriceServe(&rate, nil, 2)
+}
+
+func (s *websocketServiceTestSuite) TestAllMarkPriceServeWithInvalidRate() {
+	randSrc := rand.NewSource(time.Now().UnixNano())
+	rand := rand.New(randSrc)
+	for {
+		rate := time.Duration(rand.Intn(10)) * time.Second
+		switch rate {
+		case 3 * time.Second:
+		case 1 * time.Second:
+		default:
+			s.testAllMarkPriceServe(&rate, errors.New("Invalid rate"), 0)
+			return
+		}
+	}
 }
 
 func (s *websocketServiceTestSuite) TestKlineServe() {
