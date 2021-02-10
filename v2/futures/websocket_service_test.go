@@ -245,14 +245,14 @@ func (s *websocketServiceTestSuite) assertWsMarkPriceEvent(e, a *WsMarkPriceEven
 }
 
 func (s *websocketServiceTestSuite) TestAllMarkPriceServe() {
-	s.testMarkPriceServe(nil, nil, 1)
+	s.testAllMarkPriceServe(nil, nil, 1)
 }
 
 func (s *websocketServiceTestSuite) TestAllMarkPriceServeWithValidRate() {
 	rate := 3 * time.Second
-	s.testMarkPriceServe(&rate, nil, 1)
+	s.testAllMarkPriceServe(&rate, nil, 1)
 	rate = time.Second
-	s.testMarkPriceServe(&rate, nil, 2)
+	s.testAllMarkPriceServe(&rate, nil, 2)
 }
 
 func (s *websocketServiceTestSuite) TestAllMarkPriceServeWithInvalidRate() {
