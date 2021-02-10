@@ -793,7 +793,7 @@ func (s *websocketServiceTestSuite) assertLiquidationOrderEvent(e, a *WsLiquidat
 	r.Equal(elo.TradeTime, alo.TradeTime, "TradeTime")
 }
 
-func (s *websocketServiceTestSuite) TestPartialDepthServe() {
+func (s *websocketServiceTestSuite) testPartialDepthServe(rate *time.Duration, expectedErr error, expectedServeCnt int) {
 	data := []byte(`{
 		"e": "depthUpdate", 
 		"E": 1571889248277, 
@@ -815,11 +815,10 @@ func (s *websocketServiceTestSuite) TestPartialDepthServe() {
 		  ]
 		]
 	  }`)
-	fakeErrMsg := "fake error"
-	s.mockWsServe(data, errors.New(fakeErrMsg))
-	defer s.assertWsServe()
+	s.mockWsServe(data, expectedErr)
+	defer s.assertWsServe(expectedServeCnt)
 
-	doneC, stopC, err := WsPartialDepthServe("BTCUSDT", 5, 100*time.Millisecond, func(event *WsDepthEvent) {
+	handler := func(event *WsDepthEvent) {
 		e := &WsDepthEvent{
 			Event:            "depthUpdate",
 			Time:             1571889248277,
@@ -832,17 +831,62 @@ func (s *websocketServiceTestSuite) TestPartialDepthServe() {
 			Asks:             []Ask{{Price: "7405.96", Quantity: "3.340"}},
 		}
 		s.assertDepthEvent(e, event)
-	},
-		func(err error) {
-			s.r().EqualError(err, fakeErrMsg)
-		})
+	}
+	errHandler := func(err error) {
+	}
 
-	s.r().NoError(err)
-	stopC <- struct{}{}
-	<-doneC
+	var doneC, stopC chan struct{}
+	var err error
+	if rate == nil {
+		doneC, stopC, err = WsPartialDepthServe("BTCUSDT", 5, handler, errHandler)
+	} else {
+		doneC, stopC, err = WsPartialDepthServeWithRate("BTCUSDT", 5, *rate, handler, errHandler)
+	}
+
+	if expectedErr == nil {
+		s.r().NoError(err)
+	} else {
+		s.r().EqualError(err, expectedErr.Error())
+	}
+
+	if stopC != nil {
+		stopC <- struct{}{}
+	}
+	if doneC != nil {
+		<-doneC
+	}
 }
 
-func (s *websocketServiceTestSuite) TestDiffDepthServe() {
+func (s *websocketServiceTestSuite) TestPartialDepthServe() {
+	s.testPartialDepthServe(nil, nil, 1)
+}
+
+func (s *websocketServiceTestSuite) TestPartialDepthServeWithValidRate() {
+	rate := 250 * time.Millisecond
+	s.testPartialDepthServe(&rate, nil, 1)
+	rate = 500 * time.Millisecond
+	s.testPartialDepthServe(&rate, nil, 2)
+	rate = 100 * time.Millisecond
+	s.testPartialDepthServe(&rate, nil, 3)
+}
+
+func (s *websocketServiceTestSuite) TestPartialDepthServeWithInvalidRate() {
+	randSrc := rand.NewSource(time.Now().UnixNano())
+	rand := rand.New(randSrc)
+	for {
+		rate := time.Duration(rand.Intn(100)*10) * time.Millisecond
+		switch rate {
+		case 250 * time.Millisecond:
+		case 500 * time.Millisecond:
+		case 100 * time.Millisecond:
+		default:
+			s.testPartialDepthServe(&rate, errors.New("Invalid rate"), 0)
+			return
+		}
+	}
+}
+
+func (s *websocketServiceTestSuite) testDiffDepthServe(rate *time.Duration, expectedErr error, expectedServeCnt int) {
 	data := []byte(`{
 		"e": "depthUpdate",
 		"E": 123456789,
@@ -864,11 +908,10 @@ func (s *websocketServiceTestSuite) TestDiffDepthServe() {
 		  ]
 		]
 	  }`)
-	fakeErrMsg := "fake error"
-	s.mockWsServe(data, errors.New(fakeErrMsg))
-	defer s.assertWsServe()
+	s.mockWsServe(data, expectedErr)
+	defer s.assertWsServe(expectedServeCnt)
 
-	doneC, stopC, err := WsPartialDepthServe("BTCUSDT", 5, 100*time.Millisecond, func(event *WsDepthEvent) {
+	handler := func(event *WsDepthEvent) {
 		e := &WsDepthEvent{
 			Event:            "depthUpdate",
 			Time:             123456789,
@@ -881,14 +924,30 @@ func (s *websocketServiceTestSuite) TestDiffDepthServe() {
 			Asks:             []Ask{{Price: "0.0026", Quantity: "100"}},
 		}
 		s.assertDepthEvent(e, event)
-	},
-		func(err error) {
-			s.r().EqualError(err, fakeErrMsg)
-		})
+	}
+	errHandler := func(err error) {
+	}
 
-	s.r().NoError(err)
-	stopC <- struct{}{}
-	<-doneC
+	var doneC, stopC chan struct{}
+	var err error
+	if rate == nil {
+		doneC, stopC, err = WsDiffDepthServe("BTCUSDT", handler, errHandler)
+	} else {
+		doneC, stopC, err = WsDiffDepthServeWithRate("BTCUSDT", *rate, handler, errHandler)
+	}
+
+	if expectedErr == nil {
+		s.r().NoError(err)
+	} else {
+		s.r().EqualError(err, expectedErr.Error())
+	}
+
+	if stopC != nil {
+		stopC <- struct{}{}
+	}
+	if doneC != nil {
+		<-doneC
+	}
 }
 
 func (s *websocketServiceTestSuite) assertDepthEvent(e, a *WsDepthEvent) {
@@ -907,6 +966,35 @@ func (s *websocketServiceTestSuite) assertDepthEvent(e, a *WsDepthEvent) {
 	for i, b := range e.Asks {
 		r.Equal(b.Price, a.Asks[i].Price, "Price")
 		r.Equal(b.Quantity, a.Asks[i].Quantity, "Quantity")
+	}
+}
+
+func (s *websocketServiceTestSuite) TestDiffDepthServe() {
+	s.testDiffDepthServe(nil, nil, 1)
+}
+
+func (s *websocketServiceTestSuite) TestDiffDepthServeWithValidRate() {
+	rate := 250 * time.Millisecond
+	s.testDiffDepthServe(&rate, nil, 1)
+	rate = 500 * time.Millisecond
+	s.testDiffDepthServe(&rate, nil, 2)
+	rate = 100 * time.Millisecond
+	s.testDiffDepthServe(&rate, nil, 3)
+}
+
+func (s *websocketServiceTestSuite) TestDiffDepthServeWithInvalidRate() {
+	randSrc := rand.NewSource(time.Now().UnixNano())
+	rand := rand.New(randSrc)
+	for {
+		rate := time.Duration(rand.Intn(100)*10) * time.Millisecond
+		switch rate {
+		case 250 * time.Millisecond:
+		case 500 * time.Millisecond:
+		case 100 * time.Millisecond:
+		default:
+			s.testDiffDepthServe(&rate, errors.New("Invalid rate"), 0)
+			return
+		}
 	}
 }
 
