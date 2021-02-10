@@ -78,18 +78,7 @@ type WsMarkPriceEvent struct {
 // WsMarkPriceHandler handle websocket that pushes price and funding rate for a single symbol.
 type WsMarkPriceHandler func(event *WsMarkPriceEvent)
 
-// WsMarkPriceServe serve websocket that pushes price and funding rate for a single symbol.
-func WsMarkPriceServe(symbol string, rate time.Duration, handler WsMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	var rateStr string
-	switch rate {
-	case 3 * time.Second:
-		rateStr = ""
-	case 1 * time.Second:
-		rateStr = "@1s"
-	default:
-		return nil, nil, errors.New("Invalid rate")
-	}
-	endpoint := fmt.Sprintf("%s/%s@markPrice%s", getWsEndpoint(), strings.ToLower(symbol), rateStr)
+func wsMarkPriceServe(endpoint string, handler WsMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		event := new(WsMarkPriceEvent)
@@ -101,6 +90,27 @@ func WsMarkPriceServe(symbol string, rate time.Duration, handler WsMarkPriceHand
 		handler(event)
 	}
 	return wsServe(cfg, wsHandler, errHandler)
+}
+
+// WsMarkPriceServe serve websocket that pushes price and funding rate for a single symbol.
+func WsMarkPriceServe(symbol string, handler WsMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/%s@markPrice", getWsEndpoint(), strings.ToLower(symbol))
+	return wsMarkPriceServe(endpoint, handler, errHandler)
+}
+
+// WsMarkPriceServeWithRate serve websocket that pushes price and funding rate for a single symbol and rate.
+func WsMarkPriceServeWithRate(symbol string, rate time.Duration, handler WsMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	var rateStr string
+	switch rate {
+	case 3 * time.Second:
+		rateStr = ""
+	case 1 * time.Second:
+		rateStr = "@1s"
+	default:
+		return nil, nil, errors.New("Invalid rate")
+	}
+	endpoint := fmt.Sprintf("%s/%s@markPrice%s", getWsEndpoint(), strings.ToLower(symbol), rateStr)
+	return wsMarkPriceServe(endpoint, handler, errHandler)
 }
 
 // WsAllMarkPriceEvent defines an array of websocket markPriceUpdate events.

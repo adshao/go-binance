@@ -2,6 +2,7 @@ package futures
 
 import (
 	"errors"
+	"math/rand"
 	"testing"
 	"time"
 
@@ -107,7 +108,7 @@ func (s *websocketServiceTestSuite) assertWsAggTradeEvent(e, a *WsAggTradeEvent)
 	r.Equal(e.Maker, a.Maker, "Maker")
 }
 
-func (s *websocketServiceTestSuite) TestMarkPriceServe() {
+func (s *websocketServiceTestSuite) testMarkPriceServe(rate *time.Duration, expectedErr error, expectedServeCnt int) {
 	data := []byte(`{
 		"e": "markPriceUpdate",
 		"E": 1562305380000,
@@ -117,11 +118,10 @@ func (s *websocketServiceTestSuite) TestMarkPriceServe() {
 		"r": "0.00038167",
 		"T": 1562306400000  
 	  }`)
-	fakeErrMsg := "fake error"
-	s.mockWsServe(data, errors.New(fakeErrMsg))
-	defer s.assertWsServe()
+	s.mockWsServe(data, expectedErr)
+	defer s.assertWsServe(expectedServeCnt)
 
-	doneC, stopC, err := WsMarkPriceServe("BTCUSDT", time.Second, func(event *WsMarkPriceEvent) {
+	handler := func(event *WsMarkPriceEvent) {
 		e := &WsMarkPriceEvent{
 			Event:           "markPriceUpdate",
 			Time:            1562305380000,
@@ -132,14 +132,56 @@ func (s *websocketServiceTestSuite) TestMarkPriceServe() {
 			NextFundingTime: 1562306400000,
 		}
 		s.assertWsMarkPriceEvent(e, event)
-	},
-		func(err error) {
-			s.r().EqualError(err, fakeErrMsg)
-		})
+	}
+	errHandler := func(err error) {
+	}
 
-	s.r().NoError(err)
-	stopC <- struct{}{}
-	<-doneC
+	var doneC, stopC chan struct{}
+	var err error
+	if rate == nil {
+		doneC, stopC, err = WsMarkPriceServe("BTCUSDT", handler, errHandler)
+	} else {
+		doneC, stopC, err = WsMarkPriceServeWithRate("BTCUSDT", *rate, handler, errHandler)
+	}
+
+	if expectedErr == nil {
+		s.r().NoError(err)
+	} else {
+		s.r().EqualError(err, expectedErr.Error())
+	}
+
+	if stopC != nil {
+		stopC <- struct{}{}
+	}
+	if doneC != nil {
+		<-doneC
+	}
+}
+
+func (s *websocketServiceTestSuite) TestMarkPriceServe() {
+	s.testMarkPriceServe(nil, nil, 1)
+}
+
+func (s *websocketServiceTestSuite) TestMarkPriceServeWithValidRate() {
+	rate := 3 * time.Second
+	s.testMarkPriceServe(&rate, nil, 1)
+	rate = time.Second
+	s.testMarkPriceServe(&rate, nil, 2)
+}
+
+func (s *websocketServiceTestSuite) TestMarkPriceServeWithInvalidRate() {
+	randSrc := rand.NewSource(time.Now().UnixNano())
+	rand := rand.New(randSrc)
+	for {
+		rate := time.Duration(rand.Intn(10)) * time.Second
+		switch rate {
+		case 3 * time.Second:
+		case 1 * time.Second:
+		default:
+			s.testMarkPriceServe(&rate, errors.New("Invalid rate"), 0)
+			return
+		}
+	}
 }
 
 func (s *websocketServiceTestSuite) TestAllMarkPriceServe() {
