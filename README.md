@@ -311,10 +311,24 @@ client.TimeOffset = 123
 
 ### Testnet
 
-You can use the testnet (only available for futures and delivery) by enabling the corresponding flag.
+You can use the testnet by enabling the corresponding flag.
 
-> Note that you can't use your regular Api and Secret keys for the testnet. You have to create an account on
-> the testnet website : [https://testnet.binancefuture.com/](https://testnet.binancefuture.com/).
+> Note that you can't use your regular API and Secret keys for the testnet. You have to create an account on
+> the testnet websites : [https://testnet.binancefuture.com/](https://testnet.binancefuture.com/) for futures and delivery
+> or [https://testnet.binance.vision/](https://testnet.binance.vision/) for the Spot Test Network.
+
+#### Spot
+
+Use the `binance.UseTestnet` flag before calling the client creation and the websockets methods.
+
+```go
+import (
+    "github.com/adshao/go-binance/v2"
+)
+
+binance.UseTestnet = true
+client := binance.NewClient(apiKey, secretKey)
+```
 
 #### Futures (usd(s)-m futures)
 

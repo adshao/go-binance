@@ -62,6 +62,15 @@ type SideEffectType string
 // FuturesTransferType define futures transfer type
 type FuturesTransferType int
 
+// Endpoints
+const (
+	baseAPIMainURL    = "https://api.binance.com"
+	baseAPITestnetURL = "https://testnet.binance.vision"
+)
+
+// UseTestnet switch all the API endpoints from production to the testnet
+var UseTestnet = false
+
 // Global enums
 const (
 	SideTypeBuy  SideType = "BUY"
@@ -153,6 +162,14 @@ func newJSON(data []byte) (j *simplejson.Json, err error) {
 	return j, nil
 }
 
+// getAPIEndpoint return the base endpoint of the Rest API according the UseTestnet flag
+func getAPIEndpoint() string {
+	if UseTestnet {
+		return baseAPITestnetURL
+	}
+	return baseAPIMainURL
+}
+
 // NewClient initialize an API client instance with API key and secret key.
 // You should always call this function before using this SDK.
 // Services will be created by the form client.NewXXXService().
@@ -160,7 +177,7 @@ func NewClient(apiKey, secretKey string) *Client {
 	return &Client{
 		APIKey:     apiKey,
 		SecretKey:  secretKey,
-		BaseURL:    "https://api.binance.com",
+		BaseURL:    getAPIEndpoint(),
 		UserAgent:  "Binance/golang",
 		HTTPClient: http.DefaultClient,
 		Logger:     log.New(os.Stderr, "Binance-golang ", log.LstdFlags),
