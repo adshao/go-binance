@@ -16,7 +16,6 @@ const (
 )
 
 var (
-	baseFutureURL = "wss://fstream.binance.com/ws"
 	// WebsocketTimeout is an interval for sending ping/pong messages if WebsocketKeepalive is enabled
 	WebsocketTimeout = time.Second * 60
 	// WebsocketKeepalive enables sending ping/pong messages to check the connection stability
@@ -323,16 +322,6 @@ type WsTradeEvent struct {
 // WsUserDataServe serve user data handler with listen key
 func WsUserDataServe(listenKey string, handler WsHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := fmt.Sprintf("%s/%s", getWsEndpoint(), listenKey)
-	cfg := newWsConfig(endpoint)
-	return wsServe(cfg, handler, errHandler)
-}
-
-// WsFutureUserDataServe serve user data handler with listen key
-func WsFutureUserDataServe(listenKey string, handler WsHandler, errHandler ErrHandler, wsConfig ...*WsConfig) (doneC, stopC chan struct{}, err error) {
-	if len(wsConfig) > 0 {
-		baseFutureURL = wsConfig[0].Endpoint
-	}
-	endpoint := fmt.Sprintf("%s/%s", baseFutureURL, listenKey)
 	cfg := newWsConfig(endpoint)
 	return wsServe(cfg, handler, errHandler)
 }

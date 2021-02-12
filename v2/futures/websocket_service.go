@@ -2,6 +2,7 @@ package futures
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -30,7 +31,6 @@ func getWsEndpoint() string {
 	return baseWsMainUrl
 }
 
-// WsUserDataServe serve user data handler with listen key
 // WsAggTradeEvent define websocket aggTrde event.
 type WsAggTradeEvent struct {
 	Event            string `json:"e"`
@@ -78,9 +78,7 @@ type WsMarkPriceEvent struct {
 // WsMarkPriceHandler handle websocket that pushes price and funding rate for a single symbol.
 type WsMarkPriceHandler func(event *WsMarkPriceEvent)
 
-// WsMarkPriceServe serve websocket that pushes price and funding rate for a single symbol.
-func WsMarkPriceServe(symbol string, handler WsMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	endpoint := fmt.Sprintf("%s/%s@markPrice", getWsEndpoint(), strings.ToLower(symbol))
+func wsMarkPriceServe(endpoint string, handler WsMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		event := new(WsMarkPriceEvent)
@@ -94,15 +92,34 @@ func WsMarkPriceServe(symbol string, handler WsMarkPriceHandler, errHandler ErrH
 	return wsServe(cfg, wsHandler, errHandler)
 }
 
+// WsMarkPriceServe serve websocket that pushes price and funding rate for a single symbol.
+func WsMarkPriceServe(symbol string, handler WsMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/%s@markPrice", getWsEndpoint(), strings.ToLower(symbol))
+	return wsMarkPriceServe(endpoint, handler, errHandler)
+}
+
+// WsMarkPriceServeWithRate serve websocket that pushes price and funding rate for a single symbol and rate.
+func WsMarkPriceServeWithRate(symbol string, rate time.Duration, handler WsMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	var rateStr string
+	switch rate {
+	case 3 * time.Second:
+		rateStr = ""
+	case 1 * time.Second:
+		rateStr = "@1s"
+	default:
+		return nil, nil, errors.New("Invalid rate")
+	}
+	endpoint := fmt.Sprintf("%s/%s@markPrice%s", getWsEndpoint(), strings.ToLower(symbol), rateStr)
+	return wsMarkPriceServe(endpoint, handler, errHandler)
+}
+
 // WsAllMarkPriceEvent defines an array of websocket markPriceUpdate events.
 type WsAllMarkPriceEvent []*WsMarkPriceEvent
 
 // WsAllMarkPriceHandler handle websocket that pushes price and funding rate for all symbol.
 type WsAllMarkPriceHandler func(event WsAllMarkPriceEvent)
 
-// WsAllMarkPriceServe serve websocket that pushes price and funding rate for all symbol.
-func WsAllMarkPriceServe(handler WsAllMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	endpoint := fmt.Sprintf("%s/!markPrice@arr", getWsEndpoint())
+func wsAllMarkPriceServe(endpoint string, handler WsAllMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		var event WsAllMarkPriceEvent
@@ -114,6 +131,27 @@ func WsAllMarkPriceServe(handler WsAllMarkPriceHandler, errHandler ErrHandler) (
 		handler(event)
 	}
 	return wsServe(cfg, wsHandler, errHandler)
+}
+
+// WsAllMarkPriceServe serve websocket that pushes price and funding rate for all symbol.
+func WsAllMarkPriceServe(handler WsAllMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/!markPrice@arr", getWsEndpoint())
+	return wsAllMarkPriceServe(endpoint, handler, errHandler)
+}
+
+// WsAllMarkPriceServeWithRate serve websocket that pushes price and funding rate for all symbol and rate.
+func WsAllMarkPriceServeWithRate(rate time.Duration, handler WsAllMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	var rateStr string
+	switch rate {
+	case 3 * time.Second:
+		rateStr = ""
+	case 1 * time.Second:
+		rateStr = "@1s"
+	default:
+		return nil, nil, errors.New("Invalid rate")
+	}
+	endpoint := fmt.Sprintf("%s/!markPrice@arr%s", getWsEndpoint(), rateStr)
+	return wsAllMarkPriceServe(endpoint, handler, errHandler)
 }
 
 // WsKlineEvent define websocket kline event
@@ -401,21 +439,50 @@ type WsDepthEvent struct {
 // WsDepthHandler handle websocket depth event
 type WsDepthHandler func(event *WsDepthEvent)
 
+func wsPartialDepthServe(symbol string, levels int, rate *time.Duration, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	if levels != 5 && levels != 10 && levels != 20 {
+		return nil, nil, errors.New("Invalid levels")
+	}
+	levelsStr := fmt.Sprintf("%d", levels)
+	return wsDepthServe(symbol, levelsStr, rate, handler, errHandler)
+}
+
 // WsPartialDepthServe serve websocket partial depth handler.
 func WsPartialDepthServe(symbol string, levels int, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	endpoint := fmt.Sprintf("%s/%s@depth%d", getWsEndpoint(), strings.ToLower(symbol), levels)
-	cfg := newWsConfig(endpoint)
-	return wsDepthServe(cfg, handler, errHandler)
+	return wsPartialDepthServe(symbol, levels, nil, handler, errHandler)
+}
+
+// WsPartialDepthServeWithRate serve websocket partial depth handler with rate.
+func WsPartialDepthServeWithRate(symbol string, levels int, rate time.Duration, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	return wsPartialDepthServe(symbol, levels, &rate, handler, errHandler)
 }
 
 // WsDiffDepthServe serve websocket diff. depth handler.
 func WsDiffDepthServe(symbol string, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	endpoint := fmt.Sprintf("%s/%s@depth", getWsEndpoint(), strings.ToLower(symbol))
-	cfg := newWsConfig(endpoint)
-	return wsDepthServe(cfg, handler, errHandler)
+	return wsDepthServe(symbol, "", nil, handler, errHandler)
 }
 
-func wsDepthServe(cfg *WsConfig, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+// WsDiffDepthServeWithRate serve websocket diff. depth handler with rate.
+func WsDiffDepthServeWithRate(symbol string, rate time.Duration, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	return wsDepthServe(symbol, "", &rate, handler, errHandler)
+}
+
+func wsDepthServe(symbol string, levels string, rate *time.Duration, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	var rateStr string
+	if rate != nil {
+		switch *rate {
+		case 250 * time.Millisecond:
+			rateStr = ""
+		case 500 * time.Millisecond:
+			rateStr = "@500ms"
+		case 100 * time.Millisecond:
+			rateStr = "@100ms"
+		default:
+			return nil, nil, errors.New("Invalid rate")
+		}
+	}
+	endpoint := fmt.Sprintf("%s/%s@depth%s%s", getWsEndpoint(), strings.ToLower(symbol), levels, rateStr)
+	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		j, err := newJSON(message)
 		if err != nil {
@@ -559,6 +626,105 @@ func WsCompositiveIndexServe(symbol string, handler WsCompositeIndexHandler, err
 	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		event := new(WsCompositeIndexEvent)
+		err := json.Unmarshal(message, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+// WsUserDataEvent define user data event
+type WsUserDataEvent struct {
+	Event               UserDataEventType     `json:"e"`
+	Time                int64                 `json:"E"`
+	CrossWalletBalance  string                `json:"cw"`
+	MarginCallPositions []WsPosition          `json:"p"`
+	TransactionTime     int64                 `json:"T"`
+	AccountUpdate       WsAccountUpdate       `json:"a"`
+	OrderTradeUpdate    WsOrderTradeUpdate    `json:"o"`
+	AccountConfigUpdate WsAccountConfigUpdate `json:"ac"`
+}
+
+// WsAccountUpdate define account update
+type WsAccountUpdate struct {
+	Reason    UserDataEventReasonType `json:"m"`
+	Balances  []WsBalance             `json:"B"`
+	Positions []WsPosition            `json:"P"`
+}
+
+// WsBalance define balance
+type WsBalance struct {
+	Asset              string `json:"a"`
+	Balance            string `json:"wb"`
+	CrossWalletBalance string `json:"cw"`
+}
+
+// WsPosition define position
+type WsPosition struct {
+	Symbol                    string           `json:"s"`
+	Side                      PositionSideType `json:"ps"`
+	Amount                    string           `json:"pa"`
+	MarginType                MarginType       `json:"mt"`
+	IsolatedWallet            string           `json:"iw"`
+	EntryPrice                string           `json:"ep"`
+	MarkPrice                 string           `json:"mp"`
+	UnrealizedPnL             string           `json:"up"`
+	AccumulatedRealized       string           `json:"cr"`
+	MaintenanceMarginRequired string           `json:"mm"`
+}
+
+// WsOrderTradeUpdate define order trade update
+type WsOrderTradeUpdate struct {
+	Symbol               string             `json:"s"`
+	ClientOrderID        string             `json:"c"`
+	Side                 SideType           `json:"S"`
+	Type                 OrderType          `json:"o"`
+	TimeInForce          TimeInForceType    `json:"f"`
+	OriginalQty          string             `json:"q"`
+	OriginalPrice        string             `json:"p"`
+	AveragePrice         string             `json:"ap"`
+	StopPrice            string             `json:"sp"`
+	ExecutionType        OrderExecutionType `json:"x"`
+	Status               OrderStatusType    `json:"X"`
+	ID                   int64              `json:"i"`
+	LastFilledQty        string             `json:"l"`
+	AccumulatedFilledQty string             `json:"z"`
+	LastFilledPrice      string             `json:"L"`
+	CommissionAsset      string             `json:"N"`
+	Commission           string             `json:"n"`
+	TradeTime            int64              `json:"T"`
+	TradeID              int64              `json:"t"`
+	BidsNotional         string             `json:"b"`
+	AsksNotional         string             `json:"a"`
+	IsMaker              bool               `json:"m"`
+	IsReduceOnly         bool               `json:"R"`
+	WorkingType          WorkingType        `json:"wt"`
+	OriginalType         OrderType          `json:"ot"`
+	PositionSide         PositionSideType   `json:"ps"`
+	IsClosingPosition    bool               `json:"cp"`
+	ActivationPrice      string             `json:"AP"`
+	CallbackRate         string             `json:"cr"`
+	RealizedPnL          string             `json:"rp"`
+}
+
+// WsAccountConfigUpdate define account config update
+type WsAccountConfigUpdate struct {
+	Symbol   string `json:"s"`
+	Leverage int64  `json:"l"`
+}
+
+// WsUserDataHandler handle WsUserDataEvent
+type WsUserDataHandler func(event *WsUserDataEvent)
+
+// WsUserDataServe serve user data handler with listen key
+func WsUserDataServe(listenKey string, handler WsUserDataHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/%s", getWsEndpoint(), listenKey)
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		event := new(WsUserDataEvent)
 		err := json.Unmarshal(message, event)
 		if err != nil {
 			errHandler(err)
