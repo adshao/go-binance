@@ -616,3 +616,8 @@ func (c *Client) NewListDustLogService() *ListDustLogService {
 func (c *Client) NewDustTransferService() *DustTransferService {
 	return &DustTransferService{c: c}
 }
+
+// NewListAllSwapPoolsService init list all swap pools service
+func (c *Client) NewListAllSwapPoolsService() *ListAllSwapPoolsService {
+	return &ListAllSwapPoolsService{c: c}
+}
