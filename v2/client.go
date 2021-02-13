@@ -621,3 +621,8 @@ func (c *Client) NewDustTransferService() *DustTransferService {
 func (c *Client) NewListAllSwapPoolsService() *ListAllSwapPoolsService {
 	return &ListAllSwapPoolsService{c: c}
 }
+
+// NewAddLiquidityService init list all swap pools service
+func (c *Client) NewAddLiquidityService() *AddLiquidityService {
+	return &AddLiquidityService{c: c}
+}
