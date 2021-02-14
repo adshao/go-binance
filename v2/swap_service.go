@@ -21,7 +21,7 @@ type ListAllSwapPoolsService struct {
 }
 
 // Do sends the request.
-func (s *ListAllSwapPoolsService) Do(ctx context.Context) (*ListAllSwapPoolsResponse, error) {
+func (s *ListAllSwapPoolsService) Do(ctx context.Context) (ListAllSwapPoolsResponse, error) {
 	r := &request{
 		method:   "GET",
 		endpoint: "/sapi/v1/bswap/pools",
@@ -31,8 +31,8 @@ func (s *ListAllSwapPoolsService) Do(ctx context.Context) (*ListAllSwapPoolsResp
 	if err != nil {
 		return nil, err
 	}
-	res := new(ListAllSwapPoolsResponse)
-	if err := json.Unmarshal(data, res); err != nil {
+	res := ListAllSwapPoolsResponse{}
+	if err := json.Unmarshal(data, &res); err != nil {
 		return nil, err
 	}
 	return res, nil
@@ -43,6 +43,43 @@ type ListAllSwapPoolsResponse []struct {
 	PoolID   int      `json:"poolId"`
 	PoolName string   `json:"poolName"`
 	Assets   []string `json:"assets"`
+}
+
+// ListLiquidityService gets liquidity information and user share of a pool.
+type ListLiquidityService struct {
+	c      *Client
+	poolID int64
+}
+
+// Do sends the request.
+func (s *ListLiquidityService) Do(ctx context.Context) (ListLiquidityResponse, error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/bswap/liquidity",
+		secType:  secTypeSigned,
+	}
+	data, err := s.c.callAPI(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+	res := ListLiquidityResponse{}
+	if err := json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// ListLiquidityResponse represents a response from ListLiquidityService.
+type ListLiquidityResponse []struct {
+	PoolID     int               `json:"poolId"`
+	PoolName   string            `json:"poolName"`
+	UpdateTime int64             `json:"updateTime"`
+	Liquidity  map[string]string `json:"liquidity"`
+	Share      struct {
+		ShareAmount     string            `json:"shareAmount"`
+		SharePercentage string            `json:"sharePercentage"`
+		Asset           map[string]string `json:"asset"`
+	} `json:"share"`
 }
 
 // AddLiquidityService adds liquidity into swap pool.
