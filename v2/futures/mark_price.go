@@ -48,6 +48,30 @@ type PremiumIndex struct {
 	Time            int64  `json:"time"`
 }
 
+// AllPremiumIndexService get premium index
+type AllPremiumIndexService struct {
+	c *Client
+}
+
+// Do send request
+func (s *AllPremiumIndexService) Do(ctx context.Context, opts ...RequestOption) (res []*PremiumIndex, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/fapi/v1/premiumIndex",
+		secType:  secTypeNone,
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = []*PremiumIndex{}
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
 // FundingRateService get funding rate
 type FundingRateService struct {
 	c         *Client
