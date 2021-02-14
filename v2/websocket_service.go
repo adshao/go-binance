@@ -272,7 +272,7 @@ func WsAggTradeServe(symbol string, handler WsAggTradeHandler, errHandler ErrHan
 
 // WsCombinedAggTradeServe is similar to WsAggTradeServe, but it handles multiple symbolx
 func WsCombinedAggTradeServe(symbols []string, handler WsAggTradeHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	endpoint := combinedBaseURL
+	endpoint := getCombinedEndpoint()
 	for s := range symbols {
 		endpoint += fmt.Sprintf("%s@aggTrade", strings.ToLower(symbols[s])) + "/"
 	}
