@@ -48,7 +48,13 @@ type ListAllSwapPoolsResponse []struct {
 // ListLiquidityService gets liquidity information and user share of a pool.
 type ListLiquidityService struct {
 	c      *Client
-	poolID int64
+	poolID *int
+}
+
+// PoolID sets the poolID parameter.
+func (s *ListLiquidityService) PoolID(v int) *ListLiquidityService {
+	s.poolID = &v
+	return s
 }
 
 // Do sends the request.
@@ -75,23 +81,26 @@ type ListLiquidityResponse []struct {
 	PoolName   string            `json:"poolName"`
 	UpdateTime int64             `json:"updateTime"`
 	Liquidity  map[string]string `json:"liquidity"`
-	Share      struct {
-		ShareAmount     string            `json:"shareAmount"`
-		SharePercentage string            `json:"sharePercentage"`
-		Asset           map[string]string `json:"asset"`
-	} `json:"share"`
+	Share      LiquidityShare    `json:"share"`
+}
+
+// LiquidityShare represents a user's liquidity status
+type LiquidityShare struct {
+	ShareAmount     string            `json:"shareAmount"`
+	SharePercentage string            `json:"sharePercentage"`
+	Asset           map[string]string `json:"asset"`
 }
 
 // AddLiquidityService adds liquidity into swap pool.
 type AddLiquidityService struct {
 	c        *Client
-	poolID   int64
+	poolID   int
 	asset    string
 	quantity float64
 }
 
 // PoolID sets the poolID parameter (MANDATORY).
-func (s *AddLiquidityService) PoolID(v int64) *AddLiquidityService {
+func (s *AddLiquidityService) PoolID(v int) *AddLiquidityService {
 	s.poolID = v
 	return s
 }
@@ -137,14 +146,14 @@ type AddLiquidityResponse struct {
 // RemoveLiquidityService removes liquidity from swap pool.
 type RemoveLiquidityService struct {
 	c           *Client
-	poolID      int64
+	poolID      int
 	removalType LiquidityRemovalType
 	asset       string
 	shareAmount float64
 }
 
 // PoolID sets the poolID parameter (MANDATORY).
-func (s *RemoveLiquidityService) PoolID(v int64) *RemoveLiquidityService {
+func (s *RemoveLiquidityService) PoolID(v int) *RemoveLiquidityService {
 	s.poolID = v
 	return s
 }
