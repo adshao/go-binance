@@ -622,7 +622,12 @@ func (c *Client) NewListAllSwapPoolsService() *ListAllSwapPoolsService {
 	return &ListAllSwapPoolsService{c: c}
 }
 
-// NewAddLiquidityService init list all swap pools service
+// NewAddLiquidityService init add liquidity service
 func (c *Client) NewAddLiquidityService() *AddLiquidityService {
 	return &AddLiquidityService{c: c}
+}
+
+// NewRemoveLiquidityService init remove liquidity service
+func (c *Client) NewRemoveLiquidityService() *RemoveLiquidityService {
+	return &RemoveLiquidityService{c: c}
 }
