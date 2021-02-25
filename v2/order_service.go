@@ -217,6 +217,12 @@ func (s *CreateOCOService) Quantity(quantity string) *CreateOCOService {
 	return s
 }
 
+// ListClientOrderID set listClientOrderID
+func (s *CreateOCOService) ListClientOrderID(listClientOrderID string) *CreateOCOService {
+	s.listClientOrderID = &listClientOrderID
+	return s
+}
+
 // LimitClientOrderID set limitClientOrderID
 func (s *CreateOCOService) LimitClientOrderID(limitClientOrderID string) *CreateOCOService {
 	s.limitClientOrderID = &limitClientOrderID
@@ -605,6 +611,68 @@ func (s *CancelOrderService) Do(ctx context.Context, opts ...RequestOption) (res
 		return nil, err
 	}
 	res = new(CancelOrderResponse)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// CancelOCOService cancel all active orders on the list order.
+type CancelOCOService struct {
+	c                 *Client
+	symbol            string
+	listClientOrderID string
+	orderListID       int64
+	newClientOrderID  string
+}
+
+// Symbol set symbol
+func (s *CancelOCOService) Symbol(symbol string) *CancelOCOService {
+	s.symbol = symbol
+	return s
+}
+
+// ListClientOrderID sets listClientOrderId
+func (s *CancelOCOService) ListClientOrderID(listClientOrderID string) *CancelOCOService {
+	s.listClientOrderID = listClientOrderID
+	return s
+}
+
+// OrderListID sets orderListId
+func (s *CancelOCOService) OrderListID(orderListID int64) *CancelOCOService {
+	s.orderListID = orderListID
+	return s
+}
+
+// NewClientOrderID sets newClientOrderId
+func (s *CancelOCOService) NewClientOrderID(newClientOrderID string) *CancelOCOService {
+	s.newClientOrderID = newClientOrderID
+	return s
+}
+
+// Do send request
+func (s *CancelOCOService) Do(ctx context.Context, opts ...RequestOption) (res *CancelOCOResponse, err error) {
+	r := &request{
+		method:   "DELETE",
+		endpoint: "/api/v3/orderList",
+		secType:  secTypeSigned,
+	}
+	r.setFormParam("symbol", s.symbol)
+	if s.listClientOrderID != "" {
+		r.setFormParam("listClientOrderId", s.listClientOrderID)
+	}
+	if s.orderListID != 0 {
+		r.setFormParam("orderListId", s.orderListID)
+	}
+	if s.newClientOrderID != "" {
+		r.setFormParam("newClientOrderId", s.newClientOrderID)
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(CancelOCOResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err

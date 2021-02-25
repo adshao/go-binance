@@ -587,6 +587,122 @@ func (s *orderServiceTestSuite) TestListOrders() {
 	s.assertOrderEqual(e, orders[0])
 }
 
+func (s *orderServiceTestSuite) TestCancelOCO() {
+	data := []byte(`{
+		"orderListId":1000,
+		"contingencyType":"OCO",
+		"listStatusType":"ALL_DONE",
+		"listOrderStatus":"ALL_DONE",
+		"listClientOrderId":"my-list-order-id",
+		"transactionTime":1614272133000,
+		"symbol":"BTCUSDT",
+		"orders":[
+			{"symbol":"BTCUSDT","orderId":1100,"clientOrderId":"stop-loss-order-id"},
+			{"symbol":"BTCUSDT","orderId":1010,"clientOrderId":"limit-maker-order-id"}
+		],
+		"orderReports":[
+			{
+				"symbol":"BTCUSDT",
+				"origClientOrderId":"stop-loss-order-id",
+				"orderId":1100,
+				"orderListId":1000,
+				"clientOrderId":"cancel-request-id",
+				"price":"50000.00000000",
+				"origQty":"0.00030000",
+				"executedQty":"0.00000000",
+				"cummulativeQuoteQty":"0.00000000",
+				"status":"CANCELED",
+				"timeInForce":"GTC",
+				"type":"STOP_LOSS_LIMIT",
+				"side":"SELL",
+				"stopPrice":"50000.00000000"
+			},
+			{
+				"symbol":"BTCUSDT",
+				"origClientOrderId":"limit-maker-order-id",
+				"orderId":1010,
+				"orderListId":1000,
+				"clientOrderId":"cancel-request-id",
+				"price":"52000.00000000",
+				"origQty":"0.00030000",
+				"executedQty":"0.00000000",
+				"cummulativeQuoteQty":"0.00000000",
+				"status":"CANCELED",
+				"timeInForce":"GTC",
+				"type":"LIMIT_MAKER",
+				"side":"SELL"
+			}
+		]
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	symbol := "BTCUSDT"
+	listClientOrderID := "my-list-order-id"
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setFormParams(params{
+			"symbol":            symbol,
+			"listClientOrderId": listClientOrderID,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.
+		NewCancelOCOService().
+		Symbol(symbol).
+		ListClientOrderID(listClientOrderID).
+		Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	e := &CancelOCOResponse{
+		OrderListID:       1000,
+		ContingencyType:   "OCO",
+		ListStatusType:    "ALL_DONE",
+		ListOrderStatus:   "ALL_DONE",
+		ListClientOrderID: "my-list-order-id",
+		TransactionTime:   1614272133000,
+		Symbol:            "BTCUSDT",
+		Orders: []*OCOOrder{
+			{Symbol: "BTCUSDT", OrderID: 1100, ClientOrderID: "stop-loss-order-id"},
+			{Symbol: "BTCUSDT", OrderID: 1010, ClientOrderID: "limit-maker-order-id"},
+		},
+		OrderReports: []*OCOOrderReport{
+			{
+				Symbol:                   "BTCUSDT",
+				OrigClientOrderID:        "stop-loss-order-id",
+				OrderID:                  1100,
+				OrderListID:              1000,
+				ClientOrderID:            "cancel-request-id",
+				Price:                    "50000.00000000",
+				OrigQuantity:             "0.00030000",
+				ExecutedQuantity:         "0.00000000",
+				CummulativeQuoteQuantity: "0.00000000",
+				Status:                   OrderStatusTypeCanceled,
+				TimeInForce:              TimeInForceTypeGTC,
+				Type:                     OrderTypeStopLossLimit,
+				Side:                     SideTypeSell,
+				StopPrice:                "50000.00000000",
+			},
+			{
+				Symbol:                   "BTCUSDT",
+				OrigClientOrderID:        "limit-maker-order-id",
+				OrderID:                  1010,
+				OrderListID:              1000,
+				ClientOrderID:            "cancel-request-id",
+				Price:                    "52000.00000000",
+				OrigQuantity:             "0.00030000",
+				ExecutedQuantity:         "0.00000000",
+				CummulativeQuoteQuantity: "0.00000000",
+				Status:                   OrderStatusTypeCanceled,
+				TimeInForce:              TimeInForceTypeGTC,
+				Type:                     OrderTypeLimitMaker,
+				Side:                     SideTypeSell,
+			},
+		},
+	}
+	s.assertCancelOCOResponseEqual(e, res)
+}
+
 func (s *orderServiceTestSuite) TestCancelOrder() {
 	data := []byte(`{
 		"symbol": "LTCBTC",
