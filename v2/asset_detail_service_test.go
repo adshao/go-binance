@@ -20,14 +20,14 @@ func (s *withdrawServiceTestSuite) TestGetAssetDetail() {
     "success": true,
     "assetDetail": {
 			"CTR": {
-				"minWithdrawAmount": "70.00000000",
+				"minWithdrawAmount": 70.00000000,
 				"depositStatus": false,
 				"withdrawFee": 35,
 				"withdrawStatus": true,
 				"depositTip": "Delisted, Deposit Suspended"
 			},
 			"SKY": {
-				"minWithdrawAmount": "0.02000000",
+				"minWithdrawAmount": 0.02000000,
 				"depositStatus": true,
 				"withdrawFee": 0.01,
 				"withdrawStatus": true
