@@ -33,7 +33,7 @@ func (s *GetAssetDetailService) Do(ctx context.Context) (assetDetails map[string
 
 // AssetDetail represents the detail of an asset
 type AssetDetail struct {
-	MinWithdrawAmount string  `json:"minWithdrawAmount"`
+	MinWithdrawAmount float64 `json:"minWithdrawAmount"`
 	DepositStatus     bool    `json:"depositStatus"`
 	WithdrawFee       float64 `json:"withdrawFee"`
 	WithdrawStatus    bool    `json:"withdrawStatus"`
