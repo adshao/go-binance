@@ -361,7 +361,7 @@ func (c *Client) NewGetAccountService() *GetAccountService {
 	return &GetAccountService{c: c}
 }
 
-// NetGetBalanceService init balance service
+// NewGetBalanceService init balance service
 func (c *Client) NewGetBalanceService() *GetBalanceService {
 	return &GetBalanceService{c: c}
 }
@@ -369,4 +369,29 @@ func (c *Client) NewGetBalanceService() *GetBalanceService {
 // NewGetPositionRiskService init getting position risk service
 func (c *Client) NewGetPositionRiskService() *GetPositionRiskService {
 	return &GetPositionRiskService{c: c}
+}
+
+// NewChangeLeverageService init change leverage service
+func (c *Client) NewChangeLeverageService() *ChangeLeverageService {
+	return &ChangeLeverageService{c: c}
+}
+
+// NewChangeMarginTypeService init change margin type service
+func (c *Client) NewChangeMarginTypeService() *ChangeMarginTypeService {
+	return &ChangeMarginTypeService{c: c}
+}
+
+// NewUpdatePositionMarginService init update position margin
+func (c *Client) NewUpdatePositionMarginService() *UpdatePositionMarginService {
+	return &UpdatePositionMarginService{c: c}
+}
+
+// NewChangePositionModeService init change position mode service
+func (c *Client) NewChangePositionModeService() *ChangePositionModeService {
+	return &ChangePositionModeService{c: c}
+}
+
+// NewGetPositionModeService init get position mode service
+func (c *Client) NewGetPositionModeService() *GetPositionModeService {
+	return &GetPositionModeService{c: c}
 }
