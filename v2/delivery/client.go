@@ -7,14 +7,15 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"github.com/adshao/go-binance/v2/common"
-	"github.com/bitly/go-simplejson"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"time"
+
+	"github.com/adshao/go-binance/v2/common"
+	"github.com/bitly/go-simplejson"
 )
 
 // SideType define side type of order
@@ -353,6 +354,16 @@ func (c *Client) NewListOrdersService() *ListOrdersService {
 // NewListLiquidationOrdersService init funding rate service
 func (c *Client) NewListLiquidationOrdersService() *ListLiquidationOrdersService {
 	return &ListLiquidationOrdersService{c: c}
+}
+
+// NewGetAccountService init account service
+func (c *Client) NewGetAccountService() *GetAccountService {
+	return &GetAccountService{c: c}
+}
+
+// NetGetBalanceService init balance service
+func (c *Client) NewGetBalanceService() *GetBalanceService {
+	return &GetBalanceService{c: c}
 }
 
 // NewGetPositionRiskService init getting position risk service

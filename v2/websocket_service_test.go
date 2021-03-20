@@ -509,6 +509,49 @@ func (s *websocketServiceTestSuite) TestWsAggTradeServe() {
 	<-doneC
 }
 
+func (s *websocketServiceTestSuite) TestWsCombinedAggTradeServe() {
+	data := []byte(`{
+	"stream":"ethbtc@aggTrade",
+	"data": {
+		"e": "aggTrade",
+		"E": 1499405254326,
+		"s": "ETHBTC",
+		"a": 70232,
+		"p": "0.10281118",
+		"q": "8.15632997",
+		"f": 77489,
+		"l": 77489,
+		"T": 1499405254324,
+		"m": false,
+		"M": true
+		}
+	}`)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+
+	doneC, stopC, err := WsCombinedAggTradeServe([]string{"ETHBTC"}, func(event *WsAggTradeEvent) {
+		e := &WsAggTradeEvent{
+			Event:                 "aggTrade",
+			Time:                  1499405254326,
+			Symbol:                "ETHBTC",
+			AggTradeID:            70232,
+			Price:                 "0.10281118",
+			Quantity:              "8.15632997",
+			FirstBreakdownTradeID: 77489,
+			LastBreakdownTradeID:  77489,
+			TradeTime:             1499405254324,
+			IsBuyerMaker:          false,
+		}
+		s.assertWsAggTradeEventEqual(e, event)
+	}, func(err error) {
+		s.r().EqualError(err, fakeErrMsg)
+	})
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
 func (s *websocketServiceTestSuite) assertWsAggTradeEventEqual(e, a *WsAggTradeEvent) {
 	r := s.r()
 	r.Equal(e.Event, a.Event, "Event")

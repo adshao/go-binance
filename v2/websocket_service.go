@@ -270,6 +270,42 @@ func WsAggTradeServe(symbol string, handler WsAggTradeHandler, errHandler ErrHan
 	return wsServe(cfg, wsHandler, errHandler)
 }
 
+// WsCombinedAggTradeServe is similar to WsAggTradeServe, but it handles multiple symbolx
+func WsCombinedAggTradeServe(symbols []string, handler WsAggTradeHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := getCombinedEndpoint()
+	for s := range symbols {
+		endpoint += fmt.Sprintf("%s@aggTrade", strings.ToLower(symbols[s])) + "/"
+	}
+	endpoint = endpoint[:len(endpoint)-1]
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		j, err := newJSON(message)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		stream := j.Get("stream").MustString()
+		data := j.Get("data").MustMap()
+
+		symbol := strings.Split(stream, "@")[0]
+
+		jsonData, _ := json.Marshal(data)
+
+		event := new(WsAggTradeEvent)
+		err = json.Unmarshal(jsonData, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		event.Symbol = strings.ToUpper(symbol)
+
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
 // WsAggTradeEvent define websocket aggregate trade event
 type WsAggTradeEvent struct {
 	Event                 string `json:"e"`
