@@ -43,4 +43,6 @@ type PositionRisk struct {
 	Symbol           string `json:"symbol"`
 	UnRealizedProfit string `json:"unRealizedProfit"`
 	PositionSide     string `json:"positionSide"`
+	Notional         string `json:"notional"`
+	IsolatedWallet   string `json:"isolatedWallet"`
 }
