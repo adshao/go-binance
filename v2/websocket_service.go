@@ -365,6 +365,43 @@ func WsUserDataServe(listenKey string, handler WsHandler, errHandler ErrHandler)
 // WsMarketStatHandler handle websocket that push single market statistics for 24hr
 type WsMarketStatHandler func(event *WsMarketStatEvent)
 
+// WsCombinedMarketStatServe is similar to WsMarketStatServe, but it handles multiple symbolx
+func WsCombinedMarketStatServe(symbols []string, handler WsMarketStatHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := getCombinedEndpoint()
+	for s := range symbols {
+		endpoint += fmt.Sprintf("%s@ticker", strings.ToLower(symbols[s])) + "/"
+	}
+	endpoint = endpoint[:len(endpoint)-1]
+	cfg := newWsConfig(endpoint)
+
+	wsHandler := func(message []byte) {
+		j, err := newJSON(message)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		stream := j.Get("stream").MustString()
+		data := j.Get("data").MustMap()
+
+		symbol := strings.Split(stream, "@")[0]
+
+		jsonData, _ := json.Marshal(data)
+
+		event := new(WsMarketStatEvent)
+		err = json.Unmarshal(jsonData, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		event.Symbol = strings.ToUpper(symbol)
+
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
 // WsMarketStatServe serve websocket that push 24hr statistics for single market every second
 func WsMarketStatServe(symbol string, handler WsMarketStatHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := fmt.Sprintf("%s/%s@ticker", getWsEndpoint(), strings.ToLower(symbol))
