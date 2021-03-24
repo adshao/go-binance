@@ -568,3 +568,100 @@ type LiquidationOrder struct {
 	Side             SideType        `json:"side"`
 	Time             int64           `json:"time"`
 }
+
+// ListUserLiquidationOrdersService lists user's liquidation orders
+type ListUserLiquidationOrdersService struct {
+	c             *Client
+	symbol        *string
+	autoCloseType ForceOrderCloseType
+	startTime     *int64
+	endTime       *int64
+	limit         *int
+}
+
+// Symbol set symbol
+func (s *ListUserLiquidationOrdersService) Symbol(symbol string) *ListUserLiquidationOrdersService {
+	s.symbol = &symbol
+	return s
+}
+
+// AutoCloseType set symbol
+func (s *ListUserLiquidationOrdersService) AutoCloseType(autoCloseType ForceOrderCloseType) *ListUserLiquidationOrdersService {
+	s.autoCloseType = autoCloseType
+	return s
+}
+
+// StartTime set startTime
+func (s *ListUserLiquidationOrdersService) StartTime(startTime int64) *ListUserLiquidationOrdersService {
+	s.startTime = &startTime
+	return s
+}
+
+// EndTime set endTime
+func (s *ListUserLiquidationOrdersService) EndTime(endTime int64) *ListUserLiquidationOrdersService {
+	s.endTime = &endTime
+	return s
+}
+
+// Limit set limit
+func (s *ListUserLiquidationOrdersService) Limit(limit int) *ListUserLiquidationOrdersService {
+	s.limit = &limit
+	return s
+}
+
+// Do send request
+func (s *ListUserLiquidationOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*UserLiquidationOrder, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/fapi/v1/forceOrders",
+		secType:  secTypeSigned,
+	}
+
+	r.setParam("autoCloseType", s.autoCloseType)
+	if s.symbol != nil {
+		r.setParam("symbol", *s.symbol)
+	}
+	if s.startTime != nil {
+		r.setParam("startTime", *s.startTime)
+	}
+	if s.endTime != nil {
+		r.setParam("endTime", *s.endTime)
+	}
+	if s.limit != nil {
+		r.setParam("limit", *s.limit)
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []*UserLiquidationOrder{}, err
+	}
+	res = make([]*UserLiquidationOrder, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return []*UserLiquidationOrder{}, err
+	}
+	return res, nil
+}
+
+// UserLiquidationOrder defines user's liquidation order
+type UserLiquidationOrder struct {
+	OrderId          int64            `json:"orderId"`
+	Symbol           string           `json:"symbol"`
+	Status           OrderStatusType  `json:"status"`
+	ClientOrderId    string           `json:"clientOrderId"`
+	Price            string           `json:"price"`
+	AveragePrice     string           `json:"avgPrice"`
+	OrigQuantity     string           `json:"origQty"`
+	ExecutedQuantity string           `json:"executedQty"`
+	CumQuote         string           `json:"cumQuote"`
+	TimeInForce      TimeInForceType  `json:"timeInForce"`
+	Type             OrderType        `json:"type"`
+	ReduceOnly       bool             `json:"reduceOnly"`
+	ClosePosition    bool             `json:"closePosition"`
+	Side             SideType         `json:"side"`
+	PositionSide     PositionSideType `json:"positionSide"`
+	StopPrice        string           `json:"stopPrice"`
+	WorkingType      WorkingType      `json:"workingType"`
+	OrigType         string           `json:"origType"`
+	Time             int64            `json:"time"`
+	UpdateTime       int64            `json:"updateTime"`
+}
