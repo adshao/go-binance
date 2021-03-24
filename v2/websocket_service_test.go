@@ -687,6 +687,74 @@ func (s *websocketServiceTestSuite) TestWsMarketStatServe() {
 	<-doneC
 }
 
+func (s *websocketServiceTestSuite) TestWsCombinedMarketStatServe() {
+	data := []byte(`{
+	"stream":"bnbbtc@ticker",
+	"data": {
+		"e": "24hrTicker",
+		"E": 123456789,
+		"s": "BNBBTC",
+		"p": "0.0015",
+		"P": "250.00",
+		"w": "0.0018",
+		"x": "0.0009",
+		"c": "0.0025",
+		"Q": "10",
+		"b": "0.0024",
+		"B": "10",
+		"a": "0.0026",
+		"A": "100",
+		"o": "0.0010",
+		"h": "0.0026",
+		"l": "0.0010",
+		"v": "10000",
+		"q": "18",
+	  "O": 0,
+		"C": 86400000,
+		"F": 0,
+		"L": 18150,
+		"n": 18151
+	}
+	}`)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+
+	doneC, stopC, err := WsCombinedMarketStatServe([]string{"BNBBTC"}, func(event *WsMarketStatEvent) {
+		e := &WsMarketStatEvent{
+			Event:              "24hrTicker",
+			Time:               123456789,
+			Symbol:             "BNBBTC",
+			PriceChange:        "0.0015",
+			PriceChangePercent: "250.00",
+			WeightedAvgPrice:   "0.0018",
+			PrevClosePrice:     "0.0009",
+			LastPrice:          "0.0025",
+			CloseQty:           "10",
+			BidPrice:           "0.0024",
+			BidQty:             "10",
+			AskPrice:           "0.0026",
+			AskQty:             "100",
+			OpenPrice:          "0.0010",
+			HighPrice:          "0.0026",
+			LowPrice:           "0.0010",
+			BaseVolume:         "10000",
+			QuoteVolume:        "18",
+			OpenTime:           0,
+			CloseTime:          86400000,
+			FirstID:            0,
+			LastID:             18150,
+			Count:              18151,
+		}
+		s.assertWsMarketStatEventEqual(e, event)
+	}, func(err error) {
+		s.r().EqualError(err, fakeErrMsg)
+	})
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
 func (s *websocketServiceTestSuite) assertWsMarketStatEventEqual(e, a *WsMarketStatEvent) {
 	r := s.r()
 	r.Equal(e.Event, a.Event, "Event")
