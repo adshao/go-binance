@@ -30,6 +30,7 @@ func (s *PremiumIndexService) Do(ctx context.Context, opts ...RequestOption) (re
 		r.setParam("symbol", *s.symbol)
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
+	data = common.ToJSONList(data)
 	if err != nil {
 		return []*PremiumIndex{}, err
 	}
