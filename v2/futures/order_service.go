@@ -21,6 +21,7 @@ type CreateOrderService struct {
 	workingType      *WorkingType
 	activationPrice  *string
 	callbackRate     *string
+	priceProtect     *bool
 	newOrderRespType NewOrderRespType
 	closePosition    *bool
 }
@@ -103,6 +104,12 @@ func (s *CreateOrderService) CallbackRate(callbackRate string) *CreateOrderServi
 	return s
 }
 
+// PriceProtect set priceProtect
+func (s *CreateOrderService) PriceProtect(priceProtect bool) *CreateOrderService {
+	s.priceProtect = &priceProtect
+	return s
+}
+
 // NewOrderResponseType set newOrderResponseType
 func (s *CreateOrderService) NewOrderResponseType(newOrderResponseType NewOrderRespType) *CreateOrderService {
 	s.newOrderRespType = newOrderResponseType
@@ -148,6 +155,9 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 	}
 	if s.workingType != nil {
 		m["workingType"] = *s.workingType
+	}
+	if s.priceProtect != nil {
+		m["priceProtect"] = *s.priceProtect
 	}
 	if s.activationPrice != nil {
 		m["activationPrice"] = *s.activationPrice
@@ -202,6 +212,7 @@ type CreateOrderResponse struct {
 	AvgPrice         string           `json:"avgPrice"`
 	PositionSide     PositionSideType `json:"positionSide"`
 	ClosePosition    bool             `json:"closePosition"`
+	PriceProtect     bool             `json:"priceProtect"`
 }
 
 // ListOpenOrdersService list opened orders
@@ -314,6 +325,7 @@ type Order struct {
 	AvgPrice         string           `json:"avgPrice"`
 	OrigType         string           `json:"origType"`
 	PositionSide     PositionSideType `json:"positionSide"`
+	PriceProtect     bool             `json:"priceProtect"`
 }
 
 // ListOrdersService all account orders; active, canceled, or filled
@@ -462,6 +474,7 @@ type CancelOrderResponse struct {
 	PriceRate        string           `json:"priceRate"`
 	OrigType         string           `json:"origType"`
 	PositionSide     PositionSideType `json:"positionSide"`
+	PriceProtect     bool             `json:"priceProtect"`
 }
 
 // CancelAllOpenOrdersService cancel all open orders
