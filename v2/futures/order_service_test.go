@@ -38,7 +38,8 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 		"activatePrice": "1000",
 		"priceRate": "0.1",
 		"positionSide": "BOTH",
-		"closePosition": false
+		"closePosition": false,
+		"priceProtect": true
 	}`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
@@ -55,6 +56,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 	activationPrice := "1000"
 	callbackRate := "0.1"
 	workingType := WorkingTypeContractPrice
+	priceProtect := true
 	newOrderResponseType := NewOrderRespTypeRESULT
 	closePosition := false
 	s.assertReq(func(r *request) {
@@ -72,6 +74,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 			"workingType":      workingType,
 			"activationPrice":  activationPrice,
 			"callbackRate":     callbackRate,
+			"priceProtect":     priceProtect,
 			"newOrderRespType": newOrderResponseType,
 			"closePosition":    closePosition,
 		})
@@ -81,7 +84,8 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).ClosePosition(closePosition).
 		ReduceOnly(reduceOnly).Price(price).NewClientOrderID(newClientOrderID).
 		StopPrice(stopPrice).WorkingType(workingType).ActivationPrice(activationPrice).
-		CallbackRate(callbackRate).PositionSide(positionSide).NewOrderResponseType(newOrderResponseType).
+		CallbackRate(callbackRate).PositionSide(positionSide).
+		PriceProtect(priceProtect).NewOrderResponseType(newOrderResponseType).
 		Do(newContext())
 	s.r().NoError(err)
 	e := &CreateOrderResponse{
@@ -104,6 +108,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 		ActivatePrice:    activationPrice,
 		PriceRate:        callbackRate,
 		ClosePosition:    false,
+		PriceProtect:     priceProtect,
 	}
 	s.assertCreateOrderResponseEqual(e, res)
 }
@@ -112,6 +117,7 @@ func (s *baseOrderTestSuite) assertCreateOrderResponseEqual(e, a *CreateOrderRes
 	r := s.r()
 	r.Equal(e.ClientOrderID, a.ClientOrderID, "ClientOrderID")
 	r.Equal(e.CumQuote, a.CumQuote, "CumQuote")
+	r.Equal(e.PriceProtect, a.PriceProtect, "PriceProtect")
 	r.Equal(e.ExecutedQuantity, a.ExecutedQuantity, "ExecutedQuantity")
 	r.Equal(e.OrderID, a.OrderID, "OrderID")
 	r.Equal(e.OrigQuantity, a.OrigQuantity, "OrigQuantity")
@@ -152,7 +158,8 @@ func (s *orderServiceTestSuite) TestListOpenOrders() {
 		  "workingType": "CONTRACT_PRICE",
 		  "activatePrice": "10000",
 		  "priceRate":"0.1",
-		  "positionSide":"BOTH"
+		  "positionSide":"BOTH",
+		  "priceProtect": false
 		}
 	]`)
 	s.mockDo(data, nil)
@@ -218,6 +225,7 @@ func (s *baseOrderTestSuite) assertOrderEqual(e, a *Order) {
 	r.Equal(e.ActivatePrice, a.ActivatePrice, "ActivatePrice")
 	r.Equal(e.PriceRate, a.PriceRate, "PriceRate")
 	r.Equal(e.PositionSide, a.PositionSide, "PositionSide")
+	r.Equal(e.PriceProtect, a.PriceProtect, "PriceProtect")
 }
 
 func (s *orderServiceTestSuite) TestGetOrder() {
@@ -240,7 +248,8 @@ func (s *orderServiceTestSuite) TestGetOrder() {
 		"workingType": "CONTRACT_PRICE",
 		"activatePrice": "10000",
 		"priceRate":"0.1",
-		"positionSide": "BOTH"
+		"positionSide": "BOTH",
+		"priceProtect": false
 	}`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
@@ -280,6 +289,7 @@ func (s *orderServiceTestSuite) TestGetOrder() {
 		ActivatePrice:    "10000",
 		PriceRate:        "0.1",
 		PositionSide:     "BOTH",
+		PriceProtect:     false,
 	}
 	s.assertOrderEqual(e, order)
 }
@@ -304,7 +314,8 @@ func (s *orderServiceTestSuite) TestListOrders() {
 		  "updateTime": 1499827319559,
 		  "workingType": "CONTRACT_PRICE",
 		  "activatePrice": "10000",
-		  "priceRate":"0.1"
+		  "priceRate":"0.1",
+		  "priceProtect": false
 		}
 	  ]`)
 	s.mockDo(data, nil)
@@ -350,6 +361,7 @@ func (s *orderServiceTestSuite) TestListOrders() {
 		WorkingType:      WorkingTypeContractPrice,
 		ActivatePrice:    "10000",
 		PriceRate:        "0.1",
+		PriceProtect:     false,
 	}
 	s.assertOrderEqual(e, orders[0])
 }
@@ -374,7 +386,8 @@ func (s *orderServiceTestSuite) TestCancelOrder() {
 		"workingType": "CONTRACT_PRICE",
 		"activatePrice": "10000",
 		"priceRate":"0.1",
-		"positionSide":"BOTH"
+		"positionSide":"BOTH",
+		"priceProtect": false
 	}`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
@@ -416,6 +429,7 @@ func (s *orderServiceTestSuite) TestCancelOrder() {
 		ActivatePrice:    "10000",
 		PriceRate:        "0.1",
 		PositionSide:     "BOTH",
+		PriceProtect:     false,
 	}
 	s.assertCancelOrderResponseEqual(e, res)
 }
@@ -441,6 +455,7 @@ func (s *orderServiceTestSuite) assertCancelOrderResponseEqual(e, a *CancelOrder
 	r.Equal(e.ActivatePrice, a.ActivatePrice, "ActivatePrice")
 	r.Equal(e.PriceRate, a.PriceRate, "PriceRate")
 	r.Equal(e.PositionSide, a.PositionSide, "PositionSide")
+	r.Equal(e.PriceProtect, a.PriceProtect, "PriceProtect")
 }
 
 func (s *orderServiceTestSuite) TestCancelAllOpenOrders() {
