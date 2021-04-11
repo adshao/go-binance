@@ -207,7 +207,7 @@ type WsDepthEvent struct {
 // WsKlineHandler handle websocket kline event
 type WsKlineHandler func(event *WsKlineEvent)
 
-// WsCombinedKlineServe
+// WsCombinedKlineServe is similar to WsKlineServe, but it handles multiple symbols with it interval
 func WsCombinedKlineServe(symbolIntervalPair map[string]string, handler WsKlineHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := getCombinedEndpoint()
 	for symbol, interval := range symbolIntervalPair {
