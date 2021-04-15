@@ -194,7 +194,7 @@ func (s *bswapServiceTestSuite) TestRemoveBSwapLiquidityService() {
 		s.assertRequestEqual(e, r)
 	})
 
-	res, err := s.client.NewRemoveBSwapLiquidityService().PoolID(poolID).RemovalType(removalType).Asset(asset).ShareAmount(shareAmount).
+	res, err := s.client.NewRemoveBSwapLiquidityService().PoolID(poolID).Type(removalType).Asset(asset).ShareAmount(shareAmount).
 		Do(newContext())
 	s.r().NoError(err)
 	e := &BSwapLiquidityTradeResponse{OperationId: 12341}

@@ -90,19 +90,19 @@ type AddBSwapLiquidityService struct {
 	quantity *float64
 }
 
-// PoolID set poolID
+// PoolID set poolID (MANDATORY)
 func (bs *AddBSwapLiquidityService) PoolID(poolID int64) *AddBSwapLiquidityService {
 	bs.poolID = &poolID
 	return bs
 }
 
-// Asset set asset
+// Asset set asset (MANDATORY)
 func (bs *AddBSwapLiquidityService) Asset(asset string) *AddBSwapLiquidityService {
 	bs.asset = &asset
 	return bs
 }
 
-// Quantity set quantity
+// Quantity set quantity (MANDATORY)
 func (bs *AddBSwapLiquidityService) Quantity(quantity float64) *AddBSwapLiquidityService {
 	bs.quantity = &quantity
 	return bs
@@ -144,25 +144,25 @@ type RemoveBSwapLiquidityService struct {
 	shareAmount *float64
 }
 
-// PoolID set poolID
+// PoolID set poolID (MANDATORY)
 func (bs *RemoveBSwapLiquidityService) PoolID(poolID int64) *RemoveBSwapLiquidityService {
 	bs.poolID = &poolID
 	return bs
 }
 
-// RemovalType set removalType (BSwapRemovalTypeSingle, BSwapRemovalTypeCombination)
-func (bs *RemoveBSwapLiquidityService) RemovalType(removalType BSwapRemovalType) *RemoveBSwapLiquidityService {
+// Type set removalType (BSwapRemovalTypeSingle, BSwapRemovalTypeCombination) (MANDATORY)
+func (bs *RemoveBSwapLiquidityService) Type(removalType BSwapRemovalType) *RemoveBSwapLiquidityService {
 	bs.removalType = &removalType
 	return bs
 }
 
-// Asset set asset
+// Asset set asset (MANDATORY)
 func (bs *RemoveBSwapLiquidityService) Asset(asset string) *RemoveBSwapLiquidityService {
 	bs.asset = &asset
 	return bs
 }
 
-// ShareAmount set shareAmount
+// ShareAmount set shareAmount (MANDATORY)
 func (bs *RemoveBSwapLiquidityService) ShareAmount(shareAmount float64) *RemoveBSwapLiquidityService {
 	bs.shareAmount = &shareAmount
 	return bs
