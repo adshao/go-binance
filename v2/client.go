@@ -62,6 +62,15 @@ type SideEffectType string
 // FuturesTransferType define futures transfer type
 type FuturesTransferType int
 
+// BSwapLiquidityOperationType define operation type
+type BSwapLiquidityOperationType string
+
+// BSwapRemovalType define removal type
+type BSwapRemovalType string
+
+// BSwapStatusType define status type
+type BSwapStatusType int8
+
 // Endpoints
 const (
 	baseAPIMainURL    = "https://api.binance.com"
@@ -139,6 +148,16 @@ const (
 	SideEffectTypeNoSideEffect SideEffectType = "NO_SIDE_EFFECT"
 	SideEffectTypeMarginBuy    SideEffectType = "MARGIN_BUY"
 	SideEffectTypeAutoRepay    SideEffectType = "AUTO_REPAY"
+
+	BSwapLiquidityOperationTypeAdd BSwapLiquidityOperationType = "ADD"
+	BSwapLiquidityOperationTypeRemove BSwapLiquidityOperationType = "REMOVE"
+
+	BSwapRemovalTypeSingle BSwapRemovalType = "SINGLE"
+	BSwapRemovalTypeCombination BSwapRemovalType = "COMBINATION"
+
+	BSwapStatusTypePending BSwapStatusType = 0
+	BSwapStatusTypeSuccess BSwapStatusType = 1
+	BSwapStatusTypeFailed BSwapStatusType = 2
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
@@ -620,4 +639,44 @@ func (c *Client) NewListDustLogService() *ListDustLogService {
 // NewDustTransferService init dust transfer service
 func (c *Client) NewDustTransferService() *DustTransferService {
 	return &DustTransferService{c: c}
+}
+
+// NewListBSwapPoolsService init List BSwap pool service
+func (c *Client) NewListBSwapPoolsService() *ListBSwapPoolsService {
+	return &ListBSwapPoolsService{c: c}
+}
+
+// NewGetBSwapPoolLiquidityInfoService init Get BSwap pool liquidity information service
+func (c *Client) NewGetBSwapPoolLiquidityInfoService() *GetBSwapPoolLiquidityInfoService {
+	return &GetBSwapPoolLiquidityInfoService{c: c}
+}
+
+// NewAddBSwapLiquidityService init Add BSwap liquidity service
+func (c *Client) NewAddBSwapLiquidityService() *AddBSwapLiquidityService {
+	return &AddBSwapLiquidityService{c: c}
+}
+
+// NewRemoveBSwapLiquidityService init Remove BSwap liquidity service
+func (c *Client) NewRemoveBSwapLiquidityService() *RemoveBSwapLiquidityService {
+	return &RemoveBSwapLiquidityService{c: c}
+}
+
+// NewGetBSwapLiquidityOperationRecordService init Get BSwap liquidity operation record service
+func (c *Client) NewGetBSwapLiquidityOperationRecordService() *GetBSwapLiquidityOperationRecordService {
+	return &GetBSwapLiquidityOperationRecordService{c: c}
+}
+
+// NewRequestBSwapQuoteService init Request BSwap quote service
+func (c *Client) NewRequestBSwapQuoteService() *RequestBSwapQuoteService {
+	return &RequestBSwapQuoteService{c: c}
+}
+
+// NewSwapBSwapService init swap BSwap service
+func (c *Client) NewSwapBSwapService() *SwapBSwapService {
+	return &SwapBSwapService{c: c}
+}
+
+// NewGetBSwapSwapHistoryService init Get BSwap swap history service
+func (c *Client) NewGetBSwapSwapHistoryService() *GetBSwapSwapHistoryService {
+	return &GetBSwapSwapHistoryService{c: c}
 }
