@@ -17,12 +17,13 @@ type BSwapPool struct {
 }
 
 // Do sends the request.
-func (bs *ListBSwapPoolsService) Do(ctx context.Context) ([]*BSwapPool, error) {
+func (bs *ListBSwapPoolsService) Do(ctx context.Context, opts ...RequestOption) ([]*BSwapPool, error) {
 	r := &request{
 		method:   "GET",
 		endpoint: "/sapi/v1/bswap/pools",
+		secType:  secTypeSigned,
 	}
-	data, err := bs.c.callAPI(ctx, r)
+	data, err := bs.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -41,17 +42,17 @@ type GetBSwapPoolLiquidityInfoService struct {
 }
 
 type BSwapPoolLiquidityInfo struct {
-	PoolID     int64              `json:"poolId"`
-	PoolName   string             `json:"poolName"`
-	UpdateTime int64              `json:"updateTime"`
-	Liquidity  map[string]float64 `json:"liquidity"`
-	Share      *BSwapShare        `json:"share"`
+	PoolID     int64             `json:"poolId"`
+	PoolName   string            `json:"poolName"`
+	UpdateTime int64             `json:"updateTime"`
+	Liquidity  map[string]string `json:"liquidity"`
+	Share      *BSwapShare       `json:"share"`
 }
 
 type BSwapShare struct {
-	ShareAmount     float64            `json:"shareAmount"`
-	SharePercentage float64            `json:"sharePercentage"`
-	Asset           map[string]float64 `json:"asset"`
+	ShareAmount     string            `json:"shareAmount"`
+	SharePercentage string            `json:"sharePercentage"`
+	Asset           map[string]string `json:"asset"`
 }
 
 // PoolID set poolID
@@ -87,7 +88,7 @@ type AddBSwapLiquidityService struct {
 	c        *Client
 	poolID   *int64
 	asset    *string
-	quantity *float64
+	quantity *string
 }
 
 // PoolID set poolID (MANDATORY)
@@ -103,7 +104,7 @@ func (bs *AddBSwapLiquidityService) Asset(asset string) *AddBSwapLiquidityServic
 }
 
 // Quantity set quantity (MANDATORY)
-func (bs *AddBSwapLiquidityService) Quantity(quantity float64) *AddBSwapLiquidityService {
+func (bs *AddBSwapLiquidityService) Quantity(quantity string) *AddBSwapLiquidityService {
 	bs.quantity = &quantity
 	return bs
 }
@@ -141,7 +142,7 @@ type RemoveBSwapLiquidityService struct {
 	poolID      *int64
 	removalType *BSwapRemovalType
 	asset       *string
-	shareAmount *float64
+	shareAmount *string
 }
 
 // PoolID set poolID (MANDATORY)
@@ -163,7 +164,7 @@ func (bs *RemoveBSwapLiquidityService) Asset(asset string) *RemoveBSwapLiquidity
 }
 
 // ShareAmount set shareAmount (MANDATORY)
-func (bs *RemoveBSwapLiquidityService) ShareAmount(shareAmount float64) *RemoveBSwapLiquidityService {
+func (bs *RemoveBSwapLiquidityService) ShareAmount(shareAmount string) *RemoveBSwapLiquidityService {
 	bs.shareAmount = &shareAmount
 	return bs
 }
@@ -300,33 +301,33 @@ type RequestBSwapQuoteService struct {
 	c          *Client
 	quoteAsset *string
 	baseAsset  *string
-	quoteQty   *float64
+	quoteQty   *string
 }
 
 type BSwapQuoteResponse struct {
 	QuoteAsset string  `json:"quoteAsset"`
 	BaseAsset  string  `json:"baseAsset"`
-	QuoteQty   float64 `json:"quoteQty"`
-	BaseQty    float64 `json:"baseQty"`
-	Price      float64 `json:"price"`
-	Slippage   float64 `json:"slippage"`
-	Fee        float64 `json:"fee"`
+	QuoteQty   string `json:"quoteQty"`
+	BaseQty    string `json:"baseQty"`
+	Price      string `json:"price"`
+	Slippage   string `json:"slippage"`
+	Fee        string `json:"fee"`
 }
 
-// QuoteAsset set quoteAsset
+// QuoteAsset set quoteAsset (MANDATORY)
 func (bs *RequestBSwapQuoteService) QuoteAsset(quoteAsset string) *RequestBSwapQuoteService {
 	bs.quoteAsset = &quoteAsset
 	return bs
 }
 
-// BaseAsset set baseAsset
+// BaseAsset set baseAsset (MANDATORY)
 func (bs *RequestBSwapQuoteService) BaseAsset(baseAsset string) *RequestBSwapQuoteService {
 	bs.baseAsset = &baseAsset
 	return bs
 }
 
-// QuoteQty set quoteQty
-func (bs *RequestBSwapQuoteService) QuoteQty(quoteQty float64) *RequestBSwapQuoteService {
+// QuoteQty set quoteQty (MANDATORY)
+func (bs *RequestBSwapQuoteService) QuoteQty(quoteQty string) *RequestBSwapQuoteService {
 	bs.quoteQty = &quoteQty
 	return bs
 }
@@ -363,7 +364,7 @@ type SwapBSwapService struct {
 	c          *Client
 	quoteAsset *string
 	baseAsset  *string
-	quoteQty   *float64
+	quoteQty   *string
 }
 
 // QuoteAsset set quoteAsset
@@ -379,7 +380,7 @@ func (bs *SwapBSwapService) BaseAsset(baseAsset string) *SwapBSwapService {
 }
 
 // QuoteQty set quoteQty
-func (bs *SwapBSwapService) QuoteQty(quoteQty float64) *SwapBSwapService {
+func (bs *SwapBSwapService) QuoteQty(quoteQty string) *SwapBSwapService {
 	bs.quoteQty = &quoteQty
 	return bs
 }
@@ -429,14 +430,14 @@ type GetBSwapSwapHistoryService struct {
 
 type BSwapSwapHistory struct {
 	SwapId     int64           `json:"swapId"`
-	SwapTime   float64         `json:"swapTime"`
+	SwapTime   int64         `json:"swapTime"`
 	Status     BSwapStatusType `json:"status"`
 	BaseAsset  string          `json:"baseAsset"`
 	QuoteAsset string          `json:"quoteAsset"`
-	QuoteQty   float64         `json:"quoteQty"`
-	BaseQty    float64         `json:"baseQty"`
-	Price      float64         `json:"price"`
-	Fee        float64         `json:"fee"`
+	QuoteQty   string         `json:"quoteQty"`
+	BaseQty    string         `json:"baseQty"`
+	Price      string         `json:"price"`
+	Fee        string         `json:"fee"`
 }
 
 // SwapId set swapId

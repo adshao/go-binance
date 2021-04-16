@@ -38,7 +38,7 @@ func (s *bswapServiceTestSuite) TestListBSwapPoolsService() {
 	s.mockDo(data, nil)
 	defer s.assertDo()
 	s.assertReq(func(r *request) {
-		e := newRequest()
+		e := newSignedRequest()
 		s.assertRequestEqual(e, r)
 	})
 
@@ -77,15 +77,15 @@ func (s *bswapServiceTestSuite) TestGetBSwapPoolLiquidityInfoService() {
 				"poolName": "BUSD/USDT",
 				"updateTime": 1565769342148,
 				"liquidity": {
-					"BUSD": 100000315.79,
-					"USDT": 99999245.54
+					"BUSD": "100000315.79",
+					"USDT": "99999245.54"
 				},
 				"share": {
-					"shareAmount": 12415,
-					"sharePercentage": 0.00006207,
+					"shareAmount": "12415",
+					"sharePercentage": "0.00006207",
 					"asset": {
-						"BUSD": 6207.02,
-						"USDT": 6206.95
+						"BUSD": "6207.02",
+						"USDT": "6206.95"
 					}
 				}
 			}
@@ -107,16 +107,16 @@ func (s *bswapServiceTestSuite) TestGetBSwapPoolLiquidityInfoService() {
 			PoolID:     2,
 			PoolName:   "BUSD/USDT",
 			UpdateTime: 1565769342148,
-			Liquidity: map[string]float64{
-				"BUSD": 100000315.79,
-				"USDT": 99999245.54,
+			Liquidity: map[string]string{
+				"BUSD": "100000315.79",
+				"USDT": "99999245.54",
 			},
 			Share: &BSwapShare{
-				ShareAmount:     12415,
-				SharePercentage: 0.00006207,
-				Asset: map[string]float64{
-					"BUSD": 6207.02,
-					"USDT": 6206.95,
+				ShareAmount:     "12415",
+				SharePercentage: "0.00006207",
+				Asset: map[string]string{
+					"BUSD": "6207.02",
+					"USDT": "6206.95",
 				},
 			},
 		},
@@ -149,7 +149,7 @@ func (s *bswapServiceTestSuite) TestAddBSwapLiquidityService() {
 
 	poolID := int64(1234)
 	asset := "USDT"
-	quantity := 12.3
+	quantity := "12.3"
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
 			"poolId":   poolID,
@@ -183,7 +183,7 @@ func (s *bswapServiceTestSuite) TestRemoveBSwapLiquidityService() {
 	poolID := int64(1234)
 	removalType := BSwapRemovalTypeSingle
 	asset := "USDT"
-	shareAmount := 12.3
+	shareAmount := "12.3"
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
 			"poolId":      poolID,
@@ -273,11 +273,11 @@ func (s *bswapServiceTestSuite) TestRequestBSwapQuoteService() {
 		{
 			"quoteAsset": "USDT",
 			"baseAsset": "BUSD",
-			"quoteQty": 300000,
-			"baseQty": 299975,
-			"price": 1.00008334,
-			"slippage": 0.00007245,
-			"fee": 120
+			"quoteQty": "300000",
+			"baseQty": "299975",
+			"price": "1.00008334",
+			"slippage": "0.00007245",
+			"fee": "120"
 		}
 	`)
 	s.mockDo(data, nil)
@@ -285,7 +285,7 @@ func (s *bswapServiceTestSuite) TestRequestBSwapQuoteService() {
 
 	quoteAsset := "USDT"
 	baseAsset := "BUSD"
-	quoteQty := float64(300000)
+	quoteQty := "300000"
 
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
@@ -302,11 +302,11 @@ func (s *bswapServiceTestSuite) TestRequestBSwapQuoteService() {
 	e := &BSwapQuoteResponse{
 		QuoteAsset: "USDT",
 		BaseAsset:  "BUSD",
-		QuoteQty:   300000,
-		BaseQty:    299975,
-		Price:      1.00008334,
-		Slippage:   0.00007245,
-		Fee:        120,
+		QuoteQty:   "300000",
+		BaseQty:    "299975",
+		Price:      "1.00008334",
+		Slippage:   "0.00007245",
+		Fee:        "120",
 	}
 	s.assertBSwapQuoteResponseEqual(e, res)
 }
@@ -333,7 +333,7 @@ func (s *bswapServiceTestSuite) TestSwapBSwapService() {
 
 	quoteAsset := "USDT"
 	baseAsset := "BUSD"
-	quoteQty := float64(300000)
+	quoteQty := "300000"
 
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
@@ -365,10 +365,10 @@ func (s *bswapServiceTestSuite) TestGetBSwapSwapHistoryService() {
 				"status": 0,
 				"quoteAsset": "USDT",
 				"baseAsset": "BUSD",
-				"quoteQty": 300000,
-				"baseQty": 299975,
-				"price": 1.00008334,
-				"fee": 120
+				"quoteQty": "300000",
+				"baseQty": "299975",
+				"price": "1.00008334",
+				"fee": "120"
 			}
 		]
     `)
@@ -408,10 +408,10 @@ func (s *bswapServiceTestSuite) TestGetBSwapSwapHistoryService() {
 			Status:     BSwapStatusTypePending,
 			QuoteAsset: "USDT",
 			BaseAsset:  "BUSD",
-			QuoteQty:   300000,
-			BaseQty:    299975,
-			Price:      1.00008334,
-			Fee:        120,
+			QuoteQty:   "300000",
+			BaseQty:    "299975",
+			Price:      "1.00008334",
+			Fee:        "120",
 		},
 	}
 	s.assertSwapHistoryEqual(e, res)
