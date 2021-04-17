@@ -92,7 +92,10 @@ func (s *accountServiceTestSuite) TestGetAccount() {
 				"entryPrice": "8950.5",
 				"maxNotional": "250000",
 				"positionSide": "BOTH",
-				"positionAmt": "0.436"
+				"positionAmt": "0.436",
+				"notional":"0.1234",
+				"isolatedWallet":"0.5678",
+				"updateTime":1618646402359
 			 }
 		 ],
 		 "totalInitialMargin": "0.33683000",
@@ -146,6 +149,9 @@ func (s *accountServiceTestSuite) TestGetAccount() {
 				MaxNotional:            "250000",
 				PositionSide:           "BOTH",
 				PositionAmt:            "0.436",
+				Notional:               "0.1234",
+				IsolatedWallet:         "0.5678",
+				UpdateTime:             1618646402359,
 			},
 		},
 		TotalInitialMargin:          "0.33683000",
@@ -203,5 +209,8 @@ func (s *accountServiceTestSuite) assertAccountEqual(e, a *Account) {
 		r.Equal(e.Positions[i].MaxNotional, a.Positions[i].MaxNotional, "MaxNotional")
 		r.Equal(e.Positions[i].PositionSide, a.Positions[i].PositionSide, "PositionSide")
 		r.Equal(e.Positions[i].PositionAmt, a.Positions[i].PositionAmt, "PositionAmt")
+		r.Equal(e.Positions[i].Notional, a.Positions[i].Notional, "Notional")
+		r.Equal(e.Positions[i].IsolatedWallet, a.Positions[i].IsolatedWallet, "IsolatedWallet")
+		r.Equal(e.Positions[i].UpdateTime, a.Positions[i].UpdateTime, "UpdateTime")
 	}
 }

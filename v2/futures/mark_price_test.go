@@ -143,7 +143,8 @@ func (s *getLeverageBracketServiceTestSuite) TestGetLeverageBracket() {
 				"initialLeverage": 75,
 				"notionalCap": 10000,
 				"notionalFloor": 0,
-				"maintMarginRatio": 0.0065
+				"maintMarginRatio": 0.0065,
+				"cum": 1.2345
 			}
 		]
 	}`)
@@ -173,6 +174,7 @@ func (s *getLeverageBracketServiceTestSuite) TestGetLeverageBracket() {
 					NotionalCap:      10000,
 					NotionalFloor:    0,
 					MaintMarginRatio: 0.0065,
+					Cum:              1.2345,
 				},
 			},
 		},
@@ -191,4 +193,5 @@ func (s *getLeverageBracketServiceTestSuite) assertLeverageBracketEqual(e, a *Le
 	r.Equal(e.Brackets[0].NotionalCap, a.Brackets[0].NotionalCap, "NotionalCap")
 	r.Equal(e.Brackets[0].NotionalFloor, a.Brackets[0].NotionalFloor, "NotionalFloor")
 	r.Equal(e.Brackets[0].MaintMarginRatio, a.Brackets[0].MaintMarginRatio, "MaintMarginRatio")
+	r.Equal(e.Brackets[0].Cum, a.Brackets[0].Cum, "Cum")
 }

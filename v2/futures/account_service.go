@@ -110,4 +110,7 @@ type AccountPosition struct {
 	MaxNotional            string           `json:"maxNotional"`
 	PositionSide           PositionSideType `json:"positionSide"`
 	PositionAmt            string           `json:"positionAmt"`
+	Notional               string           `json:"notional"`
+	IsolatedWallet         string           `json:"isolatedWallet"`
+	UpdateTime             int64            `json:"updateTime"`
 }
