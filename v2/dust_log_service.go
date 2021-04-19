@@ -24,19 +24,19 @@ type ListDustLogService struct {
 func (s *ListDustLogService) Do(ctx context.Context) (withdraws *DustLogResponseWrapper, err error) {
 	r := &request{
 		method:   "GET",
-		endpoint: "/wapi/v3/userAssetDribbletLog.html",
+		endpoint: "/sapi/v1/asset/dribblet",
 		secType:  secTypeSigned,
 	}
 	data, err := s.c.callAPI(ctx, r)
 	if err != nil {
 		return
 	}
-	res := new(DustLogResponseWrapper)
+	res := new(DustResult)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return
 	}
-	return res, nil
+	return &DustLogResponseWrapper{Success: true, Results: res}, nil
 }
 
 // DustLogResponseWrapper represents a response from ListDustLogService.
@@ -48,25 +48,25 @@ type DustLogResponseWrapper struct {
 // DustResult represents the result of a DustLog API Call.
 type DustResult struct {
 	Total uint8     `json:"total"` //Total counts of exchange
-	Rows  []DustRow `json:"rows"`
+	Rows  []DustRow `json:"userAssetDribblets"`
 }
 
 // DustRow represents one dust log row
 type DustRow struct {
-	TransferedTotal    string    `json:"transfered_total"`     //Total transfered BNB amount for this exchange.
-	ServiceChargeTotal string    `json:"service_charge_total"` //Total service charge amount for this exchange.
-	TranID             int       `json:"tran_id"`
-	Logs               []DustLog `json:"logs"` //Details of this exchange.
-	OperateTime        string    `json:"operate_time"`
+	TotalTransferedAmount    string    `json:"totalTransferedAmount"`    //Total transfered BNB amount for this exchange.
+	TotalServiceChargeAmount string    `json:"totalServiceChargeAmount"` //Total service charge amount for this exchange.
+	TranID                   int       `json:"transId"`
+	Logs                     []DustLog `json:"userAssetDribbletDetails"` //Details of this exchange.
+	OperateTime              int64     `json:"operateTime"`
 }
 
 // DustLog represents one dust log informations
 type DustLog struct {
-	TranID              int    `json:"tranId"`
+	TranID              int    `json:"transId"`
 	ServiceChargeAmount string `json:"serviceChargeAmount"`
 	UID                 string `json:"uid"`
 	Amount              string `json:"amount"`
-	OperateTime         string `json:"operateTime"` //The time of this exchange.
+	OperateTime         int64  `json:"operateTime"` //The time of this exchange.
 	TransferedAmount    string `json:"transferedAmount"`
 	FromAsset           string `json:"fromAsset"`
 }

@@ -72,7 +72,7 @@ func (s *CreateWithdrawService) Name(v string) *CreateWithdrawService {
 func (s *CreateWithdrawService) Do(ctx context.Context) (*CreateWithdrawResponse, error) {
 	r := &request{
 		method:   "POST",
-		endpoint: "/wapi/v3/withdraw.html",
+		endpoint: "/sapi/v1/capital/withdraw/apply",
 		secType:  secTypeSigned,
 	}
 	r.setParam("asset", s.asset)
@@ -155,7 +155,7 @@ func (s *ListWithdrawsService) EndTime(endTime int64) *ListWithdrawsService {
 func (s *ListWithdrawsService) Do(ctx context.Context) (withdraws []*Withdraw, err error) {
 	r := &request{
 		method:   "GET",
-		endpoint: "/wapi/v3/withdrawHistory.html",
+		endpoint: "/sapi/v1/capital/withdraw/history",
 		secType:  secTypeSigned,
 	}
 	if s.asset != nil {
@@ -174,12 +174,12 @@ func (s *ListWithdrawsService) Do(ctx context.Context) (withdraws []*Withdraw, e
 	if err != nil {
 		return
 	}
-	res := new(WithdrawHistoryResponse)
-	err = json.Unmarshal(data, res)
+	res := make([]*Withdraw, 0)
+	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return
 	}
-	return res.Withdraws, nil
+	return res, nil
 }
 
 // WithdrawHistoryResponse represents a response from ListWithdrawsService.
@@ -190,15 +190,17 @@ type WithdrawHistoryResponse struct {
 
 // Withdraw represents a single withdraw entry.
 type Withdraw struct {
-	ID              string  `json:"id"`
-	WithdrawOrderID string  `json:"withdrawOrderID"`
-	Amount          float64 `json:"amount"`
-	TransactionFee  float64 `json:"transactionFee"`
-	Address         string  `json:"address"`
-	AddressTag      string  `json:"addressTag"`
-	TxID            string  `json:"txId"`
-	Asset           string  `json:"asset"`
-	ApplyTime       int64   `json:"applyTime"`
-	Network         string  `json:"network"`
-	Status          int     `json:"status"`
+	ID              string `json:"id"`
+	WithdrawOrderID string `json:"withdrawOrderID"`
+	Amount          string `json:"amount"`
+	TransactionFee  string `json:"transactionFee"`
+	Coin            string `json:"coin"`
+	Address         string `json:"address"`
+	AddressTag      string `json:"addressTag"`
+	TxID            string `json:"txId"`
+	Asset           string `json:"asset"`
+	ApplyTime       string `json:"applyTime"`
+	Network         string `json:"network"`
+	Status          int    `json:"status"`
+	TransferType    int    `json:"transferType"`
 }

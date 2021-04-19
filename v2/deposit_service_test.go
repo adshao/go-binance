@@ -15,12 +15,11 @@ func TestDepositService(t *testing.T) {
 }
 
 func (s *depositServiceTestSuite) TestListDeposits() {
-	data := []byte(`
-	{
-		"depositList": [
+	data := []byte(`	
+		[
 			{
 				"insertTime": 1508198532000,
-				"amount": 0.04670582,
+				"amount": "0.04670582",
 				"asset": "ETH",
 				"address": "0x6915f16f8791d0a1cc2bf47c13a6b2a92000504b",
 				"txId": "0xdf33b22bdb2b28b1f75ccd201a4a4m6e7g83jy5fc5d5a9d1340961598cfcb0a1",
@@ -28,16 +27,14 @@ func (s *depositServiceTestSuite) TestListDeposits() {
 			},
 			{
 				"insertTime": 1508298532000,
-				"amount": 1000,
+				"amount": "1000",
 				"asset": "XMR",
 				"address": "463tWEBn5XZJSxLU34r6g7h8jtxuNcDbjLSjkn3XAXHCbLrTTErJrBWYgHJQyrCwkNgYvyV3z8zctJLPCZy24jvb3NiTcTJ",
 				"addressTag": "342341222",
 				"txId": "b3c6219639c8ae3f9cf010cdc24fw7f7yt8j1e063f9b4bd1a05cb44c4b6e2509",
 				"status": 1
 			}
-		],
-		"success": true
-	}
+		]	
 	`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
@@ -63,7 +60,7 @@ func (s *depositServiceTestSuite) TestListDeposits() {
 	r.Len(deposits, 2)
 	s.assertDepositEqual(&Deposit{
 		InsertTime: 1508198532000,
-		Amount:     0.04670582,
+		Amount:     "0.04670582",
 		Asset:      "ETH",
 		Address:    "0x6915f16f8791d0a1cc2bf47c13a6b2a92000504b",
 		AddressTag: "",
@@ -72,7 +69,7 @@ func (s *depositServiceTestSuite) TestListDeposits() {
 	}, deposits[0])
 	s.assertDepositEqual(&Deposit{
 		InsertTime: 1508298532000,
-		Amount:     1000.0,
+		Amount:     "1000.0",
 		Asset:      "XMR",
 		Address:    "463tWEBn5XZJSxLU34r6g7h8jtxuNcDbjLSjkn3XAXHCbLrTTErJrBWYgHJQyrCwkNgYvyV3z8zctJLPCZy24jvb3NiTcTJ",
 		AddressTag: "342341222",
@@ -85,7 +82,6 @@ func (s *depositServiceTestSuite) assertDepositEqual(e, a *Deposit) {
 	r := s.r()
 	r.Equal(e.InsertTime, a.InsertTime, "InsertTime")
 	r.Equal(e.Asset, a.Asset, "Asset")
-	r.InDelta(e.Amount, a.Amount, 0.0000000001, "Amount")
 	r.Equal(e.Status, a.Status, "Status")
 	r.Equal(e.TxID, a.TxID, "TxID")
 }
@@ -107,7 +103,7 @@ func (s *depositServiceTestSuite) TestGetDepositAddress() {
 	status := true
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
-			"asset":  asset,
+			"coin":   asset,
 			"status": status,
 		})
 		s.assertRequestEqual(e, r)

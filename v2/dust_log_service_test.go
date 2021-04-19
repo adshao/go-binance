@@ -27,64 +27,61 @@ func TestListDustLogService(t *testing.T) {
 func (s *listDustLogServiceTestSuite) TestListDustLog() {
 	data := []byte(`
 	{
-		"success": true, 
-		"results": {
 			"total": 2,
-			"rows": [
+			"userAssetDribblets": [
 				{
-					"transfered_total": "0.00132256",
-					"service_charge_total": "0.00002699",
-					"tran_id": 4359321,
-					"logs": [
+					"totalTransferedAmount": "0.00132256",
+					"totalServiceChargeAmount": "0.00002699",
+					"transId": 4359321,
+					"userAssetDribbletDetails": [
 						{
-							"tranId": 4359321,
+							"transId": 4359321,
 							"serviceChargeAmount": "0.000009",
 							"uid": "10000015",
 							"amount": "0.0009",
-							"operateTime": "2018-05-03 17:07:04",
+							"operateTime": 1618413101,
 							"transferedAmount": "0.000441",
 							"fromAsset": "USDT"
 						},
 						{
-							"tranId": 4359321,
+							"transId": 4359321,
 							"serviceChargeAmount": "0.00001799",
 							"uid": "10000015",
 							"amount": "0.0009",
-							"operateTime": "2018-05-03 17:07:04",
+							"operateTime": 1618413101,
 							"transferedAmount": "0.00088156",
 							"fromAsset": "ETH"
 						}
 					],
-					"operate_time": "2018-05-03 17:07:04"
+					"operateTime": 1618413101
 				},
 				{
-					"transfered_total": "0.00058795",
-					"service_charge_total": "0.000012",
-					"tran_id": 4357015,
-					"logs": [
+					"totalTransferedAmount": "0.00058795",
+					"totalServiceChargeAmount": "0.000012",
+					"transId": 4357015,
+					"userAssetDribbletDetails": [
 						{
-							"tranId": 4357015,
+							"transId": 4357015,
 							"serviceChargeAmount": "0.00001",
 							"uid": "10000015",
 							"amount": "0.001",
-							"operateTime": "2018-05-02 13:52:24",
+							"operateTime": 1618413101,
 							"transferedAmount": "0.00049",
 							"fromAsset": "USDT"
 						},
 						{
-							"tranId": 4357015,
+							"transId": 4357015,
 							"serviceChargeAmount": "0.000002",
 							"uid": "10000015",
 							"amount": "0.0001",
-							"operateTime": "2018-05-02 13:51:11",
+							"operateTime": 1618413101,
 							"transferedAmount": "0.00009795",
 							"fromAsset": "ETH"
 						}
 					],
-					"operate_time": "2018-05-02 13:51:11"
+					"operateTime": 1618413101
 				}
-			]
-		}
+			]		
 	}
 	`)
 	s.mockDo(data, nil)
@@ -104,16 +101,16 @@ func (s *listDustLogServiceTestSuite) TestListDustLog() {
 	s.Len(rows[1].Logs, 2)
 
 	s.assertDustRowEqual(&DustRow{
-		TransferedTotal:    "0.00132256",
-		ServiceChargeTotal: "0.00002699",
-		TranID:             4359321,
+		TotalTransferedAmount:    "0.00132256",
+		TotalServiceChargeAmount: "0.00002699",
+		TranID:                   4359321,
 		Logs: []DustLog{
 			{
 				TranID:              4359321,
 				ServiceChargeAmount: "0.000009",
 				UID:                 "10000015",
 				Amount:              "0.0009",
-				OperateTime:         "2018-05-03 17:07:04",
+				OperateTime:         1618413101,
 				TransferedAmount:    "0.000441",
 				FromAsset:           "USDT",
 			},
@@ -122,24 +119,24 @@ func (s *listDustLogServiceTestSuite) TestListDustLog() {
 				ServiceChargeAmount: "0.00001799",
 				UID:                 "10000015",
 				Amount:              "0.0009",
-				OperateTime:         "2018-05-03 17:07:04",
+				OperateTime:         1618413101,
 				TransferedAmount:    "0.00088156",
 				FromAsset:           "ETH",
 			},
 		},
-		OperateTime: "2018-05-03 17:07:04",
+		OperateTime: 1618413101,
 	}, &rows[0])
 	s.assertDustRowEqual(&DustRow{
-		TransferedTotal:    "0.00058795",
-		ServiceChargeTotal: "0.000012",
-		TranID:             4357015,
+		TotalTransferedAmount:    "0.00058795",
+		TotalServiceChargeAmount: "0.000012",
+		TranID:                   4357015,
 		Logs: []DustLog{
 			{
 				TranID:              4357015,
 				ServiceChargeAmount: "0.00001",
 				UID:                 "10000015",
 				Amount:              "0.001",
-				OperateTime:         "2018-05-02 13:52:24",
+				OperateTime:         1618413101,
 				TransferedAmount:    "0.00049",
 				FromAsset:           "USDT",
 			},
@@ -148,19 +145,19 @@ func (s *listDustLogServiceTestSuite) TestListDustLog() {
 				ServiceChargeAmount: "0.000002",
 				UID:                 "10000015",
 				Amount:              "0.0001",
-				OperateTime:         "2018-05-02 13:51:11",
+				OperateTime:         1618413101,
 				TransferedAmount:    "0.00009795",
 				FromAsset:           "ETH",
 			},
 		},
-		OperateTime: "2018-05-02 13:51:11",
+		OperateTime: 1618413101,
 	}, &rows[1])
 }
 
 func (s *listDustLogServiceTestSuite) assertDustRowEqual(e, a *DustRow) {
 	r := s.r()
-	r.Equal(e.TransferedTotal, a.TransferedTotal, `TransferedTotal`)
-	r.Equal(e.ServiceChargeTotal, a.ServiceChargeTotal, `ServiceChargeTotal`)
+	r.Equal(e.TotalTransferedAmount, a.TotalTransferedAmount, `TransferedTotal`)
+	r.Equal(e.TotalServiceChargeAmount, a.TotalServiceChargeAmount, `ServiceChargeTotal`)
 	r.Equal(e.TranID, a.TranID, `TranID`)
 	s.assertDustLogEqual(&e.Logs[0], &a.Logs[0])
 	s.assertDustLogEqual(&e.Logs[1], &a.Logs[1])

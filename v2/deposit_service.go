@@ -46,7 +46,7 @@ func (s *ListDepositsService) EndTime(endTime int64) *ListDepositsService {
 func (s *ListDepositsService) Do(ctx context.Context) (deposits []*Deposit, err error) {
 	r := &request{
 		method:   "GET",
-		endpoint: "/wapi/v3/depositHistory.html",
+		endpoint: "/sapi/v1/capital/deposit/hisrec",
 		secType:  secTypeSigned,
 	}
 	if s.asset != nil {
@@ -66,12 +66,12 @@ func (s *ListDepositsService) Do(ctx context.Context) (deposits []*Deposit, err 
 	if err != nil {
 		return
 	}
-	res := new(DepositHistoryResponse)
-	err = json.Unmarshal(data, res)
+	res := make([]*Deposit, 0)
+	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return
 	}
-	return res.Deposits, nil
+	return res, nil
 }
 
 // DepositHistoryResponse represents a response from ListDepositsService.
@@ -82,13 +82,17 @@ type DepositHistoryResponse struct {
 
 // Deposit represents a single deposit entry.
 type Deposit struct {
-	InsertTime int64   `json:"insertTime"`
-	Amount     float64 `json:"amount"`
-	Asset      string  `json:"asset"`
-	Address    string  `json:"address"`
-	AddressTag string  `json:"addressTag"`
-	TxID       string  `json:"txId"`
-	Status     int     `json:"status"`
+	InsertTime   int64  `json:"insertTime"`
+	TransferType int64  `json:"transferType"`
+	ConfirmTimes string `json:"confirmTimes"`
+	Amount       string `json:"amount"`
+	Coin         string `json:"coin"`
+	Network      string `json:"network"`
+	Asset        string `json:"asset"`
+	Address      string `json:"address"`
+	AddressTag   string `json:"addressTag"`
+	TxID         string `json:"txId"`
+	Status       int    `json:"status"`
 }
 
 // GetDepositsAddressService retrieves the details of a deposit address.
@@ -116,10 +120,10 @@ func (s *GetDepositsAddressService) Status(v bool) *GetDepositsAddressService {
 func (s *GetDepositsAddressService) Do(ctx context.Context) (*GetDepositAddressResponse, error) {
 	r := &request{
 		method:   "GET",
-		endpoint: "/wapi/v3/depositAddress.html",
+		endpoint: "/sapi/v1/capital/deposit/address",
 		secType:  secTypeSigned,
 	}
-	r.setParam("asset", s.asset)
+	r.setParam("coin", s.asset)
 	if v := s.status; v != nil {
 		r.setParam("status", *v)
 	}
@@ -144,4 +148,5 @@ type GetDepositAddressResponse struct {
 	AddressTag string `json:"addressTag"`
 	Asset      string `json:"asset"`
 	URL        string `json:"url"`
+	Coin       string `json:"coin"`
 }
