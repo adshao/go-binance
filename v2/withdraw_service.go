@@ -159,7 +159,7 @@ func (s *ListWithdrawsService) Do(ctx context.Context) (withdraws []*Withdraw, e
 		secType:  secTypeSigned,
 	}
 	if s.asset != nil {
-		r.setParam("asset", *s.asset)
+		r.setParam("coin", *s.asset)
 	}
 	if s.status != nil {
 		r.setParam("status", *s.status)
