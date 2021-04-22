@@ -175,4 +175,5 @@ type Bracket struct {
 	NotionalCap      float64 `json:"notionalCap"`
 	NotionalFloor    float64 `json:"notionalFloor"`
 	MaintMarginRatio float64 `json:"maintMarginRatio"`
+	Cum              float64 `json:"cum"`
 }
