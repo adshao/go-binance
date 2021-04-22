@@ -149,7 +149,7 @@ func (s *bswapServiceTestSuite) TestAddBSwapLiquidityService() {
 
 	poolID := int64(1234)
 	asset := "USDT"
-	quantity := "12.3"
+	quantity := 12.3
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
 			"poolId":   poolID,
@@ -183,7 +183,7 @@ func (s *bswapServiceTestSuite) TestRemoveBSwapLiquidityService() {
 	poolID := int64(1234)
 	removalType := BSwapRemovalTypeSingle
 	asset := "USDT"
-	shareAmount := "12.3"
+	shareAmount := 12.3
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
 			"poolId":      poolID,
@@ -285,7 +285,7 @@ func (s *bswapServiceTestSuite) TestRequestBSwapQuoteService() {
 
 	quoteAsset := "USDT"
 	baseAsset := "BUSD"
-	quoteQty := "300000"
+	quoteQty := float64(300000)
 
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
@@ -333,7 +333,7 @@ func (s *bswapServiceTestSuite) TestSwapBSwapService() {
 
 	quoteAsset := "USDT"
 	baseAsset := "BUSD"
-	quoteQty := "300000"
+	quoteQty := float64(300000)
 
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{

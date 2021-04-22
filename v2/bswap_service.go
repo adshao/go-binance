@@ -88,7 +88,7 @@ type AddBSwapLiquidityService struct {
 	c        *Client
 	poolID   *int64
 	asset    *string
-	quantity *string
+	quantity *float64
 }
 
 // PoolID set poolID (MANDATORY)
@@ -104,7 +104,7 @@ func (bs *AddBSwapLiquidityService) Asset(asset string) *AddBSwapLiquidityServic
 }
 
 // Quantity set quantity (MANDATORY)
-func (bs *AddBSwapLiquidityService) Quantity(quantity string) *AddBSwapLiquidityService {
+func (bs *AddBSwapLiquidityService) Quantity(quantity float64) *AddBSwapLiquidityService {
 	bs.quantity = &quantity
 	return bs
 }
@@ -142,7 +142,7 @@ type RemoveBSwapLiquidityService struct {
 	poolID      *int64
 	removalType *BSwapRemovalType
 	asset       *string
-	shareAmount *string
+	shareAmount *float64
 }
 
 // PoolID set poolID (MANDATORY)
@@ -164,7 +164,7 @@ func (bs *RemoveBSwapLiquidityService) Asset(asset string) *RemoveBSwapLiquidity
 }
 
 // ShareAmount set shareAmount (MANDATORY)
-func (bs *RemoveBSwapLiquidityService) ShareAmount(shareAmount string) *RemoveBSwapLiquidityService {
+func (bs *RemoveBSwapLiquidityService) ShareAmount(shareAmount float64) *RemoveBSwapLiquidityService {
 	bs.shareAmount = &shareAmount
 	return bs
 }
@@ -301,7 +301,7 @@ type RequestBSwapQuoteService struct {
 	c          *Client
 	quoteAsset *string
 	baseAsset  *string
-	quoteQty   *string
+	quoteQty   *float64
 }
 
 type BSwapQuoteResponse struct {
@@ -327,7 +327,7 @@ func (bs *RequestBSwapQuoteService) BaseAsset(baseAsset string) *RequestBSwapQuo
 }
 
 // QuoteQty set quoteQty (MANDATORY)
-func (bs *RequestBSwapQuoteService) QuoteQty(quoteQty string) *RequestBSwapQuoteService {
+func (bs *RequestBSwapQuoteService) QuoteQty(quoteQty float64) *RequestBSwapQuoteService {
 	bs.quoteQty = &quoteQty
 	return bs
 }
@@ -364,7 +364,7 @@ type SwapBSwapService struct {
 	c          *Client
 	quoteAsset *string
 	baseAsset  *string
-	quoteQty   *string
+	quoteQty   *float64
 }
 
 // QuoteAsset set quoteAsset
@@ -380,7 +380,7 @@ func (bs *SwapBSwapService) BaseAsset(baseAsset string) *SwapBSwapService {
 }
 
 // QuoteQty set quoteQty
-func (bs *SwapBSwapService) QuoteQty(quoteQty string) *SwapBSwapService {
+func (bs *SwapBSwapService) QuoteQty(quoteQty float64) *SwapBSwapService {
 	bs.quoteQty = &quoteQty
 	return bs
 }
