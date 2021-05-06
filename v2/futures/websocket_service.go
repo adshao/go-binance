@@ -10,8 +10,10 @@ import (
 
 // Endpoints
 const (
-	baseWsMainUrl    = "wss://fstream.binance.com/ws"
-	baseWsTestnetUrl = "wss://stream.binancefuture.com/ws"
+	baseWsMainUrl          = "wss://fstream.binance.com/ws"
+	baseWsTestnetUrl       = "wss://stream.binancefuture.com/ws"
+	baseCombinedMainURL    = "wss://fstream.binance.com/stream?streams="
+	baseCombinedTestnetURL = "wss://stream.binancefuture.com/stream?streams="
 )
 
 var (
@@ -29,6 +31,14 @@ func getWsEndpoint() string {
 		return baseWsTestnetUrl
 	}
 	return baseWsMainUrl
+}
+
+// getCombinedEndpoint return the base endpoint of the combined stream according the UseTestnet flag
+func getCombinedEndpoint() string {
+	if UseTestnet {
+		return baseCombinedTestnetURL
+	}
+	return baseCombinedMainURL
 }
 
 // WsAggTradeEvent define websocket aggTrde event.
@@ -197,6 +207,41 @@ func WsKlineServe(symbol string, interval string, handler WsKlineHandler, errHan
 			errHandler(err)
 			return
 		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+// WsCombinedKlineServe is similar to WsKlineServe, but it handles multiple symbols with it interval
+func WsCombinedKlineServe(symbolIntervalPair map[string]string, handler WsKlineHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := getCombinedEndpoint()
+	for symbol, interval := range symbolIntervalPair {
+		endpoint += fmt.Sprintf("%s@kline_%s", strings.ToLower(symbol), interval) + "/"
+	}
+	endpoint = endpoint[:len(endpoint)-1]
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		j, err := newJSON(message)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		stream := j.Get("stream").MustString()
+		data := j.Get("data").MustMap()
+
+		symbol := strings.Split(stream, "@")[0]
+
+		jsonData, _ := json.Marshal(data)
+
+		event := new(WsKlineEvent)
+		err = json.Unmarshal(jsonData, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		event.Symbol = strings.ToUpper(symbol)
+
 		handler(event)
 	}
 	return wsServe(cfg, wsHandler, errHandler)
