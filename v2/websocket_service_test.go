@@ -261,7 +261,7 @@ func (s *websocketServiceTestSuite) TestDepthServe() {
 			Event:         "depthUpdate",
 			Time:          1499404630606,
 			Symbol:        "ETHBTC",
-			UpdateID:      7913455,
+			LastUpdateID:  7913455,
 			FirstUpdateID: 7913452,
 			Bids: []Bid{
 				{
@@ -334,7 +334,7 @@ func (s *websocketServiceTestSuite) TestDepthServe100Ms() {
 			Event:         "depthUpdate",
 			Time:          1499404630606,
 			Symbol:        "ETHBTC",
-			UpdateID:      7913455,
+			LastUpdateID:  7913455,
 			FirstUpdateID: 7913452,
 			Bids: []Bid{
 				{
@@ -371,7 +371,7 @@ func (s *websocketServiceTestSuite) assertWsDepthEventEqual(e, a *WsDepthEvent) 
 	r.Equal(e.Event, a.Event, "Event")
 	r.Equal(e.Time, a.Time, "Time")
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
-	r.Equal(e.UpdateID, a.UpdateID, "UpdateID")
+	r.Equal(e.LastUpdateID, a.LastUpdateID, "UpdateID")
 	r.Equal(e.FirstUpdateID, a.FirstUpdateID, "FirstUpdateID")
 	for i := 0; i < len(e.Bids); i++ {
 		r.Equal(e.Bids[i].Price, a.Bids[i].Price, "Price")
