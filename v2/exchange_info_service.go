@@ -7,7 +7,21 @@ import (
 
 // ExchangeInfoService exchange info service
 type ExchangeInfoService struct {
-	c *Client
+	c       *Client
+	symbol  string
+	symbols []string
+}
+
+// Symbol set symbol
+func (s *ExchangeInfoService) Symbol(symbol string) *ExchangeInfoService {
+	s.symbol = symbol
+	return s
+}
+
+// Symbols set symbol
+func (s *ExchangeInfoService) Symbols(symbols ...string) *ExchangeInfoService {
+	s.symbols = symbols
+	return s
 }
 
 // Do send request
@@ -17,6 +31,14 @@ func (s *ExchangeInfoService) Do(ctx context.Context, opts ...RequestOption) (re
 		endpoint: "/api/v3/exchangeInfo",
 		secType:  secTypeNone,
 	}
+	m := params{}
+	if s.symbol != "" {
+		m["symbol"] = s.symbol
+	}
+	if len(s.symbols) != 0 {
+		m["symbols"] = s.symbols
+	}
+	r.setParams(m)
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err

@@ -58,11 +58,16 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 	}`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
+	symbol := "ETHBTC"
+	symbols := []string{"ETHBTC", "LTCBTC"}
 	s.assertReq(func(r *request) {
-		e := newRequest()
+		e := newRequest().setParams(map[string]interface{}{
+			"symbol":  symbol,
+			"symbols": symbols,
+		})
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewExchangeInfoService().Do(newContext())
+	res, err := s.client.NewExchangeInfoService().Symbol(symbol).Symbols(symbols...).Do(newContext())
 	s.r().NoError(err)
 	ei := &ExchangeInfo{
 		Timezone:   "UTC",
