@@ -2,6 +2,8 @@ package binance
 
 import (
 	"context"
+
+	"github.com/adshao/go-binance/v2/common"
 )
 
 // DepthService show depth info
@@ -71,14 +73,8 @@ type DepthResponse struct {
 	Asks         []Ask `json:"asks"`
 }
 
-// Bid define bid info with price and quantity
-type Bid struct {
-	Price    string
-	Quantity string
-}
+// Ask is a type alias for PriceLevel.
+type Ask = common.PriceLevel
 
-// Ask define ask info with price and quantity
-type Ask struct {
-	Price    string
-	Quantity string
-}
+// Bid is a type alias for PriceLevel.
+type Bid = common.PriceLevel

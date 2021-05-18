@@ -1,13 +1,9 @@
 package delivery
 
-// Bid define bid info with price and quantity
-type Bid struct {
-	Price    string
-	Quantity string
-}
+import "github.com/adshao/go-binance/v2/common"
 
-// Ask define ask info with price and quantity
-type Ask struct {
-	Price    string
-	Quantity string
-}
+// Ask is a type alias for PriceLevel.
+type Ask = common.PriceLevel
+
+// Bid is a type alias for PriceLevel.
+type Bid = common.PriceLevel

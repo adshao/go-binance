@@ -168,7 +168,7 @@ func wsDepthServe(endpoint string, handler WsDepthHandler, errHandler ErrHandler
 		event.Event = j.Get("e").MustString()
 		event.Time = j.Get("E").MustInt64()
 		event.Symbol = j.Get("s").MustString()
-		event.UpdateID = j.Get("u").MustInt64()
+		event.LastUpdateID = j.Get("u").MustInt64()
 		event.FirstUpdateID = j.Get("U").MustInt64()
 		bidsLen := len(j.Get("b").MustArray())
 		event.Bids = make([]Bid, bidsLen)
@@ -198,7 +198,7 @@ type WsDepthEvent struct {
 	Event         string `json:"e"`
 	Time          int64  `json:"E"`
 	Symbol        string `json:"s"`
-	UpdateID      int64  `json:"u"`
+	LastUpdateID  int64  `json:"u"`
 	FirstUpdateID int64  `json:"U"`
 	Bids          []Bid  `json:"b"`
 	Asks          []Ask  `json:"a"`
