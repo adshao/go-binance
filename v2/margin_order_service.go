@@ -11,7 +11,8 @@ type CreateMarginOrderService struct {
 	symbol           string
 	side             SideType
 	orderType        OrderType
-	quantity         string
+	quantity         *string
+	quoteOrderQty    *string
 	price            *string
 	stopPrice        *string
 	newClientOrderID *string
@@ -54,7 +55,13 @@ func (s *CreateMarginOrderService) TimeInForce(timeInForce TimeInForceType) *Cre
 
 // Quantity set quantity
 func (s *CreateMarginOrderService) Quantity(quantity string) *CreateMarginOrderService {
-	s.quantity = quantity
+	s.quantity = &quantity
+	return s
+}
+
+// QuoteOrderQty set quoteOrderQty
+func (s *CreateMarginOrderService) QuoteOrderQty(quoteOrderQty string) *CreateMarginOrderService {
+	s.quoteOrderQty = &quoteOrderQty
 	return s
 }
 
@@ -102,12 +109,16 @@ func (s *CreateMarginOrderService) Do(ctx context.Context, opts ...RequestOption
 		secType:  secTypeSigned,
 	}
 	m := params{
-		"symbol":   s.symbol,
-		"side":     s.side,
-		"type":     s.orderType,
-		"quantity": s.quantity,
+		"symbol": s.symbol,
+		"side":   s.side,
+		"type":   s.orderType,
 	}
-
+	if s.quantity != nil {
+		m["quantity"] = *s.quantity
+	}
+	if s.quoteOrderQty != nil {
+		m["quoteOrderQty"] = *s.quoteOrderQty
+	}
 	if s.isIsolated != nil {
 		if *s.isIsolated {
 			m["isIsolated"] = "TRUE"
