@@ -251,6 +251,9 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 	body := &bytes.Buffer{}
 	bodyString := r.form.Encode()
 	header := http.Header{}
+	if r.header != nil {
+		header = r.header.Clone()
+	}
 	if bodyString != "" {
 		header.Set("Content-Type", "application/x-www-form-urlencoded")
 		body = bytes.NewBufferString(bodyString)
