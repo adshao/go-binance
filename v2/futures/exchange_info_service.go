@@ -111,6 +111,11 @@ type MaxNumAlgoOrdersFilter struct {
 	Limit int64 `json:"limit"`
 }
 
+// MinNotionalFilter define min notional filter of symbol
+type MinNotionalFilter struct {
+	Notional string `json:"notional"`
+}
+
 // LotSizeFilter return lot size filter of symbol
 func (s *Symbol) LotSizeFilter() *LotSizeFilter {
 	for _, filter := range s.Filters {
@@ -212,6 +217,20 @@ func (s *Symbol) MaxNumAlgoOrdersFilter() *MaxNumAlgoOrdersFilter {
 			f := &MaxNumAlgoOrdersFilter{}
 			if i, ok := filter["limit"]; ok {
 				f.Limit = int64(i.(float64))
+			}
+			return f
+		}
+	}
+	return nil
+}
+
+// MinNotionalFilter return min notional filter of symbol
+func (s *Symbol) MinNotionalFilter() *MinNotionalFilter {
+	for _, filter := range s.Filters {
+		if filter["filterType"].(string) == string(SymbolFilterTypeMinNotional) {
+			f := &MinNotionalFilter{}
+			if i, ok := filter["notional"]; ok {
+				f.Notional = i.(string)
 			}
 			return f
 		}
