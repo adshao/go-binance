@@ -326,6 +326,7 @@ type Order struct {
 	OrigType         string           `json:"origType"`
 	PositionSide     PositionSideType `json:"positionSide"`
 	PriceProtect     bool             `json:"priceProtect"`
+	ClosePosition    bool             `json:"closePosition"`
 }
 
 // ListOrdersService all account orders; active, canceled, or filled
