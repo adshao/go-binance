@@ -249,7 +249,8 @@ func (s *orderServiceTestSuite) TestGetOrder() {
 		"activatePrice": "10000",
 		"priceRate":"0.1",
 		"positionSide": "BOTH",
-		"priceProtect": false
+		"priceProtect": false,
+		"closePosition": true
 	}`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
@@ -290,6 +291,7 @@ func (s *orderServiceTestSuite) TestGetOrder() {
 		PriceRate:        "0.1",
 		PositionSide:     "BOTH",
 		PriceProtect:     false,
+		ClosePosition:    true,
 	}
 	s.assertOrderEqual(e, order)
 }
@@ -460,7 +462,7 @@ func (s *orderServiceTestSuite) assertCancelOrderResponseEqual(e, a *CancelOrder
 
 func (s *orderServiceTestSuite) TestCancelAllOpenOrders() {
 	data := []byte(`{
-		"code": "200", 
+		"code": "200",
 		"msg": "The operation of cancel all open order is done."
 	}`)
 	s.mockDo(data, nil)
