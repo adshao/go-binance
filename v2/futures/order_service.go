@@ -3,6 +3,8 @@ package futures
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"strings"
 )
 
 // CreateOrderService create order
@@ -503,6 +505,60 @@ func (s *CancelAllOpenOrdersService) Do(ctx context.Context, opts ...RequestOpti
 		return err
 	}
 	return nil
+}
+
+// CancelMultiplesOrdersService cancel a list of orders
+type CancelMultiplesOrdersService struct {
+	c                     *Client
+	symbol                string
+	orderIDList           []int64
+	origClientOrderIDList []string
+}
+
+// Symbol set symbol
+func (s *CancelMultiplesOrdersService) Symbol(symbol string) *CancelMultiplesOrdersService {
+	s.symbol = symbol
+	return s
+}
+
+// OrderID set orderID
+func (s *CancelMultiplesOrdersService) OrderIDList(orderIDList []int64) *CancelMultiplesOrdersService {
+	s.orderIDList = orderIDList
+	return s
+}
+
+// OrigClientOrderID set origClientOrderID
+func (s *CancelMultiplesOrdersService) OrigClientOrderIDList(origClientOrderIDList []string) *CancelMultiplesOrdersService {
+	s.origClientOrderIDList = origClientOrderIDList
+	return s
+}
+
+// Do send request
+func (s *CancelMultiplesOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*CancelOrderResponse, err error) {
+	r := &request{
+		method:   "DELETE",
+		endpoint: "/fapi/v1/batchOrders",
+		secType:  secTypeSigned,
+	}
+	r.setFormParam("symbol", s.symbol)
+	if s.orderIDList != nil {
+		// convert a slice of integers to a string e.g. [1 2 3] => "[1,2,3]"
+		orderIDListString := strings.Join(strings.Fields(fmt.Sprint(s.orderIDList)), ",")
+		r.setFormParam("orderIdList", orderIDListString)
+	}
+	if s.origClientOrderIDList != nil {
+		r.setFormParam("origClientOrderIdList", s.origClientOrderIDList)
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = make([]*CancelOrderResponse, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return []*CancelOrderResponse{}, err
+	}
+	return res, nil
 }
 
 // ListLiquidationOrdersService list liquidation orders

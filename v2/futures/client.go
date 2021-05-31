@@ -406,6 +406,11 @@ func (c *Client) NewCancelAllOpenOrdersService() *CancelAllOpenOrdersService {
 	return &CancelAllOpenOrdersService{c: c}
 }
 
+// NewCancelMultipleOrdersService init cancel multiple orders service
+func (c *Client) NewCancelMultipleOrdersService() *CancelMultiplesOrdersService {
+	return &CancelMultiplesOrdersService{c: c}
+}
+
 // NewListOpenOrdersService init list open orders service
 func (c *Client) NewListOpenOrdersService() *ListOpenOrdersService {
 	return &ListOpenOrdersService{c: c}
