@@ -733,7 +733,9 @@ func (s *GetMaxBorrowableService) Do(ctx context.Context, opts ...RequestOption)
 		secType:  secTypeSigned,
 	}
 	r.setParam("asset", s.asset)
-	r.setParam("isolatedSymbol", s.isolatedSymbol)
+	if s.isolatedSymbol != "" {
+		r.setParam("isolatedSymbol", s.isolatedSymbol)
+	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
