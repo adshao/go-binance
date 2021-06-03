@@ -27,7 +27,7 @@ func (s *TickBookTickerService) Pair(pair string) *TickBookTickerService {
 	return s
 }
 
-func (s *TickBookTickerService) Do(ctx context.Context, opts ...RequestOption) (res []BookTicker, err error) {
+func (s *TickBookTickerService) Do(ctx context.Context, opts ...RequestOption) (res []*BookTicker, err error) {
 	r := &request{
 		method:   "GET",
 		endpoint: "/dapi/v1/ticker/bookTicker",
@@ -41,7 +41,7 @@ func (s *TickBookTickerService) Do(ctx context.Context, opts ...RequestOption) (
 	if err != nil {
 		return nil, err
 	}
-	res = make([]BookTicker, 0)
+	res = make([]*BookTicker, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return nil, err
