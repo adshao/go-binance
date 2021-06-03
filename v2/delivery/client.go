@@ -398,3 +398,7 @@ func (c *Client) NewChangePositionModeService() *ChangePositionModeService {
 func (c *Client) NewGetPositionModeService() *GetPositionModeService {
 	return &GetPositionModeService{c: c}
 }
+
+func (c *Client) NewTickerBookTickerService() *TickBookTickerService {
+	return &TickBookTickerService{c: c}
+}
