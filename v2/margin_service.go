@@ -64,9 +64,10 @@ type TransactionResponse struct {
 
 // MarginLoanService apply for a loan
 type MarginLoanService struct {
-	c      *Client
-	asset  string
-	amount string
+	c          *Client
+	asset      string
+	amount     string
+	isIsolated bool
 }
 
 // Asset set asset being transferred, e.g., BTC
@@ -78,6 +79,12 @@ func (s *MarginLoanService) Asset(asset string) *MarginLoanService {
 // Amount the amount to be transferred
 func (s *MarginLoanService) Amount(amount string) *MarginLoanService {
 	s.amount = amount
+	return s
+}
+
+// IsIsolated set isIsolated
+func (s *MarginLoanService) IsIsolated(isIsolated bool) *MarginLoanService {
+	s.isIsolated = isIsolated
 	return s
 }
 
@@ -93,6 +100,9 @@ func (s *MarginLoanService) Do(ctx context.Context, opts ...RequestOption) (res 
 		"amount": s.amount,
 	}
 	r.setFormParams(m)
+	if s.isIsolated {
+		r.setParam("isIsolated", "TRUE")
+	}
 	res = new(TransactionResponse)
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
@@ -107,9 +117,10 @@ func (s *MarginLoanService) Do(ctx context.Context, opts ...RequestOption) (res 
 
 // MarginRepayService repay loan for margin account
 type MarginRepayService struct {
-	c      *Client
-	asset  string
-	amount string
+	c          *Client
+	asset      string
+	amount     string
+	isIsolated bool
 }
 
 // Asset set asset being transferred, e.g., BTC
@@ -121,6 +132,12 @@ func (s *MarginRepayService) Asset(asset string) *MarginRepayService {
 // Amount the amount to be transferred
 func (s *MarginRepayService) Amount(amount string) *MarginRepayService {
 	s.amount = amount
+	return s
+}
+
+// IsIsolated set isIsolated
+func (s *MarginRepayService) IsIsolated(isIsolated bool) *MarginRepayService {
+	s.isIsolated = isIsolated
 	return s
 }
 
@@ -136,6 +153,9 @@ func (s *MarginRepayService) Do(ctx context.Context, opts ...RequestOption) (res
 		"amount": s.amount,
 	}
 	r.setFormParams(m)
+	if s.isIsolated {
+		r.setParam("isIsolated", "TRUE")
+	}
 	res = new(TransactionResponse)
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
