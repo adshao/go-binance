@@ -101,7 +101,7 @@ func (s *MarginLoanService) Do(ctx context.Context, opts ...RequestOption) (res 
 	}
 	r.setFormParams(m)
 	if s.isIsolated {
-		r.setParam("isIsolated", "TRUE")
+		r.setParam("isolatedSymbol", "TRUE")
 	}
 	res = new(TransactionResponse)
 	data, err := s.c.callAPI(ctx, r, opts...)
@@ -154,7 +154,7 @@ func (s *MarginRepayService) Do(ctx context.Context, opts ...RequestOption) (res
 	}
 	r.setFormParams(m)
 	if s.isIsolated {
-		r.setParam("isIsolated", "TRUE")
+		r.setParam("isolatedSymbol", "TRUE")
 	}
 	res = new(TransactionResponse)
 	data, err := s.c.callAPI(ctx, r, opts...)
