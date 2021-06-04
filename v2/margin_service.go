@@ -82,7 +82,7 @@ func (s *MarginLoanService) Amount(amount string) *MarginLoanService {
 	return s
 }
 
-// IsolatedSymbol set isIsolated
+// IsolatedSymbol set IsolatedSymbol
 func (s *MarginLoanService) IsolatedSymbol(isolatedSymbol string) *MarginLoanService {
 	s.isolatedSymbol = isolatedSymbol
 	return s
@@ -135,7 +135,7 @@ func (s *MarginRepayService) Amount(amount string) *MarginRepayService {
 	return s
 }
 
-// IsolatedSymbol set isIsolated
+// IsolatedSymbol set IsolatedSymbol
 func (s *MarginRepayService) IsolatedSymbol(isolatedSymbol string) *MarginRepayService {
 	s.isolatedSymbol = isolatedSymbol
 	return s
