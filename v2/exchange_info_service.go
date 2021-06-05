@@ -3,13 +3,14 @@ package binance
 import (
 	"context"
 	"encoding/json"
+	"strings"
 )
 
 // ExchangeInfoService exchange info service
 type ExchangeInfoService struct {
 	c       *Client
 	symbol  string
-	symbols []string
+	symbols string
 }
 
 // Symbol set symbol
@@ -19,8 +20,12 @@ func (s *ExchangeInfoService) Symbol(symbol string) *ExchangeInfoService {
 }
 
 // Symbols set symbol
-func (s *ExchangeInfoService) Symbols(symbols ...string) *ExchangeInfoService {
-	s.symbols = symbols
+func (s *ExchangeInfoService) Symbols(pairs ...string) *ExchangeInfoService {
+	if len(pairs) == 0 {
+		s.symbols = "[]"
+	} else {
+		s.symbols = "[\"" + strings.Join(pairs, "\",\"") + "\"]"
+	}
 	return s
 }
 
