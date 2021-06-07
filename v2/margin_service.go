@@ -64,9 +64,10 @@ type TransactionResponse struct {
 
 // MarginLoanService apply for a loan
 type MarginLoanService struct {
-	c      *Client
-	asset  string
-	amount string
+	c              *Client
+	asset          string
+	amount         string
+	isolatedSymbol string
 }
 
 // Asset set asset being transferred, e.g., BTC
@@ -78,6 +79,12 @@ func (s *MarginLoanService) Asset(asset string) *MarginLoanService {
 // Amount the amount to be transferred
 func (s *MarginLoanService) Amount(amount string) *MarginLoanService {
 	s.amount = amount
+	return s
+}
+
+// IsolatedSymbol set IsolatedSymbol
+func (s *MarginLoanService) IsolatedSymbol(isolatedSymbol string) *MarginLoanService {
+	s.isolatedSymbol = isolatedSymbol
 	return s
 }
 
@@ -93,6 +100,9 @@ func (s *MarginLoanService) Do(ctx context.Context, opts ...RequestOption) (res 
 		"amount": s.amount,
 	}
 	r.setFormParams(m)
+	if s.isolatedSymbol != "" {
+		r.setParam("isolatedSymbol", s.isolatedSymbol)
+	}
 	res = new(TransactionResponse)
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
@@ -107,9 +117,10 @@ func (s *MarginLoanService) Do(ctx context.Context, opts ...RequestOption) (res 
 
 // MarginRepayService repay loan for margin account
 type MarginRepayService struct {
-	c      *Client
-	asset  string
-	amount string
+	c              *Client
+	asset          string
+	amount         string
+	isolatedSymbol string
 }
 
 // Asset set asset being transferred, e.g., BTC
@@ -121,6 +132,12 @@ func (s *MarginRepayService) Asset(asset string) *MarginRepayService {
 // Amount the amount to be transferred
 func (s *MarginRepayService) Amount(amount string) *MarginRepayService {
 	s.amount = amount
+	return s
+}
+
+// IsolatedSymbol set IsolatedSymbol
+func (s *MarginRepayService) IsolatedSymbol(isolatedSymbol string) *MarginRepayService {
+	s.isolatedSymbol = isolatedSymbol
 	return s
 }
 
@@ -136,6 +153,9 @@ func (s *MarginRepayService) Do(ctx context.Context, opts ...RequestOption) (res
 		"amount": s.amount,
 	}
 	r.setFormParams(m)
+	if s.isolatedSymbol != "" {
+		r.setParam("isolatedSymbol", s.isolatedSymbol)
+	}
 	res = new(TransactionResponse)
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
