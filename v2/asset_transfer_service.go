@@ -25,16 +25,19 @@ type AssetTransferService struct {
 	recvWindow int64
 }
 
-func (s *AssetTransferService) AssetType(a AssetTransferType) {
+func (s *AssetTransferService) AssetType(a AssetTransferType) *AssetTransferService {
 	s.assetType = a
+	return s
 }
 
-func (s *AssetTransferService) Asset(a string) {
+func (s *AssetTransferService) Asset(a string) *AssetTransferService{
 	s.asset = a
+	return s
 }
 
-func (s *AssetTransferService) Amount(a string) {
+func (s *AssetTransferService) Amount(a string) *AssetTransferService{
 	s.amount = a
+	return s
 }
 
 
@@ -73,6 +76,6 @@ func (s *AssetTransferService) Do(ctx context.Context, opts ...RequestOption) (r
 
 
 type AssetTransferResponse struct {
-	TranId  string     `json:"tranId"`
+	TranId  int64     `json:"tranId"`
 }
 
