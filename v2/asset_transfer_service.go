@@ -5,25 +5,27 @@ import (
 	"encoding/json"
 )
 
+type AssetTransferType string
+
 const (
 	//目前支持的type划转类型
-	AssetTransferType_MAIN_UMFUTURE = "MAIN_UMFUTURE"
-	AssetTransferType_MAIN_CMFUTURE = "MAIN_CMFUTURE"
-	AssetTransferType_UMFUTURE_MAIN = "UMFUTURE_MAIN"
-	AssetTransferType_CMFUTURE_MAIN = "CMFUTURE_MAIN"
+	MAIN_UMFUTURE AssetTransferType = "MAIN_UMFUTURE"
+	MAIN_CMFUTURE AssetTransferType = "MAIN_CMFUTURE"
+	UMFUTURE_MAIN AssetTransferType = "UMFUTURE_MAIN"
+	CMFUTURE_MAIN AssetTransferType = "CMFUTURE_MAIN"
 )
 
 
 type AssetTransferService struct {
 	c *Client
 
-	assetType string
+	assetType AssetTransferType
 	asset string
 	amount string
 	recvWindow int64
 }
 
-func (s *AssetTransferService) AssetType(a string) {
+func (s *AssetTransferService) AssetType(a AssetTransferType) {
 	s.assetType = a
 }
 
@@ -45,13 +47,17 @@ func (s *AssetTransferService) Do(ctx context.Context, opts ...RequestOption) (r
 		secType:  secTypeSigned,
 	}
 
-	r.setParams(params{
-		"type": s.assetType,
-		"asset":   s.asset,
-		"amount": s.amount,
-		"recvWindow": s.recvWindow,
-	})
 
+
+	if s.asset != "" {
+		r.setParam("asset", s.asset)
+	}
+	if s.assetType != "" {
+		r.setParam("type", s.assetType)
+	}
+	if s.amount != "" {
+		r.setParam("amount", s.amount)
+	}
 
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
