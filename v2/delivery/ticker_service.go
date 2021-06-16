@@ -3,8 +3,6 @@ package delivery
 import (
 	"context"
 	"encoding/json"
-
-	"github.com/adshao/go-binance/v2/common"
 )
 
 // ListBookTickersService list best price/qty on the order book for a symbol or symbols
@@ -40,7 +38,6 @@ func (s *ListBookTickersService) Do(ctx context.Context, opts ...RequestOption) 
 	}
 
 	data, err := s.c.callAPI(ctx, r, opts...)
-	data = common.ToJSONList(data)
 	if err != nil {
 		return []*BookTicker{}, err
 	}
@@ -98,7 +95,6 @@ func (s *ListPricesService) Do(ctx context.Context, opts ...RequestOption) (res 
 	if err != nil {
 		return []*SymbolPrice{}, err
 	}
-	data = common.ToJSONList(data)
 	res = make([]*SymbolPrice, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
@@ -150,7 +146,6 @@ func (s *ListPriceChangeStatsService) Do(ctx context.Context, opts ...RequestOpt
 	if err != nil {
 		return res, err
 	}
-	data = common.ToJSONList(data)
 	res = make([]*PriceChangeStats, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
