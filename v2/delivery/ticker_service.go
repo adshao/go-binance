@@ -107,14 +107,14 @@ func (s *ListPricesService) Do(ctx context.Context, opts ...RequestOption) (res 
 	return res, nil
 }
 
-// SymbolPrice define symbol and price pair
+// SymbolPrice define symbol, price and pair
 type SymbolPrice struct {
 	Symbol string `json:"symbol"`
 	Pair   string `json:"ps"`
 	Price  string `json:"price"`
 }
 
-// ListPriceChangeStatsService show stats of price change in last 24 hours for all symbols
+// ListPriceChangeStatsService show stats of price change in last 24 hours for single symbol, all symbols or pairs of symbols
 type ListPriceChangeStatsService struct {
 	c      *Client
 	symbol *string
