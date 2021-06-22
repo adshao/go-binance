@@ -5,26 +5,26 @@ import (
 	"encoding/json"
 )
 
-// ListBookTickersService list best price/qty on the order book for a symbol or symbols
+// ListBookTickersService list best price/qty on the order book for a symbol or symbols.
 type ListBookTickersService struct {
 	c      *Client
 	symbol *string
 	pair   *string
 }
 
-// Symbol set symbol
+// Symbol set symbol.
 func (s *ListBookTickersService) Symbol(symbol string) *ListBookTickersService {
 	s.symbol = &symbol
 	return s
 }
 
-// Pair set pair
+// Pair set pair.
 func (s *ListBookTickersService) Pair(pair string) *ListBookTickersService {
 	s.pair = &pair
 	return s
 }
 
-// Do send request
+// Do send request.
 func (s *ListBookTickersService) Do(ctx context.Context, opts ...RequestOption) (res []*BookTicker, err error) {
 	r := &request{
 		method:   "GET",
@@ -49,7 +49,7 @@ func (s *ListBookTickersService) Do(ctx context.Context, opts ...RequestOption) 
 	return res, nil
 }
 
-// BookTicker define book ticker info
+// BookTicker define book ticker info.
 type BookTicker struct {
 	Symbol      string `json:"symbol"`
 	Pair        string `json:"pair"`
@@ -59,26 +59,26 @@ type BookTicker struct {
 	AskQuantity string `json:"askQty"`
 }
 
-// ListPricesService list latest price for a symbol or symbols
+// ListPricesService list latest price for a symbol or symbols.
 type ListPricesService struct {
 	c      *Client
 	symbol *string
 	pair   *string
 }
 
-// Symbol set symbol
+// Symbol set symbol.
 func (s *ListPricesService) Symbol(symbol string) *ListPricesService {
 	s.symbol = &symbol
 	return s
 }
 
-// Pair set pair
+// Pair set pair.
 func (s *ListPricesService) Pair(pair string) *ListPricesService {
 	s.pair = &pair
 	return s
 }
 
-// Do send request
+// Do send request.
 func (s *ListPricesService) Do(ctx context.Context, opts ...RequestOption) (res []*SymbolPrice, err error) {
 	r := &request{
 		method:   "GET",
@@ -103,33 +103,33 @@ func (s *ListPricesService) Do(ctx context.Context, opts ...RequestOption) (res 
 	return res, nil
 }
 
-// SymbolPrice define symbol, price and pair
+// SymbolPrice define symbol, price and pair.
 type SymbolPrice struct {
 	Symbol string `json:"symbol"`
 	Pair   string `json:"ps"`
 	Price  string `json:"price"`
 }
 
-// ListPriceChangeStatsService show stats of price change in last 24 hours for single symbol, all symbols or pairs of symbols
+// ListPriceChangeStatsService show stats of price change in last 24 hours for single symbol, all symbols or pairs of symbols.
 type ListPriceChangeStatsService struct {
 	c      *Client
 	symbol *string
 	pair   *string
 }
 
-// Symbol set symbol
+// Symbol set symbol.
 func (s *ListPriceChangeStatsService) Symbol(symbol string) *ListPriceChangeStatsService {
 	s.symbol = &symbol
 	return s
 }
 
-// Pair set pair
+// Pair set pair.
 func (s *ListPriceChangeStatsService) Pair(pair string) *ListPriceChangeStatsService {
 	s.pair = &pair
 	return s
 }
 
-// Do send request
+// Do send request.
 func (s *ListPriceChangeStatsService) Do(ctx context.Context, opts ...RequestOption) (res []*PriceChangeStats, err error) {
 	r := &request{
 		method:   "GET",
@@ -154,7 +154,7 @@ func (s *ListPriceChangeStatsService) Do(ctx context.Context, opts ...RequestOpt
 	return res, nil
 }
 
-// PriceChangeStats define price change stats
+// PriceChangeStats define price change stats.
 type PriceChangeStats struct {
 	Symbol             string `json:"symbol"`
 	Pair               string `json:"pair"`
