@@ -628,3 +628,7 @@ func (c *Client) NewDustTransferService() *DustTransferService {
 func (c *Client) NewAssetTransferService() *AssetTransferService {
 	return &AssetTransferService{c: c}
 }
+
+func (c *Client) NewAssetTradeFeeService() *AssetTradeFeeService {
+	return &AssetTradeFeeService{c: c}
+}
