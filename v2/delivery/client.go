@@ -304,6 +304,21 @@ func (c *Client) NewKlinesService() *KlinesService {
 	return &KlinesService{c: c}
 }
 
+// NewListPriceChangeStatsService init list prices change stats service
+func (c *Client) NewListPriceChangeStatsService() *ListPriceChangeStatsService {
+	return &ListPriceChangeStatsService{c: c}
+}
+
+// NewListPricesService init listing prices service
+func (c *Client) NewListPricesService() *ListPricesService {
+	return &ListPricesService{c: c}
+}
+
+// NewListBookTickersService init listing booking tickers service
+func (c *Client) NewListBookTickersService() *ListBookTickersService {
+	return &ListBookTickersService{c: c}
+}
+
 // NewStartUserStreamService init starting user stream service
 func (c *Client) NewStartUserStreamService() *StartUserStreamService {
 	return &StartUserStreamService{c: c}
