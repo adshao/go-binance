@@ -63,7 +63,7 @@ type Symbol struct {
 	QuotePrecision        int                      `json:"quotePrecision"`
 	UnderlyingType        string                   `json:"underlyingType"`
 	UnderlyingSubType     []string                 `json:"underlyingSubType"`
-	SettlePlan            int                      `json:"settlePlan"`
+	SettlePlan            int64                    `json:"settlePlan"`
 	TriggerProtect        string                   `json:"triggerProtect"`
 	OrderType             []OrderType              `json:"OrderType"`
 	TimeInForce           []TimeInForceType        `json:"timeInForce"`
