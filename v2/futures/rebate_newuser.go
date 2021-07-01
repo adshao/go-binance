@@ -25,7 +25,7 @@ func (s *GetRebateNewUserService) Type(type_future int) *GetRebateNewUserService
 }
 
 // Do send request
-func (s *GetRebateNewUserService) Do(ctx context.Context, opts ...RequestOption) (res []*RebateNewUser, err error) {
+func (s *GetRebateNewUserService) Do(ctx context.Context, opts ...RequestOption) (res *RebateNewUser, err error) {
 	r := &request{
 		method:   "GET",
 		endpoint: "/fapi/v1/apiReferral/ifNewUser",
@@ -41,12 +41,12 @@ func (s *GetRebateNewUserService) Do(ctx context.Context, opts ...RequestOption)
 
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return []*RebateNewUser{}, err
+		return &RebateNewUser{}, err
 	}
-	res = make([]*RebateNewUser, 0)
+
 	err = json.Unmarshal(data, &res)
 	if err != nil {
-		return []*RebateNewUser{}, err
+		return &RebateNewUser{}, err
 	}
 	return res, nil
 }
