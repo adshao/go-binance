@@ -525,3 +525,8 @@ func (c *Client) NewChangePositionModeService() *ChangePositionModeService {
 func (c *Client) NewGetPositionModeService() *GetPositionModeService {
 	return &GetPositionModeService{c: c}
 }
+
+// NewGetRebateNewUserService init get rebate_newuser service
+func (c *Client) NewGetRebateNewUserService() *GetRebateNewUserService {
+	return &GetRebateNewUserService{c: c}
+}
