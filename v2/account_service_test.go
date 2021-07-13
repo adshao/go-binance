@@ -16,26 +16,31 @@ func TestAccountService(t *testing.T) {
 
 func (s *accountServiceTestSuite) TestGetAccount() {
 	data := []byte(`{
-        "makerCommission": 15,
-        "takerCommission": 15,
-        "buyerCommission": 0,
-        "sellerCommission": 0,
-        "canTrade": true,
-        "canWithdraw": true,
-        "canDeposit": true,
-        "balances": [
-            {
-                "asset": "BTC",
-                "free": "4723846.89208129",
-                "locked": "0.00000000"
-            },
-            {
-                "asset": "LTC",
-                "free": "4763368.68006011",
-                "locked": "0.00000000"
-            }
-        ]
-    }`)
+			"makerCommission": 15,
+			"takerCommission": 15,
+			"buyerCommission": 0,
+			"sellerCommission": 0,
+			"canTrade": true,
+			"canWithdraw": true,
+			"canDeposit": true,
+			"updateTime": 123456789,
+			"accountType": "SPOT",
+			"balances": [
+					{
+							"asset": "BTC",
+							"free": "4723846.89208129",
+							"locked": "0.00000000"
+					},
+					{
+							"asset": "LTC",
+							"free": "4763368.68006011",
+							"locked": "0.00000000"
+					}
+			],
+			"permissions": [
+				"SPOT"
+			]
+  }`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
 	s.assertReq(func(r *request) {
@@ -53,6 +58,8 @@ func (s *accountServiceTestSuite) TestGetAccount() {
 		CanTrade:         true,
 		CanWithdraw:      true,
 		CanDeposit:       true,
+		UpdateTime:       123456789,
+		AccountType:      "SPOT",
 		Balances: []Balance{
 			{
 				Asset:  "BTC",
@@ -65,6 +72,7 @@ func (s *accountServiceTestSuite) TestGetAccount() {
 				Locked: "0.00000000",
 			},
 		},
+		Permissions: []string{"SPOT"},
 	}
 	s.assertAccountEqual(e, res)
 }
