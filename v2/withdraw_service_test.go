@@ -17,15 +17,13 @@ func TestWithdrawService(t *testing.T) {
 func (s *withdrawServiceTestSuite) TestCreateWithdraw() {
 	data := []byte(`
 	{
-		"msg": "success",
-		"success": true,
 		"id":"7213fea8e94b4a5593d507237e5a555b"
 	}
 	`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
 
-	asset := "USDT"
+	coin := "USDT"
 	withdrawOrderID := "testID"
 	network := "ETH"
 	address := "myaddress"
@@ -35,7 +33,7 @@ func (s *withdrawServiceTestSuite) TestCreateWithdraw() {
 	name := "eth"
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
-			"asset":              asset,
+			"coin":               coin,
 			"withdrawOrderId":    withdrawOrderID,
 			"network":            network,
 			"address":            address,
@@ -48,7 +46,7 @@ func (s *withdrawServiceTestSuite) TestCreateWithdraw() {
 	})
 
 	res, err := s.client.NewCreateWithdrawService().
-		Asset(asset).
+		Coin(coin).
 		WithdrawOrderID(withdrawOrderID).
 		Network(network).
 		Address(address).
@@ -61,101 +59,109 @@ func (s *withdrawServiceTestSuite) TestCreateWithdraw() {
 	r := s.r()
 	r.NoError(err)
 	r.Equal("7213fea8e94b4a5593d507237e5a555b", res.ID)
-	r.Equal("success", res.Msg)
-	r.True(res.Success)
 }
 
 func (s *withdrawServiceTestSuite) TestListWithdraws() {
-	data := []byte(`
-	{
-		"withdrawList": [
-			{
-				"id":"7213fea8e94b4a5593d507237e5a555b",
-				"withdrawOrderID": "",    
-				"amount": 0.99,
-				"transactionFee": 0.01,
-				"address": "0x6915f16f8791d0a1cc2bf47c13a6b2a92000504b",
-				"asset": "USDT",
-				"txId": "0xdf33b22bdb2b28b1f75ccd201a4a4m6e7g83jy5fc5d5a9d1340961598cfcb0a1",
-				"applyTime": 1508198532000,
-				"network": "ETH",
-				"status": 4
-			},
-			{
-				"id":"7213fea8e94b4a5534ggsd237e5a555b",
-				"withdrawOrderID": "withdrawtest", 
-				"amount": 999.9999,
-				"transactionFee": 0.0001,
-				"address": "463tWEBn5XZJSxLU34r6g7h8jtxuNcDbjLSjkn3XAXHCbLrTTErJrBWYgHJQyrCwkNgYvyV3z8zctJLPCZy24jvb3NiTcTJ",
-				"addressTag": "342341222",
-				"txId": "b3c6219639c8ae3f9cf010cdc24fw7f7yt8j1e063f9b4bd1a05cb44c4b6e2509",
-				"asset": "XMR",
-				"applyTime": 1508198532000,
-				"status": 4
-			}
-		],
-		"success": true
-	}
+	data := []byte(`[
+    {
+        "address": "0x94df8b352de7f46f64b01d3666bf6e936e44ce60",
+        "amount": "8.91000000",
+        "applyTime": "2019-10-12 11:12:02",
+        "coin": "USDT",
+        "id": "b6ae22b3aa844210a7041aee7589627c",
+        "withdrawOrderId": "WITHDRAWtest123",
+        "network": "ETH", 
+        "transferType": 0,
+        "status": 6,
+        "transactionFee": "0.004",
+        "txId": "0xb5ef8c13b968a406cc62a93a8bd80f9e9a906ef1b3fcf20a2e48573c17659268"
+    },
+    {
+        "address": "1FZdVHtiBqMrWdjPyRPULCUceZPJ2WLCsB",
+        "amount": "0.00150000",
+        "applyTime": "2019-09-24 12:43:45",
+        "coin": "BTC",
+        "id": "156ec387f49b41df8724fa744fa82719",
+        "network": "BTC",
+        "status": 6,
+        "transactionFee": "0.004",
+        "transferType": 0,
+        "txId": "60fd9007ebfddc753455f95fafa808c4302c836e4d1eebc5a132c36c1d8ac354"
+    }
+]
 	`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
 
-	asset := "ETH"
+	coin := "ETH"
 	status := 0
 	startTime := int64(1508198532000)
 	endTime := int64(1508198532001)
+	offset := 0
+	limit := 1000
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
-			"asset":     asset,
+			"coin":      coin,
 			"status":    status,
 			"startTime": startTime,
 			"endTime":   endTime,
+			"offset":    offset,
+			"limit":     limit,
 		})
 		s.assertRequestEqual(e, r)
 	})
 
 	withdraws, err := s.client.NewListWithdrawsService().
-		Asset(asset).
+		Coin(coin).
 		Status(status).
 		StartTime(startTime).
 		EndTime(endTime).
+		Offset(offset).
+		Limit(limit).
 		Do(newContext())
 	r := s.r()
 	r.NoError(err)
 
 	s.Len(withdraws, 2)
 	s.assertWithdrawEqual(&Withdraw{
-		ID:              "7213fea8e94b4a5593d507237e5a555b",
-		WithdrawOrderID: "",
-		Amount:          0.99,
-		TransactionFee:  0.01,
-		Address:         "0x6915f16f8791d0a1cc2bf47c13a6b2a92000504b",
-		AddressTag:      "",
-		Asset:           "USDT",
-		TxID:            "0xdf33b22bdb2b28b1f75ccd201a4a4m6e7g83jy5fc5d5a9d1340961598cfcb0a1",
-		ApplyTime:       1508198532000,
+		Address:         "0x94df8b352de7f46f64b01d3666bf6e936e44ce60",
+		Amount:          "8.91000000",
+		ApplyTime:       "2019-10-12 11:12:02",
+		Coin:            "USDT",
+		ID:              "b6ae22b3aa844210a7041aee7589627c",
+		WithdrawOrderID: "WITHDRAWtest123",
 		Network:         "ETH",
-		Status:          4,
+		TransferType:    0,
+		Status:          6,
+		TransactionFee:  "0.004",
+		TxID:            "0xb5ef8c13b968a406cc62a93a8bd80f9e9a906ef1b3fcf20a2e48573c17659268",
 	}, withdraws[0])
 	s.assertWithdrawEqual(&Withdraw{
-		ID:              "7213fea8e94b4a5534ggsd237e5a555b",
-		WithdrawOrderID: "withdrawOrderID",
-		Amount:          999.9999,
-		TransactionFee:  0.0001,
-		Address:         "463tWEBn5XZJSxLU34r6g7h8jtxuNcDbjLSjkn3XAXHCbLrTTErJrBWYgHJQyrCwkNgYvyV3z8zctJLPCZy24jvb3NiTcTJ",
-		AddressTag:      "342341222",
-		TxID:            "b3c6219639c8ae3f9cf010cdc24fw7f7yt8j1e063f9b4bd1a05cb44c4b6e2509",
-		Asset:           "XMR",
-		ApplyTime:       1508198532000,
-		Status:          4,
+		Address:         "1FZdVHtiBqMrWdjPyRPULCUceZPJ2WLCsB",
+		Amount:          "0.00150000",
+		ApplyTime:       "2019-09-24 12:43:45",
+		Coin:            "BTC",
+		ID:              "156ec387f49b41df8724fa744fa82719",
+		WithdrawOrderID: "",
+		Network:         "BTC",
+		TransferType:    0,
+		Status:          6,
+		TransactionFee:  "0.004",
+		TxID:            "60fd9007ebfddc753455f95fafa808c4302c836e4d1eebc5a132c36c1d8ac354",
 	}, withdraws[1])
 }
 
 func (s *withdrawServiceTestSuite) assertWithdrawEqual(e, a *Withdraw) {
 	r := s.r()
-	r.InDelta(e.Amount, a.Amount, 0.0000001, "Amount")
 	r.Equal(e.Address, a.Address, "Address")
-	r.Equal(e.Asset, a.Asset, "Asset")
+	r.Equal(e.Amount, a.Amount, "Amount")
 	r.Equal(e.ApplyTime, a.ApplyTime, "ApplyTime")
+	r.Equal(e.Coin, a.Coin, "Coin")
+	r.Equal(e.ID, a.ID, "ID")
+	r.Equal(e.WithdrawOrderID, a.WithdrawOrderID, "WithdrawOrderID")
+	r.Equal(e.Network, a.Network, "Network")
+	r.Equal(e.TransferType, a.TransferType, "TransferType")
 	r.Equal(e.Status, a.Status, "Status")
+	r.Equal(e.TransactionFee, a.TransactionFee, "TransactionFee")
+	r.Equal(e.TxID, a.TxID, "TxID")
 }
