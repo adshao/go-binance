@@ -10,15 +10,17 @@ import (
 // See https://binance-docs.github.io/apidocs/spot/en/#deposit-history-user_data
 type ListDepositsService struct {
 	c         *Client
-	asset     *string
+	coin      *string
 	status    *int
 	startTime *int64
 	endTime   *int64
+	offset    *int
+	limit     *int
 }
 
-// Asset sets the asset parameter.
-func (s *ListDepositsService) Asset(asset string) *ListDepositsService {
-	s.asset = &asset
+// Coin sets the coin parameter.
+func (s *ListDepositsService) Coin(coin string) *ListDepositsService {
+	s.coin = &coin
 	return s
 }
 
@@ -42,15 +44,27 @@ func (s *ListDepositsService) EndTime(endTime int64) *ListDepositsService {
 	return s
 }
 
+// Offset set offset
+func (s *ListDepositsService) Offset(offset int) *ListDepositsService {
+	s.offset = &offset
+	return s
+}
+
+// Limit set limit
+func (s *ListDepositsService) Limit(limit int) *ListDepositsService {
+	s.limit = &limit
+	return s
+}
+
 // Do sends the request.
-func (s *ListDepositsService) Do(ctx context.Context) (deposits []*Deposit, err error) {
+func (s *ListDepositsService) Do(ctx context.Context) (res []*Deposit, err error) {
 	r := &request{
 		method:   "GET",
-		endpoint: "/wapi/v3/depositHistory.html",
+		endpoint: "/sapi/v1/capital/deposit/hisrec",
 		secType:  secTypeSigned,
 	}
-	if s.asset != nil {
-		r.setParam("asset", *s.asset)
+	if s.coin != nil {
+		r.setParam("coin", *s.coin)
 	}
 	if s.status != nil {
 		r.setParam("status", *s.status)
@@ -61,54 +75,57 @@ func (s *ListDepositsService) Do(ctx context.Context) (deposits []*Deposit, err 
 	if s.endTime != nil {
 		r.setParam("endTime", *s.endTime)
 	}
+	if s.offset != nil {
+		r.setParam("offset", *s.offset)
+	}
+	if s.limit != nil {
+		r.setParam("limit", *s.limit)
+	}
 
 	data, err := s.c.callAPI(ctx, r)
 	if err != nil {
 		return
 	}
-	res := new(DepositHistoryResponse)
-	err = json.Unmarshal(data, res)
+	res = make([]*Deposit, 0)
+	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return
 	}
-	return res.Deposits, nil
-}
-
-// DepositHistoryResponse represents a response from ListDepositsService.
-type DepositHistoryResponse struct {
-	Success  bool       `json:"success"`
-	Deposits []*Deposit `json:"depositList"`
+	return res, nil
 }
 
 // Deposit represents a single deposit entry.
 type Deposit struct {
-	InsertTime int64   `json:"insertTime"`
-	Amount     float64 `json:"amount"`
-	Asset      string  `json:"asset"`
-	Address    string  `json:"address"`
-	AddressTag string  `json:"addressTag"`
-	TxID       string  `json:"txId"`
-	Status     int     `json:"status"`
+	Amount       string `json:"amount"`
+	Coin         string `json:"coin"`
+	Network      string `json:"network"`
+	Status       int    `json:"status"`
+	Address      string `json:"address"`
+	AddressTag   string `json:"addressTag"`
+	TxID         string `json:"txId"`
+	InsertTime   int64  `json:"insertTime"`
+	TransferType int64  `json:"transferType"`
+	ConfirmTimes string `json:"confirmTimes"`
 }
 
 // GetDepositsAddressService retrieves the details of a deposit address.
 //
 // See https://binance-docs.github.io/apidocs/spot/en/#deposit-address-supporting-network-user_data
 type GetDepositsAddressService struct {
-	c      *Client
-	asset  string
-	status *bool
+	c       *Client
+	coin    string
+	network *string
 }
 
-// Asset sets the asset parameter (MANDATORY).
-func (s *GetDepositsAddressService) Asset(v string) *GetDepositsAddressService {
-	s.asset = v
+// Coin sets the coin parameter (MANDATORY).
+func (s *GetDepositsAddressService) Coin(coin string) *GetDepositsAddressService {
+	s.coin = coin
 	return s
 }
 
-// Status sets the status parameter.
-func (s *GetDepositsAddressService) Status(v bool) *GetDepositsAddressService {
-	s.status = &v
+// Network sets the network parameter.
+func (s *GetDepositsAddressService) Network(network string) *GetDepositsAddressService {
+	s.network = &network
 	return s
 }
 
@@ -116,12 +133,12 @@ func (s *GetDepositsAddressService) Status(v bool) *GetDepositsAddressService {
 func (s *GetDepositsAddressService) Do(ctx context.Context) (*GetDepositAddressResponse, error) {
 	r := &request{
 		method:   "GET",
-		endpoint: "/wapi/v3/depositAddress.html",
+		endpoint: "/sapi/v1/capital/deposit/address",
 		secType:  secTypeSigned,
 	}
-	r.setParam("asset", s.asset)
-	if v := s.status; v != nil {
-		r.setParam("status", *v)
+	r.setParam("coin", s.coin)
+	if s.network != nil {
+		r.setParam("network", *s.network)
 	}
 
 	data, err := s.c.callAPI(ctx, r)
@@ -139,9 +156,8 @@ func (s *GetDepositsAddressService) Do(ctx context.Context) (*GetDepositAddressR
 
 // GetDepositAddressResponse represents a response from GetDepositsAddressService.
 type GetDepositAddressResponse struct {
-	Success    bool   `json:"success"`
-	Address    string `json:"address"`
-	AddressTag string `json:"addressTag"`
-	Asset      string `json:"asset"`
-	URL        string `json:"url"`
+	Address string `json:"address"`
+	Tag     string `json:"tag"`
+	Coin    string `json:"coin"`
+	URL     string `json:"url"`
 }
