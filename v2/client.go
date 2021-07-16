@@ -624,3 +624,8 @@ func (c *Client) NewListDustLogService() *ListDustLogService {
 func (c *Client) NewDustTransferService() *DustTransferService {
 	return &DustTransferService{c: c}
 }
+
+// NewTransferToSubAccountService transfer to subaccount service
+func (c *Client) NewTransferToSubAccountService() *TransferToSubAccountService {
+	return &TransferToSubAccountService{c: c}
+}
