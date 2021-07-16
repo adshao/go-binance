@@ -624,3 +624,23 @@ func (c *Client) NewListDustLogService() *ListDustLogService {
 func (c *Client) NewDustTransferService() *DustTransferService {
 	return &DustTransferService{c: c}
 }
+
+// NewListAllSwapPoolsService init list all swap pools service
+func (c *Client) NewListAllSwapPoolsService() *ListAllSwapPoolsService {
+	return &ListAllSwapPoolsService{c: c}
+}
+
+// NewListLiquidityService init list liquidity service
+func (c *Client) NewListLiquidityService() *ListLiquidityService {
+	return &ListLiquidityService{c: c}
+}
+
+// NewAddLiquidityService init add liquidity service
+func (c *Client) NewAddLiquidityService() *AddLiquidityService {
+	return &AddLiquidityService{c: c}
+}
+
+// NewRemoveLiquidityService init remove liquidity service
+func (c *Client) NewRemoveLiquidityService() *RemoveLiquidityService {
+	return &RemoveLiquidityService{c: c}
+}
