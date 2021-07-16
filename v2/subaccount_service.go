@@ -72,5 +72,5 @@ func (s *TransferToSubAccountService) Test(ctx context.Context, opts ...RequestO
 
 // TransferToSubAccountResponse define transfer to subaccount response
 type TransferToSubAccountResponse struct {
-	TxnID string `json:"txnId"`
+	TxnID int64 `json:"txnId"`
 }
