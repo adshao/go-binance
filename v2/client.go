@@ -162,9 +162,9 @@ func newJSON(data []byte) (j *simplejson.Json, err error) {
 	return j, nil
 }
 
-// getAPIEndpoint return the base endpoint of the Rest API according the UseTestnet flag
-func getAPIEndpoint() string {
-	if UseTestnet {
+// getAPIEndpoint return the base endpoint of the Rest API according the testnet flag
+func getAPIEndpoint(testnet bool) string {
+	if testnet {
 		return baseAPITestnetURL
 	}
 	return baseAPIMainURL
@@ -173,11 +173,11 @@ func getAPIEndpoint() string {
 // NewClient initialize an API client instance with API key and secret key.
 // You should always call this function before using this SDK.
 // Services will be created by the form client.NewXXXService().
-func NewClient(apiKey, secretKey string) *Client {
+func NewClient(apiKey, secretKey string, testnet bool) *Client {
 	return &Client{
 		APIKey:     apiKey,
 		SecretKey:  secretKey,
-		BaseURL:    getAPIEndpoint(),
+		BaseURL:    getAPIEndpoint(testnet),
 		UserAgent:  "Binance/golang",
 		HTTPClient: http.DefaultClient,
 		Logger:     log.New(os.Stderr, "Binance-golang ", log.LstdFlags),
@@ -190,8 +190,8 @@ func NewFuturesClient(apiKey, secretKey string, testnet bool) *futures.Client {
 }
 
 // NewDeliveryClient initialize client for coin-M futures API
-func NewDeliveryClient(apiKey, secretKey string) *delivery.Client {
-	return delivery.NewClient(apiKey, secretKey)
+func NewDeliveryClient(apiKey, secretKey string, testnet bool) *delivery.Client {
+	return delivery.NewClient(apiKey, secretKey, testnet)
 }
 
 type doFunc func(req *http.Request) (*http.Response, error)
