@@ -38,7 +38,10 @@ type Account struct {
 	CanTrade         bool      `json:"canTrade"`
 	CanWithdraw      bool      `json:"canWithdraw"`
 	CanDeposit       bool      `json:"canDeposit"`
+	UpdateTime       uint64    `json:"updateTime"`
+	AccountType      string    `json:"accountType"`
 	Balances         []Balance `json:"balances"`
+	Permissions      []string  `json:"permissions"`
 }
 
 // Balance define user balance of your account
