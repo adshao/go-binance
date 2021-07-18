@@ -639,6 +639,7 @@ type WsBalance struct {
 	Asset              string `json:"a"`
 	Balance            string `json:"wb"`
 	CrossWalletBalance string `json:"cw"`
+	BalanceChange      string `json:"bc"`
 }
 
 // WsPosition define position
@@ -672,10 +673,12 @@ type WsOrderTradeUpdate struct {
 	LastFilledQty        string             `json:"l"`
 	AccumulatedFilledQty string             `json:"z"`
 	LastFilledPrice      string             `json:"L"`
+	MarginAsset          string             `json:"ma"`
 	CommissionAsset      string             `json:"N"`
 	Commission           string             `json:"n"`
 	TradeTime            int64              `json:"T"`
 	TradeID              int64              `json:"t"`
+	RealizedPnL          string             `json:"rp"`
 	BidsNotional         string             `json:"b"`
 	AsksNotional         string             `json:"a"`
 	IsMaker              bool               `json:"m"`
@@ -686,7 +689,7 @@ type WsOrderTradeUpdate struct {
 	IsClosingPosition    bool               `json:"cp"`
 	ActivationPrice      string             `json:"AP"`
 	CallbackRate         string             `json:"cr"`
-	RealizedPnL          string             `json:"rp"`
+	IsProtected          bool               `json:"pP"`
 }
 
 // WsAccountConfigUpdate define account config update
