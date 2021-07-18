@@ -1167,41 +1167,6 @@ func (s *websocketServiceTestSuite) assertDepthEvent(e, a *WsDepthEvent) {
 	}
 }
 
-// func (s *websocketServiceTestSuite) testWsUserDataServe(data []byte) {
-// 	fakeErrMsg := "fake error"
-// 	s.mockWsServe(data, errors.New(fakeErrMsg))
-// 	defer s.assertWsServe()
-
-// 	doneC, stopC, err := WsUserDataServe("listenKey", func(event *WsUserDataEvent) {
-// 		s.r().Equal(data, event)
-// 	}, func(err error) {
-// 		s.r().EqualError(err, fakeErrMsg)
-// 	})
-// 	s.r().NoError(err)
-// 	stopC <- struct{}{}
-// 	<-doneC
-// }
-
-// // https://binance-docs.github.io/apidocs/delivery/en/#event-margin-call
-// func (s *websocketServiceTestSuite) TestWsUserDataServe() {
-// 	s.testWsUserDataServe([]byte(`{
-// 	  "e":"MARGIN_CALL",
-// 	  "E":1587727187525,
-// 	  "i": "SfsR",
-// 	  "cw":"3.16812045",
-// 	  "p":[{
-// 	    "s":"BTCUSD_200925",
-// 	    "ps":"LONG",
-// 	    "pa":"132",
-// 	    "mt":"CROSSED",
-// 	    "iw":"0",
-// 	    "mp":"9187.17127000",
-// 	    "up":"-1.166074",
-// 	    "mm":"1.614445"
-// 	  }]
-//     }`))
-// }
-
 func (s *websocketServiceTestSuite) testWsUserDataServe(data []byte, expectedEvent *WsUserDataEvent) {
 	fakeErrMsg := "fake error"
 	s.mockWsServe(data, errors.New(fakeErrMsg))
