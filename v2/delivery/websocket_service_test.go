@@ -1308,7 +1308,7 @@ func (s *websocketServiceTestSuite) TestWsUserDataServeAccountUpdate() {
 				  "pa":"20",
 				  "ep":"6563.6",
 				  "cr":"0",
-				  "up":"2850.21200",
+				  "up":"2850.21200000",
 				  "mt":"isolated",
 				  "iw":"13200.70726908",
 				  "ps":"LONG"
@@ -1318,7 +1318,7 @@ func (s *websocketServiceTestSuite) TestWsUserDataServeAccountUpdate() {
 				  "pa":"-10",
 				  "ep":"6563.8",
 				  "cr":"-45.04000000",
-				  "up":"-1423.15600",
+				  "up":"-1423.15600000",
 				  "mt":"isolated",
 				  "iw":"6570.42511771",
 				  "ps":"SHORT"
@@ -1330,6 +1330,7 @@ func (s *websocketServiceTestSuite) TestWsUserDataServeAccountUpdate() {
 		Event:           "ACCOUNT_UPDATE",
 		Time:            1564745798939,
 		TransactionTime: 1564745798938,
+		Alias:           "SfsR",
 		AccountUpdate: WsAccountUpdate{
 			Reason: "ORDER",
 			Balances: []WsBalance{
@@ -1372,7 +1373,7 @@ func (s *websocketServiceTestSuite) TestWsUserDataServeAccountUpdate() {
 					Amount:              "-10",
 					EntryPrice:          "6563.8",
 					AccumulatedRealized: "-45.04000000",
-					UnrealizedPnL:       "-1423.15600",
+					UnrealizedPnL:       "-1423.15600000",
 					MarginType:          "isolated",
 					IsolatedWallet:      "6570.42511771",
 					Side:                "SHORT",
