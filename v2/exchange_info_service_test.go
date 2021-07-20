@@ -22,16 +22,19 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
     		{
       			"rateLimitType": "REQUEST_WEIGHT",
 				"interval": "MINUTE",
+				"intervalNum": 1,
 				"limit": 1200
     		},
     		{
       			"rateLimitType": "ORDERS",
       			"interval": "SECOND",
+				"intervalNum": 10,
       			"limit": 10
     		},
     		{
       			"rateLimitType": "ORDERS",
       			"interval": "DAY",
+				"intervalNum": 1,
       			"limit": 100000
     		}
   		],
@@ -55,19 +58,24 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 	}`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
+	symbol := "ETHBTC"
+	symbols := []string{"ETHBTC", "LTCBTC"}
 	s.assertReq(func(r *request) {
-		e := newRequest()
+		e := newRequest().setParams(map[string]interface{}{
+			"symbol":  symbol,
+			"symbols": symbols,
+		})
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewExchangeInfoService().Do(newContext())
+	res, err := s.client.NewExchangeInfoService().Symbol(symbol).Symbols(symbols...).Do(newContext())
 	s.r().NoError(err)
 	ei := &ExchangeInfo{
 		Timezone:   "UTC",
 		ServerTime: 1539281238296,
 		RateLimits: []RateLimit{
-			{RateLimitType: "REQUEST_WEIGHT", Interval: "MINUTE", Limit: 1200},
-			{RateLimitType: "ORDERS", Interval: "SECOND", Limit: 10},
-			{RateLimitType: "ORDERS", Interval: "DAY", Limit: 100000},
+			{RateLimitType: "REQUEST_WEIGHT", Interval: "MINUTE", IntervalNum: 1, Limit: 1200},
+			{RateLimitType: "ORDERS", Interval: "SECOND", IntervalNum: 10, Limit: 10},
+			{RateLimitType: "ORDERS", Interval: "DAY", IntervalNum: 1, Limit: 100000},
 		},
 		ExchangeFilters: []interface{}{},
 		Symbols: []Symbol{
@@ -128,6 +136,7 @@ func (s *exchangeInfoServiceTestSuite) assertExchangeInfoEqual(e, a *ExchangeInf
 		r.Equal(e.RateLimits[i].RateLimitType, a.RateLimits[i].RateLimitType, "RateLimitType")
 		r.Equal(e.RateLimits[i].Limit, a.RateLimits[i].Limit, "Limit")
 		r.Equal(e.RateLimits[i].Interval, a.RateLimits[i].Interval, "Interval")
+		r.Equal(e.RateLimits[i].IntervalNum, a.RateLimits[i].IntervalNum, "IntervalNum")
 	}
 
 	r.Equal(e.ExchangeFilters, a.ExchangeFilters, "ExchangeFilters")

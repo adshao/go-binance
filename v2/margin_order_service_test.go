@@ -36,6 +36,7 @@ func (s *marginOrderServiceTestSuite) TestCreateOrder() {
 	orderType := OrderTypeLimit
 	timeInForce := TimeInForceTypeGTC
 	quantity := "12.00"
+	quoteOrderQty := "10.00"
 	price := "0.0001"
 	newClientOrderID := "myOrder1"
 	s.assertReq(func(r *request) {
@@ -45,6 +46,7 @@ func (s *marginOrderServiceTestSuite) TestCreateOrder() {
 			"type":             orderType,
 			"timeInForce":      timeInForce,
 			"quantity":         quantity,
+			"quoteOrderQty":    quoteOrderQty,
 			"price":            price,
 			"newClientOrderId": newClientOrderID,
 			"sideEffectType":   SideEffectTypeNoSideEffect,
@@ -52,7 +54,7 @@ func (s *marginOrderServiceTestSuite) TestCreateOrder() {
 		s.assertRequestEqual(e, r)
 	})
 	res, err := s.client.NewCreateMarginOrderService().Symbol(symbol).Side(side).
-		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).
+		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).QuoteOrderQty(quoteOrderQty).
 		Price(price).NewClientOrderID(newClientOrderID).SideEffectType(SideEffectTypeNoSideEffect).
 		Do(newContext())
 	s.r().NoError(err)
@@ -104,6 +106,7 @@ func (s *marginOrderServiceTestSuite) TestCreateOrderFull() {
 	orderType := OrderTypeLimit
 	timeInForce := TimeInForceTypeGTC
 	quantity := "12.00"
+	quoteOrderQty := "10.00"
 	price := "0.0001"
 	newClientOrderID := "myOrder1"
 	newOrderRespType := NewOrderRespTypeFULL
@@ -114,6 +117,7 @@ func (s *marginOrderServiceTestSuite) TestCreateOrderFull() {
 			"type":             orderType,
 			"timeInForce":      timeInForce,
 			"quantity":         quantity,
+			"quoteOrderQty":    quoteOrderQty,
 			"price":            price,
 			"newClientOrderId": newClientOrderID,
 			"newOrderRespType": newOrderRespType,
@@ -121,7 +125,7 @@ func (s *marginOrderServiceTestSuite) TestCreateOrderFull() {
 		s.assertRequestEqual(e, r)
 	})
 	res, err := s.client.NewCreateMarginOrderService().Symbol(symbol).Side(side).
-		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).
+		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).QuoteOrderQty(quoteOrderQty).
 		Price(price).NewClientOrderID(newClientOrderID).
 		NewOrderRespType(newOrderRespType).Do(newContext())
 	s.r().NoError(err)

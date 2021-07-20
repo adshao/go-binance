@@ -66,6 +66,9 @@ type UserDataEventType string
 // UserDataEventReasonType define reason type for user data event
 type UserDataEventReasonType string
 
+// ForceOrderCloseType define reason type for force order
+type ForceOrderCloseType string
+
 // Endpoints
 const (
 	baseApiMainUrl    = "https://fapi.binance.com"
@@ -133,6 +136,7 @@ const (
 	SymbolFilterTypeMarketLotSize    SymbolFilterType = "MARKET_LOT_SIZE"
 	SymbolFilterTypeMaxNumOrders     SymbolFilterType = "MAX_NUM_ORDERS"
 	SymbolFilterTypeMaxNumAlgoOrders SymbolFilterType = "MAX_NUM_ALGO_ORDERS"
+	SymbolFilterTypeMinNotional      SymbolFilterType = "MIN_NOTIONAL"
 
 	SideEffectTypeNoSideEffect SideEffectType = "NO_SIDE_EFFECT"
 	SideEffectTypeMarginBuy    SideEffectType = "MARGIN_BUY"
@@ -163,6 +167,9 @@ const (
 	UserDataEventReasonTypeAssetTransfer       UserDataEventReasonType = "ASSET_TRANSFER"
 	UserDataEventReasonTypeOptionsPremiumFee   UserDataEventReasonType = "OPTIONS_PREMIUM_FEE"
 	UserDataEventReasonTypeOptionsSettleProfit UserDataEventReasonType = "OPTIONS_SETTLE_PROFIT"
+
+	ForceOrderCloseTypeLiquidation ForceOrderCloseType = "LIQUIDATION"
+	ForceOrderCloseTypeADL         ForceOrderCloseType = "ADL"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
@@ -245,6 +252,9 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 	body := &bytes.Buffer{}
 	bodyString := r.form.Encode()
 	header := http.Header{}
+	if r.header != nil {
+		header = r.header.Clone()
+	}
 	if bodyString != "" {
 		header.Set("Content-Type", "application/x-www-form-urlencoded")
 		body = bytes.NewBufferString(bodyString)
@@ -396,6 +406,11 @@ func (c *Client) NewCancelAllOpenOrdersService() *CancelAllOpenOrdersService {
 	return &CancelAllOpenOrdersService{c: c}
 }
 
+// NewCancelMultipleOrdersService init cancel multiple orders service
+func (c *Client) NewCancelMultipleOrdersService() *CancelMultiplesOrdersService {
+	return &CancelMultiplesOrdersService{c: c}
+}
+
 // NewListOpenOrdersService init list open orders service
 func (c *Client) NewListOpenOrdersService() *ListOpenOrdersService {
 	return &ListOpenOrdersService{c: c}
@@ -471,6 +486,11 @@ func (c *Client) NewFundingRateService() *FundingRateService {
 	return &FundingRateService{c: c}
 }
 
+// NewListUserLiquidationOrdersService init list user's liquidation orders service
+func (c *Client) NewListUserLiquidationOrdersService() *ListUserLiquidationOrdersService {
+	return &ListUserLiquidationOrdersService{c: c}
+}
+
 // NewListLiquidationOrdersService init funding rate service
 func (c *Client) NewListLiquidationOrdersService() *ListLiquidationOrdersService {
 	return &ListLiquidationOrdersService{c: c}
@@ -504,4 +524,9 @@ func (c *Client) NewChangePositionModeService() *ChangePositionModeService {
 // NewGetPositionModeService init get position mode service
 func (c *Client) NewGetPositionModeService() *GetPositionModeService {
 	return &GetPositionModeService{c: c}
+}
+
+// NewGetRebateNewUserService init get rebate_newuser service
+func (c *Client) NewGetRebateNewUserService() *GetRebateNewUserService {
+	return &GetRebateNewUserService{c: c}
 }

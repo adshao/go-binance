@@ -200,6 +200,9 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 	body := &bytes.Buffer{}
 	bodyString := r.form.Encode()
 	header := http.Header{}
+	if r.header != nil {
+		header = r.header.Clone()
+	}
 	if bodyString != "" {
 		header.Set("Content-Type", "application/x-www-form-urlencoded")
 		body = bytes.NewBufferString(bodyString)
@@ -299,6 +302,21 @@ func (c *Client) NewSetServerTimeService() *SetServerTimeService {
 // NewKlinesService init klines service
 func (c *Client) NewKlinesService() *KlinesService {
 	return &KlinesService{c: c}
+}
+
+// NewListPriceChangeStatsService init list prices change stats service
+func (c *Client) NewListPriceChangeStatsService() *ListPriceChangeStatsService {
+	return &ListPriceChangeStatsService{c: c}
+}
+
+// NewListPricesService init listing prices service
+func (c *Client) NewListPricesService() *ListPricesService {
+	return &ListPricesService{c: c}
+}
+
+// NewListBookTickersService init listing booking tickers service
+func (c *Client) NewListBookTickersService() *ListBookTickersService {
+	return &ListBookTickersService{c: c}
 }
 
 // NewStartUserStreamService init starting user stream service

@@ -17,21 +17,18 @@ func TestAssetDetailService(t *testing.T) {
 func (s *withdrawServiceTestSuite) TestGetAssetDetail() {
 	data := []byte(`
 	{
-    "success": true,
-    "assetDetail": {
-			"CTR": {
-				"minWithdrawAmount": 70.00000000,
-				"depositStatus": false,
-				"withdrawFee": 35,
-				"withdrawStatus": true,
-				"depositTip": "Delisted, Deposit Suspended"
-			},
-			"SKY": {
-				"minWithdrawAmount": 0.02000000,
-				"depositStatus": true,
-				"withdrawFee": 0.01,
-				"withdrawStatus": true
-			}   
+		"CTR": {
+			"minWithdrawAmount": 70.00000000,
+			"depositStatus": false,
+			"withdrawFee": 35,
+			"withdrawStatus": true,
+			"depositTip": "Delisted, Deposit Suspended"
+		},
+		"SKY": {
+			"minWithdrawAmount": 0.02000000,
+			"depositStatus": true,
+			"withdrawFee": 0.01,
+			"withdrawStatus": true
 		}
 	}`)
 	s.mockDo(data, nil)

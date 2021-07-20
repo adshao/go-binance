@@ -261,7 +261,7 @@ func (s *websocketServiceTestSuite) TestDepthServe() {
 			Event:         "depthUpdate",
 			Time:          1499404630606,
 			Symbol:        "ETHBTC",
-			UpdateID:      7913455,
+			LastUpdateID:  7913455,
 			FirstUpdateID: 7913452,
 			Bids: []Bid{
 				{
@@ -334,7 +334,7 @@ func (s *websocketServiceTestSuite) TestDepthServe100Ms() {
 			Event:         "depthUpdate",
 			Time:          1499404630606,
 			Symbol:        "ETHBTC",
-			UpdateID:      7913455,
+			LastUpdateID:  7913455,
 			FirstUpdateID: 7913452,
 			Bids: []Bid{
 				{
@@ -371,7 +371,7 @@ func (s *websocketServiceTestSuite) assertWsDepthEventEqual(e, a *WsDepthEvent) 
 	r.Equal(e.Event, a.Event, "Event")
 	r.Equal(e.Time, a.Time, "Time")
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
-	r.Equal(e.UpdateID, a.UpdateID, "UpdateID")
+	r.Equal(e.LastUpdateID, a.LastUpdateID, "UpdateID")
 	r.Equal(e.FirstUpdateID, a.FirstUpdateID, "FirstUpdateID")
 	for i := 0; i < len(e.Bids); i++ {
 		r.Equal(e.Bids[i].Price, a.Bids[i].Price, "Price")
@@ -501,6 +501,73 @@ func (s *websocketServiceTestSuite) TestWsAggTradeServe() {
 			IsBuyerMaker:          false,
 		}
 		s.assertWsAggTradeEventEqual(e, event)
+	}, func(err error) {
+		s.r().EqualError(err, fakeErrMsg)
+	})
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
+func (s *websocketServiceTestSuite) TestWsCombinedKlineServe() {
+	data := []byte(`{
+	"stream":"ethbtc@kline_1m",
+	"data": {
+        "e": "kline",
+        "E": 1499404907056,
+        "s": "ETHBTC",
+        "k": {
+            "t": 1499404860000,
+            "T": 1499404919999,
+            "s": "ETHBTC",
+            "i": "1m",
+            "f": 77462,
+            "L": 77465,
+            "o": "0.10278577",
+            "c": "0.10278645",
+            "h": "0.10278712",
+            "l": "0.10278518",
+            "v": "17.47929838",
+            "n": 4,
+            "x": false,
+            "q": "1.79662878",
+            "V": "2.34879839",
+            "Q": "0.24142166",
+            "B": "13279784.01349473"
+        }
+	}}`)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+
+	input := map[string]string{
+		"ETHBTC": "1m",
+	}
+	doneC, stopC, err := WsCombinedKlineServe(input, func(event *WsKlineEvent) {
+		e := &WsKlineEvent{
+			Event:  "kline",
+			Time:   1499404907056,
+			Symbol: "ETHBTC",
+			Kline: WsKline{
+				StartTime:            1499404860000,
+				EndTime:              1499404919999,
+				Symbol:               "ETHBTC",
+				Interval:             "1m",
+				FirstTradeID:         77462,
+				LastTradeID:          77465,
+				Open:                 "0.10278577",
+				Close:                "0.10278645",
+				High:                 "0.10278712",
+				Low:                  "0.10278518",
+				Volume:               "17.47929838",
+				TradeNum:             4,
+				IsFinal:              false,
+				QuoteVolume:          "1.79662878",
+				ActiveBuyVolume:      "2.34879839",
+				ActiveBuyQuoteVolume: "0.24142166",
+			},
+		}
+		s.assertWsKlineEventEqual(e, event)
 	}, func(err error) {
 		s.r().EqualError(err, fakeErrMsg)
 	})
@@ -653,6 +720,74 @@ func (s *websocketServiceTestSuite) TestWsMarketStatServe() {
 	defer s.assertWsServe()
 
 	doneC, stopC, err := WsMarketStatServe("BNBBTC", func(event *WsMarketStatEvent) {
+		e := &WsMarketStatEvent{
+			Event:              "24hrTicker",
+			Time:               123456789,
+			Symbol:             "BNBBTC",
+			PriceChange:        "0.0015",
+			PriceChangePercent: "250.00",
+			WeightedAvgPrice:   "0.0018",
+			PrevClosePrice:     "0.0009",
+			LastPrice:          "0.0025",
+			CloseQty:           "10",
+			BidPrice:           "0.0024",
+			BidQty:             "10",
+			AskPrice:           "0.0026",
+			AskQty:             "100",
+			OpenPrice:          "0.0010",
+			HighPrice:          "0.0026",
+			LowPrice:           "0.0010",
+			BaseVolume:         "10000",
+			QuoteVolume:        "18",
+			OpenTime:           0,
+			CloseTime:          86400000,
+			FirstID:            0,
+			LastID:             18150,
+			Count:              18151,
+		}
+		s.assertWsMarketStatEventEqual(e, event)
+	}, func(err error) {
+		s.r().EqualError(err, fakeErrMsg)
+	})
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
+func (s *websocketServiceTestSuite) TestWsCombinedMarketStatServe() {
+	data := []byte(`{
+	"stream":"bnbbtc@ticker",
+	"data": {
+		"e": "24hrTicker",
+		"E": 123456789,
+		"s": "BNBBTC",
+		"p": "0.0015",
+		"P": "250.00",
+		"w": "0.0018",
+		"x": "0.0009",
+		"c": "0.0025",
+		"Q": "10",
+		"b": "0.0024",
+		"B": "10",
+		"a": "0.0026",
+		"A": "100",
+		"o": "0.0010",
+		"h": "0.0026",
+		"l": "0.0010",
+		"v": "10000",
+		"q": "18",
+	  "O": 0,
+		"C": 86400000,
+		"F": 0,
+		"L": 18150,
+		"n": 18151
+	}
+	}`)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+
+	doneC, stopC, err := WsCombinedMarketStatServe([]string{"BNBBTC"}, func(event *WsMarketStatEvent) {
 		e := &WsMarketStatEvent{
 			Event:              "24hrTicker",
 			Time:               123456789,

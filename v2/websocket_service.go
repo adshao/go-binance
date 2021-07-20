@@ -168,7 +168,7 @@ func wsDepthServe(endpoint string, handler WsDepthHandler, errHandler ErrHandler
 		event.Event = j.Get("e").MustString()
 		event.Time = j.Get("E").MustInt64()
 		event.Symbol = j.Get("s").MustString()
-		event.UpdateID = j.Get("u").MustInt64()
+		event.LastUpdateID = j.Get("u").MustInt64()
 		event.FirstUpdateID = j.Get("U").MustInt64()
 		bidsLen := len(j.Get("b").MustArray())
 		event.Bids = make([]Bid, bidsLen)
@@ -198,7 +198,7 @@ type WsDepthEvent struct {
 	Event         string `json:"e"`
 	Time          int64  `json:"E"`
 	Symbol        string `json:"s"`
-	UpdateID      int64  `json:"u"`
+	LastUpdateID  int64  `json:"u"`
 	FirstUpdateID int64  `json:"U"`
 	Bids          []Bid  `json:"b"`
 	Asks          []Ask  `json:"a"`
@@ -206,6 +206,41 @@ type WsDepthEvent struct {
 
 // WsKlineHandler handle websocket kline event
 type WsKlineHandler func(event *WsKlineEvent)
+
+// WsCombinedKlineServe is similar to WsKlineServe, but it handles multiple symbols with it interval
+func WsCombinedKlineServe(symbolIntervalPair map[string]string, handler WsKlineHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := getCombinedEndpoint()
+	for symbol, interval := range symbolIntervalPair {
+		endpoint += fmt.Sprintf("%s@kline_%s", strings.ToLower(symbol), interval) + "/"
+	}
+	endpoint = endpoint[:len(endpoint)-1]
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		j, err := newJSON(message)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		stream := j.Get("stream").MustString()
+		data := j.Get("data").MustMap()
+
+		symbol := strings.Split(stream, "@")[0]
+
+		jsonData, _ := json.Marshal(data)
+
+		event := new(WsKlineEvent)
+		err = json.Unmarshal(jsonData, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		event.Symbol = strings.ToUpper(symbol)
+
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
 
 // WsKlineServe serve websocket kline handler with a symbol and interval like 15m, 30s
 func WsKlineServe(symbol string, interval string, handler WsKlineHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
@@ -364,6 +399,43 @@ func WsUserDataServe(listenKey string, handler WsHandler, errHandler ErrHandler)
 
 // WsMarketStatHandler handle websocket that push single market statistics for 24hr
 type WsMarketStatHandler func(event *WsMarketStatEvent)
+
+// WsCombinedMarketStatServe is similar to WsMarketStatServe, but it handles multiple symbolx
+func WsCombinedMarketStatServe(symbols []string, handler WsMarketStatHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := getCombinedEndpoint()
+	for s := range symbols {
+		endpoint += fmt.Sprintf("%s@ticker", strings.ToLower(symbols[s])) + "/"
+	}
+	endpoint = endpoint[:len(endpoint)-1]
+	cfg := newWsConfig(endpoint)
+
+	wsHandler := func(message []byte) {
+		j, err := newJSON(message)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		stream := j.Get("stream").MustString()
+		data := j.Get("data").MustMap()
+
+		symbol := strings.Split(stream, "@")[0]
+
+		jsonData, _ := json.Marshal(data)
+
+		event := new(WsMarketStatEvent)
+		err = json.Unmarshal(jsonData, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		event.Symbol = strings.ToUpper(symbol)
+
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
 
 // WsMarketStatServe serve websocket that push 24hr statistics for single market every second
 func WsMarketStatServe(symbol string, handler WsMarketStatHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {

@@ -3,6 +3,8 @@ package futures
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"strings"
 )
 
 // CreateOrderService create order
@@ -21,6 +23,7 @@ type CreateOrderService struct {
 	workingType      *WorkingType
 	activationPrice  *string
 	callbackRate     *string
+	priceProtect     *bool
 	newOrderRespType NewOrderRespType
 	closePosition    *bool
 }
@@ -103,6 +106,12 @@ func (s *CreateOrderService) CallbackRate(callbackRate string) *CreateOrderServi
 	return s
 }
 
+// PriceProtect set priceProtect
+func (s *CreateOrderService) PriceProtect(priceProtect bool) *CreateOrderService {
+	s.priceProtect = &priceProtect
+	return s
+}
+
 // NewOrderResponseType set newOrderResponseType
 func (s *CreateOrderService) NewOrderResponseType(newOrderResponseType NewOrderRespType) *CreateOrderService {
 	s.newOrderRespType = newOrderResponseType
@@ -148,6 +157,9 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 	}
 	if s.workingType != nil {
 		m["workingType"] = *s.workingType
+	}
+	if s.priceProtect != nil {
+		m["priceProtect"] = *s.priceProtect
 	}
 	if s.activationPrice != nil {
 		m["activationPrice"] = *s.activationPrice
@@ -202,6 +214,7 @@ type CreateOrderResponse struct {
 	AvgPrice         string           `json:"avgPrice"`
 	PositionSide     PositionSideType `json:"positionSide"`
 	ClosePosition    bool             `json:"closePosition"`
+	PriceProtect     bool             `json:"priceProtect"`
 }
 
 // ListOpenOrdersService list opened orders
@@ -314,6 +327,8 @@ type Order struct {
 	AvgPrice         string           `json:"avgPrice"`
 	OrigType         string           `json:"origType"`
 	PositionSide     PositionSideType `json:"positionSide"`
+	PriceProtect     bool             `json:"priceProtect"`
+	ClosePosition    bool             `json:"closePosition"`
 }
 
 // ListOrdersService all account orders; active, canceled, or filled
@@ -462,6 +477,7 @@ type CancelOrderResponse struct {
 	PriceRate        string           `json:"priceRate"`
 	OrigType         string           `json:"origType"`
 	PositionSide     PositionSideType `json:"positionSide"`
+	PriceProtect     bool             `json:"priceProtect"`
 }
 
 // CancelAllOpenOrdersService cancel all open orders
@@ -489,6 +505,60 @@ func (s *CancelAllOpenOrdersService) Do(ctx context.Context, opts ...RequestOpti
 		return err
 	}
 	return nil
+}
+
+// CancelMultiplesOrdersService cancel a list of orders
+type CancelMultiplesOrdersService struct {
+	c                     *Client
+	symbol                string
+	orderIDList           []int64
+	origClientOrderIDList []string
+}
+
+// Symbol set symbol
+func (s *CancelMultiplesOrdersService) Symbol(symbol string) *CancelMultiplesOrdersService {
+	s.symbol = symbol
+	return s
+}
+
+// OrderID set orderID
+func (s *CancelMultiplesOrdersService) OrderIDList(orderIDList []int64) *CancelMultiplesOrdersService {
+	s.orderIDList = orderIDList
+	return s
+}
+
+// OrigClientOrderID set origClientOrderID
+func (s *CancelMultiplesOrdersService) OrigClientOrderIDList(origClientOrderIDList []string) *CancelMultiplesOrdersService {
+	s.origClientOrderIDList = origClientOrderIDList
+	return s
+}
+
+// Do send request
+func (s *CancelMultiplesOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*CancelOrderResponse, err error) {
+	r := &request{
+		method:   "DELETE",
+		endpoint: "/fapi/v1/batchOrders",
+		secType:  secTypeSigned,
+	}
+	r.setFormParam("symbol", s.symbol)
+	if s.orderIDList != nil {
+		// convert a slice of integers to a string e.g. [1 2 3] => "[1,2,3]"
+		orderIDListString := strings.Join(strings.Fields(fmt.Sprint(s.orderIDList)), ",")
+		r.setFormParam("orderIdList", orderIDListString)
+	}
+	if s.origClientOrderIDList != nil {
+		r.setFormParam("origClientOrderIdList", s.origClientOrderIDList)
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = make([]*CancelOrderResponse, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return []*CancelOrderResponse{}, err
+	}
+	return res, nil
 }
 
 // ListLiquidationOrdersService list liquidation orders
@@ -567,4 +637,101 @@ type LiquidationOrder struct {
 	Type             OrderType       `json:"type"`
 	Side             SideType        `json:"side"`
 	Time             int64           `json:"time"`
+}
+
+// ListUserLiquidationOrdersService lists user's liquidation orders
+type ListUserLiquidationOrdersService struct {
+	c             *Client
+	symbol        *string
+	autoCloseType ForceOrderCloseType
+	startTime     *int64
+	endTime       *int64
+	limit         *int
+}
+
+// Symbol set symbol
+func (s *ListUserLiquidationOrdersService) Symbol(symbol string) *ListUserLiquidationOrdersService {
+	s.symbol = &symbol
+	return s
+}
+
+// AutoCloseType set symbol
+func (s *ListUserLiquidationOrdersService) AutoCloseType(autoCloseType ForceOrderCloseType) *ListUserLiquidationOrdersService {
+	s.autoCloseType = autoCloseType
+	return s
+}
+
+// StartTime set startTime
+func (s *ListUserLiquidationOrdersService) StartTime(startTime int64) *ListUserLiquidationOrdersService {
+	s.startTime = &startTime
+	return s
+}
+
+// EndTime set endTime
+func (s *ListUserLiquidationOrdersService) EndTime(endTime int64) *ListUserLiquidationOrdersService {
+	s.endTime = &endTime
+	return s
+}
+
+// Limit set limit
+func (s *ListUserLiquidationOrdersService) Limit(limit int) *ListUserLiquidationOrdersService {
+	s.limit = &limit
+	return s
+}
+
+// Do send request
+func (s *ListUserLiquidationOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*UserLiquidationOrder, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/fapi/v1/forceOrders",
+		secType:  secTypeSigned,
+	}
+
+	r.setParam("autoCloseType", s.autoCloseType)
+	if s.symbol != nil {
+		r.setParam("symbol", *s.symbol)
+	}
+	if s.startTime != nil {
+		r.setParam("startTime", *s.startTime)
+	}
+	if s.endTime != nil {
+		r.setParam("endTime", *s.endTime)
+	}
+	if s.limit != nil {
+		r.setParam("limit", *s.limit)
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []*UserLiquidationOrder{}, err
+	}
+	res = make([]*UserLiquidationOrder, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return []*UserLiquidationOrder{}, err
+	}
+	return res, nil
+}
+
+// UserLiquidationOrder defines user's liquidation order
+type UserLiquidationOrder struct {
+	OrderId          int64            `json:"orderId"`
+	Symbol           string           `json:"symbol"`
+	Status           OrderStatusType  `json:"status"`
+	ClientOrderId    string           `json:"clientOrderId"`
+	Price            string           `json:"price"`
+	AveragePrice     string           `json:"avgPrice"`
+	OrigQuantity     string           `json:"origQty"`
+	ExecutedQuantity string           `json:"executedQty"`
+	CumQuote         string           `json:"cumQuote"`
+	TimeInForce      TimeInForceType  `json:"timeInForce"`
+	Type             OrderType        `json:"type"`
+	ReduceOnly       bool             `json:"reduceOnly"`
+	ClosePosition    bool             `json:"closePosition"`
+	Side             SideType         `json:"side"`
+	PositionSide     PositionSideType `json:"positionSide"`
+	StopPrice        string           `json:"stopPrice"`
+	WorkingType      WorkingType      `json:"workingType"`
+	OrigType         string           `json:"origType"`
+	Time             int64            `json:"time"`
+	UpdateTime       int64            `json:"updateTime"`
 }
