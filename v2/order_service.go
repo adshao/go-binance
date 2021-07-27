@@ -467,6 +467,7 @@ func (s *GetOrderService) Do(ctx context.Context, opts ...RequestOption) (res *O
 type Order struct {
 	Symbol                   string          `json:"symbol"`
 	OrderID                  int64           `json:"orderId"`
+	OrderListId              int64           `json:"orderListId"`
 	ClientOrderID            string          `json:"clientOrderId"`
 	Price                    string          `json:"price"`
 	OrigQuantity             string          `json:"origQty"`
