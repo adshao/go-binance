@@ -735,3 +735,112 @@ type UserLiquidationOrder struct {
 	Time             int64            `json:"time"`
 	UpdateTime       int64            `json:"updateTime"`
 }
+
+type CreateBatchOrdersService struct {
+	c      *Client
+	orders []*CreateOrderService
+}
+
+type CreateBatchOrdersResponse struct {
+	Orders []*Order
+}
+
+func (s *CreateBatchOrdersService) OrderList(orders []*CreateOrderService) *CreateBatchOrdersService {
+	s.orders = orders
+	return s
+}
+
+func (s *CreateBatchOrdersService) Do(ctx context.Context, opts ...RequestOption) (res *CreateBatchOrdersResponse, err error) {
+	r := &request{
+		method:   "POST",
+		endpoint: "/fapi/v1/batchOrders",
+		secType:  secTypeSigned,
+	}
+
+	orders := []params{}
+	for _, order := range s.orders {
+		m := params{
+			"symbol":           order.symbol,
+			"side":             order.side,
+			"type":             order.orderType,
+			"quantity":         order.quantity,
+			"newOrderRespType": order.newOrderRespType,
+		}
+
+		if order.positionSide != nil {
+			m["positionSide"] = *order.positionSide
+		}
+		if order.timeInForce != nil {
+			m["timeInForce"] = *order.timeInForce
+		}
+		if order.reduceOnly != nil {
+			m["reduceOnly"] = *order.reduceOnly
+		}
+		if order.price != nil {
+			m["price"] = *order.price
+		}
+		if order.newClientOrderID != nil {
+			m["newClientOrderId"] = *order.newClientOrderID
+		}
+		if order.stopPrice != nil {
+			m["stopPrice"] = *order.stopPrice
+		}
+		if order.workingType != nil {
+			m["workingType"] = *order.workingType
+		}
+		if order.priceProtect != nil {
+			m["priceProtect"] = *order.priceProtect
+		}
+		if order.activationPrice != nil {
+			m["activationPrice"] = *order.activationPrice
+		}
+		if order.callbackRate != nil {
+			m["callbackRate"] = *order.callbackRate
+		}
+		if order.closePosition != nil {
+			m["closePosition"] = *order.closePosition
+		}
+		orders = append(orders, m)
+	}
+	b, err := json.Marshal(orders)
+	if err != nil {
+		return &CreateBatchOrdersResponse{}, err
+	}
+	m := params{
+		"batchOrders": string(b),
+	}
+
+	r.setFormParams(m)
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+
+	if err != nil {
+		return &CreateBatchOrdersResponse{}, err
+	}
+
+	rawMessages := make([]*json.RawMessage, 0)
+
+	err = json.Unmarshal(data, &rawMessages)
+
+	if err != nil {
+		return &CreateBatchOrdersResponse{}, err
+	}
+
+	batchCreateOrdersResponse := new(CreateBatchOrdersResponse)
+
+	for _, j := range rawMessages {
+		o := new(Order)
+		if err := json.Unmarshal(*j, o); err != nil {
+			return &CreateBatchOrdersResponse{}, err
+		}
+
+		if o.ClientOrderID != "" {
+			batchCreateOrdersResponse.Orders = append(batchCreateOrdersResponse.Orders, o)
+			continue
+		}
+
+	}
+
+	return batchCreateOrdersResponse, nil
+
+}
