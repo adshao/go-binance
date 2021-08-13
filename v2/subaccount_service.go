@@ -64,12 +64,6 @@ func (s *TransferToSubAccountService) Do(ctx context.Context, opts ...RequestOpt
 	return res, nil
 }
 
-// Test send test api to check if the request is valid
-func (s *TransferToSubAccountService) Test(ctx context.Context, opts ...RequestOption) (err error) {
-	_, err = s.transferToSubaccount(ctx, "/sapi/v1/sub-account/transfer/subToSub/test", opts...)
-	return err
-}
-
 // TransferToSubAccountResponse define transfer to subaccount response
 type TransferToSubAccountResponse struct {
 	TxnID int64 `json:"txnId"`
