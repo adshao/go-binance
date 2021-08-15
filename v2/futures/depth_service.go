@@ -44,6 +44,8 @@ func (s *DepthService) Do(ctx context.Context, opts ...RequestOption) (res *Dept
 		return nil, err
 	}
 	res = new(DepthResponse)
+	res.Time = j.Get("E").MustInt64()
+	res.TradeTime = j.Get("T").MustInt64()
 	res.LastUpdateID = j.Get("lastUpdateId").MustInt64()
 	bidsLen := len(j.Get("bids").MustArray())
 	res.Bids = make([]Bid, bidsLen)
@@ -69,6 +71,8 @@ func (s *DepthService) Do(ctx context.Context, opts ...RequestOption) (res *Dept
 // DepthResponse define depth info with bids and asks
 type DepthResponse struct {
 	LastUpdateID int64 `json:"lastUpdateId"`
+	Time         int64 `json:"E"`
+	TradeTime    int64 `json:"T"`
 	Bids         []Bid `json:"bids"`
 	Asks         []Ask `json:"asks"`
 }
