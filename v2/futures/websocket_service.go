@@ -598,7 +598,6 @@ func WsCombinedDiffDepthServe(symbols []string, handler WsDepthHandler, errHandl
 	endpoint = endpoint[:len(endpoint)-1]
 	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
-		fmt.Println(string(message))
 		j, err := newJSON(message)
 		if err != nil {
 			errHandler(err)
