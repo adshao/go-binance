@@ -96,17 +96,18 @@ func (s *websocketServiceTestSuite) TestAggTradeServe() {
 
 func (s *websocketServiceTestSuite) TestCombinedAggTradeServe() {
 	data := []byte(`{
-		"e": "aggTrade",
-		"E": 123456789, 
-		"s": "BTCUSDT",
-		"a": 5933014,
-		"p": "0.001",
-		"q": "100",
-		"f": 100,
-		"l": 105,
-		"T": 123456785,
-		"m": true
-	  }`)
+			"stream":"btcusdt@aggTrade",
+			"data":{
+				"e":"aggTrade",
+				"E":1628843331742,
+				"a":105688535,
+				"s":"BTCUSDT",
+				"p":"46063.00",
+				"q":"0.005",
+				"f":188354417,
+				"l":188354417,
+				"T":1628843331590,
+				"m":false}}`)
 	fakeErrMsg := "fake error"
 	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
@@ -114,15 +115,15 @@ func (s *websocketServiceTestSuite) TestCombinedAggTradeServe() {
 	doneC, stopC, err := WsCombinedAggTradeServe([]string{"BTCUSDT"}, func(event *WsAggTradeEvent) {
 		e := &WsAggTradeEvent{
 			Event:            "aggTrade",
-			Time:             123456789,
+			Time:             1628843331742,
 			Symbol:           "BTCUSDT",
-			AggregateTradeID: 5933014,
-			Price:            "0.001",
-			Quantity:         "100",
-			FirstTradeID:     100,
-			LastTradeID:      105,
-			TradeTime:        123456785,
-			Maker:            true,
+			AggregateTradeID: 105688535,
+			Price:            "46063.00",
+			Quantity:         "0.005",
+			FirstTradeID:     188354417,
+			LastTradeID:      188354417,
+			TradeTime:        1628843331590,
+			Maker:            false,
 		}
 		s.assertWsAggTradeEvent(e, event)
 	},
@@ -1056,6 +1057,47 @@ func (s *websocketServiceTestSuite) testDiffDepthServe(rate *time.Duration, expe
 	if doneC != nil {
 		<-doneC
 	}
+}
+
+func (s *websocketServiceTestSuite) TestWsCombinedDiffDepthServe() {
+	symbols := []string{"BTCUSDT"}
+	data := []byte(`{
+		"stream":"btcusdt@depth",
+		"data":{
+			"e":"depthUpdate",
+			"E":1628847118038,
+			"T":1628847117814,
+			"s":"BTCUSDT",
+			"U":21925649843,
+			"u":21925649849,
+			"pu":21925649651,
+			"b":[["46248.03","0.000"]],
+			"a":[["46249.88","71.870"]]}}`)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+
+	doneC, stopC, err := WsCombinedDiffDepthServe(symbols, func(event *WsDepthEvent) {
+		e := &WsDepthEvent{
+			Event:            "depthUpdate",
+			Time:             1628847118038,
+			TransactionTime:  1628847117814,
+			Symbol:           "BTCUSDT",
+			FirstUpdateID:    21925649843,
+			LastUpdateID:     21925649849,
+			PrevLastUpdateID: 21925649651,
+			Bids:             []Bid{{Price: "46248.03", Quantity: "0.000"}},
+			Asks:             []Ask{{Price: "46249.88", Quantity: "71.870"}},
+		}
+		s.assertDepthEvent(e, event)
+	},
+		func(err error) {
+			s.r().EqualError(err, fakeErrMsg)
+		})
+
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
 }
 
 func (s *websocketServiceTestSuite) assertDepthEvent(e, a *WsDepthEvent) {
