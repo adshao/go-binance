@@ -44,6 +44,9 @@ type SymbolStatusType string
 // SymbolFilterType define symbol filter type
 type SymbolFilterType string
 
+// UserDataEventType define spot user data event type
+type UserDataEventType string
+
 // MarginTransferType define margin transfer type
 type MarginTransferType int
 
@@ -117,6 +120,11 @@ const (
 	SymbolFilterTypeIcebergParts     SymbolFilterType = "ICEBERG_PARTS"
 	SymbolFilterTypeMarketLotSize    SymbolFilterType = "MARKET_LOT_SIZE"
 	SymbolFilterTypeMaxNumAlgoOrders SymbolFilterType = "MAX_NUM_ALGO_ORDERS"
+
+	UserDataEventTypeOutboundAccountPosition UserDataEventType = "outboundAccountPosition"
+	UserDataEventTypeBalanceUpdate           UserDataEventType = "balanceUpdate"
+	UserDataEventTypeExecutionReport         UserDataEventType = "executionReport"
+	UserDataEventTypeListStatus              UserDataEventType = "ListStatus"
 
 	MarginTransferTypeToMargin MarginTransferType = 1
 	MarginTransferTypeToMain   MarginTransferType = 2
