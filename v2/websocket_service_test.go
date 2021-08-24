@@ -2,6 +2,7 @@ package binance
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -383,6 +384,58 @@ func (s *websocketServiceTestSuite) assertWsDepthEventEqual(e, a *WsDepthEvent) 
 	}
 }
 
+func (s *websocketServiceTestSuite) TestCombinedDepthServe() {
+	data := []byte(`{
+		"stream":"btcusdt@depth",
+		"data":{
+			"e":"depthUpdate",
+			"E":1629769560797,
+			"s":"BTCUSDT",
+			"U":13544035,
+			"u":13544037,
+			"b":[["49095.23000000","0.01018500"],["49081.00000000","0.00000000"]],
+			"a":[["49095.65000000","0.01018500"]]}}
+	`)
+	symbols := []string{
+		"BTCUSDT",
+		"ETHUSDT",
+	}
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+	doneC, stopC, err := WsCombinedDepthServe(symbols, func(event *WsDepthEvent) {
+		e := &WsDepthEvent{
+			Symbol:        "BTCUSDT",
+			Time:          1629769560797,
+			LastUpdateID:  13544037,
+			FirstUpdateID: 13544035,
+			Bids: []Bid{
+				{
+					Price:    "49095.23000000",
+					Quantity: "0.01018500",
+				},
+				{
+					Price:    "49081.00000000",
+					Quantity: "0.00000000",
+				},
+			},
+			Asks: []Ask{
+				{
+					Price:    "49095.65000000",
+					Quantity: "0.01018500",
+				},
+			},
+		}
+		s.assertWsDepthEventEqual(e, event)
+	},
+		func(err error) {
+			s.r().EqualError(err, fakeErrMsg)
+		})
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
 func (s *websocketServiceTestSuite) TestKlineServe() {
 	data := []byte(`{
         "e": "kline",
@@ -633,60 +686,180 @@ func (s *websocketServiceTestSuite) assertWsAggTradeEventEqual(e, a *WsAggTradeE
 	r.Equal(e.IsBuyerMaker, a.IsBuyerMaker, "IsBuyerMaker")
 }
 
-func (s *websocketServiceTestSuite) testWsUserDataServe(data []byte) {
+func (s *websocketServiceTestSuite) assertAccountUpdate(e, a *WsAccountUpdate) {
+	r := s.r()
+	r.Equal(e.Asset, a.Asset)
+	r.Equal(e.Free, a.Free)
+	r.Equal(e.Locked, a.Locked)
+}
+
+func (s *websocketServiceTestSuite) assertOrderUpdate(e, a *WsOrderUpdate) {
+	r := s.r()
+	r.Equal(e.TransactionTime, a.TransactionTime, "TransactionTime")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.Volume, a.Volume, "Volume")
+	r.Equal(e.QuoteVolume, a.QuoteVolume, "QuoteVolume")
+	r.Equal(e.Price, a.Price, "Price")
+	r.Equal(e.Side, a.Side, "Side")
+	r.Equal(e.IsMaker, a.IsMaker, "IsMaker")
+	r.Equal(e.Status, a.Status, "Status")
+	r.Equal(e.TimeInForce, a.TimeInForce, "TimeInForce")
+	r.Equal(e.Type, a.Type, "Type")
+	r.Equal(e.CreateTime, a.CreateTime, "CreateTime")
+	r.Equal(e.Id, a.Id, "Id")
+	r.Equal(e.StopPrice, a.StopPrice, "StopPrice")
+	r.Equal(e.TradeId, a.TradeId, "TradeId")
+	r.Equal(e.ExecutionType, a.ExecutionType, "ExecutionType")
+	r.Equal(e.FeeAsset, a.FeeAsset, "FeeAsset")
+	r.Equal(e.FeeCost, a.FeeCost, "FeeCost")
+	r.Equal(e.FilledQuoteVolume, a.FilledQuoteVolume, "FilledQuoteVolume")
+	r.Equal(e.FilledVolume, a.FilledVolume, "FilledVolume")
+	r.Equal(e.IceBergVolume, a.IceBergVolume, "IceBergVolume")
+	r.Equal(e.IsInOrderBook, a.IsInOrderBook, "IsInOrderBook")
+	r.Equal(e.LatestPrice, a.LatestPrice, "LatestPrice")
+	r.Equal(e.OrderListId, a.OrderListId, "LatestQuoteVolume")
+	r.Equal(e.LatestQuoteVolume, a.LatestQuoteVolume, "LatestQuoteVolume")
+	r.Equal(e.LatestVolume, a.LatestVolume, "OrigCustomOrderId")
+	r.Equal(e.OrigCustomOrderId, a.OrigCustomOrderId, "OrigCustomOrderId")
+	r.Equal(e.RejectReason, a.RejectReason, "RejectReason")
+}
+
+func (s *websocketServiceTestSuite) assertBalanceUpdate(e, a *WsBalanceUpdate) {
+	r := s.r()
+	r.Equal(e.Asset, a.Asset)
+	r.Equal(e.Change, a.Change)
+}
+
+func (s *websocketServiceTestSuite) assertUserDataEvent(e, a *WsUserDataEvent) {
+	r := s.r()
+	r.Equal(e.Event, a.Event, "Event")
+	r.Equal(e.Time, a.Time, "Time")
+	fmt.Println(e.TransactionTime, a.TransactionTime)
+	r.Equal(e.TransactionTime, a.TransactionTime, "TransactionTime")
+	r.Equal(e.AccountUpdateTime, a.AccountUpdateTime, "AccountUpdateTime")
+	for i, e := range e.AccountUpdate {
+		a := a.AccountUpdate[i]
+		s.assertAccountUpdate(&e, &a)
+	}
+	s.assertOrderUpdate(&e.OrderUpdate, &a.OrderUpdate)
+	s.assertBalanceUpdate(&e.BalanceUpdate, &a.BalanceUpdate)
+}
+
+func (s *websocketServiceTestSuite) testWsUserDataServe(data []byte, expectedEvent *WsUserDataEvent) {
 	fakeErrMsg := "fake error"
 	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
 
-	doneC, stopC, err := WsUserDataServe("listenKey", func(event []byte) {
-		s.r().Equal(data, event)
+	doneC, stopC, err := WsUserDataServe("fakeListenKey", func(event *WsUserDataEvent) {
+		s.assertUserDataEvent(expectedEvent, event)
 	}, func(err error) {
 		s.r().EqualError(err, fakeErrMsg)
 	})
+
 	s.r().NoError(err)
 	stopC <- struct{}{}
 	<-doneC
 }
 
-func (s *websocketServiceTestSuite) TestWsUserDataServe() {
-	s.testWsUserDataServe([]byte(`{
-        "e": "outboundAccountInfo",
-        "E": 1499405658849,
-        "m": 0,
-        "t": 0,
-        "b": 0,
-        "s": 0,
-        "T": true,
-        "W": true,
-        "D": true,
-        "B": [
-            {
-                "a": "LTC",
-                "f": "17366.18538083",
-                "l": "0.00000000"
-            },
-            {
-                "a": "BTC",
-                "f": "10537.85314051",
-                "l": "2.19464093"
-            },
-            {
-                "a": "ETH",
-                "f": "17902.35190619",
-                "l": "0.00000000"
-            },
-            {
-                "a": "BNC",
-                "f": "1114503.29769312",
-                "l": "0.00000000"
-            },
-            {
-                "a": "NEO",
-                "f": "0.00000000",
-                "l": "0.00000000"
-            }
-        ]
-    }`))
+func (s *websocketServiceTestSuite) TestWsUserDataServeAccountUpdate() {
+	data := []byte(`{
+	   "e":"outboundAccountPosition",
+	   "E":1629771130464,
+	   "u":1629771130463,
+	   "B":[
+	      {
+	         "a":"LTC",
+	         "f":"503.70000000",
+	         "l":"0.00000000"
+	      }
+	   ]
+	}`)
+	expectedEvent := &WsUserDataEvent{
+		Event:             "outboundAccountPosition",
+		Time:              1629771130464,
+		AccountUpdateTime: 1629771130463,
+		AccountUpdate: []WsAccountUpdate{
+			{
+				"LTC",
+				"503.70000000",
+				"0.00000000",
+			},
+		},
+	}
+	s.testWsUserDataServe(data, expectedEvent)
+}
+
+func (s *websocketServiceTestSuite) TestWsUserDataServeOrderUpdate() {
+	data := []byte(`{
+	   "e":"executionReport",
+	   "E":1629771130464,
+	   "s":"LTCUSDT",
+	   "c":"MRx05dQCeTigiV1u1rfhUs",
+	   "S":"BUY",
+	   "o":"MARKET",
+	   "f":"GTC",
+	   "q":"0.10000000",
+	   "p":"0.00000000",
+	   "P":"0.00000000",
+	   "F":"0.00000000",
+	   "g":-1,
+	   "C":"",
+	   "x":"TRADE",
+	   "X":"FILLED",
+	   "r":"NONE",
+	   "i":18997,
+	   "l":"0.10000000",
+	   "z":"0.10000000",
+	   "L":"175.37000000",
+	   "n":"0.00000000",
+	   "N":"LTC",
+	   "T":1629771130463,
+	   "t":1473,
+	   "I":314739191,
+	   "w":false,
+	   "m":false,
+	   "M":true,
+	   "O":1629771130463,
+	   "Z":"17.53700000",
+	   "Y":"17.53700000",
+	   "Q":"0.00000000"
+	}`)
+	expectedEvent := &WsUserDataEvent{
+		Event:           "executionReport",
+		Time:            1629771130464,
+		TransactionTime: 1629771130463,
+		OrderUpdate: WsOrderUpdate{
+			Symbol:            "LTCUSDT",
+			ClientOrderId:     "MRx05dQCeTigiV1u1rfhUs",
+			Side:              "BUY",
+			Type:              "MARKET",
+			TimeInForce:       "GTC",
+			Volume:            "0.10000000",
+			Price:             "0.00000000",
+			StopPrice:         "0.00000000",
+			IceBergVolume:     "0.00000000",
+			OrderListId:       -1,
+			OrigCustomOrderId: "",
+			ExecutionType:     "TRADE",
+			Status:            "FILLED",
+			RejectReason:      "NONE",
+			Id:                18997,
+			LatestVolume:      "0.10000000",
+			FilledVolume:      "0.10000000",
+			LatestPrice:       "175.37000000",
+			FeeAsset:          "LTC",
+			FeeCost:           "0.00000000",
+			TransactionTime:   1629771130463,
+			TradeId:           1473,
+			IsInOrderBook:     false,
+			IsMaker:           true,
+			CreateTime:        1629771130463,
+			FilledQuoteVolume: "17.53700000",
+			LatestQuoteVolume: "17.53700000",
+			QuoteVolume:       "0.00000000",
+		},
+	}
+	s.testWsUserDataServe(data, expectedEvent)
 }
 
 func (s *websocketServiceTestSuite) TestWsMarketStatServe() {
