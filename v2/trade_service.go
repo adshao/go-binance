@@ -13,6 +13,7 @@ type ListTradesService struct {
 	endTime   *int64
 	limit     *int
 	fromID    *int64
+	orderId   *int64
 }
 
 // Symbol set symbol
@@ -45,6 +46,12 @@ func (s *ListTradesService) FromID(fromID int64) *ListTradesService {
 	return s
 }
 
+// OrderId set OrderId
+func (s *ListTradesService) OrderId(OrderId int64) *ListTradesService {
+	s.orderId = &OrderId
+	return s
+}
+
 // Do send request
 func (s *ListTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*TradeV3, err error) {
 	r := &request{
@@ -64,6 +71,9 @@ func (s *ListTradesService) Do(ctx context.Context, opts ...RequestOption) (res 
 	}
 	if s.fromID != nil {
 		r.setParam("fromId", *s.fromID)
+	}
+	if s.orderId != nil {
+		r.setParam("orderId", *s.orderId)
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
