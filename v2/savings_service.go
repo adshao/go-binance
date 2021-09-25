@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 )
 
-// ListSavingsFlexibleProductsService get
+// ListSavingsFlexibleProductsService https://binance-docs.github.io/apidocs/spot/en/#get-flexible-product-list-user_data
 type ListSavingsFlexibleProductsService struct {
 	c        *Client
 	status   string
@@ -14,21 +14,25 @@ type ListSavingsFlexibleProductsService struct {
 	size     int64
 }
 
+// Status represent the product status ("ALL", "SUBSCRIBABLE", "UNSUBSCRIBABLE") - Default: "ALL"
 func (s *ListSavingsFlexibleProductsService) Status(status string) *ListSavingsFlexibleProductsService {
 	s.status = status
 	return s
 }
 
+// Featured ("ALL", "TRUE") - Default: "ALL"
 func (s *ListSavingsFlexibleProductsService) Featured(featured string) *ListSavingsFlexibleProductsService {
 	s.featured = featured
 	return s
 }
 
+// Current query page. Default: 1, Min: 1
 func (s *ListSavingsFlexibleProductsService) Current(current int64) *ListSavingsFlexibleProductsService {
 	s.current = current
 	return s
 }
 
+// Size Default: 50, Max: 100
 func (s *ListSavingsFlexibleProductsService) Size(size int64) *ListSavingsFlexibleProductsService {
 	s.size = size
 	return s
@@ -95,39 +99,45 @@ type ListSavingsFixedAndActivityProductsService struct {
 	size        int64
 }
 
+// Asset desired asset
 func (s *ListSavingsFixedAndActivityProductsService) Asset(asset string) *ListSavingsFixedAndActivityProductsService {
 	s.asset = asset
-	return s
-}
-
-func (s *ListSavingsFixedAndActivityProductsService) IsSortAsc(inSortAsc bool) *ListSavingsFixedAndActivityProductsService {
-	s.isSortAsc = inSortAsc
-	return s
-}
-
-func (s *ListSavingsFixedAndActivityProductsService) SortBy(sortBy string) *ListSavingsFixedAndActivityProductsService {
-	s.sortBy = sortBy
-	return s
-}
-
-func (s *ListSavingsFixedAndActivityProductsService) Current(current int64) *ListSavingsFixedAndActivityProductsService {
-	s.current = current
-	return s
-}
-
-func (s *ListSavingsFixedAndActivityProductsService) Size(size int64) *ListSavingsFixedAndActivityProductsService {
-	s.size = size
-	return s
-}
-
-func (s *ListSavingsFixedAndActivityProductsService) Status(status string) *ListSavingsFixedAndActivityProductsService {
-	s.status = status
 	return s
 }
 
 // Type set project type ("ACTIVITY", "CUSTOMIZED_FIXED")
 func (s *ListSavingsFixedAndActivityProductsService) Type(projectType string) *ListSavingsFixedAndActivityProductsService {
 	s.projectType = projectType
+	return s
+}
+
+// IsSortAsc default "true"
+func (s *ListSavingsFixedAndActivityProductsService) IsSortAsc(isSortAsc bool) *ListSavingsFixedAndActivityProductsService {
+	s.isSortAsc = isSortAsc
+	return s
+}
+
+// Status ("ALL", "SUBSCRIBABLE", "UNSUBSCRIBABLE") - default "ALL"
+func (s *ListSavingsFixedAndActivityProductsService) Status(status string) *ListSavingsFixedAndActivityProductsService {
+	s.status = status
+	return s
+}
+
+// SortBy ("START_TIME", "LOT_SIZE", "INTEREST_RATE", "DURATION") - default "START_TIME"
+func (s *ListSavingsFixedAndActivityProductsService) SortBy(sortBy string) *ListSavingsFixedAndActivityProductsService {
+	s.sortBy = sortBy
+	return s
+}
+
+// Current Currently querying page. Start from 1. Default:1
+func (s *ListSavingsFixedAndActivityProductsService) Current(current int64) *ListSavingsFixedAndActivityProductsService {
+	s.current = current
+	return s
+}
+
+// Size Default:10, Max:100
+func (s *ListSavingsFixedAndActivityProductsService) Size(size int64) *ListSavingsFixedAndActivityProductsService {
+	s.size = size
 	return s
 }
 
