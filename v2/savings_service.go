@@ -135,6 +135,52 @@ type PurchaseSavingsFlexibleProductResponse struct {
 	PurchaseId uint64 `json:"purchaseId"`
 }
 
+// RedeemSavingsFlexibleProductService https://binance-docs.github.io/apidocs/spot/en/#redeem-flexible-product-user_data
+type RedeemSavingsFlexibleProductService struct {
+	c          *Client
+	productId  string
+	amount     float64
+	redeemType string
+}
+
+// ProductId represent the id of the flexible product to redeem
+func (s *RedeemSavingsFlexibleProductService) ProductId(productId string) *RedeemSavingsFlexibleProductService {
+	s.productId = productId
+	return s
+}
+
+// Amount is the quantity of the product to redeem
+func (s *RedeemSavingsFlexibleProductService) Amount(amount float64) *RedeemSavingsFlexibleProductService {
+	s.amount = amount
+	return s
+}
+
+// Type ("FAST", "NORMAL")
+func (s *RedeemSavingsFlexibleProductService) Type(redeemType string) *RedeemSavingsFlexibleProductService {
+	s.redeemType = redeemType
+	return s
+}
+
+// Do send request
+func (s *RedeemSavingsFlexibleProductService) Do(ctx context.Context, opts ...RequestOption) error {
+	r := &request{
+		method:   "POST",
+		endpoint: "/sapi/v1/lending/daily/redeem",
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"productId": s.productId,
+		"amount":    s.amount,
+	}
+	if s.redeemType != "" {
+		m["type"] = s.redeemType
+	}
+	r.setParams(m)
+	_, err := s.c.callAPI(ctx, r, opts...)
+
+	return err
+}
+
 // ListSavingsFixedAndActivityProductsService https://binance-docs.github.io/apidocs/spot/en/#get-fixed-and-activity-project-list-user_data
 type ListSavingsFixedAndActivityProductsService struct {
 	c           *Client

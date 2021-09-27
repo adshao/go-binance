@@ -135,6 +135,29 @@ func (s *savingsServiceTestSuite) TestPurchaseSavingsFlexibleProduct() {
 	r.Equal(purchaseId, uint64(40607), "Purchase Id")
 }
 
+func (s *savingsServiceTestSuite) TestReedemSavingsFlexibleProduct() {
+	data := []byte(`{}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"productId": "BTC001",
+			"amount":    0.52,
+			"type":      "FAST",
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	err := s.client.NewRedeemSavingsFlexibleProductService().
+		ProductId("BTC001").
+		Amount(0.52).
+		Type("FAST").
+		Do(newContext())
+
+	r := s.r()
+	r.NoError(err)
+}
+
 func (s *savingsServiceTestSuite) TestListSavingsFixedAndActivityProducts() {
 	data := []byte(`[
     {

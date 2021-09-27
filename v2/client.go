@@ -433,6 +433,11 @@ func (c *Client) NewPurchaseSavingsFlexibleProductService() *PurchaseSavingsFlex
 	return &PurchaseSavingsFlexibleProductService{c: c}
 }
 
+// NewRedeemSavingsFlexibleProductService redeem a flexible product (Savings)
+func (c *Client) NewRedeemSavingsFlexibleProductService() *RedeemSavingsFlexibleProductService {
+	return &RedeemSavingsFlexibleProductService{c: c}
+}
+
 // NewListSavingsFixedAndActivityProductsService get fixed and activity product list (Savings)
 func (c *Client) NewListSavingsFixedAndActivityProductsService() *ListSavingsFixedAndActivityProductsService {
 	return &ListSavingsFixedAndActivityProductsService{c: c}
