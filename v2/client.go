@@ -632,3 +632,8 @@ func (c *Client) NewListDustLogService() *ListDustLogService {
 func (c *Client) NewDustTransferService() *DustTransferService {
 	return &DustTransferService{c: c}
 }
+
+// NewAssetDividendService init the asset dividend list service
+func (c *Client) NewAssetDividendService() *AssetDividendService {
+	return &AssetDividendService{c: c}
+}
