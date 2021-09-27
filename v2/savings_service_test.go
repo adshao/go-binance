@@ -113,6 +113,28 @@ func (s *savingsServiceTestSuite) assertSavingsFlexibleProductEqual(e, a *Saving
 	r.Equal(e.UpLimitPerUser, a.UpLimitPerUser, "UpLimitPerUser")
 }
 
+func (s *savingsServiceTestSuite) TestPurchaseSavingsFlexibleProduct() {
+	data := []byte(`{ "purchaseId": 40607 }`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"productId": "BTC001",
+			"amount":    0.52,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	purchaseId, err := s.client.NewPurchaseSavingsFlexibleProductService().
+		ProductId("BTC001").
+		Amount(0.52).
+		Do(newContext())
+
+	r := s.r()
+	r.NoError(err)
+	r.Equal(purchaseId, uint64(40607), "Purchase Id")
+}
+
 func (s *savingsServiceTestSuite) TestListSavingsFixedAndActivityProducts() {
 	data := []byte(`[
     {

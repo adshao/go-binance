@@ -87,6 +87,54 @@ type SavingsFlexibleProduct struct {
 	UpLimitPerUser           string `json:"upLimitPerUser"`
 }
 
+// PurchaseSavingsFlexibleProductService https://binance-docs.github.io/apidocs/spot/en/#purchase-flexible-product-user_data
+type PurchaseSavingsFlexibleProductService struct {
+	c         *Client
+	productId string
+	amount    float64
+}
+
+// ProductId represent the id of the flexible product to purchase
+func (s *PurchaseSavingsFlexibleProductService) ProductId(productId string) *PurchaseSavingsFlexibleProductService {
+	s.productId = productId
+	return s
+}
+
+// Amount is the quantity of the product to purchase
+func (s *PurchaseSavingsFlexibleProductService) Amount(amount float64) *PurchaseSavingsFlexibleProductService {
+	s.amount = amount
+	return s
+}
+
+// Do send request
+func (s *PurchaseSavingsFlexibleProductService) Do(ctx context.Context, opts ...RequestOption) (uint64, error) {
+	r := &request{
+		method:   "POST",
+		endpoint: "/sapi/v1/lending/daily/purchase",
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"productId": s.productId,
+		"amount":    s.amount,
+	}
+	r.setParams(m)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return 0, err
+	}
+
+	var res *PurchaseSavingsFlexibleProductResponse
+	if err = json.Unmarshal(data, &res); err != nil {
+		return 0, err
+	}
+
+	return res.PurchaseId, nil
+}
+
+type PurchaseSavingsFlexibleProductResponse struct {
+	PurchaseId uint64 `json:"purchaseId"`
+}
+
 // ListSavingsFixedAndActivityProductsService https://binance-docs.github.io/apidocs/spot/en/#get-fixed-and-activity-project-list-user_data
 type ListSavingsFixedAndActivityProductsService struct {
 	c           *Client
