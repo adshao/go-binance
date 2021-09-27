@@ -423,6 +423,26 @@ func (c *Client) NewGetAccountService() *GetAccountService {
 	return &GetAccountService{c: c}
 }
 
+// NewListSavingsFlexibleProductsService get flexible products list (Savings)
+func (c *Client) NewListSavingsFlexibleProductsService() *ListSavingsFlexibleProductsService {
+	return &ListSavingsFlexibleProductsService{c: c}
+}
+
+// NewPurchaseSavingsFlexibleProductService purchase a flexible product (Savings)
+func (c *Client) NewPurchaseSavingsFlexibleProductService() *PurchaseSavingsFlexibleProductService {
+	return &PurchaseSavingsFlexibleProductService{c: c}
+}
+
+// NewRedeemSavingsFlexibleProductService redeem a flexible product (Savings)
+func (c *Client) NewRedeemSavingsFlexibleProductService() *RedeemSavingsFlexibleProductService {
+	return &RedeemSavingsFlexibleProductService{c: c}
+}
+
+// NewListSavingsFixedAndActivityProductsService get fixed and activity product list (Savings)
+func (c *Client) NewListSavingsFixedAndActivityProductsService() *ListSavingsFixedAndActivityProductsService {
+	return &ListSavingsFixedAndActivityProductsService{c: c}
+}
+
 // NewGetAccountSnapshotService init getting account snapshot service
 func (c *Client) NewGetAccountSnapshotService() *GetAccountSnapshotService {
 	return &GetAccountSnapshotService{c: c}
