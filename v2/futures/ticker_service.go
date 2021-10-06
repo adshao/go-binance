@@ -3,6 +3,7 @@ package futures
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 
 	"github.com/adshao/go-binance/v2/common"
 )
@@ -22,7 +23,7 @@ func (s *ListBookTickersService) Symbol(symbol string) *ListBookTickersService {
 // Do send request
 func (s *ListBookTickersService) Do(ctx context.Context, opts ...RequestOption) (res []*BookTicker, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/ticker/bookTicker",
 	}
 	if s.symbol != nil {
@@ -65,7 +66,7 @@ func (s *ListPricesService) Symbol(symbol string) *ListPricesService {
 // Do send request
 func (s *ListPricesService) Do(ctx context.Context, opts ...RequestOption) (res []*SymbolPrice, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/ticker/price",
 	}
 	if s.symbol != nil {
@@ -105,7 +106,7 @@ func (s *ListPriceChangeStatsService) Symbol(symbol string) *ListPriceChangeStat
 // Do send request
 func (s *ListPriceChangeStatsService) Do(ctx context.Context, opts ...RequestOption) (res []*PriceChangeStats, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/ticker/24hr",
 	}
 	if s.symbol != nil {

@@ -3,6 +3,7 @@ package binance
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // AssetDividendService fetches the saving purchases
@@ -43,7 +44,7 @@ func (s *AssetDividendService) EndTime(endTime int64) *AssetDividendService {
 // Do sends the request.
 func (s *AssetDividendService) Do(ctx context.Context) (*DividendResponseWrapper, error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/sapi/v1/asset/assetDividend",
 		secType:  secTypeSigned,
 	}

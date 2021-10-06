@@ -317,7 +317,7 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 	c.debug("response body: %s", string(data))
 	c.debug("response status code: %d", res.StatusCode)
 
-	if res.StatusCode >= 400 {
+	if res.StatusCode >= http.StatusBadRequest {
 		apiErr := new(common.APIError)
 		e := json.Unmarshal(data, apiErr)
 		if e != nil {

@@ -3,6 +3,7 @@ package binance
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // ExchangeInfoService exchange info service
@@ -27,7 +28,7 @@ func (s *ExchangeInfoService) Symbols(symbols ...string) *ExchangeInfoService {
 // Do send request
 func (s *ExchangeInfoService) Do(ctx context.Context, opts ...RequestOption) (res *ExchangeInfo, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/api/v3/exchangeInfo",
 		secType:  secTypeNone,
 	}

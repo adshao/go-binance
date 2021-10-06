@@ -3,6 +3,7 @@ package futures
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // ExchangeInfoService exchange info service
@@ -13,7 +14,7 @@ type ExchangeInfoService struct {
 // Do send request
 func (s *ExchangeInfoService) Do(ctx context.Context, opts ...RequestOption) (res *ExchangeInfo, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/exchangeInfo",
 		secType:  secTypeNone,
 	}
