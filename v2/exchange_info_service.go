@@ -77,6 +77,7 @@ type Symbol struct {
 	BaseAssetPrecision     int                      `json:"baseAssetPrecision"`
 	QuoteAsset             string                   `json:"quoteAsset"`
 	QuotePrecision         int                      `json:"quotePrecision"`
+	QuoteAssetPrecision    int                      `json:"quoteAssetPrecision"`
 	OrderTypes             []string                 `json:"orderTypes"`
 	IcebergAllowed         bool                     `json:"icebergAllowed"`
 	OcoAllowed             bool                     `json:"ocoAllowed"`
