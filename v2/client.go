@@ -657,3 +657,8 @@ func (c *Client) NewDustTransferService() *DustTransferService {
 func (c *Client) NewAssetDividendService() *AssetDividendService {
 	return &AssetDividendService{c: c}
 }
+
+// NewUserUniversalTransferService
+func (c *Client) NewUserUniversalTransferService() *CreateUserUniversalTransferService {
+	return &CreateUserUniversalTransferService{c: c}
+}
