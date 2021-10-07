@@ -3,6 +3,7 @@ package futures
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // GetPositionRiskService get account balance
@@ -20,7 +21,7 @@ func (s *GetPositionRiskService) Symbol(symbol string) *GetPositionRiskService {
 // Do send request
 func (s *GetPositionRiskService) Do(ctx context.Context, opts ...RequestOption) (res []*PositionRisk, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v2/positionRisk",
 		secType:  secTypeSigned,
 	}

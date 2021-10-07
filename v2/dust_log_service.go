@@ -12,6 +12,7 @@ package binance
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // ListDustLogService fetch small amounts of assets exchanged versus BNB
@@ -39,7 +40,7 @@ func (s *ListDustLogService) EndTime(endTime int64) *ListDustLogService {
 // Do sends the request.
 func (s *ListDustLogService) Do(ctx context.Context) (withdraws *DustResult, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/sapi/v1/asset/dribblet",
 		secType:  secTypeSigned,
 	}
@@ -102,7 +103,7 @@ func (s *DustTransferService) Asset(asset []string) *DustTransferService {
 // Do sends the request.
 func (s *DustTransferService) Do(ctx context.Context) (withdraws *DustTransferResponse, err error) {
 	r := &request{
-		method:   "POST",
+		method:   http.MethodPost,
 		endpoint: "/sapi/v1/asset/dust",
 		secType:  secTypeSigned,
 	}
