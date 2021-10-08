@@ -3,6 +3,7 @@ package binance
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // ListDepositsService fetches deposit history.
@@ -59,7 +60,7 @@ func (s *ListDepositsService) Limit(limit int) *ListDepositsService {
 // Do sends the request.
 func (s *ListDepositsService) Do(ctx context.Context) (res []*Deposit, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/sapi/v1/capital/deposit/hisrec",
 		secType:  secTypeSigned,
 	}
@@ -132,7 +133,7 @@ func (s *GetDepositsAddressService) Network(network string) *GetDepositsAddressS
 // Do sends the request.
 func (s *GetDepositsAddressService) Do(ctx context.Context) (*GetDepositAddressResponse, error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/sapi/v1/capital/deposit/address",
 		secType:  secTypeSigned,
 	}

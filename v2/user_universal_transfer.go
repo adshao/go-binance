@@ -63,6 +63,7 @@ func (s *CreateUserUniversalTransferService) Do(ctx context.Context) (*CreateUse
 		endpoint: "/sapi/v1/asset/transfer",
 		secType:  secTypeSigned,
 	}
+
 	r.setParam("type", s.types)
 	r.setParam("asset", s.asset)
 	r.setParam("amount", s.amount)

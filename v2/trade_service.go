@@ -3,6 +3,7 @@ package binance
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // ListTradesService list trades
@@ -55,7 +56,7 @@ func (s *ListTradesService) OrderId(OrderId int64) *ListTradesService {
 // Do send request
 func (s *ListTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*TradeV3, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/api/v3/myTrades",
 		secType:  secTypeSigned,
 	}
@@ -116,7 +117,7 @@ func (s *HistoricalTradesService) FromID(fromID int64) *HistoricalTradesService 
 // Do send request
 func (s *HistoricalTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*Trade, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/api/v3/historicalTrades",
 		secType:  secTypeAPIKey,
 	}
@@ -211,7 +212,7 @@ func (s *AggTradesService) Limit(limit int) *AggTradesService {
 // Do send request
 func (s *AggTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*AggTrade, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/api/v3/aggTrades",
 	}
 	r.setParam("symbol", s.symbol)
@@ -273,7 +274,7 @@ func (s *RecentTradesService) Limit(limit int) *RecentTradesService {
 // Do send request
 func (s *RecentTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*Trade, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/api/v1/trades",
 	}
 	r.setParam("symbol", s.symbol)

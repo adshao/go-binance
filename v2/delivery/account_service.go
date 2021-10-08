@@ -3,6 +3,7 @@ package delivery
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // GetBalanceService get account balance
@@ -13,7 +14,7 @@ type GetBalanceService struct {
 // Do send request
 func (s *GetBalanceService) Do(ctx context.Context, opts ...RequestOption) (res []*Balance, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/dapi/v1/balance",
 		secType:  secTypeSigned,
 	}
@@ -49,7 +50,7 @@ type GetAccountService struct {
 // Do send request
 func (s *GetAccountService) Do(ctx context.Context, opts ...RequestOption) (res *Account, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/dapi/v1/account",
 		secType:  secTypeSigned,
 	}

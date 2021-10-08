@@ -3,6 +3,7 @@ package delivery
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // GetPositionRiskService get account balance
@@ -27,7 +28,7 @@ func (s *GetPositionRiskService) Pair(pair string) *GetPositionRiskService {
 // Do send request
 func (s *GetPositionRiskService) Do(ctx context.Context, opts ...RequestOption) (res []*PositionRisk, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/dapi/v1/positionRisk",
 		secType:  secTypeSigned,
 	}
