@@ -31,7 +31,7 @@ func (s *userUniversalTransferTestSuite) TestUserUniversalTransfer() {
 
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
-			"types":      types,
+			"type":       types,
 			"asset":      asset,
 			"amount":     amount,
 			"fromSymbol": fromSymbol,
