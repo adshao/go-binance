@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"context"
+	"net/http"
 )
 
 // StartUserStreamService create listen key for user stream service
@@ -12,7 +13,7 @@ type StartUserStreamService struct {
 // Do send request
 func (s *StartUserStreamService) Do(ctx context.Context, opts ...RequestOption) (listenKey string, err error) {
 	r := &request{
-		method:   "POST",
+		method:   http.MethodPost,
 		endpoint: "/dapi/v1/listenKey",
 		secType:  secTypeSigned,
 	}
@@ -43,7 +44,7 @@ func (s *KeepaliveUserStreamService) ListenKey(listenKey string) *KeepaliveUserS
 // Do send request
 func (s *KeepaliveUserStreamService) Do(ctx context.Context, opts ...RequestOption) (err error) {
 	r := &request{
-		method:   "PUT",
+		method:   http.MethodPut,
 		endpoint: "/dapi/v1/listenKey",
 		secType:  secTypeSigned,
 	}
@@ -67,7 +68,7 @@ func (s *CloseUserStreamService) ListenKey(listenKey string) *CloseUserStreamSer
 // Do send request
 func (s *CloseUserStreamService) Do(ctx context.Context, opts ...RequestOption) (err error) {
 	r := &request{
-		method:   "DELETE",
+		method:   http.MethodDelete,
 		endpoint: "/dapi/v1/listenKey",
 		secType:  secTypeSigned,
 	}

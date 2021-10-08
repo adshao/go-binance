@@ -3,6 +3,7 @@ package futures
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // ChangeLeverageService change user's initial leverage of specific symbol market
@@ -27,7 +28,7 @@ func (s *ChangeLeverageService) Leverage(leverage int) *ChangeLeverageService {
 // Do send request
 func (s *ChangeLeverageService) Do(ctx context.Context, opts ...RequestOption) (res *SymbolLeverage, err error) {
 	r := &request{
-		method:   "POST",
+		method:   http.MethodPost,
 		endpoint: "/fapi/v1/leverage",
 		secType:  secTypeSigned,
 	}
@@ -76,7 +77,7 @@ func (s *ChangeMarginTypeService) MarginType(marginType MarginType) *ChangeMargi
 // Do send request
 func (s *ChangeMarginTypeService) Do(ctx context.Context, opts ...RequestOption) (err error) {
 	r := &request{
-		method:   "POST",
+		method:   http.MethodPost,
 		endpoint: "/fapi/v1/marginType",
 		secType:  secTypeSigned,
 	}
@@ -127,7 +128,7 @@ func (s *UpdatePositionMarginService) Type(actionType int) *UpdatePositionMargin
 // Do send request
 func (s *UpdatePositionMarginService) Do(ctx context.Context, opts ...RequestOption) (err error) {
 	r := &request{
-		method:   "POST",
+		method:   http.MethodPost,
 		endpoint: "/fapi/v1/positionMargin",
 		secType:  secTypeSigned,
 	}
@@ -167,7 +168,7 @@ func (s *ChangePositionModeService) DualSide(dualSide bool) *ChangePositionModeS
 // Do send request
 func (s *ChangePositionModeService) Do(ctx context.Context, opts ...RequestOption) (err error) {
 	r := &request{
-		method:   "POST",
+		method:   http.MethodPost,
 		endpoint: "/fapi/v1/positionSide/dual",
 		secType:  secTypeSigned,
 	}
@@ -194,7 +195,7 @@ type PositionMode struct {
 // Do send request
 func (s *GetPositionModeService) Do(ctx context.Context, opts ...RequestOption) (res *PositionMode, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/positionSide/dual",
 		secType:  secTypeSigned,
 	}

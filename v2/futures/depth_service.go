@@ -2,6 +2,7 @@ package futures
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/adshao/go-binance/v2/common"
 )
@@ -28,7 +29,7 @@ func (s *DepthService) Limit(limit int) *DepthService {
 // Do send request
 func (s *DepthService) Do(ctx context.Context, opts ...RequestOption) (res *DepthResponse, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/depth",
 	}
 	r.setParam("symbol", s.symbol)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"strings"
 )
 
@@ -126,7 +127,7 @@ func (s *CreateOrderService) ClosePosition(closePosition bool) *CreateOrderServi
 
 func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, err error) {
 	r := &request{
-		method:   "POST",
+		method:   http.MethodPost,
 		endpoint: endpoint,
 		secType:  secTypeSigned,
 	}
@@ -232,7 +233,7 @@ func (s *ListOpenOrdersService) Symbol(symbol string) *ListOpenOrdersService {
 // Do send request
 func (s *ListOpenOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*Order, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/openOrders",
 		secType:  secTypeSigned,
 	}
@@ -280,7 +281,7 @@ func (s *GetOrderService) OrigClientOrderID(origClientOrderID string) *GetOrderS
 // Do send request
 func (s *GetOrderService) Do(ctx context.Context, opts ...RequestOption) (res *Order, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/order",
 		secType:  secTypeSigned,
 	}
@@ -374,7 +375,7 @@ func (s *ListOrdersService) Limit(limit int) *ListOrdersService {
 // Do send request
 func (s *ListOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*Order, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/allOrders",
 		secType:  secTypeSigned,
 	}
@@ -432,7 +433,7 @@ func (s *CancelOrderService) OrigClientOrderID(origClientOrderID string) *Cancel
 // Do send request
 func (s *CancelOrderService) Do(ctx context.Context, opts ...RequestOption) (res *CancelOrderResponse, err error) {
 	r := &request{
-		method:   "DELETE",
+		method:   http.MethodDelete,
 		endpoint: "/fapi/v1/order",
 		secType:  secTypeSigned,
 	}
@@ -495,7 +496,7 @@ func (s *CancelAllOpenOrdersService) Symbol(symbol string) *CancelAllOpenOrdersS
 // Do send request
 func (s *CancelAllOpenOrdersService) Do(ctx context.Context, opts ...RequestOption) (err error) {
 	r := &request{
-		method:   "DELETE",
+		method:   http.MethodDelete,
 		endpoint: "/fapi/v1/allOpenOrders",
 		secType:  secTypeSigned,
 	}
@@ -536,7 +537,7 @@ func (s *CancelMultiplesOrdersService) OrigClientOrderIDList(origClientOrderIDLi
 // Do send request
 func (s *CancelMultiplesOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*CancelOrderResponse, err error) {
 	r := &request{
-		method:   "DELETE",
+		method:   http.MethodDelete,
 		endpoint: "/fapi/v1/batchOrders",
 		secType:  secTypeSigned,
 	}
@@ -597,7 +598,7 @@ func (s *ListLiquidationOrdersService) Limit(limit int) *ListLiquidationOrdersSe
 // Do send request
 func (s *ListLiquidationOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*LiquidationOrder, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/allForceOrders",
 		secType:  secTypeNone,
 	}
@@ -682,7 +683,7 @@ func (s *ListUserLiquidationOrdersService) Limit(limit int) *ListUserLiquidation
 // Do send request
 func (s *ListUserLiquidationOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*UserLiquidationOrder, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/forceOrders",
 		secType:  secTypeSigned,
 	}
@@ -752,7 +753,7 @@ func (s *CreateBatchOrdersService) OrderList(orders []*CreateOrderService) *Crea
 
 func (s *CreateBatchOrdersService) Do(ctx context.Context, opts ...RequestOption) (res *CreateBatchOrdersResponse, err error) {
 	r := &request{
-		method:   "POST",
+		method:   http.MethodPost,
 		endpoint: "/fapi/v1/batchOrders",
 		secType:  secTypeSigned,
 	}

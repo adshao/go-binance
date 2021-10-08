@@ -3,6 +3,7 @@ package binance
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // ListSavingsFlexibleProductsService https://binance-docs.github.io/apidocs/spot/en/#get-flexible-product-list-user_data
@@ -41,7 +42,7 @@ func (s *ListSavingsFlexibleProductsService) Size(size int64) *ListSavingsFlexib
 // Do send request
 func (s *ListSavingsFlexibleProductsService) Do(ctx context.Context, opts ...RequestOption) ([]*SavingsFlexibleProduct, error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/sapi/v1/lending/daily/product/list",
 		secType:  secTypeSigned,
 	}
@@ -109,7 +110,7 @@ func (s *PurchaseSavingsFlexibleProductService) Amount(amount float64) *Purchase
 // Do send request
 func (s *PurchaseSavingsFlexibleProductService) Do(ctx context.Context, opts ...RequestOption) (uint64, error) {
 	r := &request{
-		method:   "POST",
+		method:   http.MethodPost,
 		endpoint: "/sapi/v1/lending/daily/purchase",
 		secType:  secTypeSigned,
 	}
@@ -164,7 +165,7 @@ func (s *RedeemSavingsFlexibleProductService) Type(redeemType string) *RedeemSav
 // Do send request
 func (s *RedeemSavingsFlexibleProductService) Do(ctx context.Context, opts ...RequestOption) error {
 	r := &request{
-		method:   "POST",
+		method:   http.MethodPost,
 		endpoint: "/sapi/v1/lending/daily/redeem",
 		secType:  secTypeSigned,
 	}
@@ -238,7 +239,7 @@ func (s *ListSavingsFixedAndActivityProductsService) Size(size int64) *ListSavin
 // Do send request
 func (s *ListSavingsFixedAndActivityProductsService) Do(ctx context.Context, opts ...RequestOption) ([]*SavingsFixedProduct, error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/sapi/v1/lending/project/list",
 		secType:  secTypeSigned,
 	}

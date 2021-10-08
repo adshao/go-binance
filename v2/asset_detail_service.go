@@ -3,6 +3,7 @@ package binance
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // GetAssetDetailService fetches all asset detail.
@@ -22,7 +23,7 @@ func (s *GetAssetDetailService) Asset(asset string) *GetAssetDetailService {
 // Do sends the request.
 func (s *GetAssetDetailService) Do(ctx context.Context) (res map[string]AssetDetail, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/sapi/v1/asset/assetDetail",
 		secType:  secTypeSigned,
 	}

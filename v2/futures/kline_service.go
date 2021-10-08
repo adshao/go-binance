@@ -3,6 +3,7 @@ package futures
 import (
 	"context"
 	"fmt"
+	"net/http"
 )
 
 // KlinesService list klines
@@ -48,7 +49,7 @@ func (s *KlinesService) EndTime(endTime int64) *KlinesService {
 // Do send request
 func (s *KlinesService) Do(ctx context.Context, opts ...RequestOption) (res []*Kline, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/klines",
 	}
 	r.setParam("symbol", s.symbol)
