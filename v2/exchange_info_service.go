@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strings"
 )
 
 // ExchangeInfoService exchange info service
 type ExchangeInfoService struct {
 	c       *Client
 	symbol  string
-	symbols []string
+	symbols string
 }
 
 // Symbol set symbol
@@ -21,7 +22,11 @@ func (s *ExchangeInfoService) Symbol(symbol string) *ExchangeInfoService {
 
 // Symbols set symbol
 func (s *ExchangeInfoService) Symbols(symbols ...string) *ExchangeInfoService {
-	s.symbols = symbols
+	if len(symbols) == 0 {
+		s.symbols = "[]"
+	} else {
+		s.symbols = "[\"" + strings.Join(symbols, "\",\"") + "\"]"
+	}
 	return s
 }
 

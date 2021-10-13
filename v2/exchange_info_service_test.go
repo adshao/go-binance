@@ -63,7 +63,7 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 	s.assertReq(func(r *request) {
 		e := newRequest().setParams(map[string]interface{}{
 			"symbol":  symbol,
-			"symbols": symbols,
+			"symbols": `["ETHBTC","LTCBTC"]`,
 		})
 		s.assertRequestEqual(e, r)
 	})
