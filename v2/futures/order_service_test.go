@@ -80,6 +80,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 		})
 		s.assertRequestEqual(e, r)
 	})
+
 	res, err := s.client.NewCreateOrderService().Symbol(symbol).Side(side).
 		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).ClosePosition(closePosition).
 		ReduceOnly(reduceOnly).Price(price).NewClientOrderID(newClientOrderID).

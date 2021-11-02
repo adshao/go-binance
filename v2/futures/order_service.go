@@ -195,27 +195,29 @@ func (s *CreateOrderService) Do(ctx context.Context, opts ...RequestOption) (res
 
 // CreateOrderResponse define create order response
 type CreateOrderResponse struct {
-	Symbol           string           `json:"symbol"`
-	OrderID          int64            `json:"orderId"`
-	ClientOrderID    string           `json:"clientOrderId"`
-	Price            string           `json:"price"`
-	OrigQuantity     string           `json:"origQty"`
-	ExecutedQuantity string           `json:"executedQty"`
-	CumQuote         string           `json:"cumQuote"`
-	ReduceOnly       bool             `json:"reduceOnly"`
-	Status           OrderStatusType  `json:"status"`
-	StopPrice        string           `json:"stopPrice"`
-	TimeInForce      TimeInForceType  `json:"timeInForce"`
-	Type             OrderType        `json:"type"`
-	Side             SideType         `json:"side"`
-	UpdateTime       int64            `json:"updateTime"`
-	WorkingType      WorkingType      `json:"workingType"`
-	ActivatePrice    string           `json:"activatePrice"`
-	PriceRate        string           `json:"priceRate"`
-	AvgPrice         string           `json:"avgPrice"`
-	PositionSide     PositionSideType `json:"positionSide"`
-	ClosePosition    bool             `json:"closePosition"`
-	PriceProtect     bool             `json:"priceProtect"`
+	Symbol            string           `json:"symbol"`
+	OrderID           int64            `json:"orderId"`
+	ClientOrderID     string           `json:"clientOrderId"`
+	Price             string           `json:"price"`
+	OrigQuantity      string           `json:"origQty"`
+	ExecutedQuantity  string           `json:"executedQty"`
+	CumQuote          string           `json:"cumQuote"`
+	ReduceOnly        bool             `json:"reduceOnly"`
+	Status            OrderStatusType  `json:"status"`
+	StopPrice         string           `json:"stopPrice"`
+	TimeInForce       TimeInForceType  `json:"timeInForce"`
+	Type              OrderType        `json:"type"`
+	Side              SideType         `json:"side"`
+	UpdateTime        int64            `json:"updateTime"`
+	WorkingType       WorkingType      `json:"workingType"`
+	ActivatePrice     string           `json:"activatePrice"`
+	PriceRate         string           `json:"priceRate"`
+	AvgPrice          string           `json:"avgPrice"`
+	PositionSide      PositionSideType `json:"positionSide"`
+	ClosePosition     bool             `json:"closePosition"`
+	PriceProtect      bool             `json:"priceProtect"`
+	RateLimitOrder10s string           `json:"rateLimitOrder10s,omitempty"`
+	RateLimitOrder1m  string           `json:"rateLimitOrder1m,omitempty"`
 }
 
 // ListOpenOrdersService list opened orders
