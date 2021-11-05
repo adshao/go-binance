@@ -28,7 +28,7 @@ func (s *GetPositionRiskService) Do(ctx context.Context, opts ...RequestOption) 
 	if s.symbol != "" {
 		r.setParam("symbol", s.symbol)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*PositionRisk{}, err
 	}

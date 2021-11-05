@@ -29,7 +29,7 @@ func (s *ListBookTickersService) Do(ctx context.Context, opts ...RequestOption) 
 	if s.symbol != nil {
 		r.setParam("symbol", *s.symbol)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	data = common.ToJSONList(data)
 	if err != nil {
 		return []*BookTicker{}, err
@@ -72,7 +72,7 @@ func (s *ListPricesService) Do(ctx context.Context, opts ...RequestOption) (res 
 	if s.symbol != nil {
 		r.setParam("symbol", *s.symbol)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*SymbolPrice{}, err
 	}
@@ -112,7 +112,7 @@ func (s *ListPriceChangeStatsService) Do(ctx context.Context, opts ...RequestOpt
 	if s.symbol != nil {
 		r.setParam("symbol", *s.symbol)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return res, err
 	}
