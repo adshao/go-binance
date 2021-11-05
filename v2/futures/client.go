@@ -290,9 +290,6 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 }
 
 func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption) (data []byte, err error) {
-
-	var t map[string]interface{}
-
 	err = c.parseRequest(r, opts...)
 	if err != nil {
 		return []byte{}, err
@@ -316,7 +313,6 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 	if err != nil {
 		return []byte{}, err
 	}
-
 	defer func() {
 		cerr := res.Body.Close()
 		// Only overwrite the retured error if the original error was nil and an
@@ -337,20 +333,6 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 		}
 		return nil, apiErr
 	}
-
-	err = json.Unmarshal(data, &t)
-	if err != nil {
-		return data, nil
-		// c.debug("failed to unmarshal json: %s", err)
-		// return nil, err
-	}
-
-	// add rate limit by order
-
-	t["rateLimitOrder10s"] = res.Header.Get("X-Mbx-Order-Count-10s")
-	t["rateLimitOrder1m"] = res.Header.Get("X-Mbx-Order-Count-1m")
-
-	data, err = json.Marshal(t)
 	return data, nil
 }
 
