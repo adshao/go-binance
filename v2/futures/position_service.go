@@ -36,7 +36,7 @@ func (s *ChangeLeverageService) Do(ctx context.Context, opts ...RequestOption) (
 		"symbol":   s.symbol,
 		"leverage": s.leverage,
 	})
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +85,7 @@ func (s *ChangeMarginTypeService) Do(ctx context.Context, opts ...RequestOption)
 		"symbol":     s.symbol,
 		"marginType": s.marginType,
 	})
-	_, err = s.c.callAPI(ctx, r, opts...)
+	_, _, err = s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return err
 	}
@@ -142,7 +142,7 @@ func (s *UpdatePositionMarginService) Do(ctx context.Context, opts ...RequestOpt
 	}
 	r.setFormParams(m)
 
-	_, err = s.c.callAPI(ctx, r, opts...)
+	_, _, err = s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return err
 	}
@@ -175,7 +175,7 @@ func (s *ChangePositionModeService) Do(ctx context.Context, opts ...RequestOptio
 	r.setFormParams(params{
 		"dualSidePosition": s.dualSide,
 	})
-	_, err = s.c.callAPI(ctx, r, opts...)
+	_, _, err = s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return err
 	}
@@ -200,7 +200,7 @@ func (s *GetPositionModeService) Do(ctx context.Context, opts ...RequestOption) 
 		secType:  secTypeSigned,
 	}
 	r.setFormParams(params{})
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}

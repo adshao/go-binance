@@ -30,7 +30,7 @@ func (s *PremiumIndexService) Do(ctx context.Context, opts ...RequestOption) (re
 	if s.symbol != nil {
 		r.setParam("symbol", *s.symbol)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	data = common.ToJSONList(data)
 	if err != nil {
 		return []*PremiumIndex{}, err
@@ -102,7 +102,7 @@ func (s *FundingRateService) Do(ctx context.Context, opts ...RequestOption) (res
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*FundingRate{}, err
 	}
@@ -145,7 +145,7 @@ func (s *GetLeverageBracketService) Do(ctx context.Context, opts ...RequestOptio
 	if s.symbol != "" {
 		r.setParam("symbol", s.symbol)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*LeverageBracket{}, err
 	}

@@ -47,7 +47,7 @@ func (s *HistoricalTradesService) Do(ctx context.Context, opts ...RequestOption)
 		r.setParam("fromId", *s.fromID)
 	}
 
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return
 	}
@@ -144,7 +144,7 @@ func (s *AggTradesService) Do(ctx context.Context, opts ...RequestOption) (res [
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*AggTrade{}, err
 	}
@@ -196,7 +196,7 @@ func (s *RecentTradesService) Do(ctx context.Context, opts ...RequestOption) (re
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*Trade{}, err
 	}
@@ -268,7 +268,7 @@ func (s *ListAccountTradeService) Do(ctx context.Context, opts ...RequestOption)
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*AccountTrade{}, err
 	}

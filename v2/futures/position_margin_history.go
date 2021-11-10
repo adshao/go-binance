@@ -67,7 +67,7 @@ func (s *GetPositionMarginHistoryService) Do(ctx context.Context, opts ...Reques
 		r.setParam("limit", *s.limit)
 	}
 
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}

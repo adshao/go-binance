@@ -40,7 +40,7 @@ func (s *GetRebateNewUserService) Do(ctx context.Context, opts ...RequestOption)
 		r.setParam("type", s.type_future)
 	}
 
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return &RebateNewUser{}, err
 	}
