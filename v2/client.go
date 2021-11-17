@@ -662,3 +662,8 @@ func (c *Client) NewAssetDividendService() *AssetDividendService {
 func (c *Client) NewUserUniversalTransferService() *CreateUserUniversalTransferService {
 	return &CreateUserUniversalTransferService{c: c}
 }
+
+// NewDustTransferService init Get All Margin Assets service
+func (c *Client) NewGetAllMarginAssetsService() *GetAllMarginAssetsService {
+	return &GetAllMarginAssetsService{c: c}
+}
