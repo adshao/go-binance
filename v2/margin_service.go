@@ -977,3 +977,27 @@ func (s *CloseMarginUserStreamService) Do(ctx context.Context, opts ...RequestOp
 	_, err = s.c.callAPI(ctx, r, opts...)
 	return err
 }
+
+// GetAllMarginAssetsService get margin pair info
+type GetAllMarginAssetsService struct {
+	c *Client
+}
+
+// Do send request
+func (s *GetAllMarginAssetsService) Do(ctx context.Context, opts ...RequestOption) (res []*MarginAsset, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/margin/allAssets",
+		secType:  secTypeAPIKey,
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []*MarginAsset{}, err
+	}
+	res = make([]*MarginAsset, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return []*MarginAsset{}, err
+	}
+	return res, nil
+}
