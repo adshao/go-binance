@@ -662,3 +662,8 @@ func (c *Client) NewAssetDividendService() *AssetDividendService {
 func (c *Client) NewUserUniversalTransferService() *CreateUserUniversalTransferService {
 	return &CreateUserUniversalTransferService{c: c}
 }
+
+// NewAllCoinsInformation
+func (c *Client) NewGetAllCoinsInfoService() *GetAllCoinsInfoService {
+	return &GetAllCoinsInfoService{c: c}
+}
