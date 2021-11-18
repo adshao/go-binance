@@ -47,7 +47,7 @@ type GetAllCoinsInfoService struct {
 	asset *string
 }
 
-func (s *GetAllCoinsInfoService) Do(ctx context.Context) (res []CoinInfo, err error) {
+func (s *GetAllCoinsInfoService) Do(ctx context.Context) (res []*CoinInfo, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/capital/config/getall",
