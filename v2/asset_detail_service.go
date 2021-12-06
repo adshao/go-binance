@@ -55,11 +55,12 @@ func (s *GetAllCoinsInfoService) Do(ctx context.Context) (res []*CoinInfo, err e
 	}
 	data, err := s.c.callAPI(ctx, r)
 	if err != nil {
-		return
+		return []*CoinInfo{}, err
 	}
+	res = make([]*CoinInfo, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
-		return
+		return []*CoinInfo{}, err
 	}
 	return res, nil
 }
