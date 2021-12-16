@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"context"
+	"net/http"
 )
 
 // PingService ping server
@@ -12,7 +13,7 @@ type PingService struct {
 // Do send request
 func (s *PingService) Do(ctx context.Context, opts ...RequestOption) (err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/dapi/v1/ping",
 	}
 	_, err = s.c.callAPI(ctx, r, opts...)
@@ -27,7 +28,7 @@ type ServerTimeService struct {
 // Do send request
 func (s *ServerTimeService) Do(ctx context.Context, opts ...RequestOption) (serverTime int64, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/dapi/v1/time",
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)

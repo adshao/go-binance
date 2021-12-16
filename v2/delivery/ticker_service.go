@@ -3,6 +3,7 @@ package delivery
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // ListBookTickersService list best price/qty on the order book for a symbol or symbols.
@@ -27,7 +28,7 @@ func (s *ListBookTickersService) Pair(pair string) *ListBookTickersService {
 // Do send request.
 func (s *ListBookTickersService) Do(ctx context.Context, opts ...RequestOption) (res []*BookTicker, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/dapi/v1/ticker/bookTicker",
 	}
 	if s.symbol != nil {
@@ -81,7 +82,7 @@ func (s *ListPricesService) Pair(pair string) *ListPricesService {
 // Do send request.
 func (s *ListPricesService) Do(ctx context.Context, opts ...RequestOption) (res []*SymbolPrice, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/dapi/v1/ticker/price",
 	}
 	if s.symbol != nil {
@@ -132,7 +133,7 @@ func (s *ListPriceChangeStatsService) Pair(pair string) *ListPriceChangeStatsSer
 // Do send request.
 func (s *ListPriceChangeStatsService) Do(ctx context.Context, opts ...RequestOption) (res []*PriceChangeStats, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/dapi/v1/ticker/24hr",
 	}
 	if s.symbol != nil {

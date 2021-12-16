@@ -3,6 +3,7 @@ package binance
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // ListTradesService list trades
@@ -13,6 +14,7 @@ type ListTradesService struct {
 	endTime   *int64
 	limit     *int
 	fromID    *int64
+	orderId   *int64
 }
 
 // Symbol set symbol
@@ -45,10 +47,16 @@ func (s *ListTradesService) FromID(fromID int64) *ListTradesService {
 	return s
 }
 
+// OrderId set OrderId
+func (s *ListTradesService) OrderId(OrderId int64) *ListTradesService {
+	s.orderId = &OrderId
+	return s
+}
+
 // Do send request
 func (s *ListTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*TradeV3, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/api/v3/myTrades",
 		secType:  secTypeSigned,
 	}
@@ -64,6 +72,9 @@ func (s *ListTradesService) Do(ctx context.Context, opts ...RequestOption) (res 
 	}
 	if s.fromID != nil {
 		r.setParam("fromId", *s.fromID)
+	}
+	if s.orderId != nil {
+		r.setParam("orderId", *s.orderId)
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
@@ -106,7 +117,7 @@ func (s *HistoricalTradesService) FromID(fromID int64) *HistoricalTradesService 
 // Do send request
 func (s *HistoricalTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*Trade, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/api/v3/historicalTrades",
 		secType:  secTypeAPIKey,
 	}
@@ -201,7 +212,7 @@ func (s *AggTradesService) Limit(limit int) *AggTradesService {
 // Do send request
 func (s *AggTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*AggTrade, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/api/v3/aggTrades",
 	}
 	r.setParam("symbol", s.symbol)
@@ -263,7 +274,7 @@ func (s *RecentTradesService) Limit(limit int) *RecentTradesService {
 // Do send request
 func (s *RecentTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*Trade, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/api/v1/trades",
 	}
 	r.setParam("symbol", s.symbol)

@@ -204,6 +204,52 @@ type WsDepthEvent struct {
 	Asks          []Ask  `json:"a"`
 }
 
+// WsCombinedDepthServe is similar to WsDepthServe, but it for multiple symbols
+func WsCombinedDepthServe(symbols []string, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := getCombinedEndpoint()
+	for _, s := range symbols {
+		endpoint += fmt.Sprintf("%s@depth", strings.ToLower(s)) + "/"
+	}
+	endpoint = endpoint[:len(endpoint)-1]
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		j, err := newJSON(message)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		event := new(WsDepthEvent)
+		stream := j.Get("stream").MustString()
+		symbol := strings.Split(stream, "@")[0]
+		event.Symbol = strings.ToUpper(symbol)
+		data := j.Get("data").MustMap()
+		event.Time, _ = data["E"].(json.Number).Int64()
+		event.LastUpdateID, _ = data["u"].(json.Number).Int64()
+		event.FirstUpdateID, _ = data["U"].(json.Number).Int64()
+		bidsLen := len(data["b"].([]interface{}))
+		event.Bids = make([]Bid, bidsLen)
+		for i := 0; i < bidsLen; i++ {
+			item := data["b"].([]interface{})[i].([]interface{})
+			event.Bids[i] = Bid{
+				Price:    item[0].(string),
+				Quantity: item[1].(string),
+			}
+		}
+		asksLen := len(data["a"].([]interface{}))
+		event.Asks = make([]Ask, asksLen)
+		for i := 0; i < asksLen; i++ {
+
+			item := data["a"].([]interface{})[i].([]interface{})
+			event.Asks[i] = Ask{
+				Price:    item[0].(string),
+				Quantity: item[1].(string),
+			}
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
 // WsKlineHandler handle websocket kline event
 type WsKlineHandler func(event *WsKlineEvent)
 
@@ -390,11 +436,132 @@ type WsTradeEvent struct {
 	Placeholder   bool   `json:"M"` // add this field to avoid case insensitive unmarshaling
 }
 
+// WsUserDataEvent define user data event
+type WsUserDataEvent struct {
+	Event             UserDataEventType `json:"e"`
+	Time              int64             `json:"E"`
+	TransactionTime   int64             `json:"T"`
+	AccountUpdateTime int64             `json:"u"`
+	AccountUpdate     []WsAccountUpdate `json:"B"`
+	BalanceUpdate     WsBalanceUpdate
+	OrderUpdate       WsOrderUpdate
+	OCOUpdate         WsOCOUpdate
+}
+
+// WsAccountUpdate define account update
+type WsAccountUpdate struct {
+	Asset  string `json:"a"`
+	Free   string `json:"f"`
+	Locked string `json:"l"`
+}
+
+type WsBalanceUpdate struct {
+	Asset  string `json:"a"`
+	Change string `json:"d"`
+}
+
+type WsOrderUpdate struct {
+	Symbol            string          `json:"s"`
+	ClientOrderId     string          `json:"c"`
+	Side              string          `json:"S"`
+	Type              string          `json:"o"`
+	TimeInForce       TimeInForceType `json:"f"`
+	Volume            string          `json:"q"`
+	Price             string          `json:"p"`
+	StopPrice         string          `json:"P"`
+	IceBergVolume     string          `json:"F"`
+	OrderListId       int64           `json:"g"` // for OCO
+	OrigCustomOrderId string          `json:"C"` // customized order ID for the original order
+	ExecutionType     string          `json:"x"` // execution type for this event NEW/TRADE...
+	Status            string          `json:"X"` // order status
+	RejectReason      string          `json:"r"`
+	Id                int64           `json:"i"` // order id
+	LatestVolume      string          `json:"l"` // quantity for the latest trade
+	FilledVolume      string          `json:"z"`
+	LatestPrice       string          `json:"L"` // price for the latest trade
+	FeeAsset          string          `json:"N"`
+	FeeCost           string          `json:"n"`
+	TransactionTime   int64           `json:"T"`
+	TradeId           int64           `json:"t"`
+	IsInOrderBook     bool            `json:"w"` // is the order in the order book?
+	IsMaker           bool            `json:"m"` // is this order maker?
+	CreateTime        int64           `json:"O"`
+	FilledQuoteVolume string          `json:"Z"` // the quote volume that already filled
+	LatestQuoteVolume string          `json:"Y"` // the quote volume for the latest trade
+	QuoteVolume       string          `json:"Q"`
+}
+
+type WsOCOUpdate struct {
+	Symbol          string       `json:"s"`
+	OrderListId     int64        `json:"g"`
+	ContingencyType string       `json:"c"`
+	ListStatusType  string       `json:"l"`
+	ListOrderStatus string       `json:"L"`
+	RejectReason    string       `json:"r"`
+	ClientOrderId   string       `json:"C"` // List Client Order ID
+	Orders          []WsOCOOrder `json:"O"`
+}
+
+type WsOCOOrder struct {
+	Symbol        string `json:"s"`
+	OrderId       int64  `json:"i"`
+	ClientOrderId string `json:"c"`
+}
+
+// WsUserDataHandler handle WsUserDataEvent
+type WsUserDataHandler func(event *WsUserDataEvent)
+
 // WsUserDataServe serve user data handler with listen key
-func WsUserDataServe(listenKey string, handler WsHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+func WsUserDataServe(listenKey string, handler WsUserDataHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := fmt.Sprintf("%s/%s", getWsEndpoint(), listenKey)
 	cfg := newWsConfig(endpoint)
-	return wsServe(cfg, handler, errHandler)
+	wsHandler := func(message []byte) {
+		j, err := newJSON(message)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		event := new(WsUserDataEvent)
+
+		err = json.Unmarshal(message, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		switch UserDataEventType(j.Get("e").MustString()) {
+		case UserDataEventTypeOutboundAccountPosition:
+
+		case UserDataEventTypeBalanceUpdate:
+			err = json.Unmarshal(message, &event.BalanceUpdate)
+			if err != nil {
+				errHandler(err)
+				return
+			}
+		case UserDataEventTypeExecutionReport:
+			err = json.Unmarshal(message, &event.OrderUpdate)
+			if err != nil {
+				errHandler(err)
+				return
+			}
+			// Unmarshal has case sensitive problem
+			event.TransactionTime = j.Get("T").MustInt64()
+			event.OrderUpdate.TransactionTime = j.Get("T").MustInt64()
+			event.OrderUpdate.Id = j.Get("i").MustInt64()
+			event.OrderUpdate.TradeId = j.Get("t").MustInt64()
+			event.OrderUpdate.FeeAsset = j.Get("N").MustString()
+		case UserDataEventTypeListStatus:
+			err = json.Unmarshal(message, &event.OCOUpdate)
+			if err != nil {
+				errHandler(err)
+				return
+			}
+		}
+
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
 }
 
 // WsMarketStatHandler handle websocket that push single market statistics for 24hr

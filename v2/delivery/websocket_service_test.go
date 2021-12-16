@@ -51,41 +51,6 @@ func (s *websocketServiceTestSuite) assertWsServe(count ...int) {
 	s.r().Equal(e, s.serveCount)
 }
 
-func (s *websocketServiceTestSuite) testWsUserDataServe(data []byte) {
-	fakeErrMsg := "fake error"
-	s.mockWsServe(data, errors.New(fakeErrMsg))
-	defer s.assertWsServe()
-
-	doneC, stopC, err := WsUserDataServe("listenKey", func(event []byte) {
-		s.r().Equal(data, event)
-	}, func(err error) {
-		s.r().EqualError(err, fakeErrMsg)
-	})
-	s.r().NoError(err)
-	stopC <- struct{}{}
-	<-doneC
-}
-
-// https://binance-docs.github.io/apidocs/delivery/en/#event-margin-call
-func (s *websocketServiceTestSuite) TestWsUserDataServe() {
-	s.testWsUserDataServe([]byte(`{
-	  "e":"MARGIN_CALL",     
-	  "E":1587727187525,     
-	  "i": "SfsR",           
-	  "cw":"3.16812045",     
-	  "p":[{
-	    "s":"BTCUSD_200925",   
-	    "ps":"LONG",       
-	    "pa":"132",        
-	    "mt":"CROSSED",    
-	    "iw":"0",          
-	    "mp":"9187.17127000",  
-	    "up":"-1.166074",  
-	    "mm":"1.614445"    
-	  }]
-    }`))
-}
-
 // https://binance-docs.github.io/apidocs/delivery/en/#aggregate-trade-streams
 func (s *websocketServiceTestSuite) TestAggTradeServe() {
 	data := []byte(`{
@@ -1200,4 +1165,347 @@ func (s *websocketServiceTestSuite) assertDepthEvent(e, a *WsDepthEvent) {
 		r.Equal(b.Price, a.Asks[i].Price, "Price")
 		r.Equal(b.Quantity, a.Asks[i].Quantity, "Quantity")
 	}
+}
+
+func (s *websocketServiceTestSuite) testWsUserDataServe(data []byte, expectedEvent *WsUserDataEvent) {
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+
+	doneC, stopC, err := WsUserDataServe("fakeListenKey", func(event *WsUserDataEvent) {
+		s.assertUserDataEvent(expectedEvent, event)
+	},
+		func(err error) {
+			s.r().EqualError(err, fakeErrMsg)
+		})
+
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
+func (s *websocketServiceTestSuite) TestWsUserDataServeStreamExpired() {
+	data := []byte(`{
+		"e": "listenKeyExpired",
+		"E": 1576653824250
+	}`)
+	expectedEvent := &WsUserDataEvent{
+		Event: "listenKeyExpired",
+		Time:  1576653824250,
+	}
+	s.testWsUserDataServe(data, expectedEvent)
+}
+
+func (s *websocketServiceTestSuite) TestWsUserDataServeMarginCall() {
+	data := []byte(`{
+	  "e":"MARGIN_CALL",
+	  "E":1587727187525,
+	  "i": "SfsR",
+	  "cw":"3.16812045",
+	  "p":[{
+	    "s":"BTCUSD_200925",
+	    "ps":"LONG",
+	    "pa":"132",
+	    "mt":"CROSSED",
+	    "iw":"0",
+	    "mp":"9187.17127000",
+	    "up":"-1.166074",
+	    "mm":"1.614445"
+	  }]
+    }`)
+	expectedEvent := &WsUserDataEvent{
+		Event:              "MARGIN_CALL",
+		Time:               1587727187525,
+		Alias:              "SfsR",
+		CrossWalletBalance: "3.16812045",
+		MarginCallPositions: []WsPosition{
+			{
+				Symbol:                    "BTCUSD_200925",
+				Side:                      "LONG",
+				Amount:                    "132",
+				MarginType:                "CROSSED",
+				IsolatedWallet:            "0",
+				MarkPrice:                 "9187.17127000",
+				UnrealizedPnL:             "-1.166074",
+				MaintenanceMarginRequired: "1.614445",
+			},
+		},
+	}
+	s.testWsUserDataServe(data, expectedEvent)
+}
+
+func (s *websocketServiceTestSuite) TestWsUserDataServeAccountUpdate() {
+	data := []byte(`{
+		"e": "ACCOUNT_UPDATE",
+		"E": 1564745798939,
+		"T": 1564745798938,
+		"i": "SfsR",
+		"a":
+		  {
+			"m":"ORDER",
+			"B":[
+			  {
+				"a":"BTC",
+				"wb":"122624.12345678",
+				"cw":"100.12345678",
+				"bc":"50.12345678"
+			  },
+			  {
+				"a":"ETH",           
+				"wb":"1.00000000",
+				"cw":"0.00000000",
+				"bc":"-49.12345678"
+			}
+			],
+			"P":[
+			  {
+				"s":"BTCUSD_200925",
+				"pa":"0",
+				"ep":"0.00000",
+				"cr":"200",
+				"up":"0",
+				"mt":"isolated",
+				"iw":"0.00000000",
+				"ps":"BOTH"
+			  },
+			  {
+				  "s":"BTCUSD_200925",
+				  "pa":"20",
+				  "ep":"6563.6",
+				  "cr":"0",
+				  "up":"2850.21200000",
+				  "mt":"isolated",
+				  "iw":"13200.70726908",
+				  "ps":"LONG"
+			   },
+			  {
+				  "s":"BTCUSD_200925",
+				  "pa":"-10",
+				  "ep":"6563.8",
+				  "cr":"-45.04000000",
+				  "up":"-1423.15600000",
+				  "mt":"isolated",
+				  "iw":"6570.42511771",
+				  "ps":"SHORT"
+			  }
+			]
+		  }
+	}`)
+	expectedEvent := &WsUserDataEvent{
+		Event:           "ACCOUNT_UPDATE",
+		Time:            1564745798939,
+		TransactionTime: 1564745798938,
+		Alias:           "SfsR",
+		AccountUpdate: WsAccountUpdate{
+			Reason: "ORDER",
+			Balances: []WsBalance{
+				{
+					Asset:              "BTC",
+					Balance:            "122624.12345678",
+					CrossWalletBalance: "100.12345678",
+					BalanceChange:      "50.12345678",
+				},
+				{
+					Asset:              "ETH",
+					Balance:            "1.00000000",
+					CrossWalletBalance: "0.00000000",
+					BalanceChange:      "-49.12345678",
+				},
+			},
+			Positions: []WsPosition{
+				{
+					Symbol:              "BTCUSD_200925",
+					Amount:              "0",
+					EntryPrice:          "0.00000",
+					AccumulatedRealized: "200",
+					UnrealizedPnL:       "0",
+					MarginType:          "isolated",
+					IsolatedWallet:      "0.00000000",
+					Side:                "BOTH",
+				},
+				{
+					Symbol:              "BTCUSD_200925",
+					Amount:              "20",
+					EntryPrice:          "6563.6",
+					AccumulatedRealized: "0",
+					UnrealizedPnL:       "2850.21200000",
+					MarginType:          "isolated",
+					IsolatedWallet:      "13200.70726908",
+					Side:                "LONG",
+				},
+				{
+					Symbol:              "BTCUSD_200925",
+					Amount:              "-10",
+					EntryPrice:          "6563.8",
+					AccumulatedRealized: "-45.04000000",
+					UnrealizedPnL:       "-1423.15600000",
+					MarginType:          "isolated",
+					IsolatedWallet:      "6570.42511771",
+					Side:                "SHORT",
+				},
+			},
+		},
+	}
+	s.testWsUserDataServe(data, expectedEvent)
+}
+
+func (s *websocketServiceTestSuite) TestWsUserDataServeOrderTradeUpdate() {
+	data := []byte(`{
+		"e":"ORDER_TRADE_UPDATE",
+		"E":1568879465651,
+		"T":1568879465650,
+		"i": "SfsR",
+		"o":{
+		  "s":"BTCUSD_200925",
+		  "c":"TEST",
+		  "S":"SELL",
+		  "o":"TRAILING_STOP_MARKET",
+		  "f":"GTC",
+		  "q":"2",
+		  "p":"0",
+		  "ap":"0",
+		  "sp":"9103.1",
+		  "x":"NEW",
+		  "X":"NEW",
+		  "i":8888888,
+		  "l":"0",
+		  "z":"0",
+		  "L":"0",
+		  "ma": "BTC",
+		  "N":"BTC",
+		  "n":"0",
+		  "T":1591274595442,
+		  "t":0,
+		  "rp": "0",
+		  "b":"0",
+		  "a":"0",
+		  "m":false,
+		  "R":false,
+		  "wt":"CONTRACT_PRICE",
+		  "ot":"TRAILING_STOP_MARKET",
+		  "ps":"LONG",
+		  "cp":false,
+		  "AP":"9476.8",
+		  "cr":"5.0",
+		  "pP": false
+		}
+	}`)
+	expectedEvent := &WsUserDataEvent{
+		Event:           "ORDER_TRADE_UPDATE",
+		Time:            1568879465651,
+		TransactionTime: 1568879465650,
+		Alias:           "SfsR",
+		OrderTradeUpdate: WsOrderTradeUpdate{
+			Symbol:               "BTCUSD_200925",
+			ClientOrderID:        "TEST",
+			Side:                 "SELL",
+			Type:                 "TRAILING_STOP_MARKET",
+			TimeInForce:          "GTC",
+			OriginalQty:          "2",
+			OriginalPrice:        "0",
+			AveragePrice:         "0",
+			StopPrice:            "9103.1",
+			ExecutionType:        "NEW",
+			Status:               "NEW",
+			ID:                   8888888,
+			LastFilledQty:        "0",
+			AccumulatedFilledQty: "0",
+			LastFilledPrice:      "0",
+			MarginAsset:          "BTC",
+			CommissionAsset:      "BTC",
+			Commission:           "0",
+			TradeTime:            1591274595442,
+			TradeID:              0,
+			RealizedPnL:          "0",
+			BidsNotional:         "0",
+			AsksNotional:         "0",
+			IsMaker:              false,
+			IsReduceOnly:         false,
+			WorkingType:          "CONTRACT_PRICE",
+			OriginalType:         "TRAILING_STOP_MARKET",
+			PositionSide:         "LONG",
+			IsClosingPosition:    false,
+			ActivationPrice:      "9476.8",
+			CallbackRate:         "5.0",
+			IsProtected:          false,
+		},
+	}
+	s.testWsUserDataServe(data, expectedEvent)
+}
+
+func (s *websocketServiceTestSuite) assertUserDataEvent(e, a *WsUserDataEvent) {
+	r := s.r()
+	r.Equal(e.Event, a.Event, "Event")
+	r.Equal(e.Time, a.Time, "Time")
+	r.Equal(e.CrossWalletBalance, a.CrossWalletBalance, "CrossWalletBalance")
+	for i, e := range e.MarginCallPositions {
+		a := a.MarginCallPositions[i]
+		s.assertPosition(e, a)
+	}
+	r.Equal(e.TransactionTime, a.TransactionTime, "TransactionTime")
+	s.assertAccountUpdate(e.AccountUpdate, a.AccountUpdate)
+	s.assertOrderTradeUpdate(e.OrderTradeUpdate, a.OrderTradeUpdate)
+}
+
+func (s *websocketServiceTestSuite) assertPosition(e, a WsPosition) {
+	r := s.r()
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.Side, a.Side, "Side")
+	r.Equal(e.Amount, a.Amount, "Amount")
+	r.Equal(e.MarginType, a.MarginType, "MarginType")
+	r.Equal(e.IsolatedWallet, a.IsolatedWallet, "IsolatedWallet")
+	r.Equal(e.EntryPrice, a.EntryPrice, "EntryPrice")
+	r.Equal(e.MarkPrice, a.MarkPrice, "MarkPrice")
+	r.Equal(e.UnrealizedPnL, a.UnrealizedPnL, "UnrealizedPnL")
+	r.Equal(e.AccumulatedRealized, a.AccumulatedRealized, "AccumulatedRealized")
+	r.Equal(e.MaintenanceMarginRequired, a.MaintenanceMarginRequired, "MaintenanceMarginRequired")
+}
+
+func (s *websocketServiceTestSuite) assertAccountUpdate(e, a WsAccountUpdate) {
+	r := s.r()
+	r.Equal(e.Reason, a.Reason, "Reason")
+	for i, e := range e.Balances {
+		a := a.Balances[i]
+		r.Equal(e.Asset, a.Asset, "Asset")
+		r.Equal(e.Balance, a.Balance, "Balance")
+		r.Equal(e.CrossWalletBalance, a.CrossWalletBalance, "CrossWalletBalance")
+	}
+	for i, e := range e.Positions {
+		a := a.Positions[i]
+		s.assertPosition(e, a)
+	}
+}
+
+func (s *websocketServiceTestSuite) assertOrderTradeUpdate(e, a WsOrderTradeUpdate) {
+	r := s.r()
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.ClientOrderID, a.ClientOrderID, "ClientOrderID")
+	r.Equal(e.Side, a.Side, "Side")
+	r.Equal(e.Type, a.Type, "Type")
+	r.Equal(e.TimeInForce, a.TimeInForce, "TimeInForce")
+	r.Equal(e.OriginalQty, a.OriginalQty, "OriginalQty")
+	r.Equal(e.OriginalPrice, a.OriginalPrice, "OriginalPrice")
+	r.Equal(e.AveragePrice, a.AveragePrice, "AveragePrice")
+	r.Equal(e.StopPrice, a.StopPrice, "StopPrice")
+	r.Equal(e.ExecutionType, a.ExecutionType, "ExecutionType")
+	r.Equal(e.Status, a.Status, "Status")
+	r.Equal(e.ID, a.ID, "ID")
+	r.Equal(e.LastFilledQty, a.LastFilledQty, "LastFilledQty")
+	r.Equal(e.AccumulatedFilledQty, a.AccumulatedFilledQty, "AccumulatedFilledQty")
+	r.Equal(e.LastFilledPrice, a.LastFilledPrice, "LastFilledPrice")
+	r.Equal(e.CommissionAsset, a.CommissionAsset, "CommissionAsset")
+	r.Equal(e.Commission, a.Commission, "Commission")
+	r.Equal(e.TradeTime, a.TradeTime, "TradeTime")
+	r.Equal(e.TradeID, a.TradeID, "TradeID")
+	r.Equal(e.BidsNotional, a.BidsNotional, "BidsNotional")
+	r.Equal(e.AsksNotional, a.AsksNotional, "AsksNotional")
+	r.Equal(e.IsMaker, a.IsMaker, "IsMaker")
+	r.Equal(e.IsReduceOnly, a.IsReduceOnly, "IsReduceOnly")
+	r.Equal(e.WorkingType, a.WorkingType, "WorkingType")
+	r.Equal(e.OriginalType, a.OriginalType, "OriginalType")
+	r.Equal(e.PositionSide, a.PositionSide, "PositionSide")
+	r.Equal(e.IsClosingPosition, a.IsClosingPosition, "IsClosingPosition")
+	r.Equal(e.ActivationPrice, a.ActivationPrice, "ActivationPrice")
+	r.Equal(e.CallbackRate, a.CallbackRate, "CallbackRate")
+	r.Equal(e.RealizedPnL, a.RealizedPnL, "RealizedPnL")
 }

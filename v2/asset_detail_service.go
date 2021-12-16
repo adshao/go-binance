@@ -3,6 +3,7 @@ package binance
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // GetAssetDetailService fetches all asset detail.
@@ -22,7 +23,7 @@ func (s *GetAssetDetailService) Asset(asset string) *GetAssetDetailService {
 // Do sends the request.
 func (s *GetAssetDetailService) Do(ctx context.Context) (res map[string]AssetDetail, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/sapi/v1/asset/assetDetail",
 		secType:  secTypeSigned,
 	}
@@ -43,9 +44,9 @@ func (s *GetAssetDetailService) Do(ctx context.Context) (res map[string]AssetDet
 
 // AssetDetail represents the detail of an asset
 type AssetDetail struct {
-	MinWithdrawAmount float64 `json:"minWithdrawAmount"`
-	DepositStatus     bool    `json:"depositStatus"`
-	WithdrawFee       float64 `json:"withdrawFee"`
-	WithdrawStatus    bool    `json:"withdrawStatus"`
-	DepositTip        string  `json:"depositTip"`
+	MinWithdrawAmount string `json:"minWithdrawAmount"`
+	DepositStatus     bool   `json:"depositStatus"`
+	WithdrawFee       string `json:"withdrawFee"`
+	WithdrawStatus    bool   `json:"withdrawStatus"`
+	DepositTip        string `json:"depositTip"`
 }

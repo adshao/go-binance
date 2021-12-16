@@ -3,13 +3,15 @@ package binance
 import (
 	"context"
 	"encoding/json"
+	"net/http"
+	"strings"
 )
 
 // ExchangeInfoService exchange info service
 type ExchangeInfoService struct {
 	c       *Client
 	symbol  string
-	symbols []string
+	symbols string
 }
 
 // Symbol set symbol
@@ -20,14 +22,18 @@ func (s *ExchangeInfoService) Symbol(symbol string) *ExchangeInfoService {
 
 // Symbols set symbol
 func (s *ExchangeInfoService) Symbols(symbols ...string) *ExchangeInfoService {
-	s.symbols = symbols
+	if len(symbols) == 0 {
+		s.symbols = "[]"
+	} else {
+		s.symbols = "[\"" + strings.Join(symbols, "\",\"") + "\"]"
+	}
 	return s
 }
 
 // Do send request
 func (s *ExchangeInfoService) Do(ctx context.Context, opts ...RequestOption) (res *ExchangeInfo, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/api/v3/exchangeInfo",
 		secType:  secTypeNone,
 	}
@@ -77,6 +83,7 @@ type Symbol struct {
 	BaseAssetPrecision     int                      `json:"baseAssetPrecision"`
 	QuoteAsset             string                   `json:"quoteAsset"`
 	QuotePrecision         int                      `json:"quotePrecision"`
+	QuoteAssetPrecision    int                      `json:"quoteAssetPrecision"`
 	OrderTypes             []string                 `json:"orderTypes"`
 	IcebergAllowed         bool                     `json:"icebergAllowed"`
 	OcoAllowed             bool                     `json:"ocoAllowed"`
