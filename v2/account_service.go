@@ -3,6 +3,7 @@ package binance
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // GetAccountService get account info
@@ -13,7 +14,7 @@ type GetAccountService struct {
 // Do send request
 func (s *GetAccountService) Do(ctx context.Context, opts ...RequestOption) (res *Account, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/api/v3/account",
 		secType:  secTypeSigned,
 	}
@@ -38,7 +39,10 @@ type Account struct {
 	CanTrade         bool      `json:"canTrade"`
 	CanWithdraw      bool      `json:"canWithdraw"`
 	CanDeposit       bool      `json:"canDeposit"`
+	UpdateTime       uint64    `json:"updateTime"`
+	AccountType      string    `json:"accountType"`
 	Balances         []Balance `json:"balances"`
+	Permissions      []string  `json:"permissions"`
 }
 
 // Balance define user balance of your account
@@ -84,7 +88,7 @@ func (s *GetAccountSnapshotService) Limit(limit int) *GetAccountSnapshotService 
 // Do send request
 func (s *GetAccountSnapshotService) Do(ctx context.Context, opts ...RequestOption) (res *Snapshot, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/sapi/v1/accountSnapshot",
 		secType:  secTypeSigned,
 	}

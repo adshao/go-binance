@@ -3,6 +3,7 @@ package futures
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // GetIncomeHistoryService get position margin history service
@@ -48,7 +49,7 @@ func (s *GetIncomeHistoryService) Limit(limit int64) *GetIncomeHistoryService {
 // Do send request
 func (s *GetIncomeHistoryService) Do(ctx context.Context, opts ...RequestOption) (res []*IncomeHistory, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/income",
 		secType:  secTypeSigned,
 	}
@@ -66,7 +67,7 @@ func (s *GetIncomeHistoryService) Do(ctx context.Context, opts ...RequestOption)
 		r.setParam("limit", *s.limit)
 	}
 
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}

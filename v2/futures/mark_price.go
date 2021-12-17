@@ -3,6 +3,7 @@ package futures
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 
 	"github.com/adshao/go-binance/v2/common"
 )
@@ -22,14 +23,14 @@ func (s *PremiumIndexService) Symbol(symbol string) *PremiumIndexService {
 // Do send request
 func (s *PremiumIndexService) Do(ctx context.Context, opts ...RequestOption) (res []*PremiumIndex, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/premiumIndex",
 		secType:  secTypeNone,
 	}
 	if s.symbol != nil {
 		r.setParam("symbol", *s.symbol)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	data = common.ToJSONList(data)
 	if err != nil {
 		return []*PremiumIndex{}, err
@@ -87,7 +88,7 @@ func (s *FundingRateService) Limit(limit int) *FundingRateService {
 // Do send request
 func (s *FundingRateService) Do(ctx context.Context, opts ...RequestOption) (res []*FundingRate, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/fundingRate",
 		secType:  secTypeNone,
 	}
@@ -101,7 +102,7 @@ func (s *FundingRateService) Do(ctx context.Context, opts ...RequestOption) (res
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*FundingRate{}, err
 	}
@@ -136,7 +137,7 @@ func (s *GetLeverageBracketService) Symbol(symbol string) *GetLeverageBracketSer
 // Do send request
 func (s *GetLeverageBracketService) Do(ctx context.Context, opts ...RequestOption) (res []*LeverageBracket, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/leverageBracket",
 		secType:  secTypeSigned,
 	}
@@ -144,7 +145,7 @@ func (s *GetLeverageBracketService) Do(ctx context.Context, opts ...RequestOptio
 	if s.symbol != "" {
 		r.setParam("symbol", s.symbol)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*LeverageBracket{}, err
 	}

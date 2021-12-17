@@ -15,114 +15,129 @@ func TestDepositService(t *testing.T) {
 }
 
 func (s *depositServiceTestSuite) TestListDeposits() {
-	data := []byte(`
-	{
-		"depositList": [
-			{
-				"insertTime": 1508198532000,
-				"amount": 0.04670582,
-				"asset": "ETH",
-				"address": "0x6915f16f8791d0a1cc2bf47c13a6b2a92000504b",
-				"txId": "0xdf33b22bdb2b28b1f75ccd201a4a4m6e7g83jy5fc5d5a9d1340961598cfcb0a1",
-				"status": 1
-			},
-			{
-				"insertTime": 1508298532000,
-				"amount": 1000,
-				"asset": "XMR",
-				"address": "463tWEBn5XZJSxLU34r6g7h8jtxuNcDbjLSjkn3XAXHCbLrTTErJrBWYgHJQyrCwkNgYvyV3z8zctJLPCZy24jvb3NiTcTJ",
-				"addressTag": "342341222",
-				"txId": "b3c6219639c8ae3f9cf010cdc24fw7f7yt8j1e063f9b4bd1a05cb44c4b6e2509",
-				"status": 1
-			}
-		],
-		"success": true
-	}
-	`)
+	data := []byte(`[
+    {
+        "amount":"0.00999800",
+        "coin":"PAXG",
+        "network":"ETH",
+        "status":1,
+        "address":"0x788cabe9236ce061e5a892e1a59395a81fc8d62c",
+        "addressTag":"",
+        "txId":"0xaad4654a3234aa6118af9b4b335f5ae81c360b2394721c019b5d1e75328b09f3",
+        "insertTime":1599621997000,
+        "transferType":0,
+        "confirmTimes":"12/12"
+    },
+    {
+        "amount":"0.50000000",
+        "coin":"IOTA",
+        "network":"IOTA",
+        "status":1,
+        "address":"SIZ9VLMHWATXKV99LH99CIGFJFUMLEHGWVZVNNZXRJJVWBPHYWPPBOSDORZ9EQSHCZAMPVAPGFYQAUUV9DROOXJLNW",
+        "addressTag":"",
+        "txId":"ESBFVQUTPIWQNJSPXFNHNYHSQNTGKRVKPRABQWTAXCDWOAKDKYWPTVG9BGXNVNKTLEJGESAVXIKIZ9999",
+        "insertTime":1599620082000,
+        "transferType":0,
+        "confirmTimes":"1/1"
+    }
+]`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
-			"asset":     "BTC",
+			"coin":      "BTC",
 			"status":    1,
 			"startTime": 1508198532000,
 			"endTime":   1508198532001,
+			"offset":    0,
+			"limit":     1000,
 		})
 		s.assertRequestEqual(e, r)
 	})
 
 	deposits, err := s.client.NewListDepositsService().
-		Asset("BTC").
+		Coin("BTC").
 		Status(1).
 		StartTime(1508198532000).
 		EndTime(1508198532001).
+		Offset(0).
+		Limit(1000).
 		Do(newContext())
 	r := s.r()
 	r.NoError(err)
 
 	r.Len(deposits, 2)
 	s.assertDepositEqual(&Deposit{
-		InsertTime: 1508198532000,
-		Amount:     0.04670582,
-		Asset:      "ETH",
-		Address:    "0x6915f16f8791d0a1cc2bf47c13a6b2a92000504b",
-		AddressTag: "",
-		TxID:       "0xdf33b22bdb2b28b1f75ccd201a4a4m6e7g83jy5fc5d5a9d1340961598cfcb0a1",
-		Status:     1,
+		Amount:       "0.00999800",
+		Coin:         "PAXG",
+		Network:      "ETH",
+		Status:       1,
+		Address:      "0x788cabe9236ce061e5a892e1a59395a81fc8d62c",
+		AddressTag:   "",
+		TxID:         "0xaad4654a3234aa6118af9b4b335f5ae81c360b2394721c019b5d1e75328b09f3",
+		InsertTime:   1599621997000,
+		TransferType: 0,
+		ConfirmTimes: "12/12",
 	}, deposits[0])
 	s.assertDepositEqual(&Deposit{
-		InsertTime: 1508298532000,
-		Amount:     1000.0,
-		Asset:      "XMR",
-		Address:    "463tWEBn5XZJSxLU34r6g7h8jtxuNcDbjLSjkn3XAXHCbLrTTErJrBWYgHJQyrCwkNgYvyV3z8zctJLPCZy24jvb3NiTcTJ",
-		AddressTag: "342341222",
-		TxID:       "b3c6219639c8ae3f9cf010cdc24fw7f7yt8j1e063f9b4bd1a05cb44c4b6e2509",
-		Status:     1,
+		Amount:       "0.50000000",
+		Coin:         "IOTA",
+		Network:      "IOTA",
+		Status:       1,
+		Address:      "SIZ9VLMHWATXKV99LH99CIGFJFUMLEHGWVZVNNZXRJJVWBPHYWPPBOSDORZ9EQSHCZAMPVAPGFYQAUUV9DROOXJLNW",
+		AddressTag:   "",
+		TxID:         "ESBFVQUTPIWQNJSPXFNHNYHSQNTGKRVKPRABQWTAXCDWOAKDKYWPTVG9BGXNVNKTLEJGESAVXIKIZ9999",
+		InsertTime:   1599620082000,
+		TransferType: 0,
+		ConfirmTimes: "1/1",
 	}, deposits[1])
 }
 
 func (s *depositServiceTestSuite) assertDepositEqual(e, a *Deposit) {
 	r := s.r()
-	r.Equal(e.InsertTime, a.InsertTime, "InsertTime")
-	r.Equal(e.Asset, a.Asset, "Asset")
-	r.InDelta(e.Amount, a.Amount, 0.0000000001, "Amount")
+	r.Equal(e.Amount, a.Amount, "Amount")
+	r.Equal(e.Coin, a.Coin, "Coin")
+	r.Equal(e.Network, a.Network, "Network")
 	r.Equal(e.Status, a.Status, "Status")
+	r.Equal(e.Address, a.Address, "Address")
+	r.Equal(e.AddressTag, a.AddressTag, "AddressTag")
 	r.Equal(e.TxID, a.TxID, "TxID")
+	r.Equal(e.InsertTime, a.InsertTime, "InsertTime")
+	r.Equal(e.TransferType, a.TransferType, "TransferType")
+	r.Equal(e.ConfirmTimes, a.ConfirmTimes, "ConfirmTimes")
 }
 
 func (s *depositServiceTestSuite) TestGetDepositAddress() {
 	data := []byte(`
 	{
-		"address": "0xbf1f86b3c8ff4f8cbfc195e9713b6f0000000000",
-		"success": true,
-		"addressTag": "1231212",
-		"asset": "ETH",
-		"url": "https://etherscan.io/address/0xbf1f86b3c8ff4f8cbfc195e9713b6f0000000000"
+		"address": "1HPn8Rx2y6nNSfagQBKy27GB99Vbzg89wv",
+		"coin": "BTC",
+		"tag": "",
+		"url": "https://btc.com/1HPn8Rx2y6nNSfagQBKy27GB99Vbzg89wv"
 	}
 	`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
 
-	asset := "ETH"
-	status := true
+	coin := "BTC"
+	network := "BTC"
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
-			"asset":  asset,
-			"status": status,
+			"coin":    coin,
+			"network": network,
 		})
 		s.assertRequestEqual(e, r)
 	})
 
 	res, err := s.client.NewGetDepositAddressService().
-		Asset(asset).
-		Status(status).
+		Coin(coin).
+		Network(network).
 		Do(newContext())
 
 	r := s.r()
 	r.NoError(err)
-	r.True(res.Success)
-	r.Equal("0xbf1f86b3c8ff4f8cbfc195e9713b6f0000000000", res.Address)
-	r.Equal("1231212", res.AddressTag)
-	r.Equal("ETH", res.Asset)
-	r.Equal("https://etherscan.io/address/0xbf1f86b3c8ff4f8cbfc195e9713b6f0000000000", res.URL)
+	r.Equal("1HPn8Rx2y6nNSfagQBKy27GB99Vbzg89wv", res.Address)
+	r.Equal("", res.Tag)
+	r.Equal("BTC", res.Coin)
+	r.Equal("https://btc.com/1HPn8Rx2y6nNSfagQBKy27GB99Vbzg89wv", res.URL)
 }

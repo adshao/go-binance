@@ -3,6 +3,7 @@ package futures
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // HistoricalTradesService trades
@@ -34,7 +35,7 @@ func (s *HistoricalTradesService) FromID(fromID int64) *HistoricalTradesService 
 // Do send request
 func (s *HistoricalTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*Trade, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/historicalTrades",
 		secType:  secTypeAPIKey,
 	}
@@ -46,7 +47,7 @@ func (s *HistoricalTradesService) Do(ctx context.Context, opts ...RequestOption)
 		r.setParam("fromId", *s.fromID)
 	}
 
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return
 	}
@@ -127,7 +128,7 @@ func (s *AggTradesService) Limit(limit int) *AggTradesService {
 // Do send request
 func (s *AggTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*AggTrade, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/aggTrades",
 	}
 	r.setParam("symbol", s.symbol)
@@ -143,7 +144,7 @@ func (s *AggTradesService) Do(ctx context.Context, opts ...RequestOption) (res [
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*AggTrade{}, err
 	}
@@ -188,14 +189,14 @@ func (s *RecentTradesService) Limit(limit int) *RecentTradesService {
 // Do send request
 func (s *RecentTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*Trade, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/trades",
 	}
 	r.setParam("symbol", s.symbol)
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*Trade{}, err
 	}
@@ -250,7 +251,7 @@ func (s *ListAccountTradeService) Limit(limit int) *ListAccountTradeService {
 // Do send request
 func (s *ListAccountTradeService) Do(ctx context.Context, opts ...RequestOption) (res []*AccountTrade, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/userTrades",
 		secType:  secTypeSigned,
 	}
@@ -267,7 +268,7 @@ func (s *ListAccountTradeService) Do(ctx context.Context, opts ...RequestOption)
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*AccountTrade{}, err
 	}
