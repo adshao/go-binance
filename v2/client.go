@@ -423,6 +423,11 @@ func (c *Client) NewGetAccountService() *GetAccountService {
 	return &GetAccountService{c: c}
 }
 
+// NewGetAPIKeyPermission init getting API key permission
+func (c *Client) NewGetAPIKeyPermission() *GetAPIKeyPermission {
+	return &GetAPIKeyPermission{c: c}
+}
+
 // NewListSavingsFlexibleProductsService get flexible products list (Savings)
 func (c *Client) NewListSavingsFlexibleProductsService() *ListSavingsFlexibleProductsService {
 	return &ListSavingsFlexibleProductsService{c: c}

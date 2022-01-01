@@ -174,3 +174,42 @@ type SnapshotPositions struct {
 	Symbol           string `json:"symbol"`
 	UnRealizedProfit string `json:"unRealizedProfit"`
 }
+
+// GetAPIKeyPermission get API Key permission info
+type GetAPIKeyPermission struct {
+	c *Client
+}
+
+// Do send request
+func (s *GetAPIKeyPermission) Do(ctx context.Context, opts ...RequestOption) (res *APIKeyPermission, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/account/apiRestrictions",
+		secType:  secTypeSigned,
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(APIKeyPermission)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// APIKeyPermission define API key permission
+type APIKeyPermission struct {
+	IPRestrict                     bool   `json:"ipRestrict"`
+	CreateTime                     uint64 `json:"createTime"`
+	EnableWithdrawals              bool   `json:"enableWithdrawals"`
+	EnableInternalTransfer         bool   `json:"enableInternalTransfer"`
+	PermitsUniversalTransfer       bool   `json:"permitsUniversalTransfer"`
+	EnableVanillaOptions           bool   `json:"enableVanillaOptions"`
+	EnableReading                  bool   `json:"enableReading"`
+	EnableFutures                  bool   `json:"enableFutures"`
+	EnableMargin                   bool   `json:"enableMargin"`
+	EnableSpotAndMarginTrading     bool   `json:"enableSpotAndMarginTrading"`
+	TradingAuthorityExpirationTime uint64 `json:"tradingAuthorityExpirationTime"`
+}
