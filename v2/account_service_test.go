@@ -174,3 +174,57 @@ func (s *accountServiceTestSuite) assertSnapshotAccountEqual(e, a *Snapshot) {
 		}
 	}
 }
+
+func (s *accountServiceTestSuite) TestGetAPIKeyPermission() {
+	data := []byte(`{
+   			"ipRestrict": false,
+   			"createTime": 1623840271000,   
+   			"enableWithdrawals": false,
+   			"enableInternalTransfer": true,
+   			"permitsUniversalTransfer": true,
+   			"enableVanillaOptions": false,
+   			"enableReading": true,
+   			"enableFutures": false,
+   			"enableMargin": false,
+   			"enableSpotAndMarginTrading": false,
+   			"tradingAuthorityExpirationTime": 1628985600000
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	s.assertReq(func(r *request) {
+		e := newSignedRequest()
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewGetAPIKeyPermission().Do(newContext())
+	s.r().NoError(err)
+	e := &APIKeyPermission{
+		IPRestrict:                     false,
+		CreateTime:                     1623840271000,
+		EnableWithdrawals:              false,
+		EnableInternalTransfer:         true,
+		PermitsUniversalTransfer:       true,
+		EnableVanillaOptions:           false,
+		EnableReading:                  true,
+		EnableFutures:                  false,
+		EnableMargin:                   false,
+		EnableSpotAndMarginTrading:     false,
+		TradingAuthorityExpirationTime: 1628985600000,
+	}
+	s.assertAPIKeyPermissionEqual(e, res)
+}
+
+func (s *accountServiceTestSuite) assertAPIKeyPermissionEqual(e, a *APIKeyPermission) {
+	r := s.r()
+	r.Equal(e.IPRestrict, a.IPRestrict, "IPRestrict")
+	r.Equal(e.CreateTime, a.CreateTime, "CreateTime")
+	r.Equal(e.EnableWithdrawals, a.EnableWithdrawals, "EnableWithdrawals")
+	r.Equal(e.EnableInternalTransfer, a.EnableInternalTransfer, "EnableInternalTransfer")
+	r.Equal(e.PermitsUniversalTransfer, a.PermitsUniversalTransfer, "PermitsUniversalTransfer")
+	r.Equal(e.EnableVanillaOptions, a.EnableVanillaOptions, "EnableVanillaOptions")
+	r.Equal(e.EnableReading, a.EnableReading, "EnableReading")
+	r.Equal(e.EnableFutures, a.EnableFutures, "EnableFutures")
+	r.Equal(e.EnableMargin, a.EnableMargin, "EnableMargin")
+	r.Equal(e.EnableSpotAndMarginTrading, a.EnableSpotAndMarginTrading, "EnableSpotAndMarginTrading")
+	r.Equal(e.TradingAuthorityExpirationTime, a.TradingAuthorityExpirationTime, "TradingAuthorityExpirationTime")
+}
