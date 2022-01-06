@@ -686,7 +686,12 @@ func (c *Client) NewGetAllMarginAssetsService() *GetAllMarginAssetsService {
 	return &GetAllMarginAssetsService{c: c}
 }
 
-// NewFiatDepositWithdrawHistoryService init get the fiat deposit/withdraw history service
+// NewFiatDepositWithdrawHistoryService init the fiat deposit/withdraw history service
 func (c *Client) NewFiatDepositWithdrawHistoryService() *FiatDepositWithdrawHistoryService {
 	return &FiatDepositWithdrawHistoryService{c: c}
+}
+
+// NewFiatPaymentsHistoryService init the fiat payments history service
+func (c *Client) NewFiatPaymentsHistoryService() *FiatPaymentsHistoryService {
+	return &FiatPaymentsHistoryService{c: c}
 }
