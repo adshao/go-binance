@@ -700,3 +700,8 @@ func (c *Client) NewFiatPaymentsHistoryService() *FiatPaymentsHistoryService {
 func (c *Client) NewSpotRebateHistoryService() *SpotRebateHistoryService {
 	return &SpotRebateHistoryService{c: c}
 }
+
+// NewConvertTradeHistoryService init the convert trade history service
+func (c *Client) NewConvertTradeHistoryService() *ConvertTradeHistoryService {
+	return &ConvertTradeHistoryService{c: c}
+}
