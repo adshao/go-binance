@@ -65,6 +65,9 @@ type SideEffectType string
 // FuturesTransferType define futures transfer type
 type FuturesTransferType int
 
+// TransactionType define transaction type
+type TransactionType string
+
 // Endpoints
 const (
 	baseAPIMainURL    = "https://api.binance.com"
@@ -147,6 +150,11 @@ const (
 	SideEffectTypeNoSideEffect SideEffectType = "NO_SIDE_EFFECT"
 	SideEffectTypeMarginBuy    SideEffectType = "MARGIN_BUY"
 	SideEffectTypeAutoRepay    SideEffectType = "AUTO_REPAY"
+
+	TransactionTypeDeposit  TransactionType = "0"
+	TransactionTypeWithdraw TransactionType = "1"
+	TransactionTypeBuy      TransactionType = "0"
+	TransactionTypeSell     TransactionType = "1"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
@@ -676,4 +684,14 @@ func (c *Client) NewUserUniversalTransferService() *CreateUserUniversalTransferS
 // NewDustTransferService init Get All Margin Assets service
 func (c *Client) NewGetAllMarginAssetsService() *GetAllMarginAssetsService {
 	return &GetAllMarginAssetsService{c: c}
+}
+
+// NewFiatDepositWithdrawHistoryService init the fiat deposit/withdraw history service
+func (c *Client) NewFiatDepositWithdrawHistoryService() *FiatDepositWithdrawHistoryService {
+	return &FiatDepositWithdrawHistoryService{c: c}
+}
+
+// NewFiatPaymentsHistoryService init the fiat payments history service
+func (c *Client) NewFiatPaymentsHistoryService() *FiatPaymentsHistoryService {
+	return &FiatPaymentsHistoryService{c: c}
 }
