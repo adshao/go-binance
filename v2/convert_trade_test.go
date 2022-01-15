@@ -38,8 +38,8 @@ func (s *convertTradeTestSuite) TestConvertTradeHistory() {
 	s.mockDo(data, nil)
 	defer s.assertDo()
 
-	startTime := time.Now().AddDate(0, 0, -7).UnixMilli()
-	endTime := time.Now().UnixMilli()
+	startTime := time.Now().AddDate(0, 0, -7).Unix() * 1000
+	endTime := time.Now().Unix() * 1000
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
 			"startTime": startTime,
