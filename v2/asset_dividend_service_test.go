@@ -20,6 +20,7 @@ func (s *assetDividendServiceTestSuite) TestListAssetDividend() {
 	{
 		"rows":[
 			{
+	            "id":1637366104,
 				"amount":"10.00000000",
 				"asset":"BHFT",
 				"divTime":1563189166000,
@@ -27,6 +28,7 @@ func (s *assetDividendServiceTestSuite) TestListAssetDividend() {
 				"tranId":2968885920
 			},
 			{
+	            "id":1631750237,
 				"amount":"10.00000000",
 				"asset":"BHFT",
 				"divTime":1563189165000,
@@ -65,6 +67,7 @@ func (s *assetDividendServiceTestSuite) TestListAssetDividend() {
 
 	s.Len(rows, 2)
 	s.assertDividendEqual(&DividendResponse{
+		ID:     1637366104,
 		Amount: `10.00000000`,
 		Asset:  `BHFT`,
 		Time:   1563189166000,
@@ -72,17 +75,20 @@ func (s *assetDividendServiceTestSuite) TestListAssetDividend() {
 		TranID: 2968885920,
 	}, &rows[0])
 	s.assertDividendEqual(&DividendResponse{
+		ID:     1631750237,
 		Amount: `10.00000000`,
 		Asset:  `BHFT`,
 		Time:   1563189165000,
 		Info:   `BHFT distribution`,
 		TranID: 2968885920,
 	}, &rows[1])
+	s.Equal(int32(2), dividend.Total, `Total`)
 }
 
 func (s *assetDividendServiceTestSuite) assertDividendEqual(e, a *DividendResponse) {
 	r := s.r()
-	r.Equal(e.Amount, `10.00000000`, `Amount`)
+	r.Equal(e.ID, a.ID, `ID`)
+	r.Equal(e.Amount, a.Amount, `Amount`)
 	r.Equal(e.Amount, a.Amount, `Amount`)
 	r.Equal(e.Info, a.Info, `Info`)
 	r.Equal(e.Asset, a.Asset, `Asset`)
