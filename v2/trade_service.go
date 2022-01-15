@@ -157,6 +157,7 @@ type TradeV3 struct {
 	ID              int64  `json:"id"`
 	Symbol          string `json:"symbol"`
 	OrderID         int64  `json:"orderId"`
+	OrderListId     int64  `json:"orderListId"`
 	Price           string `json:"price"`
 	Quantity        string `json:"qty"`
 	QuoteQuantity   string `json:"quoteQty"`
