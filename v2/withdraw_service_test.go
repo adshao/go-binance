@@ -74,6 +74,8 @@ func (s *withdrawServiceTestSuite) TestListWithdraws() {
         "transferType": 0,
         "status": 6,
         "transactionFee": "0.004",
+		"confirmNo":3,
+		"info":"The address is not valid. Please confirm with the recipient",
         "txId": "0xb5ef8c13b968a406cc62a93a8bd80f9e9a906ef1b3fcf20a2e48573c17659268"
     },
     {
@@ -86,6 +88,8 @@ func (s *withdrawServiceTestSuite) TestListWithdraws() {
         "status": 6,
         "transactionFee": "0.004",
         "transferType": 0,
+		"confirmNo":2,
+		"info":"",
         "txId": "60fd9007ebfddc753455f95fafa808c4302c836e4d1eebc5a132c36c1d8ac354"
     }
 ]
@@ -134,6 +138,8 @@ func (s *withdrawServiceTestSuite) TestListWithdraws() {
 		TransferType:    0,
 		Status:          6,
 		TransactionFee:  "0.004",
+		ConfirmNo:       3,
+		Info:            "The address is not valid. Please confirm with the recipient",
 		TxID:            "0xb5ef8c13b968a406cc62a93a8bd80f9e9a906ef1b3fcf20a2e48573c17659268",
 	}, withdraws[0])
 	s.assertWithdrawEqual(&Withdraw{
@@ -147,6 +153,8 @@ func (s *withdrawServiceTestSuite) TestListWithdraws() {
 		TransferType:    0,
 		Status:          6,
 		TransactionFee:  "0.004",
+		ConfirmNo:       2,
+		Info:            "",
 		TxID:            "60fd9007ebfddc753455f95fafa808c4302c836e4d1eebc5a132c36c1d8ac354",
 	}, withdraws[1])
 }
@@ -163,5 +171,7 @@ func (s *withdrawServiceTestSuite) assertWithdrawEqual(e, a *Withdraw) {
 	r.Equal(e.TransferType, a.TransferType, "TransferType")
 	r.Equal(e.Status, a.Status, "Status")
 	r.Equal(e.TransactionFee, a.TransactionFee, "TransactionFee")
+	r.Equal(e.ConfirmNo, a.ConfirmNo, "ConfirmNo")
+	r.Equal(e.Info, a.Info, "Info")
 	r.Equal(e.TxID, a.TxID, "TxID")
 }
