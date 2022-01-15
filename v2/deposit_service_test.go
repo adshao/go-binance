@@ -26,6 +26,7 @@ func (s *depositServiceTestSuite) TestListDeposits() {
         "txId":"0xaad4654a3234aa6118af9b4b335f5ae81c360b2394721c019b5d1e75328b09f3",
         "insertTime":1599621997000,
         "transferType":0,
+        "unlockConfirm":"12/12",
         "confirmTimes":"12/12"
     },
     {
@@ -38,6 +39,7 @@ func (s *depositServiceTestSuite) TestListDeposits() {
         "txId":"ESBFVQUTPIWQNJSPXFNHNYHSQNTGKRVKPRABQWTAXCDWOAKDKYWPTVG9BGXNVNKTLEJGESAVXIKIZ9999",
         "insertTime":1599620082000,
         "transferType":0,
+        "unlockConfirm":"1/12",
         "confirmTimes":"1/1"
     }
 ]`)
@@ -68,28 +70,30 @@ func (s *depositServiceTestSuite) TestListDeposits() {
 
 	r.Len(deposits, 2)
 	s.assertDepositEqual(&Deposit{
-		Amount:       "0.00999800",
-		Coin:         "PAXG",
-		Network:      "ETH",
-		Status:       1,
-		Address:      "0x788cabe9236ce061e5a892e1a59395a81fc8d62c",
-		AddressTag:   "",
-		TxID:         "0xaad4654a3234aa6118af9b4b335f5ae81c360b2394721c019b5d1e75328b09f3",
-		InsertTime:   1599621997000,
-		TransferType: 0,
-		ConfirmTimes: "12/12",
+		Amount:        "0.00999800",
+		Coin:          "PAXG",
+		Network:       "ETH",
+		Status:        1,
+		Address:       "0x788cabe9236ce061e5a892e1a59395a81fc8d62c",
+		AddressTag:    "",
+		TxID:          "0xaad4654a3234aa6118af9b4b335f5ae81c360b2394721c019b5d1e75328b09f3",
+		InsertTime:    1599621997000,
+		TransferType:  0,
+		UnlockConfirm: "12/12",
+		ConfirmTimes:  "12/12",
 	}, deposits[0])
 	s.assertDepositEqual(&Deposit{
-		Amount:       "0.50000000",
-		Coin:         "IOTA",
-		Network:      "IOTA",
-		Status:       1,
-		Address:      "SIZ9VLMHWATXKV99LH99CIGFJFUMLEHGWVZVNNZXRJJVWBPHYWPPBOSDORZ9EQSHCZAMPVAPGFYQAUUV9DROOXJLNW",
-		AddressTag:   "",
-		TxID:         "ESBFVQUTPIWQNJSPXFNHNYHSQNTGKRVKPRABQWTAXCDWOAKDKYWPTVG9BGXNVNKTLEJGESAVXIKIZ9999",
-		InsertTime:   1599620082000,
-		TransferType: 0,
-		ConfirmTimes: "1/1",
+		Amount:        "0.50000000",
+		Coin:          "IOTA",
+		Network:       "IOTA",
+		Status:        1,
+		Address:       "SIZ9VLMHWATXKV99LH99CIGFJFUMLEHGWVZVNNZXRJJVWBPHYWPPBOSDORZ9EQSHCZAMPVAPGFYQAUUV9DROOXJLNW",
+		AddressTag:    "",
+		TxID:          "ESBFVQUTPIWQNJSPXFNHNYHSQNTGKRVKPRABQWTAXCDWOAKDKYWPTVG9BGXNVNKTLEJGESAVXIKIZ9999",
+		InsertTime:    1599620082000,
+		TransferType:  0,
+		UnlockConfirm: "1/12",
+		ConfirmTimes:  "1/1",
 	}, deposits[1])
 }
 
@@ -104,6 +108,7 @@ func (s *depositServiceTestSuite) assertDepositEqual(e, a *Deposit) {
 	r.Equal(e.TxID, a.TxID, "TxID")
 	r.Equal(e.InsertTime, a.InsertTime, "InsertTime")
 	r.Equal(e.TransferType, a.TransferType, "TransferType")
+	r.Equal(e.UnlockConfirm, a.UnlockConfirm, "UnlockConfirm")
 	r.Equal(e.ConfirmTimes, a.ConfirmTimes, "ConfirmTimes")
 }
 
