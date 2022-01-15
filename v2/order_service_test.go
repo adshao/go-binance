@@ -463,6 +463,7 @@ func (s *baseOrderTestSuite) assertOrderEqual(e, a *Order) {
 	r.Equal(e.Time, e.Time, "Time")
 	r.Equal(e.UpdateTime, a.UpdateTime, "UpdateTime")
 	r.Equal(e.IsWorking, a.IsWorking, "IsWorking")
+	r.Equal(e.OrigQuoteOrderQuantity, a.OrigQuoteOrderQuantity, "OrigQuoteOrderQuantity")
 }
 
 func (s *orderServiceTestSuite) TestGetOrder() {
@@ -540,7 +541,8 @@ func (s *orderServiceTestSuite) TestListOrders() {
             "icebergQty": "0.0",
 			"time": 1499827319559,
 			"updateTime": 1499827319559,
-			"isWorking": true
+			"isWorking": true,
+    		"origQuoteOrderQty": "0.000000"
         }
     ]`)
 	s.mockDo(data, nil)
@@ -568,21 +570,22 @@ func (s *orderServiceTestSuite) TestListOrders() {
 	r.NoError(err)
 	r.Len(orders, 1)
 	e := &Order{
-		Symbol:           "LTCBTC",
-		OrderID:          1,
-		ClientOrderID:    "myOrder1",
-		Price:            "0.1",
-		OrigQuantity:     "1.0",
-		ExecutedQuantity: "0.0",
-		Status:           OrderStatusTypeNew,
-		TimeInForce:      TimeInForceTypeGTC,
-		Type:             OrderTypeLimit,
-		Side:             SideTypeBuy,
-		StopPrice:        "0.0",
-		IcebergQuantity:  "0.0",
-		Time:             1499827319559,
-		UpdateTime:       1499827319559,
-		IsWorking:        true,
+		Symbol:                 "LTCBTC",
+		OrderID:                1,
+		ClientOrderID:          "myOrder1",
+		Price:                  "0.1",
+		OrigQuantity:           "1.0",
+		ExecutedQuantity:       "0.0",
+		Status:                 OrderStatusTypeNew,
+		TimeInForce:            TimeInForceTypeGTC,
+		Type:                   OrderTypeLimit,
+		Side:                   SideTypeBuy,
+		StopPrice:              "0.0",
+		IcebergQuantity:        "0.0",
+		Time:                   1499827319559,
+		UpdateTime:             1499827319559,
+		IsWorking:              true,
+		OrigQuoteOrderQuantity: "0.000000",
 	}
 	s.assertOrderEqual(e, orders[0])
 }

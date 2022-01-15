@@ -484,6 +484,7 @@ type Order struct {
 	UpdateTime               int64           `json:"updateTime"`
 	IsWorking                bool            `json:"isWorking"`
 	IsIsolated               bool            `json:"isIsolated"`
+	OrigQuoteOrderQuantity   string          `json:"origQuoteOrderQty"`
 }
 
 // ListOrdersService all account orders; active, canceled, or filled
