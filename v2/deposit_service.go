@@ -97,16 +97,17 @@ func (s *ListDepositsService) Do(ctx context.Context) (res []*Deposit, err error
 
 // Deposit represents a single deposit entry.
 type Deposit struct {
-	Amount       string `json:"amount"`
-	Coin         string `json:"coin"`
-	Network      string `json:"network"`
-	Status       int    `json:"status"`
-	Address      string `json:"address"`
-	AddressTag   string `json:"addressTag"`
-	TxID         string `json:"txId"`
-	InsertTime   int64  `json:"insertTime"`
-	TransferType int64  `json:"transferType"`
-	ConfirmTimes string `json:"confirmTimes"`
+	Amount        string `json:"amount"`
+	Coin          string `json:"coin"`
+	Network       string `json:"network"`
+	Status        int    `json:"status"`
+	Address       string `json:"address"`
+	AddressTag    string `json:"addressTag"`
+	TxID          string `json:"txId"`
+	InsertTime    int64  `json:"insertTime"`
+	TransferType  int64  `json:"transferType"`
+	UnlockConfirm string `json:"unlockConfirm"`
+	ConfirmTimes  string `json:"confirmTimes"`
 }
 
 // GetDepositsAddressService retrieves the details of a deposit address.

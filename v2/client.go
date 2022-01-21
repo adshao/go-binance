@@ -695,3 +695,13 @@ func (c *Client) NewFiatDepositWithdrawHistoryService() *FiatDepositWithdrawHist
 func (c *Client) NewFiatPaymentsHistoryService() *FiatPaymentsHistoryService {
 	return &FiatPaymentsHistoryService{c: c}
 }
+
+// NewFiatPaymentsHistoryService init the spot rebate history service
+func (c *Client) NewSpotRebateHistoryService() *SpotRebateHistoryService {
+	return &SpotRebateHistoryService{c: c}
+}
+
+// NewConvertTradeHistoryService init the convert trade history service
+func (c *Client) NewConvertTradeHistoryService() *ConvertTradeHistoryService {
+	return &ConvertTradeHistoryService{c: c}
+}
