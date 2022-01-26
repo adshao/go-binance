@@ -681,6 +681,11 @@ func (c *Client) NewUserUniversalTransferService() *CreateUserUniversalTransferS
 	return &CreateUserUniversalTransferService{c: c}
 }
 
+// NewAllCoinsInformation
+func (c *Client) NewGetAllCoinsInfoService() *GetAllCoinsInfoService {
+	return &GetAllCoinsInfoService{c: c}
+}
+
 // NewDustTransferService init Get All Margin Assets service
 func (c *Client) NewGetAllMarginAssetsService() *GetAllMarginAssetsService {
 	return &GetAllMarginAssetsService{c: c}
