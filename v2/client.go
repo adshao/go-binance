@@ -68,6 +68,9 @@ type FuturesTransferType int
 // TransactionType define transaction type
 type TransactionType string
 
+// IsIsolated define isIsolated type for margin isolated
+type IsIsolated string
+
 // Endpoints
 const (
 	baseAPIMainURL    = "https://api.binance.com"
@@ -155,6 +158,9 @@ const (
 	TransactionTypeWithdraw TransactionType = "1"
 	TransactionTypeBuy      TransactionType = "0"
 	TransactionTypeSell     TransactionType = "1"
+
+	IsIsolatedTrue  IsIsolated = "TRUE"
+	IsIsolatedFalse IsIsolated = "FALSE"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
