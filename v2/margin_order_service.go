@@ -442,7 +442,7 @@ type CancelMarginOrderResponse struct {
 	Side                     SideType        `json:"side"`
 }
 
-// CreateMarginOCOService create order
+// CreateMarginOCOService create a new OCO for a margin account
 type CreateMarginOCOService struct {
 	c                    *Client
 	symbol               string
@@ -634,14 +634,14 @@ type CreateMarginOCOResponse struct {
 	OrderReports          []*MarginOCOOrderReport `json:"orderReports"`
 }
 
-// MarginOCOOrder may be returned in an array of MarginOCOOrder in a CreateMarginOCOResponse.
+// MarginOCOOrder may be returned in an array of MarginOCOOrder in a CreateMarginOCOResponse
 type MarginOCOOrder struct {
 	Symbol        string `json:"symbol"`
 	OrderID       int64  `json:"orderId"`
 	ClientOrderID string `json:"clientOrderId"`
 }
 
-// MarginOCOOrderReport may be returned in an array of MarginOCOOrderReport in a CreateMarginOCOResponse.
+// MarginOCOOrderReport may be returned in an array of MarginOCOOrderReport in a CreateMarginOCOResponse
 type MarginOCOOrderReport struct {
 	Symbol                   string          `json:"symbol"`
 	OrderID                  int64           `json:"orderId"`
@@ -657,4 +657,90 @@ type MarginOCOOrderReport struct {
 	Type                     OrderType       `json:"type"`
 	Side                     SideType        `json:"side"`
 	StopPrice                string          `json:"stopPrice"`
+}
+
+// CancelMarginOCOService cancel an entire Order List for a margin account
+type CancelMarginOCOService struct {
+	c                 *Client
+	symbol            string
+	isIsolated        *IsIsolated
+	listClientOrderID string
+	orderListID       int64
+	newClientOrderID  string
+}
+
+// Symbol set symbol
+func (s *CancelMarginOCOService) Symbol(symbol string) *CancelMarginOCOService {
+	s.symbol = symbol
+	return s
+}
+
+// IsIsolated set isIsolated
+func (s *CancelMarginOCOService) IsIsolated(isIsolated IsIsolated) *CancelMarginOCOService {
+	s.isIsolated = &isIsolated
+	return s
+}
+
+// ListClientOrderID sets listClientOrderId
+func (s *CancelMarginOCOService) ListClientOrderID(listClientOrderID string) *CancelMarginOCOService {
+	s.listClientOrderID = listClientOrderID
+	return s
+}
+
+// OrderListID sets orderListId
+func (s *CancelMarginOCOService) OrderListID(orderListID int64) *CancelMarginOCOService {
+	s.orderListID = orderListID
+	return s
+}
+
+// NewClientOrderID sets newClientOrderId
+func (s *CancelMarginOCOService) NewClientOrderID(newClientOrderID string) *CancelMarginOCOService {
+	s.newClientOrderID = newClientOrderID
+	return s
+}
+
+// Do send request
+func (s *CancelMarginOCOService) Do(ctx context.Context, opts ...RequestOption) (res *CancelMarginOCOResponse, err error) {
+	r := &request{
+		method:   http.MethodDelete,
+		endpoint: "/sapi/v1/margin/orderList",
+		secType:  secTypeSigned,
+	}
+	r.setFormParam("symbol", s.symbol)
+	if s.listClientOrderID != "" {
+		r.setFormParam("listClientOrderId", s.listClientOrderID)
+	}
+	if s.isIsolated != nil {
+		r.setFormParam("isIsolated", *s.isIsolated)
+	}
+	if s.orderListID != 0 {
+		r.setFormParam("orderListId", s.orderListID)
+	}
+	if s.newClientOrderID != "" {
+		r.setFormParam("newClientOrderId", s.newClientOrderID)
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(CancelMarginOCOResponse)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// CancelMarginOCOResponse define create cancelled oco response.
+type CancelMarginOCOResponse struct {
+	OrderListID       int64             `json:"orderListId"`
+	ContingencyType   string            `json:"contingencyType"`
+	ListStatusType    string            `json:"listStatusType"`
+	ListOrderStatus   string            `json:"listOrderStatus"`
+	ListClientOrderID string            `json:"listClientOrderId"`
+	TransactionTime   int64             `json:"transactionTime"`
+	Symbol            string            `json:"symbol"`
+	IsIsolated        *IsIsolated       `json:"isIsolated"`
+	Orders            []*OCOOrder       `json:"orders"`
+	OrderReports      []*OCOOrderReport `json:"orderReports"`
 }
