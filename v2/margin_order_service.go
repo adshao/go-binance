@@ -21,7 +21,7 @@ type CreateMarginOrderService struct {
 	newOrderRespType *NewOrderRespType
 	sideEffectType   *SideEffectType
 	timeInForce      *TimeInForceType
-	isIsolated       *bool
+	isIsolated       *IsIsolated
 }
 
 // Symbol set symbol
@@ -31,7 +31,7 @@ func (s *CreateMarginOrderService) Symbol(symbol string) *CreateMarginOrderServi
 }
 
 // IsIsolated sets the order to isolated margin
-func (s *CreateMarginOrderService) IsIsolated(isIsolated bool) *CreateMarginOrderService {
+func (s *CreateMarginOrderService) IsIsolated(isIsolated IsIsolated) *CreateMarginOrderService {
 	s.isIsolated = &isIsolated
 	return s
 }
@@ -121,11 +121,7 @@ func (s *CreateMarginOrderService) Do(ctx context.Context, opts ...RequestOption
 		m["quoteOrderQty"] = *s.quoteOrderQty
 	}
 	if s.isIsolated != nil {
-		if *s.isIsolated {
-			m["isIsolated"] = "TRUE"
-		} else {
-			m["isIsolated"] = "FALSE"
-		}
+		m["isIsolated"] = *s.isIsolated
 	}
 	if s.timeInForce != nil {
 		m["timeInForce"] = *s.timeInForce
@@ -733,14 +729,14 @@ func (s *CancelMarginOCOService) Do(ctx context.Context, opts ...RequestOption) 
 
 // CancelMarginOCOResponse define create cancelled oco response.
 type CancelMarginOCOResponse struct {
-	OrderListID       int64             `json:"orderListId"`
-	ContingencyType   string            `json:"contingencyType"`
-	ListStatusType    string            `json:"listStatusType"`
-	ListOrderStatus   string            `json:"listOrderStatus"`
-	ListClientOrderID string            `json:"listClientOrderId"`
-	TransactionTime   int64             `json:"transactionTime"`
-	Symbol            string            `json:"symbol"`
-	IsIsolated        *IsIsolated       `json:"isIsolated"`
-	Orders            []*OCOOrder       `json:"orders"`
-	OrderReports      []*OCOOrderReport `json:"orderReports"`
+	OrderListID       int64                   `json:"orderListId"`
+	ContingencyType   string                  `json:"contingencyType"`
+	ListStatusType    string                  `json:"listStatusType"`
+	ListOrderStatus   string                  `json:"listOrderStatus"`
+	ListClientOrderID string                  `json:"listClientOrderId"`
+	TransactionTime   int64                   `json:"transactionTime"`
+	Symbol            string                  `json:"symbol"`
+	IsIsolated        *IsIsolated             `json:"isIsolated"`
+	Orders            []*MarginOCOOrder       `json:"orders"`
+	OrderReports      []*MarginOCOOrderReport `json:"orderReports"`
 }
