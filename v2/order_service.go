@@ -236,8 +236,8 @@ func (s *CreateOCOService) Price(price string) *CreateOCOService {
 	return s
 }
 
-// limitIcebergQuantity set limitIcebergQuantity
-func (s *CreateOCOService) limitIcebergQuantity(limitIcebergQty string) *CreateOCOService {
+// LimitIcebergQuantity set limitIcebergQuantity
+func (s *CreateOCOService) LimitIcebergQuantity(limitIcebergQty string) *CreateOCOService {
 	s.limitIcebergQty = &limitIcebergQty
 	return s
 }
