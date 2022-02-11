@@ -496,7 +496,7 @@ func (s *marginOrderServiceTestSuite) TestCreateOCO() {
 	s.mockDo(data, nil)
 	defer s.assertDo()
 	symbol := "LTCBTC"
-	isIsolated := IsIsolatedTrue
+	isIsolated := true
 	side := SideTypeBuy
 	timeInForce := TimeInForceTypeGTC
 	quantity := "10"
@@ -509,7 +509,7 @@ func (s *marginOrderServiceTestSuite) TestCreateOCO() {
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setFormParams(params{
 			"symbol":               symbol,
-			"isIsolated":           isIsolated,
+			"isIsolated":           "TRUE",
 			"side":                 side,
 			"quantity":             quantity,
 			"price":                price,
@@ -640,4 +640,150 @@ func (s *marginOrderServiceTestSuite) assertMarginOCOOrderEqual(e, a *MarginOCOO
 	r.Equal(e.ClientOrderID, a.ClientOrderID, "ClientOrderID")
 	r.Equal(e.OrderID, a.OrderID, "OrderID")
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
+}
+
+func (s *marginOrderServiceTestSuite) TestCancelOCO() {
+	data := []byte(`{
+		"orderListId":1000,
+		"contingencyType":"OCO",
+		"listStatusType":"ALL_DONE",
+		"listOrderStatus":"ALL_DONE",
+		"listClientOrderId":"C3wyj4WVEktd7u9aVBRXcN",
+		"transactionTime":1614272133000,
+		"symbol":"LTCBTC",
+		"isIsolated":true,
+		"orders":[
+			{
+				"symbol":"LTCBTC",
+				"orderId":1100,
+				"clientOrderId":"pO9ufTiFGg3nw2fOdgeOXa"
+			},
+			{
+				"symbol":"LTCBTC",
+				"orderId":1010,
+				"clientOrderId":"TXOvglzXuaubXAaENpaRCB"
+			}
+		],
+		"orderReports":[
+			{
+				"symbol":"LTCBTC",
+				"origClientOrderId":"pO9ufTiFGg3nw2fOdgeOXa",
+				"orderId":1100,
+				"orderListId":1000,
+				"clientOrderId":"unfWT8ig8i0uj6lPuYLez6",
+				"price":"50000.00000000",
+				"origQty":"0.00030000",
+				"executedQty":"0.00000000",
+				"cummulativeQuoteQty":"0.00000000",
+				"status":"CANCELED",
+				"timeInForce":"GTC",
+				"type":"STOP_LOSS_LIMIT",
+				"side":"SELL",
+				"stopPrice":"50000.00000000"
+			},
+			{
+				"symbol":"LTCBTC",
+				"origClientOrderId":"TXOvglzXuaubXAaENpaRCB",
+				"orderId":1010,
+				"orderListId":1000,
+				"clientOrderId":"unfWT8ig8i0uj6lPuYLez6",
+				"price":"52000.00000000",
+				"origQty":"0.00030000",
+				"executedQty":"0.00000000",
+				"cummulativeQuoteQty":"0.00000000",
+				"status":"CANCELED",
+				"timeInForce":"GTC",
+				"type":"LIMIT_MAKER",
+				"side":"SELL"
+			}
+		]
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	symbol := "LTCBTC"
+	listClientOrderID := "C3wyj4WVEktd7u9aVBRXcN"
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setFormParams(params{
+			"symbol":            symbol,
+			"listClientOrderId": listClientOrderID,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.
+		NewCancelMarginOCOService().
+		Symbol(symbol).
+		ListClientOrderID(listClientOrderID).
+		Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	e := &CancelMarginOCOResponse{
+		OrderListID:       1000,
+		ContingencyType:   "OCO",
+		ListStatusType:    "ALL_DONE",
+		ListOrderStatus:   "ALL_DONE",
+		ListClientOrderID: "C3wyj4WVEktd7u9aVBRXcN",
+		TransactionTime:   1614272133000,
+		Symbol:            "LTCBTC",
+		IsIsolated:        true,
+		Orders: []*MarginOCOOrder{
+			{Symbol: "LTCBTC", OrderID: 1100, ClientOrderID: "pO9ufTiFGg3nw2fOdgeOXa"},
+			{Symbol: "LTCBTC", OrderID: 1010, ClientOrderID: "TXOvglzXuaubXAaENpaRCB"},
+		},
+		OrderReports: []*MarginOCOOrderReport{
+			{
+				Symbol:                   "LTCBTC",
+				OrderID:                  1100,
+				OrderListID:              1000,
+				ClientOrderID:            "unfWT8ig8i0uj6lPuYLez6",
+				Price:                    "50000.00000000",
+				OrigQuantity:             "0.00030000",
+				ExecutedQuantity:         "0.00000000",
+				CummulativeQuoteQuantity: "0.00000000",
+				Status:                   OrderStatusTypeCanceled,
+				TimeInForce:              TimeInForceTypeGTC,
+				Type:                     OrderTypeStopLossLimit,
+				Side:                     SideTypeSell,
+				StopPrice:                "50000.00000000",
+			},
+			{
+				Symbol:                   "LTCBTC",
+				OrderID:                  1010,
+				OrderListID:              1000,
+				ClientOrderID:            "unfWT8ig8i0uj6lPuYLez6",
+				Price:                    "52000.00000000",
+				OrigQuantity:             "0.00030000",
+				ExecutedQuantity:         "0.00000000",
+				CummulativeQuoteQuantity: "0.00000000",
+				Status:                   OrderStatusTypeCanceled,
+				TimeInForce:              TimeInForceTypeGTC,
+				Type:                     OrderTypeLimitMaker,
+				Side:                     SideTypeSell,
+			},
+		},
+	}
+	s.assertCancelMarginOCOResponseEqual(e, res)
+}
+
+func (s *marginOrderServiceTestSuite) assertCancelMarginOCOResponseEqual(e, a *CancelMarginOCOResponse) {
+	r := s.r()
+	r.Equal(e.OrderListID, a.OrderListID, "OrderListID")
+	r.Equal(e.ContingencyType, a.ContingencyType, "ContingencyType")
+	r.Equal(e.ListStatusType, a.ListStatusType, "ListStatusType")
+	r.Equal(e.ListOrderStatus, a.ListOrderStatus, "ListOrderStatus")
+	r.Equal(e.ListClientOrderID, a.ListClientOrderID, "ListClientOrderID")
+	r.Equal(e.TransactionTime, a.TransactionTime, "TransactionTime")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.IsIsolated, a.IsIsolated, "IsIsolated")
+
+	r.Len(a.OrderReports, len(e.OrderReports))
+	for idx, orderReport := range e.OrderReports {
+		s.assertMarginOCOOrderReportEqual(orderReport, a.OrderReports[idx])
+	}
+
+	r.Len(a.Orders, len(e.Orders))
+	for idx, order := range e.Orders {
+		s.assertMarginOCOOrderEqual(order, a.Orders[idx])
+	}
 }

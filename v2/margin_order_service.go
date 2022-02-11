@@ -21,7 +21,7 @@ type CreateMarginOrderService struct {
 	newOrderRespType *NewOrderRespType
 	sideEffectType   *SideEffectType
 	timeInForce      *TimeInForceType
-	isIsolated       *IsIsolated
+	isIsolated       *bool
 }
 
 // Symbol set symbol
@@ -31,7 +31,7 @@ func (s *CreateMarginOrderService) Symbol(symbol string) *CreateMarginOrderServi
 }
 
 // IsIsolated sets the order to isolated margin
-func (s *CreateMarginOrderService) IsIsolated(isIsolated IsIsolated) *CreateMarginOrderService {
+func (s *CreateMarginOrderService) IsIsolated(isIsolated bool) *CreateMarginOrderService {
 	s.isIsolated = &isIsolated
 	return s
 }
@@ -121,7 +121,11 @@ func (s *CreateMarginOrderService) Do(ctx context.Context, opts ...RequestOption
 		m["quoteOrderQty"] = *s.quoteOrderQty
 	}
 	if s.isIsolated != nil {
-		m["isIsolated"] = *s.isIsolated
+		if *s.isIsolated {
+			m["isIsolated"] = "TRUE"
+		} else {
+			m["isIsolated"] = "FALSE"
+		}
 	}
 	if s.timeInForce != nil {
 		m["timeInForce"] = *s.timeInForce
@@ -164,7 +168,7 @@ type CancelMarginOrderService struct {
 	orderID           *int64
 	origClientOrderID *string
 	newClientOrderID  *string
-	isIsolated        bool
+	isIsolated        *bool
 }
 
 // Symbol set symbol
@@ -175,7 +179,7 @@ func (s *CancelMarginOrderService) Symbol(symbol string) *CancelMarginOrderServi
 
 // IsIsolated set isIsolated
 func (s *CancelMarginOrderService) IsIsolated(isIsolated bool) *CancelMarginOrderService {
-	s.isIsolated = isIsolated
+	s.isIsolated = &isIsolated
 	return s
 }
 
@@ -214,8 +218,12 @@ func (s *CancelMarginOrderService) Do(ctx context.Context, opts ...RequestOption
 	if s.newClientOrderID != nil {
 		r.setFormParam("newClientOrderId", *s.newClientOrderID)
 	}
-	if s.isIsolated {
-		r.setFormParam("isIsolated", "TRUE")
+	if s.isIsolated != nil {
+		if *s.isIsolated {
+			r.setFormParam("isIsolated", "TRUE")
+		} else {
+			r.setFormParam("isIsolated", "FALSE")
+		}
 	}
 
 	data, err := s.c.callAPI(ctx, r, opts...)
@@ -442,7 +450,7 @@ type CancelMarginOrderResponse struct {
 type CreateMarginOCOService struct {
 	c                    *Client
 	symbol               string
-	isIsolated           *IsIsolated
+	isIsolated           *bool
 	listClientOrderID    *string
 	side                 SideType
 	quantity             *string
@@ -465,7 +473,7 @@ func (s *CreateMarginOCOService) Symbol(symbol string) *CreateMarginOCOService {
 }
 
 // IsIsolated set isIsolated
-func (s *CreateMarginOCOService) IsIsolated(isIsolated IsIsolated) *CreateMarginOCOService {
+func (s *CreateMarginOCOService) IsIsolated(isIsolated bool) *CreateMarginOCOService {
 	s.isIsolated = &isIsolated
 	return s
 }
@@ -500,8 +508,8 @@ func (s *CreateMarginOCOService) Price(price string) *CreateMarginOCOService {
 	return s
 }
 
-// limitIcebergQuantity set limitIcebergQuantity
-func (s *CreateMarginOCOService) limitIcebergQuantity(limitIcebergQty string) *CreateMarginOCOService {
+// LimitIcebergQuantity set limitIcebergQuantity
+func (s *CreateMarginOCOService) LimitIcebergQuantity(limitIcebergQty string) *CreateMarginOCOService {
 	s.limitIcebergQty = &limitIcebergQty
 	return s
 }
@@ -563,7 +571,11 @@ func (s *CreateMarginOCOService) createOrder(ctx context.Context, opts ...Reques
 	}
 
 	if s.isIsolated != nil {
-		m["isIsolated"] = *s.isIsolated
+		if *s.isIsolated {
+			m["isIsolated"] = "TRUE"
+		} else {
+			m["isIsolated"] = "FALSE"
+		}
 	}
 	if s.listClientOrderID != nil {
 		m["listClientOrderId"] = *s.listClientOrderID
@@ -659,7 +671,7 @@ type MarginOCOOrderReport struct {
 type CancelMarginOCOService struct {
 	c                 *Client
 	symbol            string
-	isIsolated        *IsIsolated
+	isIsolated        *bool
 	listClientOrderID string
 	orderListID       int64
 	newClientOrderID  string
@@ -672,7 +684,7 @@ func (s *CancelMarginOCOService) Symbol(symbol string) *CancelMarginOCOService {
 }
 
 // IsIsolated set isIsolated
-func (s *CancelMarginOCOService) IsIsolated(isIsolated IsIsolated) *CancelMarginOCOService {
+func (s *CancelMarginOCOService) IsIsolated(isIsolated bool) *CancelMarginOCOService {
 	s.isIsolated = &isIsolated
 	return s
 }
@@ -736,7 +748,7 @@ type CancelMarginOCOResponse struct {
 	ListClientOrderID string                  `json:"listClientOrderId"`
 	TransactionTime   int64                   `json:"transactionTime"`
 	Symbol            string                  `json:"symbol"`
-	IsIsolated        *IsIsolated             `json:"isIsolated"`
+	IsIsolated        bool                    `json:"isIsolated"`
 	Orders            []*MarginOCOOrder       `json:"orders"`
 	OrderReports      []*MarginOCOOrderReport `json:"orderReports"`
 }
