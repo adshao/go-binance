@@ -168,7 +168,7 @@ type CancelMarginOrderService struct {
 	orderID           *int64
 	origClientOrderID *string
 	newClientOrderID  *string
-	isIsolated        bool
+	isIsolated        *bool
 }
 
 // Symbol set symbol
@@ -179,7 +179,7 @@ func (s *CancelMarginOrderService) Symbol(symbol string) *CancelMarginOrderServi
 
 // IsIsolated set isIsolated
 func (s *CancelMarginOrderService) IsIsolated(isIsolated bool) *CancelMarginOrderService {
-	s.isIsolated = isIsolated
+	s.isIsolated = &isIsolated
 	return s
 }
 
@@ -218,8 +218,12 @@ func (s *CancelMarginOrderService) Do(ctx context.Context, opts ...RequestOption
 	if s.newClientOrderID != nil {
 		r.setFormParam("newClientOrderId", *s.newClientOrderID)
 	}
-	if s.isIsolated {
-		r.setFormParam("isIsolated", "TRUE")
+	if s.isIsolated != nil {
+		if *s.isIsolated {
+			r.setFormParam("isIsolated", "TRUE")
+		} else {
+			r.setFormParam("isIsolated", "FALSE")
+		}
 	}
 
 	data, err := s.c.callAPI(ctx, r, opts...)
@@ -440,4 +444,311 @@ type CancelMarginOrderResponse struct {
 	TimeInForce              TimeInForceType `json:"timeInForce"`
 	Type                     OrderType       `json:"type"`
 	Side                     SideType        `json:"side"`
+}
+
+// CreateMarginOCOService create a new OCO for a margin account
+type CreateMarginOCOService struct {
+	c                    *Client
+	symbol               string
+	isIsolated           *bool
+	listClientOrderID    *string
+	side                 SideType
+	quantity             *string
+	limitClientOrderID   *string
+	price                *string
+	limitIcebergQty      *string
+	stopClientOrderID    *string
+	stopPrice            *string
+	stopLimitPrice       *string
+	stopIcebergQty       *string
+	stopLimitTimeInForce *TimeInForceType
+	newOrderRespType     *NewOrderRespType
+	sideEffectType       *SideEffectType
+}
+
+// Symbol set symbol
+func (s *CreateMarginOCOService) Symbol(symbol string) *CreateMarginOCOService {
+	s.symbol = symbol
+	return s
+}
+
+// IsIsolated set isIsolated
+func (s *CreateMarginOCOService) IsIsolated(isIsolated bool) *CreateMarginOCOService {
+	s.isIsolated = &isIsolated
+	return s
+}
+
+// Side set side
+func (s *CreateMarginOCOService) Side(side SideType) *CreateMarginOCOService {
+	s.side = side
+	return s
+}
+
+// Quantity set quantity
+func (s *CreateMarginOCOService) Quantity(quantity string) *CreateMarginOCOService {
+	s.quantity = &quantity
+	return s
+}
+
+// ListClientOrderID set listClientOrderID
+func (s *CreateMarginOCOService) ListClientOrderID(listClientOrderID string) *CreateMarginOCOService {
+	s.listClientOrderID = &listClientOrderID
+	return s
+}
+
+// LimitClientOrderID set limitClientOrderID
+func (s *CreateMarginOCOService) LimitClientOrderID(limitClientOrderID string) *CreateMarginOCOService {
+	s.limitClientOrderID = &limitClientOrderID
+	return s
+}
+
+// Price set price
+func (s *CreateMarginOCOService) Price(price string) *CreateMarginOCOService {
+	s.price = &price
+	return s
+}
+
+// LimitIcebergQuantity set limitIcebergQuantity
+func (s *CreateMarginOCOService) LimitIcebergQuantity(limitIcebergQty string) *CreateMarginOCOService {
+	s.limitIcebergQty = &limitIcebergQty
+	return s
+}
+
+// StopClientOrderID set stopClientOrderID
+func (s *CreateMarginOCOService) StopClientOrderID(stopClientOrderID string) *CreateMarginOCOService {
+	s.stopClientOrderID = &stopClientOrderID
+	return s
+}
+
+// StopPrice set stop price
+func (s *CreateMarginOCOService) StopPrice(stopPrice string) *CreateMarginOCOService {
+	s.stopPrice = &stopPrice
+	return s
+}
+
+// StopLimitPrice set stop limit price
+func (s *CreateMarginOCOService) StopLimitPrice(stopLimitPrice string) *CreateMarginOCOService {
+	s.stopLimitPrice = &stopLimitPrice
+	return s
+}
+
+// StopIcebergQty set stop limit price
+func (s *CreateMarginOCOService) StopIcebergQty(stopIcebergQty string) *CreateMarginOCOService {
+	s.stopIcebergQty = &stopIcebergQty
+	return s
+}
+
+// StopLimitTimeInForce set stopLimitTimeInForce
+func (s *CreateMarginOCOService) StopLimitTimeInForce(stopLimitTimeInForce TimeInForceType) *CreateMarginOCOService {
+	s.stopLimitTimeInForce = &stopLimitTimeInForce
+	return s
+}
+
+// NewOrderRespType set icebergQuantity
+func (s *CreateMarginOCOService) NewOrderRespType(newOrderRespType NewOrderRespType) *CreateMarginOCOService {
+	s.newOrderRespType = &newOrderRespType
+	return s
+}
+
+// SideEffectType set sideEffectType
+func (s *CreateMarginOCOService) SideEffectType(sideEffectType SideEffectType) *CreateMarginOCOService {
+	s.sideEffectType = &sideEffectType
+	return s
+}
+
+func (s *CreateMarginOCOService) createOrder(ctx context.Context, opts ...RequestOption) (data []byte, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v1/margin/order/oco",
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"symbol":    s.symbol,
+		"side":      s.side,
+		"quantity":  *s.quantity,
+		"price":     *s.price,
+		"stopPrice": *s.stopPrice,
+	}
+
+	if s.isIsolated != nil {
+		if *s.isIsolated {
+			m["isIsolated"] = "TRUE"
+		} else {
+			m["isIsolated"] = "FALSE"
+		}
+	}
+	if s.listClientOrderID != nil {
+		m["listClientOrderId"] = *s.listClientOrderID
+	}
+	if s.limitClientOrderID != nil {
+		m["limitClientOrderId"] = *s.limitClientOrderID
+	}
+	if s.limitIcebergQty != nil {
+		m["limitIcebergQty"] = *s.limitIcebergQty
+	}
+	if s.stopClientOrderID != nil {
+		m["stopClientOrderId"] = *s.stopClientOrderID
+	}
+	if s.stopLimitPrice != nil {
+		m["stopLimitPrice"] = *s.stopLimitPrice
+	}
+	if s.stopIcebergQty != nil {
+		m["stopIcebergQty"] = *s.stopIcebergQty
+	}
+	if s.stopLimitTimeInForce != nil {
+		m["stopLimitTimeInForce"] = *s.stopLimitTimeInForce
+	}
+	if s.newOrderRespType != nil {
+		m["newOrderRespType"] = *s.newOrderRespType
+	}
+	if s.sideEffectType != nil {
+		m["sideEffectType"] = *s.sideEffectType
+	}
+	r.setFormParams(m)
+	data, err = s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []byte{}, err
+	}
+	return data, nil
+}
+
+// Do send request
+func (s *CreateMarginOCOService) Do(ctx context.Context, opts ...RequestOption) (res *CreateMarginOCOResponse, err error) {
+	data, err := s.createOrder(ctx, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(CreateMarginOCOResponse)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// CreateMarginOCOResponse define create order response
+type CreateMarginOCOResponse struct {
+	OrderListID           int64                   `json:"orderListId"`
+	ContingencyType       string                  `json:"contingencyType"`
+	ListStatusType        string                  `json:"listStatusType"`
+	ListOrderStatus       string                  `json:"listOrderStatus"`
+	ListClientOrderID     string                  `json:"listClientOrderId"`
+	TransactionTime       int64                   `json:"transactionTime"`
+	Symbol                string                  `json:"symbol"`
+	MarginBuyBorrowAmount string                  `json:"marginBuyBorrowAmount"`
+	MarginBuyBorrowAsset  string                  `json:"marginBuyBorrowAsset"`
+	IsIsolated            bool                    `json:"isIsolated"`
+	Orders                []*MarginOCOOrder       `json:"orders"`
+	OrderReports          []*MarginOCOOrderReport `json:"orderReports"`
+}
+
+// MarginOCOOrder may be returned in an array of MarginOCOOrder in a CreateMarginOCOResponse
+type MarginOCOOrder struct {
+	Symbol        string `json:"symbol"`
+	OrderID       int64  `json:"orderId"`
+	ClientOrderID string `json:"clientOrderId"`
+}
+
+// MarginOCOOrderReport may be returned in an array of MarginOCOOrderReport in a CreateMarginOCOResponse
+type MarginOCOOrderReport struct {
+	Symbol                   string          `json:"symbol"`
+	OrderID                  int64           `json:"orderId"`
+	OrderListID              int64           `json:"orderListId"`
+	ClientOrderID            string          `json:"clientOrderId"`
+	TransactionTime          int64           `json:"transactionTime"`
+	Price                    string          `json:"price"`
+	OrigQuantity             string          `json:"origQty"`
+	ExecutedQuantity         string          `json:"executedQty"`
+	CummulativeQuoteQuantity string          `json:"cummulativeQuoteQty"`
+	Status                   OrderStatusType `json:"status"`
+	TimeInForce              TimeInForceType `json:"timeInForce"`
+	Type                     OrderType       `json:"type"`
+	Side                     SideType        `json:"side"`
+	StopPrice                string          `json:"stopPrice"`
+}
+
+// CancelMarginOCOService cancel an entire Order List for a margin account
+type CancelMarginOCOService struct {
+	c                 *Client
+	symbol            string
+	isIsolated        *bool
+	listClientOrderID string
+	orderListID       int64
+	newClientOrderID  string
+}
+
+// Symbol set symbol
+func (s *CancelMarginOCOService) Symbol(symbol string) *CancelMarginOCOService {
+	s.symbol = symbol
+	return s
+}
+
+// IsIsolated set isIsolated
+func (s *CancelMarginOCOService) IsIsolated(isIsolated bool) *CancelMarginOCOService {
+	s.isIsolated = &isIsolated
+	return s
+}
+
+// ListClientOrderID sets listClientOrderId
+func (s *CancelMarginOCOService) ListClientOrderID(listClientOrderID string) *CancelMarginOCOService {
+	s.listClientOrderID = listClientOrderID
+	return s
+}
+
+// OrderListID sets orderListId
+func (s *CancelMarginOCOService) OrderListID(orderListID int64) *CancelMarginOCOService {
+	s.orderListID = orderListID
+	return s
+}
+
+// NewClientOrderID sets newClientOrderId
+func (s *CancelMarginOCOService) NewClientOrderID(newClientOrderID string) *CancelMarginOCOService {
+	s.newClientOrderID = newClientOrderID
+	return s
+}
+
+// Do send request
+func (s *CancelMarginOCOService) Do(ctx context.Context, opts ...RequestOption) (res *CancelMarginOCOResponse, err error) {
+	r := &request{
+		method:   http.MethodDelete,
+		endpoint: "/sapi/v1/margin/orderList",
+		secType:  secTypeSigned,
+	}
+	r.setFormParam("symbol", s.symbol)
+	if s.listClientOrderID != "" {
+		r.setFormParam("listClientOrderId", s.listClientOrderID)
+	}
+	if s.isIsolated != nil {
+		r.setFormParam("isIsolated", *s.isIsolated)
+	}
+	if s.orderListID != 0 {
+		r.setFormParam("orderListId", s.orderListID)
+	}
+	if s.newClientOrderID != "" {
+		r.setFormParam("newClientOrderId", s.newClientOrderID)
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(CancelMarginOCOResponse)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// CancelMarginOCOResponse define create cancelled oco response.
+type CancelMarginOCOResponse struct {
+	OrderListID       int64                   `json:"orderListId"`
+	ContingencyType   string                  `json:"contingencyType"`
+	ListStatusType    string                  `json:"listStatusType"`
+	ListOrderStatus   string                  `json:"listOrderStatus"`
+	ListClientOrderID string                  `json:"listClientOrderId"`
+	TransactionTime   int64                   `json:"transactionTime"`
+	Symbol            string                  `json:"symbol"`
+	IsIsolated        bool                    `json:"isIsolated"`
+	Orders            []*MarginOCOOrder       `json:"orders"`
+	OrderReports      []*MarginOCOOrderReport `json:"orderReports"`
 }
