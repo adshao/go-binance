@@ -421,6 +421,11 @@ func (c *Client) NewListOpenOrdersService() *ListOpenOrdersService {
 	return &ListOpenOrdersService{c: c}
 }
 
+// NewListOpenOcoService init list open oco service
+func (c *Client) NewListOpenOcoService() *ListOpenOcoService {
+	return &ListOpenOcoService{c: c}
+}
+
 // NewListOrdersService init listing orders service
 func (c *Client) NewListOrdersService() *ListOrdersService {
 	return &ListOrdersService{c: c}
