@@ -143,7 +143,7 @@ func (s *marginOrderServiceTestSuite) TestCreateOrderFull() {
 		Type:                     OrderTypeLimit,
 		Side:                     SideTypeBuy,
 		Fills: []*Fill{
-			&Fill{
+			{
 				Price:           "0.00002991",
 				Quantity:        "344.00000000",
 				Commission:      "0.00332384",

@@ -150,7 +150,7 @@ func (s *orderServiceTestSuite) TestCreateOrderFull() {
 		Type:                     OrderTypeLimit,
 		Side:                     SideTypeBuy,
 		Fills: []*Fill{
-			&Fill{
+			{
 				Price:           "0.00002991",
 				Quantity:        "344.00000000",
 				Commission:      "0.00332384",
@@ -387,7 +387,83 @@ func (s *baseOrderTestSuite) assertOCOOrderEqual(e, a *OCOOrder) {
 	r.Equal(e.OrderID, a.OrderID, "OrderID")
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
 }
-
+func (s *orderServiceTestSuite) TestListOpenOco() {
+	data := []byte(`[
+		{
+			"orderListId": 31,
+			"contingencyType": "OCO",
+			"listStatusType": "EXEC_STARTED",
+			"listOrderStatus": "EXECUTING",
+			"listClientOrderId": "wuB13fmulKj3YjdqWEcsnp",
+			"transactionTime": 1565246080644,
+			"symbol": "LTCBTC",
+			"orders": [
+			  {
+				"symbol": "LTCBTC",
+				"orderId": 4,
+				"clientOrderId": "r3EH2N76dHfLoSZWIUw1bT"
+			  },
+			  {
+				"symbol": "LTCBTC",
+				"orderId": 5,
+				"clientOrderId": "Cv1SnyPD3qhqpbjpYEHbd2"
+			  }
+			]
+		  }
+    ]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	recvWindow := int64(1000)
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"recvWindow": recvWindow,
+		})
+		s.assertRequestEqual(e, r)
+	})
+	ocos, err := s.client.NewListOpenOcoService().
+		Do(newContext(), WithRecvWindow(recvWindow))
+	r := s.r()
+	r.NoError(err)
+	r.Len(ocos, 1)
+	e := &Oco{
+		Symbol:            "LTCBTC",
+		OrderListId:       31,
+		ContingencyType:   "OCO",
+		ListStatusType:    "EXEC_STARTED",
+		ListOrderStatus:   "EXECUTING",
+		ListClientOrderID: "wuB13fmulKj3YjdqWEcsnp",
+		TransactionTime:   1565246080644,
+		Orders: []*Order{
+			{
+				Symbol:        "LTCBTC",
+				OrderID:       4,
+				ClientOrderID: "r3EH2N76dHfLoSZWIUw1bT",
+			},
+			{
+				Symbol:        "LTCBTC",
+				OrderID:       5,
+				ClientOrderID: "Cv1SnyPD3qhqpbjpYEHbd2",
+			},
+		},
+	}
+	s.assertOcoEqual(e, ocos[0])
+}
+func (s *baseOrderTestSuite) assertOcoEqual(e, a *Oco) {
+	r := s.r()
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.ContingencyType, a.ContingencyType, "ContingencyType")
+	r.Equal(e.ListClientOrderID, a.ListClientOrderID, "ListClientOrderID")
+	r.Equal(e.ListOrderStatus, a.ListOrderStatus, "ListOrderStatus")
+	r.Equal(e.ListStatusType, a.ListStatusType, "ListStatusType")
+	r.Equal(e.OrderListId, a.OrderListId, "OrderListId")
+	r.Equal(e.Orders[0].Symbol, a.Orders[0].Symbol, "Orders[0].Symbol")
+	r.Equal(e.Orders[0].OrderID, a.Orders[0].OrderID, "Orders[0].OrderID")
+	r.Equal(e.Orders[0].ClientOrderID, a.Orders[0].ClientOrderID, "Orders[0].ClientOrderID")
+	r.Equal(e.Orders[1].Symbol, a.Orders[1].Symbol, "Orders[1].Symbol")
+	r.Equal(e.Orders[1].OrderID, a.Orders[1].OrderID, "Orders[1].OrderID")
+	r.Equal(e.Orders[1].ClientOrderID, a.Orders[1].ClientOrderID, "Orders[1].ClientOrderID")
+	r.Equal(e.TransactionTime, a.TransactionTime, "TransactionTime")
+}
 func (s *orderServiceTestSuite) TestListOpenOrders() {
 	data := []byte(`[
         {
