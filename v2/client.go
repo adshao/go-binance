@@ -725,3 +725,8 @@ func (c *Client) NewSpotRebateHistoryService() *SpotRebateHistoryService {
 func (c *Client) NewConvertTradeHistoryService() *ConvertTradeHistoryService {
 	return &ConvertTradeHistoryService{c: c}
 }
+
+// NewGetIsolatedMarginAllPairsService init get isolated margin all pairs service
+func (c *Client) NewGetIsolatedMarginAllPairsService() *GetIsolatedMarginAllPairsService {
+	return &GetIsolatedMarginAllPairsService{c: c}
+}
