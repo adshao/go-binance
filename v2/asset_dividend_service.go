@@ -62,7 +62,7 @@ func (s *AssetDividendService) Do(ctx context.Context) (*DividendResponseWrapper
 	if s.endTime != nil {
 		r.setParam("endTime", *s.endTime)
 	}
-	data, err := s.c.callAPI(ctx, r)
+	data, _, err := s.c.callAPI(ctx, r)
 	if err != nil {
 		return nil, err
 	}

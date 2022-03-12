@@ -16,7 +16,7 @@ func (s *PingService) Do(ctx context.Context, opts ...RequestOption) (err error)
 		method:   http.MethodGet,
 		endpoint: "/api/v3/ping",
 	}
-	_, err = s.c.callAPI(ctx, r, opts...)
+	_, _, err = s.c.callAPI(ctx, r, opts...)
 	return err
 }
 
@@ -31,7 +31,7 @@ func (s *ServerTimeService) Do(ctx context.Context, opts ...RequestOption) (serv
 		method:   http.MethodGet,
 		endpoint: "/api/v3/time",
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return 0, err
 	}

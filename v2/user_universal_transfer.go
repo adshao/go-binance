@@ -74,7 +74,7 @@ func (s *CreateUserUniversalTransferService) Do(ctx context.Context) (*CreateUse
 		r.setParam("toSymbol", *v)
 	}
 
-	data, err := s.c.callAPI(ctx, r)
+	data, _, err := s.c.callAPI(ctx, r)
 	if err != nil {
 		return nil, err
 	}

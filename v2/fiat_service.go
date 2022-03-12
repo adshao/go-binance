@@ -66,7 +66,7 @@ func (s *FiatDepositWithdrawHistoryService) Do(ctx context.Context, opts ...Requ
 	if s.rows != nil {
 		r.setParam("rows", *s.rows)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +159,7 @@ func (s *FiatPaymentsHistoryService) Do(ctx context.Context, opts ...RequestOpti
 	if s.rows != nil {
 		r.setParam("rows", *s.rows)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}

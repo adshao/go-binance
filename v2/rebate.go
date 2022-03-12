@@ -47,7 +47,7 @@ func (s *SpotRebateHistoryService) Do(ctx context.Context, opts ...RequestOption
 	if s.page != nil {
 		r.setParam("page", *s.page)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}

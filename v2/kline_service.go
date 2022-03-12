@@ -63,7 +63,7 @@ func (s *KlinesService) Do(ctx context.Context, opts ...RequestOption) (res []*K
 	if s.endTime != nil {
 		r.setParam("endTime", *s.endTime)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*Kline{}, err
 	}

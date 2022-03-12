@@ -17,7 +17,7 @@ func (s *StartUserStreamService) Do(ctx context.Context, opts ...RequestOption) 
 		endpoint: "/api/v3/userDataStream",
 		secType:  secTypeAPIKey,
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return "", err
 	}
@@ -49,7 +49,7 @@ func (s *KeepaliveUserStreamService) Do(ctx context.Context, opts ...RequestOpti
 		secType:  secTypeAPIKey,
 	}
 	r.setFormParam("listenKey", s.listenKey)
-	_, err = s.c.callAPI(ctx, r, opts...)
+	_, _, err = s.c.callAPI(ctx, r, opts...)
 	return err
 }
 
@@ -73,6 +73,6 @@ func (s *CloseUserStreamService) Do(ctx context.Context, opts ...RequestOption) 
 		secType:  secTypeAPIKey,
 	}
 	r.setFormParam("listenKey", s.listenKey)
-	_, err = s.c.callAPI(ctx, r, opts...)
+	_, _, err = s.c.callAPI(ctx, r, opts...)
 	return err
 }

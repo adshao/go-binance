@@ -18,7 +18,7 @@ func (s *GetAccountService) Do(ctx context.Context, opts ...RequestOption) (res 
 		endpoint: "/api/v3/account",
 		secType:  secTypeSigned,
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +103,7 @@ func (s *GetAccountSnapshotService) Do(ctx context.Context, opts ...RequestOptio
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return &Snapshot{}, err
 	}
@@ -187,7 +187,7 @@ func (s *GetAPIKeyPermission) Do(ctx context.Context, opts ...RequestOption) (re
 		endpoint: "/sapi/v1/account/apiRestrictions",
 		secType:  secTypeSigned,
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}

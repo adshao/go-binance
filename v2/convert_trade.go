@@ -43,7 +43,7 @@ func (s *ConvertTradeHistoryService) Do(ctx context.Context, opts ...RequestOpti
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}

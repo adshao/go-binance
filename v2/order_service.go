@@ -124,7 +124,7 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 		m["newOrderRespType"] = *s.newOrderRespType
 	}
 	r.setFormParams(m)
-	data, err = s.c.callAPI(ctx, r, opts...)
+	data, _, err = s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -317,7 +317,7 @@ func (s *CreateOCOService) createOrder(ctx context.Context, endpoint string, opt
 		m["newOrderRespType"] = *s.newOrderRespType
 	}
 	r.setFormParams(m)
-	data, err = s.c.callAPI(ctx, r, opts...)
+	data, _, err = s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -402,7 +402,7 @@ func (s *ListOpenOcoService) Do(ctx context.Context, opts ...RequestOption) (res
 		endpoint: "/api/v3/openOrderList ",
 		secType:  secTypeSigned,
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*Oco{}, err
 	}
@@ -436,7 +436,7 @@ func (s *ListOpenOrdersService) Do(ctx context.Context, opts ...RequestOption) (
 	if s.symbol != "" {
 		r.setParam("symbol", s.symbol)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*Order{}, err
 	}
@@ -488,7 +488,7 @@ func (s *GetOrderService) Do(ctx context.Context, opts ...RequestOption) (res *O
 	if s.origClientOrderID != nil {
 		r.setParam("origClientOrderId", *s.origClientOrderID)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -583,7 +583,7 @@ func (s *ListOrdersService) Do(ctx context.Context, opts ...RequestOption) (res 
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*Order{}, err
 	}
@@ -645,7 +645,7 @@ func (s *CancelOrderService) Do(ctx context.Context, opts ...RequestOption) (res
 	if s.newClientOrderID != nil {
 		r.setFormParam("newClientOrderId", *s.newClientOrderID)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -707,7 +707,7 @@ func (s *CancelOCOService) Do(ctx context.Context, opts ...RequestOption) (res *
 	if s.newClientOrderID != "" {
 		r.setFormParam("newClientOrderId", s.newClientOrderID)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -739,7 +739,7 @@ func (s *CancelOpenOrdersService) Do(ctx context.Context, opts ...RequestOption)
 		secType:  secTypeSigned,
 	}
 	r.setParam("symbol", s.symbol)
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return &CancelOpenOrdersResponse{}, err
 	}

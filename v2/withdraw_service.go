@@ -95,7 +95,7 @@ func (s *CreateWithdrawService) Do(ctx context.Context) (*CreateWithdrawResponse
 		r.setParam("name", *v)
 	}
 
-	data, err := s.c.callAPI(ctx, r)
+	data, _, err := s.c.callAPI(ctx, r)
 	if err != nil {
 		return nil, err
 	}
@@ -199,7 +199,7 @@ func (s *ListWithdrawsService) Do(ctx context.Context) (res []*Withdraw, err err
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
 	}
-	data, err := s.c.callAPI(ctx, r)
+	data, _, err := s.c.callAPI(ctx, r)
 	if err != nil {
 		return
 	}

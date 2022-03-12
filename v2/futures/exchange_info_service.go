@@ -18,7 +18,7 @@ func (s *ExchangeInfoService) Do(ctx context.Context, opts ...RequestOption) (re
 		endpoint: "/fapi/v1/exchangeInfo",
 		secType:  secTypeNone,
 	}
-	data, _, err := s.c.callAPI(ctx, r, opts...)
+	data, header, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +27,7 @@ func (s *ExchangeInfoService) Do(ctx context.Context, opts ...RequestOption) (re
 	if err != nil {
 		return nil, err
 	}
-
+	res.RateLimitWeight1m = header.Get("X-Mbx-Used-Weight-1m")
 	return res, nil
 }
 
@@ -38,6 +38,8 @@ type ExchangeInfo struct {
 	RateLimits      []RateLimit   `json:"rateLimits"`
 	ExchangeFilters []interface{} `json:"exchangeFilters"`
 	Symbols         []Symbol      `json:"symbols"`
+
+	RateLimitWeight1m string `json:"rateLimitUsedWeight1m,omitempty"`
 }
 
 // RateLimit struct

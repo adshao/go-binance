@@ -60,7 +60,7 @@ func (s *ListSavingsFlexibleProductsService) Do(ctx context.Context, opts ...Req
 		m["size"] = s.size
 	}
 	r.setParams(m)
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +119,7 @@ func (s *PurchaseSavingsFlexibleProductService) Do(ctx context.Context, opts ...
 		"amount":    s.amount,
 	}
 	r.setParams(m)
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return 0, err
 	}
@@ -177,7 +177,7 @@ func (s *RedeemSavingsFlexibleProductService) Do(ctx context.Context, opts ...Re
 		m["type"] = s.redeemType
 	}
 	r.setParams(m)
-	_, err := s.c.callAPI(ctx, r, opts...)
+	_, _, err := s.c.callAPI(ctx, r, opts...)
 
 	return err
 }
@@ -265,7 +265,7 @@ func (s *ListSavingsFixedAndActivityProductsService) Do(ctx context.Context, opt
 		m["size"] = s.size
 	}
 	r.setParams(m)
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}
