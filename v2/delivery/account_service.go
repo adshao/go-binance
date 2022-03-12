@@ -96,6 +96,7 @@ type AccountAsset struct {
 // AccountPosition define accoutn position
 type AccountPosition struct {
 	Symbol                 string `json:"symbol"`
+	PositionAmt            string `json:"positionAmt"`
 	InitialMargin          string `json:"initialMargin"`
 	MaintMargin            string `json:"maintMargin"`
 	UnrealizedProfit       string `json:"unrealizedProfit"`
