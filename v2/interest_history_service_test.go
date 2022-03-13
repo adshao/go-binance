@@ -54,7 +54,7 @@ func (s *interestHistoryServiceTestSuite) TestInterestHistory() {
 	s.Len(*history, 2)
 	s.assertInterestHistoryElementEqual(&InterestHistoryElement{
 		Asset:       "BUSD",
-		Interest:   "0.00006408",
+		Interest:    "0.00006408",
 		LendingType: "DAILY",
 		ProductName: "BUSD",
 		Time:        1577233578000,
