@@ -83,6 +83,7 @@ func (s *accountServiceTestSuite) TestetAccount() {
 		"positions": [
 			{
 				"symbol": "BTCUSD_201225",
+				"positionAmt": "0",
 				"initialMargin": "0",
 				"maintMargin": "0",
 				"unrealizedProfit": "0.00000000",
@@ -96,6 +97,7 @@ func (s *accountServiceTestSuite) TestetAccount() {
 			},
 			{
 				"symbol": "BTCUSD_201225",
+				"positionAmt": "0",
 				"initialMargin": "0",
 				"maintMargin": "0",
 				"unrealizedProfit": "0.00000000",
@@ -109,6 +111,7 @@ func (s *accountServiceTestSuite) TestetAccount() {
 			},
 			{
 				"symbol": "BTCUSD_201225",
+				"positionAmt": "0",
 				"initialMargin": "0",
 				"maintMargin": "0",
 				"unrealizedProfit": "0.00000000",
@@ -156,6 +159,7 @@ func (s *accountServiceTestSuite) TestetAccount() {
 		Positions: []*AccountPosition{
 			{
 				Symbol:                 "BTCUSD_201225",
+				PositionAmt:            "0",
 				InitialMargin:          "0",
 				MaintMargin:            "0",
 				UnrealizedProfit:       "0.00000000",
@@ -169,6 +173,7 @@ func (s *accountServiceTestSuite) TestetAccount() {
 			},
 			{
 				Symbol:                 "BTCUSD_201225",
+				PositionAmt:            "0",
 				InitialMargin:          "0",
 				MaintMargin:            "0",
 				UnrealizedProfit:       "0.00000000",
@@ -182,6 +187,7 @@ func (s *accountServiceTestSuite) TestetAccount() {
 			},
 			{
 				Symbol:                 "BTCUSD_201225",
+				PositionAmt:            "0",
 				InitialMargin:          "0",
 				MaintMargin:            "0",
 				UnrealizedProfit:       "0.00000000",
@@ -240,5 +246,6 @@ func (s *accountServiceTestSuite) assertAccountEqual(e, a *Account) {
 		r.Equal(e.Positions[i].PositionSide, a.Positions[i].PositionSide, "PositionSide")
 		r.Equal(e.Positions[i].Symbol, a.Positions[i].Symbol, "Symbol")
 		r.Equal(e.Positions[i].UnrealizedProfit, a.Positions[i].UnrealizedProfit, "UnrealizedProfit")
+		r.Equal(e.Positions[i].PositionAmt, a.Positions[i].PositionAmt, "PositionAmt")
 	}
 }
