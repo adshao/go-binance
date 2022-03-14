@@ -1011,3 +1011,37 @@ func (s *GetAllMarginAssetsService) Do(ctx context.Context, opts ...RequestOptio
 	}
 	return res, nil
 }
+
+// GetIsolatedMarginAllPairsService get isolated margin pair info
+type GetIsolatedMarginAllPairsService struct {
+	c *Client
+}
+
+// Do send request
+func (s *GetIsolatedMarginAllPairsService) Do(ctx context.Context, opts ...RequestOption) (res []*IsolatedMarginAllPair, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/margin/isolated/allPairs",
+		secType:  secTypeAPIKey,
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []*IsolatedMarginAllPair{}, err
+	}
+	res = make([]*IsolatedMarginAllPair, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return []*IsolatedMarginAllPair{}, err
+	}
+	return res, nil
+}
+
+// IsolatedMarginAllPair define isolated margin pair info
+type IsolatedMarginAllPair struct {
+	Symbol        string `json:"symbol"`
+	Base          string `json:"base"`
+	Quote         string `json:"quote"`
+	IsMarginTrade bool   `json:"isMarginTrade"`
+	IsBuyAllowed  bool   `json:"isBuyAllowed"`
+	IsSellAllowed bool   `json:"isSellAllowed"`
+}

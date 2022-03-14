@@ -811,3 +811,65 @@ func (s *marginTestSuite) TestCloseMarginUserStream() {
 	err := s.client.NewCloseMarginUserStreamService().ListenKey(listenKey).Do(newContext())
 	s.r().NoError(err)
 }
+
+func (s *marginTestSuite) TestGetIsolatedMarginAllPairs() {
+	data := []byte(`[{
+        "base": "BNB",
+        "isBuyAllowed": true,
+        "isMarginTrade": true,
+        "isSellAllowed": true,
+        "quote": "BTC",
+        "symbol": "BNBBTC"     
+    },
+    {
+        "base": "TRX",
+        "isBuyAllowed": true,
+        "isMarginTrade": true,
+        "isSellAllowed": true,
+        "quote": "BTC",
+        "symbol": "TRXBTC"    
+    }]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newRequest()
+		s.assertRequestEqual(e, r)
+	})
+	res, err := s.client.NewGetIsolatedMarginAllPairsService().
+		Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	r.Len(res, 2)
+	e := []*IsolatedMarginAllPair{
+		{
+			Symbol:        "BNBBTC",
+			Base:          "BNB",
+			Quote:         "BTC",
+			IsMarginTrade: true,
+			IsBuyAllowed:  true,
+			IsSellAllowed: true,
+		}, {
+			Symbol:        "TRXBTC",
+			Base:          "TRX",
+			Quote:         "BTC",
+			IsMarginTrade: true,
+			IsBuyAllowed:  true,
+			IsSellAllowed: true,
+		},
+	}
+
+	for i := 0; i < len(res); i++ {
+		s.assertIsolatedMarginAllPairsEqual(e[i], res[i])
+	}
+}
+
+func (s *marginTestSuite) assertIsolatedMarginAllPairsEqual(e, a *IsolatedMarginAllPair) {
+	r := s.r()
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.Base, a.Base, "Base")
+	r.Equal(e.Quote, a.Quote, "Quote")
+	r.Equal(e.IsMarginTrade, a.IsMarginTrade, "IsMarginTrade")
+	r.Equal(e.IsBuyAllowed, a.IsBuyAllowed, "IsBuyAllowed")
+	r.Equal(e.IsSellAllowed, a.IsSellAllowed, "IsSellAllowed")
+}

@@ -733,6 +733,11 @@ func (c *Client) NewConvertTradeHistoryService() *ConvertTradeHistoryService {
 	return &ConvertTradeHistoryService{c: c}
 }
 
+// NewGetIsolatedMarginAllPairsService init get isolated margin all pairs service
+func (c *Client) NewGetIsolatedMarginAllPairsService() *GetIsolatedMarginAllPairsService {
+	return &GetIsolatedMarginAllPairsService{c: c}
+}
+
 // NewInterestHistoryService init the interest history service
 func (c *Client) NewInterestHistoryService() *InterestHistoryService {
 	return &InterestHistoryService{c: c}
