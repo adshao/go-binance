@@ -68,6 +68,9 @@ type FuturesTransferType int
 // TransactionType define transaction type
 type TransactionType string
 
+// LendingType define the type of lending (flexible saving, activity, ...)
+type LendingType string
+
 // Endpoints
 const (
 	baseAPIMainURL    = "https://api.binance.com"
@@ -155,6 +158,10 @@ const (
 	TransactionTypeWithdraw TransactionType = "1"
 	TransactionTypeBuy      TransactionType = "0"
 	TransactionTypeSell     TransactionType = "1"
+
+	LendingTypeFlexible LendingType = "DAILY"
+	LendingTypeFixed    LendingType = "CUSTOMIZED_FIXED"
+	LendingTypeActivity LendingType = "ACTIVITY"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
@@ -724,4 +731,9 @@ func (c *Client) NewSpotRebateHistoryService() *SpotRebateHistoryService {
 // NewConvertTradeHistoryService init the convert trade history service
 func (c *Client) NewConvertTradeHistoryService() *ConvertTradeHistoryService {
 	return &ConvertTradeHistoryService{c: c}
+}
+
+// NewInterestHistoryService init the interest history service
+func (c *Client) NewInterestHistoryService() *InterestHistoryService {
+	return &InterestHistoryService{c: c}
 }
