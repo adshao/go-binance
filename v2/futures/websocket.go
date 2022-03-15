@@ -1,9 +1,9 @@
 package futures
 
 import (
-	"context"
-	"nhooyr.io/websocket"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 // WsHandler handle raw websocket message
@@ -24,10 +24,8 @@ func newWsConfig(endpoint string) *WsConfig {
 }
 
 var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	ctx, cancel := context.WithCancel(context.Background())
-	c, _, err := websocket.Dial(ctx, cfg.Endpoint, nil)
+	c, _, err := websocket.DefaultDialer.Dial(cfg.Endpoint, nil)
 	if err != nil {
-		cancel()
 		return nil, nil, err
 	}
 	c.SetReadLimit(655350)
@@ -38,9 +36,8 @@ var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (don
 		// websocket.Conn.ReadMessage or when the stopC channel is
 		// closed by the client.
 		defer close(doneC)
-		defer cancel()
 		if WebsocketKeepalive {
-			go keepAlive(ctx, c, WebsocketTimeout)
+			keepAlive(c, WebsocketTimeout)
 		}
 		// Wait for the stopC channel to be closed.  We do that in a
 		// separate goroutine because ReadMessage is a blocking
@@ -52,13 +49,13 @@ var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (don
 				silent = true
 			case <-doneC:
 			}
-			_ = c.Close(websocket.StatusNormalClosure, "normal closure")
+			c.Close()
 		}()
 		for {
-			_, message, readErr := c.Read(ctx)
-			if readErr != nil {
+			_, message, err := c.ReadMessage()
+			if err != nil {
 				if !silent {
-					errHandler(readErr)
+					errHandler(err)
 				}
 				return
 			}
@@ -68,21 +65,28 @@ var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (don
 	return
 }
 
-func keepAlive(ctx context.Context, c *websocket.Conn, d time.Duration) {
-	t := time.NewTimer(d)
-	defer t.Stop()
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case <-t.C:
-		}
+func keepAlive(c *websocket.Conn, timeout time.Duration) {
+	ticker := time.NewTicker(timeout)
 
-		err := c.Ping(ctx)
-		if err != nil {
-			return
-		}
+	lastResponse := time.Now()
+	c.SetPongHandler(func(msg string) error {
+		lastResponse = time.Now()
+		return nil
+	})
 
-		t.Reset(d)
-	}
+	go func() {
+		defer ticker.Stop()
+		for {
+			deadline := time.Now().Add(10 * time.Second)
+			err := c.WriteControl(websocket.PingMessage, []byte{}, deadline)
+			if err != nil {
+				return
+			}
+			<-ticker.C
+			if time.Since(lastResponse) > timeout {
+				c.Close()
+				return
+			}
+		}
+	}()
 }
