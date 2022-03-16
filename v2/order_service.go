@@ -176,6 +176,7 @@ type CreateOrderResponse struct {
 
 // Fill may be returned in an array of fills in a CreateOrderResponse.
 type Fill struct {
+	TradeID         int    `json:"tradeId"`
 	Price           string `json:"price"`
 	Quantity        string `json:"qty"`
 	Commission      string `json:"commission"`
