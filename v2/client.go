@@ -73,7 +73,7 @@ type LendingType string
 
 // Endpoints
 const (
-	baseAPIMainURL    = "https://api.binance.com"
+	baseAPIMainURL    = "https://api.binance.us"
 	baseAPITestnetURL = "https://testnet.binance.vision"
 )
 
