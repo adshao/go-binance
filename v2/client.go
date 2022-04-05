@@ -742,3 +742,8 @@ func (c *Client) NewGetIsolatedMarginAllPairsService() *GetIsolatedMarginAllPair
 func (c *Client) NewInterestHistoryService() *InterestHistoryService {
 	return &InterestHistoryService{c: c}
 }
+
+// NewTradeFeeService init the trade fee service
+func (c *Client) NewTradeFeeService() *TradeFeeService {
+	return &TradeFeeService{c: c}
+}
