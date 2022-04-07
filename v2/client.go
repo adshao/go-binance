@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"github.com/bitly/go-simplejson"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -14,10 +15,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/adshao/go-binance/v2/common"
-	"github.com/adshao/go-binance/v2/delivery"
-	"github.com/adshao/go-binance/v2/futures"
-	"github.com/bitly/go-simplejson"
+	"github.com/takeprofit-ai/go-binance/v2/common"
+	"github.com/takeprofit-ai/go-binance/v2/delivery"
+	"github.com/takeprofit-ai/go-binance/v2/futures"
 )
 
 // SideType define side type of order
