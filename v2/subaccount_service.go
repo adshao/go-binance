@@ -113,7 +113,13 @@ func (s *SubaccountAssetsService) Do(ctx context.Context, opts ...RequestOption)
 
 // TransferToSubAccountResponse define transfer to subaccount response
 type SubaccountAssetsResponse struct {
-	Balances []Balance `json:"balances"`
+	Balances []AssetBalance `json:"balances"`
+}
+
+type AssetBalance struct {
+	Asset  string  `json:"asset"`
+	Free   float64 `json:"free"`
+	Locked float64 `json:"locked"`
 }
 
 type SubaccountSpotSummaryService struct {
