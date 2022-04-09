@@ -159,12 +159,12 @@ func (s *SubaccountSpotSummaryService) subaccountSpotSummary(ctx context.Context
 }
 
 // Do send request
-func (s *SubaccountSpotSummaryService) Do(ctx context.Context, opts ...RequestOption) (res *SubaccountAssetsResponse, err error) {
+func (s *SubaccountSpotSummaryService) Do(ctx context.Context, opts ...RequestOption) (res *SubaccountSpotSummaryResponse, err error) {
 	data, err := s.subaccountSpotSummary(ctx, "/sapi/v1/sub-account/spotSummary", opts...)
 	if err != nil {
 		return nil, err
 	}
-	res = &SubaccountAssetsResponse{}
+	res = &SubaccountSpotSummaryResponse{}
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
