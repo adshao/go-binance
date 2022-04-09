@@ -145,12 +145,18 @@ func (s *SubaccountSpotSummaryService) subaccountSpotSummary(ctx context.Context
 		endpoint: endpoint,
 		secType:  secTypeSigned,
 	}
-	m := params{
-		"email": s.email,
-		"page":  s.page,
-		"size":  s.size,
+
+	if s.size != nil {
+		r.setParam("startTime", *s.size)
 	}
-	r.setParams(m)
+
+	if s.page != nil {
+		r.setParam("page", *s.page)
+	}
+
+	if s.email != nil {
+		r.setParam("email", *s.email)
+	}
 	data, err = s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []byte{}, err
