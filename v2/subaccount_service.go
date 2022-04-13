@@ -153,7 +153,7 @@ func (s *SubaccountSpotSummaryService) subaccountSpotSummary(ctx context.Context
 	}
 
 	if s.size != nil {
-		r.setParam("startTime", *s.size)
+		r.setParam("size", *s.size)
 	}
 
 	if s.page != nil {
