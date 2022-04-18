@@ -693,6 +693,16 @@ func (c *Client) NewTransferToSubAccountService() *TransferToSubAccountService {
 	return &TransferToSubAccountService{c: c}
 }
 
+// NewSubaccountAssetsService init list subaccount assets
+func (c *Client) NewSubaccountAssetsService() *SubaccountAssetsService {
+	return &SubaccountAssetsService{c: c}
+}
+
+// NewSubaccountSpotSummaryService init subaccount spot summary
+func (c *Client) NewSubaccountSpotSummaryService() *SubaccountSpotSummaryService {
+	return &SubaccountSpotSummaryService{c: c}
+}
+
 // NewAssetDividendService init the asset dividend list service
 func (c *Client) NewAssetDividendService() *AssetDividendService {
 	return &AssetDividendService{c: c}
