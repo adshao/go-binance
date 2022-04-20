@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 // ExchangeInfoService exchange info service
@@ -163,7 +164,13 @@ func (s *Symbol) PercentPriceFilter() *PercentPriceFilter {
 		if filter["filterType"].(string) == string(SymbolFilterTypePercentPrice) {
 			f := &PercentPriceFilter{}
 			if i, ok := filter["multiplierDecimal"]; ok {
-				f.MultiplierDecimal = int(i.(float64))
+				smd, is := i.(string)
+				if is {
+					md, _ := strconv.Atoi(smd)
+					f.MultiplierDecimal = md
+				} else {
+					f.MultiplierDecimal = int(i.(float64))
+				}
 			}
 			if i, ok := filter["multiplierUp"]; ok {
 				f.MultiplierUp = i.(string)
