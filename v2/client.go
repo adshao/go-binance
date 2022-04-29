@@ -733,6 +733,11 @@ func (c *Client) NewFiatPaymentsHistoryService() *FiatPaymentsHistoryService {
 	return &FiatPaymentsHistoryService{c: c}
 }
 
+// NewPayTransactionService init the pay transaction service
+func (c *Client) NewPayTradeHistoryService() *PayTradeHistoryService {
+	return &PayTradeHistoryService{c: c}
+}
+
 // NewFiatPaymentsHistoryService init the spot rebate history service
 func (c *Client) NewSpotRebateHistoryService() *SpotRebateHistoryService {
 	return &SpotRebateHistoryService{c: c}
