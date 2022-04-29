@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/hmac"
 	"crypto/sha256"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -207,6 +208,28 @@ func NewClient(apiKey, secretKey string) *Client {
 		UserAgent:  "Binance/golang",
 		HTTPClient: http.DefaultClient,
 		Logger:     log.New(os.Stderr, "Binance-golang ", log.LstdFlags),
+	}
+}
+
+//NewProxiedClient passing a proxy url
+func NewProxiedClient(apiKey, secretKey, proxyUrl string) *Client {
+	proxy, err := url.Parse(proxyUrl)
+	if err != nil {
+		log.Fatal(err)
+	}
+	tr := &http.Transport{
+		Proxy:           http.ProxyURL(proxy),
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	return &Client{
+		APIKey:    apiKey,
+		SecretKey: secretKey,
+		BaseURL:   getApiEndpoint(),
+		UserAgent: "Binance/golang",
+		HTTPClient: &http.Client{
+			Transport: tr,
+		},
+		Logger: log.New(os.Stderr, "Binance-golang ", log.LstdFlags),
 	}
 }
 
