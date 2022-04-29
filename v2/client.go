@@ -785,3 +785,8 @@ func (c *Client) NewInterestHistoryService() *InterestHistoryService {
 func (c *Client) NewTradeFeeService() *TradeFeeService {
 	return &TradeFeeService{c: c}
 }
+
+// NewC2CTradeHistoryService init the c2c trade history service
+func (c *Client) NewC2CTradeHistoryService() *C2CTradeHistoryService {
+	return &C2CTradeHistoryService{c: c}
+}
