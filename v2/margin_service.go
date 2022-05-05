@@ -65,10 +65,11 @@ type TransactionResponse struct {
 
 // MarginLoanService apply for a loan
 type MarginLoanService struct {
-	c              *Client
-	asset          string
-	amount         string
-	isolatedSymbol string
+	c          *Client
+	asset      string
+	amount     string
+	isIsolated bool
+	symbol     *string
 }
 
 // Asset set asset being transferred, e.g., BTC
@@ -83,9 +84,15 @@ func (s *MarginLoanService) Amount(amount string) *MarginLoanService {
 	return s
 }
 
-// IsolatedSymbol set IsolatedSymbol
-func (s *MarginLoanService) IsolatedSymbol(isolatedSymbol string) *MarginLoanService {
-	s.isolatedSymbol = isolatedSymbol
+// IsIsolated is for isolated margin or not, "TRUE", "FALSE"，default "FALSE"
+func (s *MarginLoanService) IsIsolated(isIsolated bool) *MarginLoanService {
+	s.isIsolated = isIsolated
+	return s
+}
+
+// Symbol set isolated symbol
+func (s *MarginLoanService) Symbol(symbol string) *MarginLoanService {
+	s.symbol = &symbol
 	return s
 }
 
@@ -101,9 +108,13 @@ func (s *MarginLoanService) Do(ctx context.Context, opts ...RequestOption) (res 
 		"amount": s.amount,
 	}
 	r.setFormParams(m)
-	if s.isolatedSymbol != "" {
-		r.setParam("isolatedSymbol", s.isolatedSymbol)
+	if s.isIsolated {
+		r.setParam("isIsolated", "TRUE")
 	}
+	if s.symbol != nil {
+		r.setParam("symbol", *s.symbol)
+	}
+
 	res = new(TransactionResponse)
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
