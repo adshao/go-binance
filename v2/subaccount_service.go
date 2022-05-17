@@ -2,7 +2,6 @@ package binance
 
 import (
 	"context"
-	"encoding/json"
 )
 
 // TransferToSubAccountService transfer to subaccount

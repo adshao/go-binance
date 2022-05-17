@@ -6,7 +6,6 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"crypto/tls"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -19,6 +18,7 @@ import (
 	"github.com/adshao/go-binance/v2/delivery"
 	"github.com/adshao/go-binance/v2/futures"
 	"github.com/bitly/go-simplejson"
+	jsoniter "github.com/json-iterator/go"
 )
 
 // SideType define side type of order
@@ -80,6 +80,9 @@ const (
 
 // UseTestnet switch all the API endpoints from production to the testnet
 var UseTestnet = false
+
+// Redefining the standard package
+var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // Global enums
 const (
