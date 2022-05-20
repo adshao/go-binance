@@ -1,10 +1,11 @@
 package binance
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
+
+	stdjson "encoding/json"
 )
 
 // Endpoints
@@ -115,7 +116,7 @@ func WsCombinedPartialDepthServe(symbolLevels map[string]string, handler WsParti
 		symbol := strings.Split(stream, "@")[0]
 		event.Symbol = strings.ToUpper(symbol)
 		data := j.Get("data").MustMap()
-		event.LastUpdateID, _ = data["lastUpdateId"].(json.Number).Int64()
+		event.LastUpdateID, _ = data["lastUpdateId"].(stdjson.Number).Int64()
 		bidsLen := len(data["bids"].([]interface{}))
 		event.Bids = make([]Bid, bidsLen)
 		for i := 0; i < bidsLen; i++ {
@@ -236,9 +237,9 @@ func wsCombinedDepthServe(endpoint string, handler WsDepthHandler, errHandler Er
 		symbol := strings.Split(stream, "@")[0]
 		event.Symbol = strings.ToUpper(symbol)
 		data := j.Get("data").MustMap()
-		event.Time, _ = data["E"].(json.Number).Int64()
-		event.LastUpdateID, _ = data["u"].(json.Number).Int64()
-		event.FirstUpdateID, _ = data["U"].(json.Number).Int64()
+		event.Time, _ = data["E"].(stdjson.Number).Int64()
+		event.LastUpdateID, _ = data["u"].(stdjson.Number).Int64()
+		event.FirstUpdateID, _ = data["U"].(stdjson.Number).Int64()
 		bidsLen := len(data["b"].([]interface{}))
 		event.Bids = make([]Bid, bidsLen)
 		for i := 0; i < bidsLen; i++ {

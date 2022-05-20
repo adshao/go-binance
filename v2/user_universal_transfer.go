@@ -11,7 +11,6 @@ package binance
 
 import (
 	"context"
-	"encoding/json"
 )
 
 // CreateUserUniversalTransferService submits a transfer request.
