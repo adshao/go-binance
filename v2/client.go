@@ -75,6 +75,9 @@ type LendingType string
 // StakingProduct define the staking product (locked staking, flexible defi staking, locked defi staking, ...)
 type StakingProduct string
 
+// StakingTransactionType define the staking transaction type (subscription, redemption, interest)
+type StakingTransactionType string
+
 // Endpoints
 const (
 	baseAPIMainURL    = "https://api.binance.com"
@@ -177,6 +180,10 @@ const (
 	StakingProductLockedStaking       = "STAKING"
 	StakingProductFlexibleDeFiStaking = "F_DEFI"
 	StakingProductLockedDeFiStaking   = "L_DEFI"
+
+	StakingTransactionTypeSubscription = "SUBSCRIPTION"
+	StakingTransactionTypeRedemption   = "REDEMPTION"
+	StakingTransactionTypeInterest     = "INTEREST"
 )
 
 func currentTimestamp() int64 {
@@ -804,4 +811,9 @@ func (c *Client) NewC2CTradeHistoryService() *C2CTradeHistoryService {
 // NewStakingProductPositionService init the staking product position service
 func (c *Client) NewStakingProductPositionService() *StakingProductPositionService {
 	return &StakingProductPositionService{c: c}
+}
+
+// NewStakingHistoryService init the staking history service
+func (c *Client) NewStakingHistoryService() *StakingHistoryService {
+	return &StakingHistoryService{c: c}
 }

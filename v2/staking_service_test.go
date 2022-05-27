@@ -128,3 +128,70 @@ func (s *stakingServiceTestSuite) assertStakingProductPositionEqual(e, a *Stakin
 	r.Equal(e.Type, a.Type, "Type")
 	r.Equal(e.Status, a.Status, "Status")
 }
+
+func (s *stakingServiceTestSuite) TestStakingHistory() {
+	data := []byte(`[
+	  {
+		"positionId": 123123,
+		"time": 1575018510000,
+		"asset": "BNB",
+		"project": "BSC",
+		"amount": "21312.23223",
+		"lockPeriod": 30,
+		"deliverDate": 1575018510000,
+		"type": "AUTO",
+		"status": "success"
+	  }
+	]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"product": StakingProductLockedStaking,
+			"txnType": StakingTransactionTypeSubscription,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewStakingHistoryService().
+		Product(StakingProductLockedStaking).
+		TransactionType(StakingTransactionTypeSubscription).
+		Do(newContext())
+	s.r().NoError(err)
+	e := &StakingHistory{
+		{
+			PositionId:  123123,
+			Time:        1575018510000,
+			Asset:       "BNB",
+			Project:     "BSC",
+			Amount:      "21312.23223",
+			LockPeriod:  30,
+			DeliverDate: 1575018510000,
+			Type:        "AUTO",
+			Status:      "success",
+		},
+	}
+	s.assertStakingHistoryEqual(e, res)
+}
+
+func (s *stakingServiceTestSuite) assertStakingHistoryEqual(e, a *StakingHistory) {
+	r := s.r()
+	r.Len(*a, len(*e))
+	for i := 0; i < len(*a); i++ {
+		s.assertStakingHistoryTransactionEqual(&(*e)[i], &(*a)[i])
+	}
+}
+
+func (s *stakingServiceTestSuite) assertStakingHistoryTransactionEqual(e, a *StakingHistoryTransaction) {
+	r := s.r()
+	r.Equal(e.PositionId, a.PositionId, "PositionId")
+	r.Equal(e.Time, a.Time, "Time")
+	r.Equal(e.Asset, a.Asset, "Asset")
+	r.Equal(e.Project, a.Project, "Project")
+	r.Equal(e.Amount, a.Amount, "Amount")
+	r.Equal(e.LockPeriod, a.LockPeriod, "LockPeriod")
+	r.Equal(e.DeliverDate, a.DeliverDate, "DeliverDate")
+	r.Equal(e.Type, a.Type, "Type")
+	r.Equal(e.Status, a.Status, "Status")
+}
