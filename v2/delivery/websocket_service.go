@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -562,21 +563,52 @@ type WsDepthEvent struct {
 // WsDepthHandler handle websocket depth event
 type WsDepthHandler func(event *WsDepthEvent)
 
+func wsPartialDepthServe(symbol string, levels int, rate *time.Duration, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	if levels != 5 && levels != 10 && levels != 20 {
+		return nil, nil, errors.New("Invalid levels")
+	}
+	levelsStr := fmt.Sprintf("%d", levels)
+	return wsDepthServe(symbol, levelsStr, rate, handler, errHandler)
+}
+
 // WsPartialDepthServe serve websocket partial depth handler.
 func WsPartialDepthServe(symbol string, levels int, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	endpoint := fmt.Sprintf("%s/%s@depth%d", getWsEndpoint(), strings.ToLower(symbol), levels)
-	cfg := newWsConfig(endpoint)
-	return wsDepthServe(cfg, handler, errHandler)
+	return wsPartialDepthServe(symbol, levels, nil, handler, errHandler)
+}
+
+// WsPartialDepthServeWithRate serve websocket partial depth handler with rate.
+func WsPartialDepthServeWithRate(symbol string, levels int, rate *time.Duration, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	return wsPartialDepthServe(symbol, levels, rate, handler, errHandler)
 }
 
 // WsDiffDepthServe serve websocket diff. depth handler.
 func WsDiffDepthServe(symbol string, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	endpoint := fmt.Sprintf("%s/%s@depth", getWsEndpoint(), strings.ToLower(symbol))
-	cfg := newWsConfig(endpoint)
-	return wsDepthServe(cfg, handler, errHandler)
+	return wsDepthServe(symbol, "", nil, handler, errHandler)
 }
 
-func wsDepthServe(cfg *WsConfig, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+// WsDiffDepthServe serve websocket diff. depth handler with rate.
+func WsDiffDepthServeWithRate(symbol string, rate *time.Duration, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	return wsDepthServe(symbol, "", rate, handler, errHandler)
+}
+
+func wsDepthServe(symbol string, levels string, rate *time.Duration, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	var rateStr string
+	if rate != nil {
+		switch *rate {
+		case 250 * time.Millisecond:
+			rateStr = ""
+		case 500 * time.Millisecond:
+			rateStr = "@500ms"
+		case 100 * time.Millisecond:
+			rateStr = "@100ms"
+		default:
+			return nil, nil, errors.New("Invalid rate")
+		}
+	}
+
+	endpoint := fmt.Sprintf("%s/%s@depth%s%s", getWsEndpoint(), strings.ToLower(symbol), levels, rateStr)
+	cfg := newWsConfig(endpoint)
+
 	wsHandler := func(message []byte) {
 		j, err := newJSON(message)
 		if err != nil {

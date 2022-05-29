@@ -2,7 +2,9 @@ package delivery
 
 import (
 	"errors"
+	"math/rand"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/suite"
 )
@@ -1036,7 +1038,7 @@ func (s *websocketServiceTestSuite) assertLiquidationOrderEvent(e, a *WsLiquidat
 }
 
 // https://binance-docs.github.io/apidocs/delivery/en/#partial-book-depth-streams
-func (s *websocketServiceTestSuite) TestPartialDepthServe() {
+func (s *websocketServiceTestSuite) testPartialDepthServe(levels int, rate *time.Duration, expectedErr error, expectedServeCnt int) {
 	data := []byte(`{
 	  "e":"depthUpdate",     
 	  "E":1591269996801,     
@@ -1061,11 +1063,11 @@ func (s *websocketServiceTestSuite) TestPartialDepthServe() {
 		["9525.3","6"]
 	  ]
 	}`)
-	fakeErrMsg := "fake error"
-	s.mockWsServe(data, errors.New(fakeErrMsg))
-	defer s.assertWsServe()
+	s.mockWsServe(data, expectedErr)
+	defer s.assertWsServe(expectedServeCnt)
 
-	doneC, stopC, err := WsPartialDepthServe("BTCUSD_200626", 5, func(event *WsDepthEvent) {
+	// doneC, stopC, err := WsPartialDepthServe("BTCUSD_200626", 5,
+	handler := func(event *WsDepthEvent) {
 		e := &WsDepthEvent{
 			Event:            "depthUpdate",
 			Time:             1591269996801,
@@ -1091,14 +1093,63 @@ func (s *websocketServiceTestSuite) TestPartialDepthServe() {
 			},
 		}
 		s.assertDepthEvent(e, event)
-	},
-		func(err error) {
-			s.r().EqualError(err, fakeErrMsg)
-		})
+	}
+	errHandler := func(err error) {
+	}
 
-	s.r().NoError(err)
-	stopC <- struct{}{}
-	<-doneC
+	var doneC, stopC chan struct{}
+	var err error
+	if rate == nil {
+		doneC, stopC, err = WsPartialDepthServe("BTCUSD_200626", levels, handler, errHandler)
+	} else {
+		doneC, stopC, err = WsPartialDepthServeWithRate("BTCUSD_200626", levels, rate, handler, errHandler)
+	}
+
+	if expectedErr == nil {
+		s.r().NoError(err)
+	} else {
+		s.r().EqualError(err, expectedErr.Error())
+	}
+
+	if stopC != nil {
+		stopC <- struct{}{}
+	}
+	if doneC != nil {
+		<-doneC
+	}
+}
+
+func (s *websocketServiceTestSuite) TestPartialDepthServe() {
+	s.testPartialDepthServe(5, nil, nil, 1)
+}
+
+func (s *websocketServiceTestSuite) TestPartialDepthServeWithInvalidLevels() {
+	s.testPartialDepthServe(8, nil, errors.New("Invalid levels"), 0)
+}
+
+func (s *websocketServiceTestSuite) TestPartialDepthServeWithValidRate() {
+	rate := 250 * time.Millisecond
+	s.testPartialDepthServe(5, &rate, nil, 1)
+	rate = 500 * time.Millisecond
+	s.testPartialDepthServe(5, &rate, nil, 2)
+	rate = 100 * time.Millisecond
+	s.testPartialDepthServe(5, &rate, nil, 3)
+}
+
+func (s *websocketServiceTestSuite) TestPartialDepthServeWithInvalidRate() {
+	randSrc := rand.NewSource(time.Now().UnixNano())
+	rand := rand.New(randSrc)
+	for {
+		rate := time.Duration(rand.Intn(100)*10) * time.Millisecond
+		switch rate {
+		case 250 * time.Millisecond:
+		case 500 * time.Millisecond:
+		case 100 * time.Millisecond:
+		default:
+			s.testPartialDepthServe(5, &rate, errors.New("Invalid rate"), 0)
+			return
+		}
+	}
 }
 
 // https://binance-docs.github.io/apidocs/delivery/en/#diff-book-depth-streams
