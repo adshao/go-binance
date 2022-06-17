@@ -26,7 +26,7 @@ func (s *depositServiceTestSuite) TestListDeposits() {
         "txId":"0xaad4654a3234aa6118af9b4b335f5ae81c360b2394721c019b5d1e75328b09f3",
         "insertTime":1599621997000,
         "transferType":0,
-        "unlockConfirm":"12/12",
+        "unlockConfirm":12,
         "confirmTimes":"12/12"
     },
     {
@@ -39,7 +39,7 @@ func (s *depositServiceTestSuite) TestListDeposits() {
         "txId":"ESBFVQUTPIWQNJSPXFNHNYHSQNTGKRVKPRABQWTAXCDWOAKDKYWPTVG9BGXNVNKTLEJGESAVXIKIZ9999",
         "insertTime":1599620082000,
         "transferType":0,
-        "unlockConfirm":"1/12",
+        "unlockConfirm":1,
         "confirmTimes":"1/1"
     }
 ]`)
@@ -79,7 +79,7 @@ func (s *depositServiceTestSuite) TestListDeposits() {
 		TxID:          "0xaad4654a3234aa6118af9b4b335f5ae81c360b2394721c019b5d1e75328b09f3",
 		InsertTime:    1599621997000,
 		TransferType:  0,
-		UnlockConfirm: "12/12",
+		UnlockConfirm: 12,
 		ConfirmTimes:  "12/12",
 	}, deposits[0])
 	s.assertDepositEqual(&Deposit{
@@ -92,7 +92,7 @@ func (s *depositServiceTestSuite) TestListDeposits() {
 		TxID:          "ESBFVQUTPIWQNJSPXFNHNYHSQNTGKRVKPRABQWTAXCDWOAKDKYWPTVG9BGXNVNKTLEJGESAVXIKIZ9999",
 		InsertTime:    1599620082000,
 		TransferType:  0,
-		UnlockConfirm: "1/12",
+		UnlockConfirm: 1,
 		ConfirmTimes:  "1/1",
 	}, deposits[1])
 }
