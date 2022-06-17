@@ -43,6 +43,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 	quoteOrderQty := "10.00"
 	price := "0.0001"
 	newClientOrderID := "myOrder1"
+	trailingDelta := "1000"
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setFormParams(params{
 			"symbol":           symbol,
@@ -53,12 +54,13 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 			"quoteOrderQty":    quoteOrderQty,
 			"price":            price,
 			"newClientOrderId": newClientOrderID,
+			"trailingDelta":    trailingDelta,
 		})
 		s.assertRequestEqual(e, r)
 	})
 	res, err := s.client.NewCreateOrderService().Symbol(symbol).Side(side).
 		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).QuoteOrderQty(quoteOrderQty).
-		Price(price).NewClientOrderID(newClientOrderID).Do(newContext())
+		Price(price).NewClientOrderID(newClientOrderID).TrailingDelta(trailingDelta).Do(newContext())
 	s.r().NoError(err)
 	e := &CreateOrderResponse{
 		Symbol:                   "LTCBTC",
@@ -78,7 +80,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 
 	err = s.client.NewCreateOrderService().Symbol(symbol).Side(side).
 		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).QuoteOrderQty(quoteOrderQty).
-		Price(price).NewClientOrderID(newClientOrderID).Test(newContext())
+		Price(price).NewClientOrderID(newClientOrderID).TrailingDelta(trailingDelta).Test(newContext())
 	s.r().NoError(err)
 }
 

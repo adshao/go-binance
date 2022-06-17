@@ -19,6 +19,7 @@ type CreateOrderService struct {
 	price            *string
 	newClientOrderID *string
 	stopPrice        *string
+	trailingDelta    *string
 	icebergQuantity  *string
 }
 
@@ -76,6 +77,12 @@ func (s *CreateOrderService) StopPrice(stopPrice string) *CreateOrderService {
 	return s
 }
 
+// TrailingDelta set trailingDelta
+func (s *CreateOrderService) TrailingDelta(trailingDelta string) *CreateOrderService {
+	s.trailingDelta = &trailingDelta
+	return s
+}
+
 // IcebergQuantity set icebergQuantity
 func (s *CreateOrderService) IcebergQuantity(icebergQuantity string) *CreateOrderService {
 	s.icebergQuantity = &icebergQuantity
@@ -116,6 +123,9 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 	}
 	if s.stopPrice != nil {
 		m["stopPrice"] = *s.stopPrice
+	}
+	if s.trailingDelta != nil {
+		m["trailingDelta"] = *s.trailingDelta
 	}
 	if s.icebergQuantity != nil {
 		m["icebergQty"] = *s.icebergQuantity
