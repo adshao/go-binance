@@ -15,7 +15,7 @@ func (s *GetSwapPoolService) Do(ctx context.Context, opts ...RequestOption) ([]*
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/bswap/pools",
-		secType:  secTypeNone,
+		secType:  secTypeAPIKey,
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
