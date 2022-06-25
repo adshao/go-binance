@@ -50,7 +50,7 @@ type SwapPoolDetail struct {
 	PoolId     int64                 `json:"poolId"`
 	PoolName   string                `json:"poolName"`
 	UpdateTime int64                 `json:"updateTime"`
-	Liquidity  map[string]float64    `json:"liquidity"`
+	Liquidity  map[string]string     `json:"liquidity"`
 	Share      *PoolShareInformation `json:"share"`
 }
 
