@@ -28,8 +28,8 @@ func (s *swapPoolServiceTestSuite) TestGetSwapPoolDetail() {
 				"shareAmount": 12415,
 				"sharePercentage": 0.00006207,
 				"asset": {
-					"BUSD": 6207.02,
-					"USDT": 6206.95
+					"BUSD": "6207.02",
+					"USDT": "6206.95"
 				}
 			}
 		}
@@ -58,9 +58,9 @@ func (s *swapPoolServiceTestSuite) TestGetSwapPoolDetail() {
 			Share: &PoolShareInformation{
 				ShareAmount:     12415,
 				SharePercentage: 0.00006207,
-				Assets: map[string]float64{
-					"BUSD": 6207.02,
-					"USDT": 6206.95,
+				Assets: map[string]string{
+					"BUSD": "6207.02",
+					"USDT": "6206.95",
 				},
 			},
 		},
@@ -90,7 +90,10 @@ func (s *swapPoolServiceTestSuite) assertSwapPoolDetailEqual(e *SwapPoolDetail, 
 		r.Equal(v, a.Liquidity[k], "Liquidity")
 	}
 
-	r.InDeltaMapValues(e.Share.Assets, a.Share.Assets, 0, "Share.Assets")
+	r.Len(a.Share.Assets, len(e.Share.Assets), "Share.Assets.Len")
+	for k, v := range e.Share.Assets {
+		r.Equal(v, a.Share.Assets[k], "Share.Assets")
+	}
 }
 
 func (s *swapPoolServiceTestSuite) TestGetSwapPoolList() {
