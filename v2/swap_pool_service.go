@@ -55,8 +55,8 @@ type SwapPoolDetail struct {
 }
 
 type PoolShareInformation struct {
-	ShareAmount     float64           `json:"shareAmount"`
-	SharePercentage float64           `json:"sharePercentage"`
+	ShareAmount     string            `json:"shareAmount"`
+	SharePercentage string            `json:"sharePercentage"`
 	Assets          map[string]string `json:"asset"`
 }
 

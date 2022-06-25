@@ -25,8 +25,8 @@ func (s *swapPoolServiceTestSuite) TestGetSwapPoolDetail() {
 				"USDT": "99999245.54"
 			},
 			"share": {
-				"shareAmount": 12415,
-				"sharePercentage": 0.00006207,
+				"shareAmount": "12415",
+				"sharePercentage": "0.00006207",
 				"asset": {
 					"BUSD": "6207.02",
 					"USDT": "6206.95"
@@ -56,8 +56,8 @@ func (s *swapPoolServiceTestSuite) TestGetSwapPoolDetail() {
 				"USDT": "99999245.54",
 			},
 			Share: &PoolShareInformation{
-				ShareAmount:     12415,
-				SharePercentage: 0.00006207,
+				ShareAmount:     "12415",
+				SharePercentage: "0.00006207",
 				Assets: map[string]string{
 					"BUSD": "6207.02",
 					"USDT": "6206.95",
