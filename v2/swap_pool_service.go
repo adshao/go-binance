@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-// GetPoolService get swap pool market data
+// GetSwapPoolService get swap pool market data
 type GetSwapPoolService struct {
 	c *Client
 }
