@@ -818,7 +818,12 @@ func (c *Client) NewStakingHistoryService() *StakingHistoryService {
 	return &StakingHistoryService{c: c}
 }
 
-// NewGetSwapPoolService init the get swap pool service
-func (c *Client) NewGetSwapPoolService() *GetSwapPoolService {
-	return &GetSwapPoolService{c: c}
+// NewGetAllSwapPoolService init the get all swap pool service
+func (c *Client) NewGetAllSwapPoolService() *GetAllSwapPoolService {
+	return &GetAllSwapPoolService{c: c}
+}
+
+// NewGetSwapPoolDetailService init the get swap pool detial service
+func (c *Client) NewGetSwapPoolDetailService() *GetSwapPoolDetailService {
+	return &GetSwapPoolDetailService{c: c}
 }

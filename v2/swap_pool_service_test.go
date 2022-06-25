@@ -14,6 +14,80 @@ func TestSwapPoolService(t *testing.T) {
 	suite.Run(t, new(swapPoolServiceTestSuite))
 }
 
+func (s *swapPoolServiceTestSuite) TestGetSwapPoolDetail() {
+	data := []byte(`[
+		{
+			"poolId": 2,
+			"poolName": "BUSD/USDT",
+			"updateTime": 1565769342148,
+			"liquidity": {
+				"BUSD": 100000315.79,
+				"USDT": 99999245.54
+			},
+			"share": {
+				"shareAmount": 12415,
+				"sharePercentage": 0.00006207,
+				"asset": {
+					"BUSD": 6207.02,
+					"USDT": 6206.95
+				}
+			}
+		}
+	]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"poolId": 2,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewGetSwapPoolDetailService().PoolId(2).Do(newContext())
+	s.r().NoError(err)
+	e := []*SwapPoolDetail{
+		{
+			PoolId:     2,
+			PoolName:   "BUSD/USDT",
+			UpdateTime: 1565769342148,
+			Liquidity: map[string]float64{
+				"BUSD": 100000315.79,
+				"USDT": 99999245.54,
+			},
+			Share: &PoolShareInformation{
+				ShareAmount:     12415,
+				SharePercentage: 0.00006207,
+				Assets: map[string]float64{
+					"BUSD": 6207.02,
+					"USDT": 6206.95,
+				},
+			},
+		},
+	}
+	s.assertSwapPoolDetailsEqual(e, 1, res)
+}
+
+func (s *swapPoolServiceTestSuite) assertSwapPoolDetailsEqual(e []*SwapPoolDetail, expectLen int, a []*SwapPoolDetail) {
+	r := s.r()
+
+	r.Len(a, expectLen)
+	for i := 0; i < len(a); i++ {
+		s.assertSwapPoolDetailEqual(e[i], a[i])
+	}
+}
+
+func (s *swapPoolServiceTestSuite) assertSwapPoolDetailEqual(e *SwapPoolDetail, a *SwapPoolDetail) {
+	r := s.r()
+
+	r.Equal(e.PoolId, a.PoolId, "PoolId")
+	r.Equal(e.PoolName, a.PoolName, "PoolName")
+	r.Equal(e.Share.ShareAmount, a.Share.ShareAmount, "Share.ShareAmount")
+	r.Equal(e.Share.SharePercentage, a.Share.SharePercentage, "Share.SharePercentage")
+	r.InDeltaMapValues(e.Liquidity, a.Liquidity, 0, "Liquidity")
+	r.InDeltaMapValues(e.Share.Assets, a.Share.Assets, 0, "Share.Assets")
+}
+
 func (s *swapPoolServiceTestSuite) TestGetSwapPoolList() {
 	data := []byte(`[
 		{
@@ -49,7 +123,7 @@ func (s *swapPoolServiceTestSuite) TestGetSwapPoolList() {
 		s.assertRequestEqual(e, r)
 	})
 
-	res, err := s.client.NewGetSwapPoolService().Do(newContext())
+	res, err := s.client.NewGetAllSwapPoolService().Do(newContext())
 	s.r().NoError(err)
 	e := []*SwapPool{
 		{
