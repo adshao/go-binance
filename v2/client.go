@@ -824,17 +824,22 @@ func (c *Client) NewStakingHistoryService() *StakingHistoryService {
 	return &StakingHistoryService{c: c}
 }
 
-// NewGetAllSwapPoolService init the get all swap pool service
-func (c *Client) NewGetAllSwapPoolService() *GetAllSwapPoolService {
-	return &GetAllSwapPoolService{c: c}
+// NewGetAllLiquidityPoolService init the get all swap pool service
+func (c *Client) NewGetAllLiquidityPoolService() *GetAllLiquidityPoolService {
+	return &GetAllLiquidityPoolService{c: c}
 }
 
-// NewGetSwapPoolDetailService init the get swap pool detial service
-func (c *Client) NewGetSwapPoolDetailService() *GetSwapPoolDetailService {
-	return &GetSwapPoolDetailService{c: c}
+// NewGetLiquidityPoolDetailService init the get liquidity pool detial service
+func (c *Client) NewGetLiquidityPoolDetailService() *GetLiquidityPoolDetailService {
+	return &GetLiquidityPoolDetailService{c: c}
 }
 
 // NewAddLiquidityPreviewService init the add liquidity preview service
 func (c *Client) NewAddLiquidityPreviewService() *AddLiquidityPreviewService {
 	return &AddLiquidityPreviewService{c: c}
+}
+
+// NewGetSwapQuoteService init the add liquidity preview service
+func (c *Client) NewGetSwapQuoteService() *GetSwapQuoteService {
+	return &GetSwapQuoteService{c: c}
 }

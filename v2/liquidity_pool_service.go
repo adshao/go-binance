@@ -6,12 +6,12 @@ import (
 )
 
 // GetAllSwapPoolService get swap pool market data
-type GetAllSwapPoolService struct {
+type GetAllLiquidityPoolService struct {
 	c *Client
 }
 
 // Do send request
-func (s *GetAllSwapPoolService) Do(ctx context.Context, opts ...RequestOption) ([]*SwapPool, error) {
+func (s *GetAllLiquidityPoolService) Do(ctx context.Context, opts ...RequestOption) ([]*LiquidityPool, error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/bswap/pools",
@@ -21,32 +21,32 @@ func (s *GetAllSwapPoolService) Do(ctx context.Context, opts ...RequestOption) (
 	if err != nil {
 		return nil, err
 	}
-	res := []*SwapPool{}
+	res := []*LiquidityPool{}
 	if err = json.Unmarshal(data, &res); err != nil {
 		return nil, err
 	}
 	return res, nil
 }
 
-type SwapPool struct {
+type LiquidityPool struct {
 	PoolId   int64    `json:"poolId"`
 	PoolName string   `json:"poolName"`
 	Assets   []string `json:"assets"`
 }
 
-// GetSwapPoolDetailService get swap pool detail by pool id
-type GetSwapPoolDetailService struct {
+// GetLiquidityPoolDetailService get swap pool detail by pool id
+type GetLiquidityPoolDetailService struct {
 	c      *Client
 	poolId *int64
 }
 
 // PoolId set poolId
-func (s *GetSwapPoolDetailService) PoolId(poolId int64) *GetSwapPoolDetailService {
+func (s *GetLiquidityPoolDetailService) PoolId(poolId int64) *GetLiquidityPoolDetailService {
 	s.poolId = &poolId
 	return s
 }
 
-type SwapPoolDetail struct {
+type LiquidityPoolDetail struct {
 	PoolId     int64                 `json:"poolId"`
 	PoolName   string                `json:"poolName"`
 	UpdateTime int64                 `json:"updateTime"`
@@ -61,7 +61,7 @@ type PoolShareInformation struct {
 }
 
 // Do sends the request.
-func (s *GetSwapPoolDetailService) Do(ctx context.Context) ([]*SwapPoolDetail, error) {
+func (s *GetLiquidityPoolDetailService) Do(ctx context.Context) ([]*LiquidityPoolDetail, error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/bswap/liquidity",
@@ -74,7 +74,7 @@ func (s *GetSwapPoolDetailService) Do(ctx context.Context) ([]*SwapPoolDetail, e
 	if err != nil {
 		return nil, err
 	}
-	res := []*SwapPoolDetail{}
+	res := []*LiquidityPoolDetail{}
 	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return nil, err
@@ -144,6 +144,66 @@ func (s *AddLiquidityPreviewService) Do(ctx context.Context) (*AddLiquidityPrevi
 		return nil, err
 	}
 	res := &AddLiquidityPreviewResponse{}
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// GetSwapQuoteService get the quote
+type GetSwapQuoteService struct {
+	c          *Client
+	quoteAsset *string
+	baseAsset  *string
+	quoteQty   *float64
+}
+
+// QuoteAsset set quoteAsset
+func (s *GetSwapQuoteService) QuoteAsset(quoteAsset string) *GetSwapQuoteService {
+	s.quoteAsset = &quoteAsset
+	return s
+}
+
+// QuoteQty set quoteQty
+func (s *GetSwapQuoteService) QuoteQty(quoteQty float64) *GetSwapQuoteService {
+	s.quoteQty = &quoteQty
+	return s
+}
+
+// BaseAsset set baseAsset
+func (s *GetSwapQuoteService) BaseAsset(baseAsset string) *GetSwapQuoteService {
+	s.baseAsset = &baseAsset
+	return s
+}
+
+type GetSwapQuoteResponse struct {
+	QuoteAsset string `json:"quoteAsset"`
+	BaseAsset  string `json:"baseAsset"`
+	QuoteQty   string `json:"quoteQty"`
+	BaseQty    string `json:"baseQty"`
+	Price      string `json:"price"`
+	Slippage   string `json:"slippage"`
+	Fee        string `json:"fee"`
+}
+
+// Do sends the request.
+func (s *GetSwapQuoteService) Do(ctx context.Context) (*GetSwapQuoteResponse, error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/bswap/quote",
+		secType:  secTypeSigned,
+	}
+
+	r.setParam("quoteAsset", *s.quoteAsset)
+	r.setParam("baseAsset", *s.baseAsset)
+	r.setParam("quoteQty", *s.quoteQty)
+
+	data, err := s.c.callAPI(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+	res := &GetSwapQuoteResponse{}
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err

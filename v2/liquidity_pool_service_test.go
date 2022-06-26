@@ -6,15 +6,15 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type swapPoolServiceTestSuite struct {
+type liquidityPoolServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSwapPoolService(t *testing.T) {
-	suite.Run(t, new(swapPoolServiceTestSuite))
+func TestLiquidityPoolService(t *testing.T) {
+	suite.Run(t, new(liquidityPoolServiceTestSuite))
 }
 
-func (s *swapPoolServiceTestSuite) TestAddLiquidityPreviewService() {
+func (s *liquidityPoolServiceTestSuite) TestAddLiquidityPreviewService() {
 	data := []byte(`{
 		"quoteAsset": "USDT",
 		"baseAsset": "BUSD",
@@ -59,7 +59,7 @@ func (s *swapPoolServiceTestSuite) TestAddLiquidityPreviewService() {
 	s.assertAddLiquidityPreviewEqual(e, res)
 }
 
-func (s *swapPoolServiceTestSuite) assertAddLiquidityPreviewEqual(e *AddLiquidityPreviewResponse, a *AddLiquidityPreviewResponse) {
+func (s *liquidityPoolServiceTestSuite) assertAddLiquidityPreviewEqual(e *AddLiquidityPreviewResponse, a *AddLiquidityPreviewResponse) {
 	r := s.r()
 
 	r.Equal(e.BaseAmt, a.BaseAmt, "BaseAmt")
@@ -72,7 +72,7 @@ func (s *swapPoolServiceTestSuite) assertAddLiquidityPreviewEqual(e *AddLiquidit
 	r.Equal(e.Share, a.Share, "Share")
 }
 
-func (s *swapPoolServiceTestSuite) TestGetSwapPoolDetail() {
+func (s *liquidityPoolServiceTestSuite) TestGetLiquidityPoolDetail() {
 	data := []byte(`[
 		{
 			"poolId": 2,
@@ -102,9 +102,9 @@ func (s *swapPoolServiceTestSuite) TestGetSwapPoolDetail() {
 		s.assertRequestEqual(e, r)
 	})
 
-	res, err := s.client.NewGetSwapPoolDetailService().PoolId(2).Do(newContext())
+	res, err := s.client.NewGetLiquidityPoolDetailService().PoolId(2).Do(newContext())
 	s.r().NoError(err)
-	e := []*SwapPoolDetail{
+	e := []*LiquidityPoolDetail{
 		{
 			PoolId:     2,
 			PoolName:   "BUSD/USDT",
@@ -123,19 +123,19 @@ func (s *swapPoolServiceTestSuite) TestGetSwapPoolDetail() {
 			},
 		},
 	}
-	s.assertSwapPoolDetailsEqual(e, 1, res)
+	s.assertLiquidityPoolDetailsEqual(e, 1, res)
 }
 
-func (s *swapPoolServiceTestSuite) assertSwapPoolDetailsEqual(e []*SwapPoolDetail, expectLen int, a []*SwapPoolDetail) {
+func (s *liquidityPoolServiceTestSuite) assertLiquidityPoolDetailsEqual(e []*LiquidityPoolDetail, expectLen int, a []*LiquidityPoolDetail) {
 	r := s.r()
 
 	r.Len(a, expectLen)
 	for i := 0; i < len(a); i++ {
-		s.assertSwapPoolDetailEqual(e[i], a[i])
+		s.assertLiquidityPoolDetailEqual(e[i], a[i])
 	}
 }
 
-func (s *swapPoolServiceTestSuite) assertSwapPoolDetailEqual(e *SwapPoolDetail, a *SwapPoolDetail) {
+func (s *liquidityPoolServiceTestSuite) assertLiquidityPoolDetailEqual(e *LiquidityPoolDetail, a *LiquidityPoolDetail) {
 	r := s.r()
 
 	r.Equal(e.PoolId, a.PoolId, "PoolId")
@@ -154,7 +154,7 @@ func (s *swapPoolServiceTestSuite) assertSwapPoolDetailEqual(e *SwapPoolDetail, 
 	}
 }
 
-func (s *swapPoolServiceTestSuite) TestGetSwapPoolList() {
+func (s *liquidityPoolServiceTestSuite) TestGetLiquidityPoolList() {
 	data := []byte(`[
 		{
 			"poolId": 2,
@@ -189,9 +189,9 @@ func (s *swapPoolServiceTestSuite) TestGetSwapPoolList() {
 		s.assertRequestEqual(e, r)
 	})
 
-	res, err := s.client.NewGetAllSwapPoolService().Do(newContext())
+	res, err := s.client.NewGetAllLiquidityPoolService().Do(newContext())
 	s.r().NoError(err)
-	e := []*SwapPool{
+	e := []*LiquidityPool{
 		{
 			PoolId:   2,
 			PoolName: "BUSD/USDT",
@@ -208,19 +208,19 @@ func (s *swapPoolServiceTestSuite) TestGetSwapPoolList() {
 			Assets:   []string{"USDT", "DAI"},
 		},
 	}
-	s.assertSwapPoolSliceEqual(e, 3, res)
+	s.assertLiquidityPoolSliceEqual(e, 3, res)
 }
 
-func (s *swapPoolServiceTestSuite) assertSwapPoolSliceEqual(e []*SwapPool, expectLen int, a []*SwapPool) {
+func (s *liquidityPoolServiceTestSuite) assertLiquidityPoolSliceEqual(e []*LiquidityPool, expectLen int, a []*LiquidityPool) {
 	r := s.r()
 
 	r.Len(a, expectLen)
 	for i := 0; i < len(a); i++ {
-		s.assertSwapPoolEqual(e[i], a[i])
+		s.assertLiquidityPoolEqual(e[i], a[i])
 	}
 }
 
-func (s *swapPoolServiceTestSuite) assertSwapPoolEqual(e *SwapPool, a *SwapPool) {
+func (s *liquidityPoolServiceTestSuite) assertLiquidityPoolEqual(e *LiquidityPool, a *LiquidityPool) {
 	r := s.r()
 
 	r.Equal(e.PoolId, a.PoolId, "PoolId")
