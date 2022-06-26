@@ -78,6 +78,9 @@ type StakingProduct string
 // StakingTransactionType define the staking transaction type (subscription, redemption, interest)
 type StakingTransactionType string
 
+// LiquidityOperationType define the type of adding/removing liquidity to a liquidity pool(COMBINATION, SINGLE)
+type LiquidityOperationType string
+
 // Endpoints
 const (
 	baseAPIMainURL    = "https://api.binance.com"
@@ -172,6 +175,9 @@ const (
 	LendingTypeFlexible LendingType = "DAILY"
 	LendingTypeFixed    LendingType = "CUSTOMIZED_FIXED"
 	LendingTypeActivity LendingType = "ACTIVITY"
+
+	LiquidityOperationTypeCombination LiquidityOperationType = "COMBINATION"
+	LiquidityOperationTypeSingle      LiquidityOperationType = "SINGLE"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"

@@ -14,6 +14,60 @@ func TestSwapPoolService(t *testing.T) {
 	suite.Run(t, new(swapPoolServiceTestSuite))
 }
 
+func (s *swapPoolServiceTestSuite) TestAddLiquidityPreviewService() {
+	data := []byte(`{
+		"quoteAsset": "USDT",
+		"baseAsset": "BUSD",
+		"quoteAmt": 300000,
+		"baseAmt": 299975,
+		"price": 1.00008334,
+		"share":1.23,
+		"slippage": 0.00007245,
+		"fee": 120,
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"poolId": 2,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewGetSwapPoolDetailService().PoolId(2).Do(newContext())
+	s.r().NoError(err)
+	e := []*SwapPoolDetail{
+		{
+			PoolId:     2,
+			PoolName:   "BUSD/USDT",
+			UpdateTime: 1565769342148,
+			Liquidity: map[string]string{
+				"BUSD": "100000315.79",
+				"USDT": "99999245.54",
+			},
+			Share: &PoolShareInformation{
+				ShareAmount:     "12415",
+				SharePercentage: "0.00006207",
+				Assets: map[string]string{
+					"BUSD": "6207.02",
+					"USDT": "6206.95",
+				},
+			},
+		},
+	}
+	s.assertAddLiquidityPreviewEqual(e, 1, res)
+}
+
+func (s *swapPoolServiceTestSuite) assertAddLiquidityPreviewEqual(e []*SwapPoolDetail, expectLen int, a []*SwapPoolDetail) {
+	r := s.r()
+
+	r.Len(a, expectLen)
+	for i := 0; i < len(a); i++ {
+		s.assertSwapPoolDetailEqual(e[i], a[i])
+	}
+}
+
 func (s *swapPoolServiceTestSuite) TestGetSwapPoolDetail() {
 	data := []byte(`[
 		{

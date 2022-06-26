@@ -81,3 +81,48 @@ func (s *GetSwapPoolDetailService) Do(ctx context.Context) ([]*SwapPoolDetail, e
 	}
 	return res, nil
 }
+
+// AddLiquidityPreviewService to preview the quote/base qty needed when adding assets to a liquidity pool with an estimated share after adding the liquidity
+type AddLiquidityPreviewService struct {
+	c             *Client
+	poolId        *int64
+	operationType *LiquidityOperationType
+	quoteAsset    *string
+	quoteQty      *float64
+}
+
+type AddLiquidityPreviewResponse struct {
+	QuoteAsset string `json:"quoteAsset"`
+	BaseAsset  string `json:"baseAsset"` // only existed when type is COMBINATION
+	QuoteAmt   string `json:"quoteAmt"`
+	BaseAmt    string `json:"baseAmt"` // only existed when type is COMBINATION
+	Price      string `json:"price"`
+	Share      string `json:"share"`
+	Slippage   string `json:"slippage"`
+	Fee        string `json:"fee"`
+}
+
+// Do sends the request.
+func (s *AddLiquidityPreviewService) Do(ctx context.Context) (*AddLiquidityPreviewResponse, error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/bswap/addLiquidityPreview",
+		secType:  secTypeSigned,
+	}
+
+	r.setParam("poolId", *s.poolId)
+	r.setParam("type", *s.operationType)
+	r.setParam("quoteAsset", *s.quoteAsset)
+	r.setParam("quoteQty", *s.quoteQty)
+
+	data, err := s.c.callAPI(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+	res := &AddLiquidityPreviewResponse{}
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
