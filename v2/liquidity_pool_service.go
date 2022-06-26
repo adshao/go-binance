@@ -210,3 +210,57 @@ func (s *GetSwapQuoteService) Do(ctx context.Context) (*GetSwapQuoteResponse, er
 	}
 	return res, nil
 }
+
+// SwapService swap tokens in liquidity pool
+type SwapService struct {
+	c          *Client
+	quoteAsset *string
+	baseAsset  *string
+	quoteQty   *float64
+}
+
+// QuoteAsset set quoteAsset
+func (s *SwapService) QuoteAsset(quoteAsset string) *SwapService {
+	s.quoteAsset = &quoteAsset
+	return s
+}
+
+// QuoteQty set quoteQty
+func (s *SwapService) QuoteQty(quoteQty float64) *SwapService {
+	s.quoteQty = &quoteQty
+	return s
+}
+
+// BaseAsset set baseAsset
+func (s *SwapService) BaseAsset(baseAsset string) *SwapService {
+	s.baseAsset = &baseAsset
+	return s
+}
+
+type SwapResponse struct {
+	SwapId int64 `json:"swapId"`
+}
+
+// Do sends the request.
+func (s *SwapService) Do(ctx context.Context) (*SwapResponse, error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v1/bswap/swap",
+		secType:  secTypeSigned,
+	}
+
+	r.setParam("quoteAsset", *s.quoteAsset)
+	r.setParam("baseAsset", *s.baseAsset)
+	r.setParam("quoteQty", *s.quoteQty)
+
+	data, err := s.c.callAPI(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+	res := &SwapResponse{}
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}

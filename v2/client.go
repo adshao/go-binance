@@ -843,3 +843,8 @@ func (c *Client) NewAddLiquidityPreviewService() *AddLiquidityPreviewService {
 func (c *Client) NewGetSwapQuoteService() *GetSwapQuoteService {
 	return &GetSwapQuoteService{c: c}
 }
+
+// NewSwapService init the swap service
+func (c *Client) NewSwapService() *SwapService {
+	return &SwapService{c: c}
+}
