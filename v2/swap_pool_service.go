@@ -91,6 +91,30 @@ type AddLiquidityPreviewService struct {
 	quoteQty      *float64
 }
 
+// PoolId set poolId
+func (s *AddLiquidityPreviewService) PoolId(poolId int64) *AddLiquidityPreviewService {
+	s.poolId = &poolId
+	return s
+}
+
+// QuoteAsset set quoteAsset
+func (s *AddLiquidityPreviewService) QuoteAsset(quoteAsset string) *AddLiquidityPreviewService {
+	s.quoteAsset = &quoteAsset
+	return s
+}
+
+// QuoteQty set quoteQty
+func (s *AddLiquidityPreviewService) QuoteQty(quoteQty float64) *AddLiquidityPreviewService {
+	s.quoteQty = &quoteQty
+	return s
+}
+
+// OperationType set operationType
+func (s *AddLiquidityPreviewService) OperationType(operationType LiquidityOperationType) *AddLiquidityPreviewService {
+	s.operationType = &operationType
+	return s
+}
+
 type AddLiquidityPreviewResponse struct {
 	QuoteAsset string `json:"quoteAsset"`
 	BaseAsset  string `json:"baseAsset"` // only existed when type is COMBINATION

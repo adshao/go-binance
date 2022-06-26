@@ -18,54 +18,58 @@ func (s *swapPoolServiceTestSuite) TestAddLiquidityPreviewService() {
 	data := []byte(`{
 		"quoteAsset": "USDT",
 		"baseAsset": "BUSD",
-		"quoteAmt": 300000,
-		"baseAmt": 299975,
-		"price": 1.00008334,
-		"share":1.23,
-		"slippage": 0.00007245,
-		"fee": 120,
+		"quoteAmt": "300000",
+		"baseAmt": "299975",
+		"price": "1.00008334",
+		"share": "1.23",
+		"slippage": "0.00007245",
+		"fee": "120"
 	}`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
 
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
-			"poolId": 2,
+			"poolId":     2,
+			"type":       LiquidityOperationTypeCombination,
+			"quoteAsset": "USDT",
+			"quoteQty":   1000,
 		})
 		s.assertRequestEqual(e, r)
 	})
 
-	res, err := s.client.NewGetSwapPoolDetailService().PoolId(2).Do(newContext())
+	res, err := s.client.NewAddLiquidityPreviewService().
+		PoolId(2).
+		OperationType(LiquidityOperationTypeCombination).
+		QuoteAsset("USDT").
+		QuoteQty(1000).
+		Do(newContext())
 	s.r().NoError(err)
-	e := []*SwapPoolDetail{
-		{
-			PoolId:     2,
-			PoolName:   "BUSD/USDT",
-			UpdateTime: 1565769342148,
-			Liquidity: map[string]string{
-				"BUSD": "100000315.79",
-				"USDT": "99999245.54",
-			},
-			Share: &PoolShareInformation{
-				ShareAmount:     "12415",
-				SharePercentage: "0.00006207",
-				Assets: map[string]string{
-					"BUSD": "6207.02",
-					"USDT": "6206.95",
-				},
-			},
-		},
+
+	e := &AddLiquidityPreviewResponse{
+		QuoteAsset: "USDT",
+		BaseAsset:  "BUSD",
+		QuoteAmt:   "300000",
+		BaseAmt:    "299975",
+		Price:      "1.00008334",
+		Share:      "1.23",
+		Slippage:   "0.00007245",
+		Fee:        "120",
 	}
-	s.assertAddLiquidityPreviewEqual(e, 1, res)
+	s.assertAddLiquidityPreviewEqual(e, res)
 }
 
-func (s *swapPoolServiceTestSuite) assertAddLiquidityPreviewEqual(e []*SwapPoolDetail, expectLen int, a []*SwapPoolDetail) {
+func (s *swapPoolServiceTestSuite) assertAddLiquidityPreviewEqual(e *AddLiquidityPreviewResponse, a *AddLiquidityPreviewResponse) {
 	r := s.r()
 
-	r.Len(a, expectLen)
-	for i := 0; i < len(a); i++ {
-		s.assertSwapPoolDetailEqual(e[i], a[i])
-	}
+	r.Equal(e.BaseAmt, a.BaseAmt, "BaseAmt")
+	r.Equal(e.BaseAsset, a.BaseAsset, "BaseAsset")
+	r.Equal(e.QuoteAmt, a.QuoteAmt, "QuoteAmt")
+	r.Equal(e.Fee, a.Fee, "Fee")
+	r.Equal(e.Price, a.Price, "Price")
+	r.Equal(e.QuoteAsset, a.QuoteAsset, "QuoteAsset")
+	r.Equal(e.Slippage, a.Slippage, "Slippage")
+	r.Equal(e.Share, a.Share, "Share")
 }
 
 func (s *swapPoolServiceTestSuite) TestGetSwapPoolDetail() {
