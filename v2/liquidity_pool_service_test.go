@@ -14,6 +14,94 @@ func TestLiquidityPoolService(t *testing.T) {
 	suite.Run(t, new(liquidityPoolServiceTestSuite))
 }
 
+func (s *liquidityPoolServiceTestSuite) TestSwapService() {
+	data := []byte(`{
+		"swapId": 2314
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"quoteAsset": "USDT",
+			"baseAsset":  "BUSD",
+			"quoteQty":   1000,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewSwapService().
+		QuoteAsset("USDT").
+		BaseAsset("BUSD").
+		QuoteQty(1000).
+		Do(newContext())
+	s.r().NoError(err)
+
+	e := &SwapResponse{
+		SwapId: 2314,
+	}
+	s.assertSwapEqual(e, res)
+}
+
+func (s *liquidityPoolServiceTestSuite) assertSwapEqual(e *SwapResponse, a *SwapResponse) {
+	r := s.r()
+
+	r.Equal(e.SwapId, a.SwapId, "SwapId")
+}
+
+func (s *liquidityPoolServiceTestSuite) TestGetSwapQuoteService() {
+	data := []byte(`{
+		"quoteAsset": "USDT",
+		"baseAsset": "BUSD",
+		"quoteQty": "300000",
+		"baseQty": "299975",
+		"price": "1.00008334",
+		"slippage": "0.00007245",
+		"fee": "120"
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"quoteAsset": "USDT",
+			"baseAsset":  "BUSD",
+			"quoteQty":   1000,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewGetSwapQuoteService().
+		QuoteAsset("USDT").
+		BaseAsset("BUSD").
+		QuoteQty(1000).
+		Do(newContext())
+	s.r().NoError(err)
+
+	e := &GetSwapQuoteResponse{
+		QuoteAsset: "USDT",
+		BaseAsset:  "BUSD",
+		QuoteQty:   "300000",
+		BaseQty:    "299975",
+		Price:      "1.00008334",
+		Slippage:   "0.00007245",
+		Fee:        "120",
+	}
+	s.assertGetSwapQuoteEqual(e, res)
+}
+
+func (s *liquidityPoolServiceTestSuite) assertGetSwapQuoteEqual(e *GetSwapQuoteResponse, a *GetSwapQuoteResponse) {
+	r := s.r()
+
+	r.Equal(e.BaseQty, a.BaseQty, "BaseQty")
+	r.Equal(e.BaseAsset, a.BaseAsset, "BaseAsset")
+	r.Equal(e.QuoteQty, a.QuoteQty, "QuoteQty")
+	r.Equal(e.Fee, a.Fee, "Fee")
+	r.Equal(e.Price, a.Price, "Price")
+	r.Equal(e.QuoteAsset, a.QuoteAsset, "QuoteAsset")
+	r.Equal(e.Slippage, a.Slippage, "Slippage")
+}
+
 func (s *liquidityPoolServiceTestSuite) TestAddLiquidityPreviewService() {
 	data := []byte(`{
 		"quoteAsset": "USDT",

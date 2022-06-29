@@ -264,3 +264,65 @@ func (s *SwapService) Do(ctx context.Context) (*SwapResponse, error) {
 	}
 	return res, nil
 }
+
+// AddLiquidityService to add liquidity
+type AddLiquidityService struct {
+	c             *Client
+	poolId        *int64
+	operationType *LiquidityOperationType
+	quoteAsset    *string
+	quoteQty      *float64
+}
+
+// PoolId set poolId
+func (s *AddLiquidityService) PoolId(poolId int64) *AddLiquidityService {
+	s.poolId = &poolId
+	return s
+}
+
+// QuoteAsset set quoteAsset
+func (s *AddLiquidityService) QuoteAsset(quoteAsset string) *AddLiquidityService {
+	s.quoteAsset = &quoteAsset
+	return s
+}
+
+// QuoteQty set quoteQty
+func (s *AddLiquidityService) QuoteQty(quoteQty float64) *AddLiquidityService {
+	s.quoteQty = &quoteQty
+	return s
+}
+
+// OperationType set operationType
+func (s *AddLiquidityService) OperationType(operationType LiquidityOperationType) *AddLiquidityService {
+	s.operationType = &operationType
+	return s
+}
+
+type AddLiquidityResponse struct {
+	OperationId int64 `json:"operationId"`
+}
+
+// Do sends the request.
+func (s *AddLiquidityService) Do(ctx context.Context) (*AddLiquidityResponse, error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/bswap/liquidityAdd",
+		secType:  secTypeSigned,
+	}
+
+	r.setParam("poolId", *s.poolId)
+	r.setParam("type", *s.operationType)
+	r.setParam("asset", *s.quoteAsset)
+	r.setParam("quantity", *s.quoteQty)
+
+	data, err := s.c.callAPI(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+	res := &AddLiquidityResponse{}
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
