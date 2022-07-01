@@ -78,6 +78,9 @@ type StakingProduct string
 // StakingTransactionType define the staking transaction type (subscription, redemption, interest)
 type StakingTransactionType string
 
+// LiquidityOperationType define the type of adding/removing liquidity to a liquidity pool(COMBINATION, SINGLE)
+type LiquidityOperationType string
+
 // Endpoints
 const (
 	baseAPIMainURL    = "https://api.binance.com"
@@ -172,6 +175,9 @@ const (
 	LendingTypeFlexible LendingType = "DAILY"
 	LendingTypeFixed    LendingType = "CUSTOMIZED_FIXED"
 	LendingTypeActivity LendingType = "ACTIVITY"
+
+	LiquidityOperationTypeCombination LiquidityOperationType = "COMBINATION"
+	LiquidityOperationTypeSingle      LiquidityOperationType = "SINGLE"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
@@ -816,4 +822,34 @@ func (c *Client) NewStakingProductPositionService() *StakingProductPositionServi
 // NewStakingHistoryService init the staking history service
 func (c *Client) NewStakingHistoryService() *StakingHistoryService {
 	return &StakingHistoryService{c: c}
+}
+
+// NewGetAllLiquidityPoolService init the get all swap pool service
+func (c *Client) NewGetAllLiquidityPoolService() *GetAllLiquidityPoolService {
+	return &GetAllLiquidityPoolService{c: c}
+}
+
+// NewGetLiquidityPoolDetailService init the get liquidity pool detial service
+func (c *Client) NewGetLiquidityPoolDetailService() *GetLiquidityPoolDetailService {
+	return &GetLiquidityPoolDetailService{c: c}
+}
+
+// NewAddLiquidityPreviewService init the add liquidity preview service
+func (c *Client) NewAddLiquidityPreviewService() *AddLiquidityPreviewService {
+	return &AddLiquidityPreviewService{c: c}
+}
+
+// NewGetSwapQuoteService init the add liquidity preview service
+func (c *Client) NewGetSwapQuoteService() *GetSwapQuoteService {
+	return &GetSwapQuoteService{c: c}
+}
+
+// NewSwapService init the swap service
+func (c *Client) NewSwapService() *SwapService {
+	return &SwapService{c: c}
+}
+
+// NewAddLiquidityService init the add liquidity service
+func (c *Client) NewAddLiquidityService() *AddLiquidityService {
+	return &AddLiquidityService{c: c}
 }
