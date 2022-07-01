@@ -2,6 +2,7 @@ package binance
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/adshao/go-binance/v2/common"
@@ -52,8 +53,9 @@ type BookTicker struct {
 
 // ListPricesService list latest price for a symbol or symbols
 type ListPricesService struct {
-	c      *Client
-	symbol *string
+	c       *Client
+	symbol  *string
+	symbols *string
 }
 
 // Symbol set symbol
@@ -70,6 +72,8 @@ func (s *ListPricesService) Do(ctx context.Context, opts ...RequestOption) (res 
 	}
 	if s.symbol != nil {
 		r.setParam("symbol", *s.symbol)
+	} else if s.symbols != nil {
+		r.setParam("symbols", *s.symbols)
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
@@ -99,6 +103,21 @@ type ListPriceChangeStatsService struct {
 // Symbol set symbol
 func (s *ListPriceChangeStatsService) Symbol(symbol string) *ListPriceChangeStatsService {
 	s.symbol = &symbol
+	return s
+}
+
+// Symbols set symbols
+func (s *ListPricesService) Symbols(symbols []*string) *ListPricesService {
+	symbolsParam := `[`
+	for i, symbol := range symbols {
+		symbolsParam = fmt.Sprintf("%v\"%v\"", symbolsParam, *symbol)
+		if i != len(symbols)-1 {
+			symbolsParam = fmt.Sprintf("%v,", symbolsParam)
+		}
+	}
+	symbolsParam = fmt.Sprintf("%v]", symbolsParam)
+
+	s.symbols = &symbolsParam
 	return s
 }
 
