@@ -157,10 +157,10 @@ func (s *tickerServiceTestSuite) TestListPricesForMultipleSymbols() {
 	})
 
 	symbol1, symbol2 := "ETHUSDT", "LTCBTC"
-	symbols := make([]*string, 2)
+	symbols := make([]string, 2)
 
-	symbols[0] = &symbol1
-	symbols[1] = &symbol2
+	symbols[0] = symbol1
+	symbols[1] = symbol2
 
 	s.assertReq(func(r *request) {
 		e := newRequest().setParam("symbols", `["ETHUSDT","LTCBTC"]`)
