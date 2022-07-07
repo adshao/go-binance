@@ -14,6 +14,134 @@ func TestLiquidityPoolService(t *testing.T) {
 	suite.Run(t, new(liquidityPoolServiceTestSuite))
 }
 
+func (s *liquidityPoolServiceTestSuite) TestAddLiquidityService() {
+	data := []byte(`{
+		"operationId": 12341
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"asset":    "BUSD",
+			"quantity": 1000,
+			"type":     "COMBINATION",
+			"poolId":   100,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewAddLiquidityService().
+		QuoteAsset("BUSD").
+		QuoteQty(1000).
+		OperationType(LiquidityOperationTypeCombination).
+		PoolId(100).
+		Do(newContext())
+	s.r().NoError(err)
+
+	e := &AddLiquidityResponse{
+		OperationId: 12341,
+	}
+	s.assertAddLiquidityEqual(e, res)
+}
+
+func (s *liquidityPoolServiceTestSuite) assertAddLiquidityEqual(e *AddLiquidityResponse, a *AddLiquidityResponse) {
+	r := s.r()
+
+	r.Equal(e.OperationId, a.OperationId, "OperationId")
+}
+
+func (s *liquidityPoolServiceTestSuite) TestGetUserSwapRecordsService() {
+	data := []byte(`[
+		{
+			"swapId": 201662785,
+			"swapTime": 1656726835460,
+			"status": 1,
+			"quoteAsset": "BUSD",
+			"baseAsset": "USDT",
+			"quoteQty": "16.9466317",
+			"baseQty": "16.94903774",
+			"price": "0.99835826",
+			"fee": "0.02541995"
+		},
+		{
+			"swapId": 201662768,
+			"swapTime": 1656726827025,
+			"status": 1,
+			"quoteAsset": "BUSD",
+			"baseAsset": "USDT",
+			"quoteQty": "19.80833233",
+			"baseQty": "19.81114496",
+			"price": "0.99835824",
+			"fee": "0.0297125"
+		}
+	]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"quoteAsset": "BUSD",
+			"baseAsset":  "USDT",
+			"startTime":  1656726827025,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewGetUserSwapRecordsService().
+		QuoteAsset("BUSD").
+		BaseAsset("USDT").
+		StartTime(1656726827025).
+		Do(newContext())
+	s.r().NoError(err)
+
+	e := []*SwapRecord{
+		{
+			SwapId:     201662785,
+			SwapTime:   1656726835460,
+			Status:     SwappingStatusDone,
+			QuoteAsset: "BUSD",
+			BaseAsset:  "USDT",
+			QuoteQty:   "16.9466317",
+			BaseQty:    "16.94903774",
+			Price:      "0.99835826",
+			Fee:        "0.02541995",
+		},
+		{
+			SwapId:     201662768,
+			SwapTime:   1656726827025,
+			Status:     SwappingStatusDone,
+			QuoteAsset: "BUSD",
+			BaseAsset:  "USDT",
+			QuoteQty:   "19.80833233",
+			BaseQty:    "19.81114496",
+			Price:      "0.99835824",
+			Fee:        "0.0297125",
+		},
+	}
+	s.assertSwapRecordsEqual(e, res)
+}
+
+func (s *liquidityPoolServiceTestSuite) assertSwapRecordsEqual(e []*SwapRecord, a []*SwapRecord) {
+	for i := 0; i < len(e); i++ {
+		s.assertSwapRecordEqual(e[i], a[i])
+	}
+}
+
+func (s *liquidityPoolServiceTestSuite) assertSwapRecordEqual(e *SwapRecord, a *SwapRecord) {
+	r := s.r()
+
+	r.Equal(e.SwapId, a.SwapId, "SwapId")
+	r.Equal(e.SwapTime, a.SwapTime, "SwapTime")
+	r.Equal(e.QuoteAsset, a.QuoteAsset, "QuoteAsset")
+	r.Equal(e.BaseAsset, a.BaseAsset, "BaseAsset")
+	r.Equal(e.QuoteQty, a.QuoteQty, "QuoteQty")
+	r.Equal(e.BaseQty, a.BaseQty, "BaseQty")
+	r.Equal(e.Status, a.Status, "Status")
+	r.Equal(e.Fee, a.Fee, "Fee")
+	r.Equal(e.Price, a.Price, "Price")
+}
+
 func (s *liquidityPoolServiceTestSuite) TestSwapService() {
 	data := []byte(`{
 		"swapId": 2314
@@ -314,4 +442,89 @@ func (s *liquidityPoolServiceTestSuite) assertLiquidityPoolEqual(e *LiquidityPoo
 	r.Equal(e.PoolId, a.PoolId, "PoolId")
 	r.Equal(e.PoolName, a.PoolName, "PoolName")
 	r.ElementsMatch(e.Assets, a.Assets, "Assets")
+}
+
+func (s *liquidityPoolServiceTestSuite) TestClaimRewardService() {
+	data := []byte(`{
+		"success": true
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"type": 1,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewClaimRewardService().
+		RewardType(RewardTypeLiquidity).
+		Do(newContext())
+	s.r().NoError(err)
+
+	e := &ClaimRewardResponse{
+		Success: true,
+	}
+	s.assertClaimRewardResponseEqual(e, res)
+}
+
+func (s *liquidityPoolServiceTestSuite) assertClaimRewardResponseEqual(e *ClaimRewardResponse, a *ClaimRewardResponse) {
+	r := s.r()
+
+	r.Equal(e.Success, a.Success, "Success")
+}
+
+func (s *liquidityPoolServiceTestSuite) TestQueryClaimedRewardHistoryService() {
+	data := []byte(`[{
+		"poolId": 189,
+		"poolName": "MULTI/USDT",
+		"assetRewards": "BNB",
+		"claimAmount": "0.00006944",
+		"status": 1,
+		"claimedTime": 1656764967000
+	}]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"type":   1,
+			"poolId": 189,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewQueryClaimedRewardHistoryService().
+		RewardType(RewardTypeLiquidity).
+		PoolId(189).
+		Do(newContext())
+	s.r().NoError(err)
+
+	e := []*ClaimedRewardHistory{
+		{
+			PoolId:        189,
+			PoolName:      "MULTI/USDT",
+			ClaimedAt:     1656764967000,
+			ClaimedAmount: "0.00006944",
+			Status:        RewardClaimDone,
+		},
+	}
+	s.assertQueryClaimedRewardHistoryListEqual(e, res)
+}
+
+func (s *liquidityPoolServiceTestSuite) assertQueryClaimedRewardHistoryListEqual(e []*ClaimedRewardHistory, a []*ClaimedRewardHistory) {
+	for i := 0; i < len(a); i++ {
+		s.assertQueryClaimedRewardHistoryEqual(e[i], a[i])
+	}
+}
+
+func (s *liquidityPoolServiceTestSuite) assertQueryClaimedRewardHistoryEqual(e *ClaimedRewardHistory, a *ClaimedRewardHistory) {
+	r := s.r()
+
+	r.Equal(e.PoolId, a.PoolId, "PoolId")
+	r.Equal(e.PoolName, a.PoolName, "PoolName")
+	r.Equal(e.ClaimedAmount, a.ClaimedAmount, "ClaimedAmount")
+	r.Equal(e.ClaimedAt, a.ClaimedAt, "ClaimedAt")
+	r.Equal(e.Status, a.Status, "Status")
 }
