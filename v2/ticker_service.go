@@ -52,8 +52,9 @@ type BookTicker struct {
 
 // ListPricesService list latest price for a symbol or symbols
 type ListPricesService struct {
-	c      *Client
-	symbol *string
+	c       *Client
+	symbol  *string
+	symbols []string
 }
 
 // Symbol set symbol
@@ -70,6 +71,9 @@ func (s *ListPricesService) Do(ctx context.Context, opts ...RequestOption) (res 
 	}
 	if s.symbol != nil {
 		r.setParam("symbol", *s.symbol)
+	} else if s.symbols != nil {
+		s, _ := json.Marshal(s.symbols)
+		r.setParam("symbols", string(s))
 	}
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
@@ -99,6 +103,12 @@ type ListPriceChangeStatsService struct {
 // Symbol set symbol
 func (s *ListPriceChangeStatsService) Symbol(symbol string) *ListPriceChangeStatsService {
 	s.symbol = &symbol
+	return s
+}
+
+// Symbols set symbols
+func (s *ListPricesService) Symbols(symbols []string) *ListPricesService {
+	s.symbols = symbols
 	return s
 }
 

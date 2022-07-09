@@ -137,6 +137,52 @@ func (s *tickerServiceTestSuite) TestListPrices() {
 	s.assertSymbolPriceEqual(e2, prices[1])
 }
 
+func (s *tickerServiceTestSuite) TestListPricesForMultipleSymbols() {
+	data := []byte(`[
+        {
+            "symbol": "LTCBTC",
+            "price": "4.00000200"
+        },
+        {
+            "symbol": "ETHUSDT",
+            "price": "2856.76"
+        }
+    ]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newRequest()
+		s.assertRequestEqual(e, r)
+	})
+
+	symbol1, symbol2 := "ETHUSDT", "LTCBTC"
+	symbols := make([]string, 2)
+
+	symbols[0] = symbol1
+	symbols[1] = symbol2
+
+	s.assertReq(func(r *request) {
+		e := newRequest().setParam("symbols", `["ETHUSDT","LTCBTC"]`)
+		s.assertRequestEqual(e, r)
+	})
+
+	prices, err := s.client.NewListPricesService().Symbols(symbols).Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	r.Len(prices, 2)
+	e1 := &SymbolPrice{
+		Symbol: "LTCBTC",
+		Price:  "4.00000200",
+	}
+	e2 := &SymbolPrice{
+		Symbol: "ETHUSDT",
+		Price:  "2856.76",
+	}
+	s.assertSymbolPriceEqual(e1, prices[0])
+	s.assertSymbolPriceEqual(e2, prices[1])
+}
+
 func (s *tickerServiceTestSuite) TestListSinglePrice() {
 	data := []byte(`{
 		"symbol": "LTCBTC",
