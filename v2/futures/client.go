@@ -396,6 +396,11 @@ func (c *Client) NewKlinesService() *KlinesService {
 	return &KlinesService{c: c}
 }
 
+// NewContinuousKlinesService init klines service
+func (c *Client) NewContinuousKlinesService() *ContinuousKlinesService {
+	return &ContinuousKlinesService{c: c}
+}
+
 // NewListPriceChangeStatsService init list prices change stats service
 func (c *Client) NewListPriceChangeStatsService() *ListPriceChangeStatsService {
 	return &ListPriceChangeStatsService{c: c}

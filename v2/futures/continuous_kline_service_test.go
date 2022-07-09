@@ -63,7 +63,7 @@ func (s *ContinuousklineServiceTestSuite) TestContinuousKlines() {
 		})
 		s.assertRequestEqual(e, r)
 	})
-	klines, err := s.client.NewKlinesService().Symbol(symbol).
+	klines, err := s.client.NewContinuousKlinesService().Symbol(symbol).
 		Interval(interval).Limit(limit).StartTime(startTime).
 		EndTime(endTime).Do(newContext())
 	s.r().NoError(err)
