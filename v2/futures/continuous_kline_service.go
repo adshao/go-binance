@@ -9,7 +9,7 @@ import (
 // ContinuousKlinesService list klines
 type ContinuousKlinesService struct {
 	c         *Client
-	symbol    string
+	pair    string
 	contractType ContractType
 	interval  string
 	limit     *int
@@ -17,9 +17,9 @@ type ContinuousKlinesService struct {
 	endTime   *int64
 }
 
-// Symbol set symbol
-func (s *ContinuousKlinesService) Symbol(symbol string) *ContinuousKlinesService {
-	s.symbol = symbol
+// Pair set pair
+func (s *ContinuousKlinesService) Pair(pair string) *ContinuousKlinesService {
+	s.pair = pair
 	return s
 }
 
@@ -57,10 +57,11 @@ func (s *ContinuousKlinesService) EndTime(endTime int64) *ContinuousKlinesServic
 func (s *ContinuousKlinesService) Do(ctx context.Context, opts ...RequestOption) (res []*Kline, err error) {
 	r := &request{
 		method:   http.MethodGet,
-		endpoint: "/fapi/v1/klines",
+		endpoint: "/fapi/v1/continuousKlines",
 	}
-	r.setParam("symbol", s.symbol)
+	r.setParam("pair", s.pair)
 	r.setParam("interval", s.interval)
+	r.setParam("contractType", s.contractType)
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
 	}
