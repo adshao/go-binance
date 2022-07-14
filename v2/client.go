@@ -892,3 +892,8 @@ func (c *Client) NewRemoveLiquidityService() *RemoveLiquidityService {
 func (c *Client) NewQueryClaimedRewardHistoryService() *QueryClaimedRewardHistoryService {
 	return &QueryClaimedRewardHistoryService{c: c}
 }
+
+// NewCreateOrderService init creating order service
+func (c *Client) NewCommissionRateService() *CommissionRateService {
+	return &CommissionRateService{c: c}
+}

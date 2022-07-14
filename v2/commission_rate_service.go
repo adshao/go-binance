@@ -43,8 +43,8 @@ func (s *CommissionRateService) Do(ctx context.Context, opts ...RequestOption) (
 		}
 		res[i] = &CommissionRate{
 			Symbol:              item.GetIndex(0).MustString(),
-			MakerCommissionRate: item.GetIndex(1).MustFloat64(),
-			TakerCommissionRate: item.GetIndex(2).MustFloat64(),
+			MakerCommissionRate: item.GetIndex(1).MustString(),
+			TakerCommissionRate: item.GetIndex(2).MustString(),
 		}
 	}
 	return res, nil
@@ -52,7 +52,7 @@ func (s *CommissionRateService) Do(ctx context.Context, opts ...RequestOption) (
 
 // Commission Rate
 type CommissionRate struct {
-	Symbol              string  `json:"symbol"`
-	MakerCommissionRate float64 `json:"makerCommissionRate"`
-	TakerCommissionRate float64 `json:"takerCommissionRate"`
+	Symbol              string `json:"symbol"`
+	MakerCommissionRate string `json:"makerCommissionRate"`
+	TakerCommissionRate string `json:"takerCommissionRate"`
 }
