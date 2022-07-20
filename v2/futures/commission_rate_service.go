@@ -1,8 +1,8 @@
-package binance
+package futures
 
 import (
 	"context"
-	"fmt"
+	"encoding/json"
 	"net/http"
 )
 
@@ -23,29 +23,17 @@ func (s *CommissionRateService) Do(ctx context.Context, opts ...RequestOption) (
 		method:   http.MethodGet,
 		endpoint: "/fapi/v1/commissionRate",
 	}
-	r.setParam("symbol", s.symbol)
-
-	data, err := s.c.callAPI(ctx, r, opts...)
+	if s.symbol != "" {
+		r.setParam("symbol", s.symbol)
+	}
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*CommissionRate{}, err
 	}
-	j, err := newJSON(data)
+	res = make([]*CommissionRate, 0)
+	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return []*CommissionRate{}, err
-	}
-	num := len(j.MustArray())
-	res = make([]*CommissionRate, num)
-	for i := 0; i < num; i++ {
-		item := j.GetIndex(i)
-		if len(item.MustArray()) < 11 {
-			err = fmt.Errorf("invalid Commission Rate response")
-			return []*CommissionRate{}, err
-		}
-		res[i] = &CommissionRate{
-			Symbol:              item.GetIndex(0).MustString(),
-			MakerCommissionRate: item.GetIndex(1).MustString(),
-			TakerCommissionRate: item.GetIndex(2).MustString(),
-		}
 	}
 	return res, nil
 }

@@ -558,3 +558,8 @@ func (c *Client) NewGetPositionModeService() *GetPositionModeService {
 func (c *Client) NewGetRebateNewUserService() *GetRebateNewUserService {
 	return &GetRebateNewUserService{c: c}
 }
+
+// NewCommissionRateService returns commission rate
+func (c *Client) NewCommissionRateService() *CommissionRateService {
+	return &CommissionRateService{c: c}
+}
