@@ -271,6 +271,7 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 		fullURL = fmt.Sprintf("%s?%s", fullURL, queryString)
 	}
 	c.debug("full url: %s, body: %s", fullURL, bodyString)
+	fmt.Printf("full url: %s, body: %s\n", fullURL, bodyString)
 
 	r.fullURL = fullURL
 	r.header = header
