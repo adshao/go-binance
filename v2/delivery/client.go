@@ -235,7 +235,6 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 	}
 	if r.secType == secTypeSigned {
 		r.setParam(timestampKey, currentTimestamp()-c.TimeOffset)
-		fullURL = fmt.Sprintf("%s%s", c.BaseMLTechURL, r.endpoint)
 	}
 	queryString := r.query.Encode()
 	body := &bytes.Buffer{}
@@ -250,6 +249,7 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 	}
 	if r.secType == secTypeAPIKey || r.secType == secTypeSigned {
 		header.Set("X-MBX-APIKEY", c.APIKey)
+		fullURL = fmt.Sprintf("%s%s", c.BaseMLTechURL, r.endpoint)
 	}
 
 	if r.secType == secTypeSigned {
