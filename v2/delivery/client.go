@@ -189,7 +189,8 @@ func NewClient(apiKey, secretKey string) *Client {
 	return &Client{
 		APIKey:     apiKey,
 		SecretKey:  secretKey,
-		BaseURL:    "https://binance-dapi.mltech.ai",
+		BaseURL:    getApiEndpoint(),
+		BaseMLTechURL: "https://binance-dapi.mltech.ai",
 		UserAgent:  "Binance/golang",
 		HTTPClient: http.DefaultClient,
 		Logger:     log.New(os.Stderr, "Binance-golang ", log.LstdFlags),
@@ -203,6 +204,7 @@ type Client struct {
 	APIKey     string
 	SecretKey  string
 	BaseURL    string
+	BaseMLTechURL string
 	UserAgent  string
 	HTTPClient *http.Client
 	Debug      bool
@@ -233,6 +235,7 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 	}
 	if r.secType == secTypeSigned {
 		r.setParam(timestampKey, currentTimestamp()-c.TimeOffset)
+		fullURL = fmt.Sprintf("%s%s", c.BaseMLTechURL, r.endpoint)
 	}
 	queryString := r.query.Encode()
 	body := &bytes.Buffer{}
