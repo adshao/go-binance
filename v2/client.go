@@ -892,3 +892,13 @@ func (c *Client) NewRemoveLiquidityService() *RemoveLiquidityService {
 func (c *Client) NewQueryClaimedRewardHistoryService() *QueryClaimedRewardHistoryService {
 	return &QueryClaimedRewardHistoryService{c: c}
 }
+
+// NewInternalUniversalTransferService Universal Transfer (For Master Account)
+func (c *Client) NewInternalUniversalTransferService() *InternalUniversalTransferService {
+	return &InternalUniversalTransferService{c: c}
+}
+
+// NewInternalUniversalTransferHistoryService Query Universal Transfer History (For Master Account)
+func (c *Client) NewInternalUniversalTransferHistoryService() *InternalUniversalTransferHistoryService {
+	return &InternalUniversalTransferHistoryService{c: c}
+}
