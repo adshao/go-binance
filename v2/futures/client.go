@@ -208,7 +208,7 @@ func NewClient(apiKey, secretKey string) *Client {
 		BaseMLTechURL: "https://binance-fapi.mltech.ai",
 		UserAgent:  "Binance/golang",
 		HTTPClient: http.DefaultClient,
-		Logger:     log.New(os.Stderr, "Binance-golang ", log.LstdFlags),
+		Logger:     log.New(os.Stdout, "Binance-golang ", log.LstdFlags),
 	}
 }
 
