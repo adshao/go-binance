@@ -338,6 +338,7 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 		fullURL = fmt.Sprintf("%s%s", c.BaseMLTechURL, r.endpoint)
 	}
 
+
 	if r.secType == secTypeSigned {
 		raw := fmt.Sprintf("%s%s", queryString, bodyString)
 		mac := hmac.New(sha256.New, []byte(c.SecretKey))
