@@ -8,6 +8,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -313,6 +314,9 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 	r.fullURL = fullURL
 	r.header = header
 	r.body = body
+
+	spew.Dump(r)
+
 	return nil
 }
 
