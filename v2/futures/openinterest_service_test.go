@@ -44,3 +44,68 @@ func (s *openInterestServiceTestSuite) TestGetOpenInterest() {
 	s.r().Equal(e.OpenInterest, res.OpenInterest, "OpenInterest")
 	s.r().Equal(e.Time, res.Time, "Time")
 }
+
+func (s *klineServiceTestSuite) TestOpenInterestStatistics() {
+	data := []byte(`[
+		{ 
+			"symbol":"BTCUSDT",
+			"sumOpenInterest":"20403.63700000", 
+			"sumOpenInterestValue": "150570784.07809979",
+			"timestamp": 1583127900000
+		},
+		{
+			"symbol":"BTCUSDT",
+			"sumOpenInterest":"20401.36700000",
+			"sumOpenInterestValue":"149940752.14464448",
+			"timestamp": 1583128200000
+		}
+	]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	symbol := "BTCUSDT"
+	period := "15m"
+	limit := 10
+	startTime := int64(1499040000000)
+	endTime := int64(1499040000001)
+	s.assertReq(func(r *request) {
+		e := newRequest().setParams(params{
+			"symbol":    symbol,
+			"period":    period,
+			"limit":     limit,
+			"startTime": startTime,
+			"endTime":   endTime,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	openInterests, err := s.client.NewOpenInterestStatisticsService().Symbol(symbol).
+		Period(period).Limit(limit).StartTime(startTime).
+		EndTime(endTime).Do(newContext())
+
+	s.r().NoError(err)
+	s.Len(openInterests, 2)
+
+	openInterest1 := &OpenInterestStatistic{
+		Symbol:               "BTCUSDT",
+		SumOpenInterest:      "20403.63700000",
+		SumOpenInterestValue: "150570784.07809979",
+		Timestamp:            1583127900000,
+	}
+	openInterest2 := &OpenInterestStatistic{
+		Symbol:               "BTCUSDT",
+		SumOpenInterest:      "20401.36700000",
+		SumOpenInterestValue: "149940752.14464448",
+		Timestamp:            1583128200000,
+	}
+	s.assertOpenInterestStatisticEqual(openInterest1, openInterests[0])
+	s.assertOpenInterestStatisticEqual(openInterest2, openInterests[1])
+}
+
+func (s *klineServiceTestSuite) assertOpenInterestStatisticEqual(e, a *OpenInterestStatistic) {
+	r := s.r()
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.Timestamp, a.Timestamp, "Timestamp")
+	r.Equal(e.SumOpenInterest, a.SumOpenInterest, "SumOpenInterest")
+	r.Equal(e.SumOpenInterestValue, a.SumOpenInterestValue, "SumOpenInterestValue")
+}
