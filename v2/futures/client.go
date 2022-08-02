@@ -563,3 +563,13 @@ func (c *Client) NewGetRebateNewUserService() *GetRebateNewUserService {
 func (c *Client) NewCommissionRateService() *CommissionRateService {
 	return &CommissionRateService{c: c}
 }
+
+// NewGetOpenInterestService init open interest service
+func (c *Client) NewGetOpenInterestService() *GetOpenInterestService {
+	return &GetOpenInterestService{c: c}
+}
+
+// NewOpenInterestStatisticsService init open interest statistics service
+func (c *Client) NewOpenInterestStatisticsService() *OpenInterestStatisticsService {
+	return &OpenInterestStatisticsService{c: c}
+}
