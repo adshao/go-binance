@@ -458,6 +458,11 @@ func (c *Client) NewListBookTickersService() *ListBookTickersService {
 	return &ListBookTickersService{c: c}
 }
 
+// NewListSymbolTickerService init listing symbols tickers
+func (c *Client) NewListSymbolTickerService() *ListSymbolTickerService {
+	return &ListSymbolTickerService{c: c}
+}
+
 // NewCreateOrderService init creating order service
 func (c *Client) NewCreateOrderService() *CreateOrderService {
 	return &CreateOrderService{c: c}
