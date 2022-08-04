@@ -1,2 +1,2 @@
-# Force CRLF for all text files.
-**/* text eol=crlf
+# Force LF for all text files.
+**/* text eol=lf
