@@ -80,12 +80,12 @@ func (mpks *MarkPriceKlinesService) Do(ctx context.Context, opts ...RequestOptio
 			return []*Kline{}, err
 		}
 		res[i] = &Kline{
-			OpenTime:                 item.GetIndex(0).MustInt64(),
-			Open:                     item.GetIndex(1).MustString(),
-			High:                     item.GetIndex(2).MustString(),
-			Low:                      item.GetIndex(3).MustString(),
-			Close:                    item.GetIndex(4).MustString(),
-			CloseTime:                item.GetIndex(6).MustInt64(),
+			OpenTime:  item.GetIndex(0).MustInt64(),
+			Open:      item.GetIndex(1).MustString(),
+			High:      item.GetIndex(2).MustString(),
+			Low:       item.GetIndex(3).MustString(),
+			Close:     item.GetIndex(4).MustString(),
+			CloseTime: item.GetIndex(6).MustInt64(),
 		}
 	}
 	return res, nil
