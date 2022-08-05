@@ -394,6 +394,11 @@ func (c *Client) NewKlinesService() *KlinesService {
 	return &KlinesService{c: c}
 }
 
+// NewIndexPriceKlinesService init index price klines service
+func (c *Client) NewIndexPriceKlinesService() *IndexPriceKlinesService {
+	return &IndexPriceKlinesService{c: c}
+}
+
 // NewListPriceChangeStatsService init list prices change stats service
 func (c *Client) NewListPriceChangeStatsService() *ListPriceChangeStatsService {
 	return &ListPriceChangeStatsService{c: c}
