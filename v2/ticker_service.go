@@ -261,7 +261,7 @@ func (s *ListSymbolTickerService) Do(ctx context.Context, opts ...RequestOption)
 	}
 
 	if s.windowSize != nil {
-		r.setParam("windowSize", s.windowSize)
+		r.setParam("windowSize", *s.windowSize)
 	}
 
 	data, err := s.c.callAPI(ctx, r, opts...)
