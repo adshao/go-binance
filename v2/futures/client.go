@@ -211,7 +211,7 @@ func NewClient(apiKey, secretKey string) *Client {
 	}
 }
 
-//NewProxiedClient passing a proxy url
+// NewProxiedClient passing a proxy url
 func NewProxiedClient(apiKey, secretKey, proxyUrl string) *Client {
 	proxy, err := url.Parse(proxyUrl)
 	if err != nil {
@@ -582,4 +582,9 @@ func (c *Client) NewGetOpenInterestService() *GetOpenInterestService {
 // NewOpenInterestStatisticsService init open interest statistics service
 func (c *Client) NewOpenInterestStatisticsService() *OpenInterestStatisticsService {
 	return &OpenInterestStatisticsService{c: c}
+}
+
+// NewLongShortRatioService init open interest statistics service
+func (c *Client) NewLongShortRatioService() *LongShortRatioService {
+	return &LongShortRatioService{c: c}
 }
