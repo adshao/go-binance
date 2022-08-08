@@ -897,3 +897,13 @@ func (c *Client) NewRemoveLiquidityService() *RemoveLiquidityService {
 func (c *Client) NewQueryClaimedRewardHistoryService() *QueryClaimedRewardHistoryService {
 	return &QueryClaimedRewardHistoryService{c: c}
 }
+
+// NewGetBNBBurnService init the service to get BNB Burn on spot trade and margin interest
+func (c *Client) NewGetBNBBurnService() *GetBNBBurnService {
+	return &GetBNBBurnService{c: c}
+}
+
+// NewToggleBNBBurnService init the service to toggle BNB Burn on spot trade and margin interest
+func (c *Client) NewToggleBNBBurnService() *ToggleBNBBurnService {
+	return &ToggleBNBBurnService{c: c}
+}
