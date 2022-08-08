@@ -45,7 +45,7 @@ func (s *openInterestServiceTestSuite) TestGetOpenInterest() {
 	s.r().Equal(e.Time, res.Time, "Time")
 }
 
-func (s *klineServiceTestSuite) TestOpenInterestStatistics() {
+func (s *openInterestServiceTestSuite) TestOpenInterestStatistics() {
 	data := []byte(`[
 		{ 
 			"symbol":"BTCUSDT",
@@ -102,7 +102,7 @@ func (s *klineServiceTestSuite) TestOpenInterestStatistics() {
 	s.assertOpenInterestStatisticEqual(openInterest2, openInterests[1])
 }
 
-func (s *klineServiceTestSuite) assertOpenInterestStatisticEqual(e, a *OpenInterestStatistic) {
+func (s *openInterestServiceTestSuite) assertOpenInterestStatisticEqual(e, a *OpenInterestStatistic) {
 	r := s.r()
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
 	r.Equal(e.Timestamp, a.Timestamp, "Timestamp")
