@@ -475,7 +475,3 @@ func (s *tickerServiceTestSuite) assertSymbolTicker(e, st []*SymbolTicker) {
 		s.r().Equal(e[i].Count, st[i].Count, "Count")
 	}
 }
-
-// func (s *tickerServiceTestSuite) assertSymbolTickerWindowSize() {
-// 	s.
-// }
