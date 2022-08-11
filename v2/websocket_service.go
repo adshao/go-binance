@@ -471,8 +471,8 @@ type WsTradeEvent struct {
 }
 
 type WsCombinedTradeEvent struct {
-	Stream string `json:"stream"`
-	Data   WsTradeEvent
+	Stream string       `json:"stream"`
+	Data   WsTradeEvent `json:"data"`
 }
 
 // WsUserDataEvent define user data event
