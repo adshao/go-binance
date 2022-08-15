@@ -195,9 +195,10 @@ type AvgPrice struct {
 }
 
 type ListSymbolTickerService struct {
-	c       *Client
-	symbol  *string
-	symbols []string
+	c          *Client
+	symbol     *string
+	symbols    []string
+	windowSize *string
 }
 
 type SymbolTicker struct {
@@ -228,6 +229,25 @@ func (s *ListSymbolTickerService) Symbols(symbols []string) *ListSymbolTickerSer
 	return s
 }
 
+// Defaults to 1d if no parameter provided
+//
+// Supported windowSize values:
+//
+// - 1m,2m....59m for minutes
+//
+// - 1h, 2h....23h - for hours
+//
+// - 1d...7d - for days
+//
+//
+// Units cannot be combined (e.g. 1d2h is not allowed).
+//
+// Reference: https://binance-docs.github.io/apidocs/spot/en/#rolling-window-price-change-statistics
+func (s *ListSymbolTickerService) WindowSize(windowSize string) *ListSymbolTickerService {
+	s.windowSize = &windowSize
+	return s
+}
+
 func (s *ListSymbolTickerService) Do(ctx context.Context, opts ...RequestOption) (res []*SymbolTicker, err error) {
 	r := &request{
 		method:   http.MethodGet,
@@ -239,6 +259,11 @@ func (s *ListSymbolTickerService) Do(ctx context.Context, opts ...RequestOption)
 		s, _ := json.Marshal(s.symbols)
 		r.setParam("symbols", string(s))
 	}
+
+	if s.windowSize != nil {
+		r.setParam("windowSize", *s.windowSize)
+	}
+
 	data, err := s.c.callAPI(ctx, r, opts...)
 	data = common.ToJSONList(data)
 	if err != nil {

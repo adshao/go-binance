@@ -426,12 +426,13 @@ func (s *tickerServiceTestSuite) TestListSymbolTicker() {
 	defer s.assertDo()
 
 	symbol := "ETHBTC"
+	windowSize := "1m" // 1 minute
 	s.assertReq(func(r *request) {
-		e := newRequest().setParam("symbol", symbol)
+		e := newRequest().setParam("symbol", symbol).setParam("windowSize", windowSize)
 		s.assertRequestEqual(e, r)
 	})
 
-	res, err := s.client.NewListSymbolTickerService().Symbol(symbol).Do(newContext())
+	res, err := s.client.NewListSymbolTickerService().Symbol(symbol).WindowSize(windowSize).Do(newContext())
 	r := s.r()
 	r.NoError(err)
 	e := make([]*SymbolTicker, 0)
