@@ -418,6 +418,7 @@ type WsAggTradeEvent struct {
 
 // WsTradeHandler handle websocket trade event
 type WsTradeHandler func(event *WsTradeEvent)
+type WsCombinedTradeHandler func(event *WsCombinedTradeEvent)
 
 // WsTradeServe serve websocket handler with a symbol
 func WsTradeServe(symbol string, handler WsTradeHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
@@ -425,6 +426,25 @@ func WsTradeServe(symbol string, handler WsTradeHandler, errHandler ErrHandler) 
 	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		event := new(WsTradeEvent)
+		err := json.Unmarshal(message, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+func WsCombinedTradeServe(symbols []string, handler WsCombinedTradeHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := getCombinedEndpoint()
+	for _, s := range symbols {
+		endpoint += fmt.Sprintf("%s@trade/", strings.ToLower(s))
+	}
+	endpoint = endpoint[:len(endpoint)-1]
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		event := new(WsCombinedTradeEvent)
 		err := json.Unmarshal(message, event)
 		if err != nil {
 			errHandler(err)
@@ -448,6 +468,11 @@ type WsTradeEvent struct {
 	TradeTime     int64  `json:"T"`
 	IsBuyerMaker  bool   `json:"m"`
 	Placeholder   bool   `json:"M"` // add this field to avoid case insensitive unmarshaling
+}
+
+type WsCombinedTradeEvent struct {
+	Stream string       `json:"stream"`
+	Data   WsTradeEvent `json:"data"`
 }
 
 // WsUserDataEvent define user data event
