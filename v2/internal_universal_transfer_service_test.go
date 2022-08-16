@@ -87,7 +87,7 @@ func (s *internalUniversalTransferServiceTestSuite) TestInternalUniversalTransfe
 	fromEmail := "sub1@gmail.com"
 	toEmail := "sub2@gmail.com"
 	clientTranId := "testID"
-	endTime := time.Now().UnixMilli()
+	endTime := time.Now().UnixNano() / 1000 / 1000
 	startTime := endTime - 3600*1000
 	page := 1
 	limit := 10
