@@ -211,7 +211,7 @@ func NewClient(apiKey, secretKey string) *Client {
 	}
 }
 
-//NewProxiedClient passing a proxy url
+// NewProxiedClient passing a proxy url
 func NewProxiedClient(apiKey, secretKey, proxyUrl string) *Client {
 	proxy, err := url.Parse(proxyUrl)
 	if err != nil {
@@ -394,6 +394,16 @@ func (c *Client) NewKlinesService() *KlinesService {
 	return &KlinesService{c: c}
 }
 
+// NewIndexPriceKlinesService init index price klines service
+func (c *Client) NewIndexPriceKlinesService() *IndexPriceKlinesService {
+	return &IndexPriceKlinesService{c: c}
+}
+
+// NewMarkPriceKlinesService init markPriceKlines service
+func (c *Client) NewMarkPriceKlinesService() *MarkPriceKlinesService {
+	return &MarkPriceKlinesService{c: c}
+}
+
 // NewListPriceChangeStatsService init list prices change stats service
 func (c *Client) NewListPriceChangeStatsService() *ListPriceChangeStatsService {
 	return &ListPriceChangeStatsService{c: c}
@@ -562,4 +572,19 @@ func (c *Client) NewGetRebateNewUserService() *GetRebateNewUserService {
 // NewCommissionRateService returns commission rate
 func (c *Client) NewCommissionRateService() *CommissionRateService {
 	return &CommissionRateService{c: c}
+}
+
+// NewGetOpenInterestService init open interest service
+func (c *Client) NewGetOpenInterestService() *GetOpenInterestService {
+	return &GetOpenInterestService{c: c}
+}
+
+// NewOpenInterestStatisticsService init open interest statistics service
+func (c *Client) NewOpenInterestStatisticsService() *OpenInterestStatisticsService {
+	return &OpenInterestStatisticsService{c: c}
+}
+
+// NewLongShortRatioService init open interest statistics service
+func (c *Client) NewLongShortRatioService() *LongShortRatioService {
+	return &LongShortRatioService{c: c}
 }
