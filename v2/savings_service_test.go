@@ -246,3 +246,72 @@ func (s *savingsServiceTestSuite) assertSavingsFixedProductEqual(e, a *SavingsFi
 	r.Equal(e.Type, a.Type, "Type")
 	r.Equal(e.WithAreaLimitation, a.WithAreaLimitation, "WithAreaLimitation")
 }
+
+func (s *savingsServiceTestSuite) TestSavingFlexibleProductPositionsService() {
+	data := []byte(`[
+		{
+			"asset": "BUSD",
+			"productId": "BUSD001",
+			"productName": "BUSD",
+			"avgAnnualInterestRate": "0.09998802",
+			"annualInterestRate": "0.1",
+			"dailyInterestRate": "0.00017529",
+			"totalInterest": "12.95020362",
+			"totalAmount": "1234.56789",
+			"todayPurchasedAmount": "0",
+			"redeemingAmount": "0",
+			"freeAmount": "1234.56789",
+			"freezeAmount": "0",
+			"lockedAmount": "0",
+			"canRedeem": true
+	}
+]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{})
+		s.assertRequestEqual(e, r)
+	})
+
+	flexibleProductList, err := s.client.NewSavingFlexibleProductPositionsService().
+		Asset("").
+		Do(newContext())
+	r := s.r()
+	r.NoError(err)
+
+	r.Len(flexibleProductList, 1)
+	s.assertSavingFlexibleProductPosition(&SavingFlexibleProductPosition{
+		Asset:                 "BUSD",
+		ProductId:             "BUSD001",
+		ProductName:           "BUSD",
+		AvgAnnualInterestRate: "0.09998802",
+		AnnualInterestRate:    "0.1",
+		DailyInterestRate:     "0.00017529",
+		TotalInterest:         "12.95020362",
+		TotalAmount:           "1234.56789",
+		TotalPurchasedAmount:  "0",
+		RedeemingAmount:       "0",
+		FreeAmount:            "1234.56789",
+		FreezeAmount:          "0",
+		LockedAmount:          "0",
+		CanRedeem:             true,
+	}, flexibleProductList[0])
+}
+
+func (s *savingsServiceTestSuite) assertSavingFlexibleProductPosition(e, a *SavingFlexibleProductPosition) {
+	r := s.r()
+	r.Equal(e.Asset, a.Asset, "Asset")
+	r.Equal(e.ProductId, a.ProductId, "ProductId")
+	r.Equal(e.ProductName, a.ProductName, "ProductName")
+	r.Equal(e.AvgAnnualInterestRate, a.AvgAnnualInterestRate, "AvgAnnualInterestRate")
+	r.Equal(e.AnnualInterestRate, a.AnnualInterestRate, "AnnualInterestRate")
+	r.Equal(e.DailyInterestRate, a.DailyInterestRate, "DailyInterestRate")
+	r.Equal(e.TotalInterest, a.TotalInterest, "TotalInterest")
+	r.Equal(e.TotalAmount, a.TotalAmount, "TotalAmount")
+	r.Equal(e.TotalPurchasedAmount, a.TotalPurchasedAmount, "TotalPurchasedAmount")
+	r.Equal(e.RedeemingAmount, a.RedeemingAmount, "RedeemingAmount")
+	r.Equal(e.FreeAmount, a.FreeAmount, "FreeAmount")
+	r.Equal(e.FreezeAmount, a.FreezeAmount, "FreezeAmount")
+	r.Equal(e.LockedAmount, a.LockedAmount, "LockedAmount")
+	r.Equal(e.CanRedeem, a.CanRedeem, "CanRedeem")
+}
