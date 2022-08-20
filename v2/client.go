@@ -518,6 +518,11 @@ func (c *Client) NewGetAPIKeyPermission() *GetAPIKeyPermission {
 	return &GetAPIKeyPermission{c: c}
 }
 
+// NewSavingFlexibleProductPositionsService get flexible products positions (Savings)
+func (c *Client) NewSavingFlexibleProductPositionsService() *SavingFlexibleProductPositionsService {
+	return &SavingFlexibleProductPositionsService{c: c}
+}
+
 // NewListSavingsFlexibleProductsService get flexible products list (Savings)
 func (c *Client) NewListSavingsFlexibleProductsService() *ListSavingsFlexibleProductsService {
 	return &ListSavingsFlexibleProductsService{c: c}

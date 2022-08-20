@@ -294,3 +294,56 @@ type SavingsFixedProduct struct {
 	Type               string `json:"type"`
 	WithAreaLimitation bool   `json:"withAreaLimitation"`
 }
+
+// SavingFlexibleProductPositionsService fetches the saving flexible product positions
+type SavingFlexibleProductPositionsService struct {
+	c     *Client
+	asset string
+}
+
+// Asset sets the asset parameter.
+func (s *SavingFlexibleProductPositionsService) Asset(asset string) *SavingFlexibleProductPositionsService {
+	s.asset = asset
+	return s
+}
+
+// Do send request
+func (s *SavingFlexibleProductPositionsService) Do(ctx context.Context, opts ...RequestOption) ([]*SavingProductPosition, error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/lending/daily/token/position",
+		secType:  secTypeSigned,
+	}
+	m := params{}
+	if s.asset != "" {
+		m["asset"] = s.asset
+	}
+	r.setParams(m)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	var res []*SavingProductPosition
+	if err = json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// SavingProductPosition represents a saving flexible product position.
+type SavingProductPosition struct {
+	Asset                 string `json:"asset"`
+	ProductId             string `json:"productId"`
+	ProductName           string `json:"productName"`
+	AvgAnnualInterestRate string `json:"avgAnnualInterestRate"`
+	AnnualInterestRate    string `json:"annualInterestRate"`
+	DailyInterestRate     string `json:"dailyInterestRate"`
+	TotalInterest         string `json:"totalInterest"`
+	TotalAmount           string `json:"totalAmount"`
+	TotalPurchasedAmount  string `json:"todayPurchasedAmount"`
+	RedeemingAmount       string `json:"redeemingAmount"`
+	FreeAmount            string `json:"freeAmount"`
+	FreezeAmount          string `json:"freezeAmount,omitempty"`
+	LockedAmount          string `json:"lockedAmount,omitempty"`
+	CanRedeem             bool   `json:"canRedeem"`
+}
