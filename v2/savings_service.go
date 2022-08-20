@@ -412,11 +412,12 @@ type SavingFixedProjectPosition struct {
 	StartTime       int64  `json:"startTime"`
 	EndTime         int64  `json:"endTime"`
 	PurchaseTime    int64  `json:"purchaseTime"`
-	RedeemDate      int64  `json:"redeemDate"`
+	RedeemDate      string `json:"redeemDate"`
 	Interest        string `json:"interest"`
 	InterestRate    string `json:"interestRate"`
 	Lot             int32  `json:"lot"`
 	PositionId      int64  `json:"positionId"`
+	Principal       string `json:"principal"`
 	ProjectId       string `json:"projectId"`
 	ProjectName     string `json:"projectName"`
 	Status          string `json:"status"`
