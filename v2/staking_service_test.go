@@ -1,8 +1,9 @@
 package binance
 
 import (
-	"github.com/stretchr/testify/suite"
 	"testing"
+
+	"github.com/stretchr/testify/suite"
 )
 
 type stakingServiceTestSuite struct {
@@ -74,7 +75,7 @@ func (s *stakingServiceTestSuite) TestStakingProductPosition() {
 			ExtraRewardAPY:             "0.0203",
 			EstimatedExtraRewardAmount: "5.17181528",
 			NextInterestPay:            "1.29295383",
-			NextInterestPayDate:        "1646697600000",
+			NextInterestPayDate:        1646697600000,
 			PayInterestPeriod:          1,
 			RedeemAmountEarly:          "2802.24068892",
 			InterestEndDate:            1651449600000,
