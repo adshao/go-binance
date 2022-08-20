@@ -308,7 +308,7 @@ func (s *SavingFlexibleProductPositionsService) Asset(asset string) *SavingFlexi
 }
 
 // Do send request
-func (s *SavingFlexibleProductPositionsService) Do(ctx context.Context, opts ...RequestOption) ([]*SavingProductPosition, error) {
+func (s *SavingFlexibleProductPositionsService) Do(ctx context.Context, opts ...RequestOption) ([]*SavingFlexibleProductPosition, error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/lending/daily/token/position",
@@ -323,15 +323,15 @@ func (s *SavingFlexibleProductPositionsService) Do(ctx context.Context, opts ...
 	if err != nil {
 		return nil, err
 	}
-	var res []*SavingProductPosition
+	var res []*SavingFlexibleProductPosition
 	if err = json.Unmarshal(data, &res); err != nil {
 		return nil, err
 	}
 	return res, nil
 }
 
-// SavingProductPosition represents a saving flexible product position.
-type SavingProductPosition struct {
+// SavingFlexibleProductPosition represents a saving flexible product position.
+type SavingFlexibleProductPosition struct {
 	Asset                 string `json:"asset"`
 	ProductId             string `json:"productId"`
 	ProductName           string `json:"productName"`
