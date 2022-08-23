@@ -907,3 +907,13 @@ func (c *Client) NewGetBNBBurnService() *GetBNBBurnService {
 func (c *Client) NewToggleBNBBurnService() *ToggleBNBBurnService {
 	return &ToggleBNBBurnService{c: c}
 }
+
+// NewInternalUniversalTransferService Universal Transfer (For Master Account)
+func (c *Client) NewInternalUniversalTransferService() *InternalUniversalTransferService {
+	return &InternalUniversalTransferService{c: c}
+}
+
+// NewInternalUniversalTransferHistoryService Query Universal Transfer History (For Master Account)
+func (c *Client) NewInternalUniversalTransferHistoryService() *InternalUniversalTransferHistoryService {
+	return &InternalUniversalTransferHistoryService{c: c}
+}
