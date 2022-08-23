@@ -96,7 +96,7 @@ type StakingProductPosition struct {
 	ExtraRewardAPY             string `json:"extraRewardAPY"`
 	EstimatedExtraRewardAmount string `json:"estExtraRewardAmt"`
 	NextInterestPay            string `json:"nextInterestPay"`
-	NextInterestPayDate        string `json:"nextInterestPayDate"`
+	NextInterestPayDate        int64  `json:"nextInterestPayDate"`
 	PayInterestPeriod          int64  `json:"payInterestPeriod"`
 	RedeemAmountEarly          string `json:"redeemAmountEarly"`
 	InterestEndDate            int64  `json:"interestEndDate"`
