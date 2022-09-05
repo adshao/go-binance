@@ -10,8 +10,10 @@ import (
 
 // Endpoints
 const (
-	baseWsMainUrl    = "wss://fstream.binance.com/ws"
-	baseWsTestnetUrl = "wss://stream.binancefuture.com/ws"
+	baseWsMainUrl          = "wss://fstream.binance.com/ws"
+	baseWsTestnetUrl       = "wss://stream.binancefuture.com/ws"
+	baseCombinedMainURL    = "wss://fstream.binance.com/stream?streams="
+	baseCombinedTestnetURL = "wss://stream.binancefuture.com/stream?streams="
 )
 
 var (
@@ -29,6 +31,14 @@ func getWsEndpoint() string {
 		return baseWsTestnetUrl
 	}
 	return baseWsMainUrl
+}
+
+// getCombinedEndpoint return the base endpoint of the combined stream according the UseTestnet flag
+func getCombinedEndpoint() string {
+	if UseTestnet {
+		return baseCombinedTestnetURL
+	}
+	return baseCombinedMainURL
 }
 
 // WsAggTradeEvent define websocket aggTrde event.
@@ -64,15 +74,51 @@ func WsAggTradeServe(symbol string, handler WsAggTradeHandler, errHandler ErrHan
 	return wsServe(cfg, wsHandler, errHandler)
 }
 
+// WsCombinedAggTradeServe is similar to WsAggTradeServe, but it handles multiple symbols
+func WsCombinedAggTradeServe(symbols []string, handler WsAggTradeHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := getCombinedEndpoint()
+	for _, s := range symbols {
+		endpoint += fmt.Sprintf("%s@aggTrade", strings.ToLower(s)) + "/"
+	}
+	endpoint = endpoint[:len(endpoint)-1]
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		j, err := newJSON(message)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		stream := j.Get("stream").MustString()
+		data := j.Get("data").MustMap()
+
+		symbol := strings.Split(stream, "@")[0]
+
+		jsonData, _ := json.Marshal(data)
+
+		event := new(WsAggTradeEvent)
+		err = json.Unmarshal(jsonData, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		event.Symbol = strings.ToUpper(symbol)
+
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
 // WsMarkPriceEvent define websocket markPriceUpdate event.
 type WsMarkPriceEvent struct {
-	Event           string `json:"e"`
-	Time            int64  `json:"E"`
-	Symbol          string `json:"s"`
-	MarkPrice       string `json:"p"`
-	IndexPrice      string `json:"i"`
-	FundingRate     string `json:"r"`
-	NextFundingTime int64  `json:"T"`
+	Event                string `json:"e"`
+	Time                 int64  `json:"E"`
+	Symbol               string `json:"s"`
+	MarkPrice            string `json:"p"`
+	IndexPrice           string `json:"i"`
+	EstimatedSettlePrice string `json:"P"`
+	FundingRate          string `json:"r"`
+	NextFundingTime      int64  `json:"T"`
 }
 
 // WsMarkPriceHandler handle websocket that pushes price and funding rate for a single symbol.
@@ -196,6 +242,41 @@ func WsKlineServe(symbol string, interval string, handler WsKlineHandler, errHan
 			errHandler(err)
 			return
 		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+// WsCombinedKlineServe is similar to WsKlineServe, but it handles multiple symbols with it interval
+func WsCombinedKlineServe(symbolIntervalPair map[string]string, handler WsKlineHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := getCombinedEndpoint()
+	for symbol, interval := range symbolIntervalPair {
+		endpoint += fmt.Sprintf("%s@kline_%s", strings.ToLower(symbol), interval) + "/"
+	}
+	endpoint = endpoint[:len(endpoint)-1]
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		j, err := newJSON(message)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		stream := j.Get("stream").MustString()
+		data := j.Get("data").MustMap()
+
+		symbol := strings.Split(stream, "@")[0]
+
+		jsonData, _ := json.Marshal(data)
+
+		event := new(WsKlineEvent)
+		err = json.Unmarshal(jsonData, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		event.Symbol = strings.ToUpper(symbol)
+
 		handler(event)
 	}
 	return wsServe(cfg, wsHandler, errHandler)
@@ -462,6 +543,98 @@ func WsDiffDepthServe(symbol string, handler WsDepthHandler, errHandler ErrHandl
 	return wsDepthServe(symbol, "", nil, handler, errHandler)
 }
 
+// WsCombinedDepthServe is similar to WsPartialDepthServe, but it for multiple symbols
+func WsCombinedDepthServe(symbolLevels map[string]string, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := getCombinedEndpoint()
+	for s, l := range symbolLevels {
+		endpoint += fmt.Sprintf("%s@depth%s", strings.ToLower(s), l) + "/"
+	}
+	endpoint = endpoint[:len(endpoint)-1]
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		j, err := newJSON(message)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		event := new(WsDepthEvent)
+		data := j.Get("data").MustMap()
+		event.Event = data["e"].(string)
+		event.Time, _ = data["E"].(json.Number).Int64()
+		event.TransactionTime, _ = data["T"].(json.Number).Int64()
+		event.Symbol = data["s"].(string)
+		event.FirstUpdateID, _ = data["U"].(json.Number).Int64()
+		event.LastUpdateID, _ = data["u"].(json.Number).Int64()
+		event.PrevLastUpdateID, _ = data["pu"].(json.Number).Int64()
+		bidsLen := len(data["b"].([]interface{}))
+		event.Bids = make([]Bid, bidsLen)
+		for i := 0; i < bidsLen; i++ {
+			item := data["b"].([]interface{})[i].([]interface{})
+			event.Bids[i] = Bid{
+				Price:    item[0].(string),
+				Quantity: item[1].(string),
+			}
+		}
+		asksLen := len(data["a"].([]interface{}))
+		event.Asks = make([]Ask, asksLen)
+		for i := 0; i < asksLen; i++ {
+			item := data["a"].([]interface{})[i].([]interface{})
+			event.Asks[i] = Ask{
+				Price:    item[0].(string),
+				Quantity: item[1].(string),
+			}
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+// WsCombinedDiffDepthServe is similar to WsDiffDepthServe, but it for multiple symbols
+func WsCombinedDiffDepthServe(symbols []string, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := getCombinedEndpoint()
+	for _, s := range symbols {
+		endpoint += fmt.Sprintf("%s@depth", strings.ToLower(s)) + "/"
+	}
+	endpoint = endpoint[:len(endpoint)-1]
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		j, err := newJSON(message)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		event := new(WsDepthEvent)
+		data := j.Get("data").MustMap()
+		event.Event = data["e"].(string)
+		event.Time, _ = data["E"].(json.Number).Int64()
+		event.TransactionTime, _ = data["T"].(json.Number).Int64()
+		event.Symbol = data["s"].(string)
+		event.FirstUpdateID, _ = data["U"].(json.Number).Int64()
+		event.LastUpdateID, _ = data["u"].(json.Number).Int64()
+		event.PrevLastUpdateID, _ = data["pu"].(json.Number).Int64()
+		bidsLen := len(data["b"].([]interface{}))
+		event.Bids = make([]Bid, bidsLen)
+		for i := 0; i < bidsLen; i++ {
+			item := data["b"].([]interface{})[i].([]interface{})
+			event.Bids[i] = Bid{
+				Price:    item[0].(string),
+				Quantity: item[1].(string),
+			}
+		}
+		asksLen := len(data["a"].([]interface{}))
+		event.Asks = make([]Ask, asksLen)
+		for i := 0; i < asksLen; i++ {
+			item := data["a"].([]interface{})[i].([]interface{})
+			event.Asks[i] = Ask{
+				Price:    item[0].(string),
+				Quantity: item[1].(string),
+			}
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
 // WsDiffDepthServeWithRate serve websocket diff. depth handler with rate.
 func WsDiffDepthServeWithRate(symbol string, rate time.Duration, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	return wsDepthServe(symbol, "", &rate, handler, errHandler)
@@ -660,6 +833,7 @@ type WsBalance struct {
 	Asset              string `json:"a"`
 	Balance            string `json:"wb"`
 	CrossWalletBalance string `json:"cw"`
+	ChangeBalance      string `json:"bc"`
 }
 
 // WsPosition define position

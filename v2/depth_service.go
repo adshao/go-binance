@@ -2,6 +2,9 @@ package binance
 
 import (
 	"context"
+	"net/http"
+
+	"github.com/adshao/go-binance/v2/common"
 )
 
 // DepthService show depth info
@@ -26,7 +29,7 @@ func (s *DepthService) Limit(limit int) *DepthService {
 // Do send request
 func (s *DepthService) Do(ctx context.Context, opts ...RequestOption) (res *DepthResponse, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/api/v3/depth",
 	}
 	r.setParam("symbol", s.symbol)
@@ -71,14 +74,8 @@ type DepthResponse struct {
 	Asks         []Ask `json:"asks"`
 }
 
-// Bid define bid info with price and quantity
-type Bid struct {
-	Price    string
-	Quantity string
-}
+// Ask is a type alias for PriceLevel.
+type Ask = common.PriceLevel
 
-// Ask define ask info with price and quantity
-type Ask struct {
-	Price    string
-	Quantity string
-}
+// Bid is a type alias for PriceLevel.
+type Bid = common.PriceLevel

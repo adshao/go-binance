@@ -3,6 +3,9 @@ package futures
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"net/http"
+	"strings"
 )
 
 // CreateOrderService create order
@@ -21,6 +24,7 @@ type CreateOrderService struct {
 	workingType      *WorkingType
 	activationPrice  *string
 	callbackRate     *string
+	priceProtect     *bool
 	newOrderRespType NewOrderRespType
 	closePosition    *bool
 }
@@ -103,6 +107,12 @@ func (s *CreateOrderService) CallbackRate(callbackRate string) *CreateOrderServi
 	return s
 }
 
+// PriceProtect set priceProtect
+func (s *CreateOrderService) PriceProtect(priceProtect bool) *CreateOrderService {
+	s.priceProtect = &priceProtect
+	return s
+}
+
 // NewOrderResponseType set newOrderResponseType
 func (s *CreateOrderService) NewOrderResponseType(newOrderResponseType NewOrderRespType) *CreateOrderService {
 	s.newOrderRespType = newOrderResponseType
@@ -115,9 +125,10 @@ func (s *CreateOrderService) ClosePosition(closePosition bool) *CreateOrderServi
 	return s
 }
 
-func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, err error) {
+func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, header *http.Header, err error) {
+
 	r := &request{
-		method:   "POST",
+		method:   http.MethodPost,
 		endpoint: endpoint,
 		secType:  secTypeSigned,
 	}
@@ -149,6 +160,9 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 	if s.workingType != nil {
 		m["workingType"] = *s.workingType
 	}
+	if s.priceProtect != nil {
+		m["priceProtect"] = *s.priceProtect
+	}
 	if s.activationPrice != nil {
 		m["activationPrice"] = *s.activationPrice
 	}
@@ -159,21 +173,24 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 		m["closePosition"] = *s.closePosition
 	}
 	r.setFormParams(m)
-	data, err = s.c.callAPI(ctx, r, opts...)
+	data, header, err = s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return []byte{}, err
+		return []byte{}, &http.Header{}, err
 	}
-	return data, nil
+	return data, header, nil
 }
 
 // Do send request
 func (s *CreateOrderService) Do(ctx context.Context, opts ...RequestOption) (res *CreateOrderResponse, err error) {
-	data, err := s.createOrder(ctx, "/fapi/v1/order", opts...)
+	data, header, err := s.createOrder(ctx, "/fapi/v1/order", opts...)
 	if err != nil {
 		return nil, err
 	}
 	res = new(CreateOrderResponse)
 	err = json.Unmarshal(data, res)
+	res.RateLimitOrder10s = header.Get("X-Mbx-Order-Count-10s")
+	res.RateLimitOrder1m = header.Get("X-Mbx-Order-Count-1m")
+
 	if err != nil {
 		return nil, err
 	}
@@ -182,26 +199,29 @@ func (s *CreateOrderService) Do(ctx context.Context, opts ...RequestOption) (res
 
 // CreateOrderResponse define create order response
 type CreateOrderResponse struct {
-	Symbol           string           `json:"symbol"`
-	OrderID          int64            `json:"orderId"`
-	ClientOrderID    string           `json:"clientOrderId"`
-	Price            string           `json:"price"`
-	OrigQuantity     string           `json:"origQty"`
-	ExecutedQuantity string           `json:"executedQty"`
-	CumQuote         string           `json:"cumQuote"`
-	ReduceOnly       bool             `json:"reduceOnly"`
-	Status           OrderStatusType  `json:"status"`
-	StopPrice        string           `json:"stopPrice"`
-	TimeInForce      TimeInForceType  `json:"timeInForce"`
-	Type             OrderType        `json:"type"`
-	Side             SideType         `json:"side"`
-	UpdateTime       int64            `json:"updateTime"`
-	WorkingType      WorkingType      `json:"workingType"`
-	ActivatePrice    string           `json:"activatePrice"`
-	PriceRate        string           `json:"priceRate"`
-	AvgPrice         string           `json:"avgPrice"`
-	PositionSide     PositionSideType `json:"positionSide"`
-	ClosePosition    bool             `json:"closePosition"`
+	Symbol            string           `json:"symbol"`
+	OrderID           int64            `json:"orderId"`
+	ClientOrderID     string           `json:"clientOrderId"`
+	Price             string           `json:"price"`
+	OrigQuantity      string           `json:"origQty"`
+	ExecutedQuantity  string           `json:"executedQty"`
+	CumQuote          string           `json:"cumQuote"`
+	ReduceOnly        bool             `json:"reduceOnly"`
+	Status            OrderStatusType  `json:"status"`
+	StopPrice         string           `json:"stopPrice"`
+	TimeInForce       TimeInForceType  `json:"timeInForce"`
+	Type              OrderType        `json:"type"`
+	Side              SideType         `json:"side"`
+	UpdateTime        int64            `json:"updateTime"`
+	WorkingType       WorkingType      `json:"workingType"`
+	ActivatePrice     string           `json:"activatePrice"`
+	PriceRate         string           `json:"priceRate"`
+	AvgPrice          string           `json:"avgPrice"`
+	PositionSide      PositionSideType `json:"positionSide"`
+	ClosePosition     bool             `json:"closePosition"`
+	PriceProtect      bool             `json:"priceProtect"`
+	RateLimitOrder10s string           `json:"rateLimitOrder10s,omitempty"`
+	RateLimitOrder1m  string           `json:"rateLimitOrder1m,omitempty"`
 }
 
 // ListOpenOrdersService list opened orders
@@ -219,14 +239,14 @@ func (s *ListOpenOrdersService) Symbol(symbol string) *ListOpenOrdersService {
 // Do send request
 func (s *ListOpenOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*Order, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/openOrders",
 		secType:  secTypeSigned,
 	}
 	if s.symbol != "" {
 		r.setParam("symbol", s.symbol)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*Order{}, err
 	}
@@ -267,7 +287,7 @@ func (s *GetOrderService) OrigClientOrderID(origClientOrderID string) *GetOrderS
 // Do send request
 func (s *GetOrderService) Do(ctx context.Context, opts ...RequestOption) (res *Order, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/order",
 		secType:  secTypeSigned,
 	}
@@ -278,7 +298,7 @@ func (s *GetOrderService) Do(ctx context.Context, opts ...RequestOption) (res *O
 	if s.origClientOrderID != nil {
 		r.setParam("origClientOrderId", *s.origClientOrderID)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -314,6 +334,8 @@ type Order struct {
 	AvgPrice         string           `json:"avgPrice"`
 	OrigType         string           `json:"origType"`
 	PositionSide     PositionSideType `json:"positionSide"`
+	PriceProtect     bool             `json:"priceProtect"`
+	ClosePosition    bool             `json:"closePosition"`
 }
 
 // ListOrdersService all account orders; active, canceled, or filled
@@ -359,7 +381,7 @@ func (s *ListOrdersService) Limit(limit int) *ListOrdersService {
 // Do send request
 func (s *ListOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*Order, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/allOrders",
 		secType:  secTypeSigned,
 	}
@@ -376,7 +398,7 @@ func (s *ListOrdersService) Do(ctx context.Context, opts ...RequestOption) (res 
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*Order{}, err
 	}
@@ -417,7 +439,7 @@ func (s *CancelOrderService) OrigClientOrderID(origClientOrderID string) *Cancel
 // Do send request
 func (s *CancelOrderService) Do(ctx context.Context, opts ...RequestOption) (res *CancelOrderResponse, err error) {
 	r := &request{
-		method:   "DELETE",
+		method:   http.MethodDelete,
 		endpoint: "/fapi/v1/order",
 		secType:  secTypeSigned,
 	}
@@ -428,7 +450,7 @@ func (s *CancelOrderService) Do(ctx context.Context, opts ...RequestOption) (res
 	if s.origClientOrderID != nil {
 		r.setFormParam("origClientOrderId", *s.origClientOrderID)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -462,6 +484,7 @@ type CancelOrderResponse struct {
 	PriceRate        string           `json:"priceRate"`
 	OrigType         string           `json:"origType"`
 	PositionSide     PositionSideType `json:"positionSide"`
+	PriceProtect     bool             `json:"priceProtect"`
 }
 
 // CancelAllOpenOrdersService cancel all open orders
@@ -479,16 +502,70 @@ func (s *CancelAllOpenOrdersService) Symbol(symbol string) *CancelAllOpenOrdersS
 // Do send request
 func (s *CancelAllOpenOrdersService) Do(ctx context.Context, opts ...RequestOption) (err error) {
 	r := &request{
-		method:   "DELETE",
+		method:   http.MethodDelete,
 		endpoint: "/fapi/v1/allOpenOrders",
 		secType:  secTypeSigned,
 	}
 	r.setFormParam("symbol", s.symbol)
-	_, err = s.c.callAPI(ctx, r, opts...)
+	_, _, err = s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+// CancelMultiplesOrdersService cancel a list of orders
+type CancelMultiplesOrdersService struct {
+	c                     *Client
+	symbol                string
+	orderIDList           []int64
+	origClientOrderIDList []string
+}
+
+// Symbol set symbol
+func (s *CancelMultiplesOrdersService) Symbol(symbol string) *CancelMultiplesOrdersService {
+	s.symbol = symbol
+	return s
+}
+
+// OrderID set orderID
+func (s *CancelMultiplesOrdersService) OrderIDList(orderIDList []int64) *CancelMultiplesOrdersService {
+	s.orderIDList = orderIDList
+	return s
+}
+
+// OrigClientOrderID set origClientOrderID
+func (s *CancelMultiplesOrdersService) OrigClientOrderIDList(origClientOrderIDList []string) *CancelMultiplesOrdersService {
+	s.origClientOrderIDList = origClientOrderIDList
+	return s
+}
+
+// Do send request
+func (s *CancelMultiplesOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*CancelOrderResponse, err error) {
+	r := &request{
+		method:   http.MethodDelete,
+		endpoint: "/fapi/v1/batchOrders",
+		secType:  secTypeSigned,
+	}
+	r.setFormParam("symbol", s.symbol)
+	if s.orderIDList != nil {
+		// convert a slice of integers to a string e.g. [1 2 3] => "[1,2,3]"
+		orderIDListString := strings.Join(strings.Fields(fmt.Sprint(s.orderIDList)), ",")
+		r.setFormParam("orderIdList", orderIDListString)
+	}
+	if s.origClientOrderIDList != nil {
+		r.setFormParam("origClientOrderIdList", s.origClientOrderIDList)
+	}
+	data, _, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = make([]*CancelOrderResponse, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return []*CancelOrderResponse{}, err
+	}
+	return res, nil
 }
 
 // ListLiquidationOrdersService list liquidation orders
@@ -527,7 +604,7 @@ func (s *ListLiquidationOrdersService) Limit(limit int) *ListLiquidationOrdersSe
 // Do send request
 func (s *ListLiquidationOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*LiquidationOrder, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/allForceOrders",
 		secType:  secTypeNone,
 	}
@@ -543,7 +620,7 @@ func (s *ListLiquidationOrdersService) Do(ctx context.Context, opts ...RequestOp
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*LiquidationOrder{}, err
 	}
@@ -567,4 +644,210 @@ type LiquidationOrder struct {
 	Type             OrderType       `json:"type"`
 	Side             SideType        `json:"side"`
 	Time             int64           `json:"time"`
+}
+
+// ListUserLiquidationOrdersService lists user's liquidation orders
+type ListUserLiquidationOrdersService struct {
+	c             *Client
+	symbol        *string
+	autoCloseType ForceOrderCloseType
+	startTime     *int64
+	endTime       *int64
+	limit         *int
+}
+
+// Symbol set symbol
+func (s *ListUserLiquidationOrdersService) Symbol(symbol string) *ListUserLiquidationOrdersService {
+	s.symbol = &symbol
+	return s
+}
+
+// AutoCloseType set symbol
+func (s *ListUserLiquidationOrdersService) AutoCloseType(autoCloseType ForceOrderCloseType) *ListUserLiquidationOrdersService {
+	s.autoCloseType = autoCloseType
+	return s
+}
+
+// StartTime set startTime
+func (s *ListUserLiquidationOrdersService) StartTime(startTime int64) *ListUserLiquidationOrdersService {
+	s.startTime = &startTime
+	return s
+}
+
+// EndTime set endTime
+func (s *ListUserLiquidationOrdersService) EndTime(endTime int64) *ListUserLiquidationOrdersService {
+	s.endTime = &endTime
+	return s
+}
+
+// Limit set limit
+func (s *ListUserLiquidationOrdersService) Limit(limit int) *ListUserLiquidationOrdersService {
+	s.limit = &limit
+	return s
+}
+
+// Do send request
+func (s *ListUserLiquidationOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*UserLiquidationOrder, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/fapi/v1/forceOrders",
+		secType:  secTypeSigned,
+	}
+
+	r.setParam("autoCloseType", s.autoCloseType)
+	if s.symbol != nil {
+		r.setParam("symbol", *s.symbol)
+	}
+	if s.startTime != nil {
+		r.setParam("startTime", *s.startTime)
+	}
+	if s.endTime != nil {
+		r.setParam("endTime", *s.endTime)
+	}
+	if s.limit != nil {
+		r.setParam("limit", *s.limit)
+	}
+	data, _, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []*UserLiquidationOrder{}, err
+	}
+	res = make([]*UserLiquidationOrder, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return []*UserLiquidationOrder{}, err
+	}
+	return res, nil
+}
+
+// UserLiquidationOrder defines user's liquidation order
+type UserLiquidationOrder struct {
+	OrderId          int64            `json:"orderId"`
+	Symbol           string           `json:"symbol"`
+	Status           OrderStatusType  `json:"status"`
+	ClientOrderId    string           `json:"clientOrderId"`
+	Price            string           `json:"price"`
+	AveragePrice     string           `json:"avgPrice"`
+	OrigQuantity     string           `json:"origQty"`
+	ExecutedQuantity string           `json:"executedQty"`
+	CumQuote         string           `json:"cumQuote"`
+	TimeInForce      TimeInForceType  `json:"timeInForce"`
+	Type             OrderType        `json:"type"`
+	ReduceOnly       bool             `json:"reduceOnly"`
+	ClosePosition    bool             `json:"closePosition"`
+	Side             SideType         `json:"side"`
+	PositionSide     PositionSideType `json:"positionSide"`
+	StopPrice        string           `json:"stopPrice"`
+	WorkingType      WorkingType      `json:"workingType"`
+	OrigType         string           `json:"origType"`
+	Time             int64            `json:"time"`
+	UpdateTime       int64            `json:"updateTime"`
+}
+
+type CreateBatchOrdersService struct {
+	c      *Client
+	orders []*CreateOrderService
+}
+
+type CreateBatchOrdersResponse struct {
+	Orders []*Order
+}
+
+func (s *CreateBatchOrdersService) OrderList(orders []*CreateOrderService) *CreateBatchOrdersService {
+	s.orders = orders
+	return s
+}
+
+func (s *CreateBatchOrdersService) Do(ctx context.Context, opts ...RequestOption) (res *CreateBatchOrdersResponse, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/fapi/v1/batchOrders",
+		secType:  secTypeSigned,
+	}
+
+	orders := []params{}
+	for _, order := range s.orders {
+		m := params{
+			"symbol":           order.symbol,
+			"side":             order.side,
+			"type":             order.orderType,
+			"quantity":         order.quantity,
+			"newOrderRespType": order.newOrderRespType,
+		}
+
+		if order.positionSide != nil {
+			m["positionSide"] = *order.positionSide
+		}
+		if order.timeInForce != nil {
+			m["timeInForce"] = *order.timeInForce
+		}
+		if order.reduceOnly != nil {
+			m["reduceOnly"] = *order.reduceOnly
+		}
+		if order.price != nil {
+			m["price"] = *order.price
+		}
+		if order.newClientOrderID != nil {
+			m["newClientOrderId"] = *order.newClientOrderID
+		}
+		if order.stopPrice != nil {
+			m["stopPrice"] = *order.stopPrice
+		}
+		if order.workingType != nil {
+			m["workingType"] = *order.workingType
+		}
+		if order.priceProtect != nil {
+			m["priceProtect"] = *order.priceProtect
+		}
+		if order.activationPrice != nil {
+			m["activationPrice"] = *order.activationPrice
+		}
+		if order.callbackRate != nil {
+			m["callbackRate"] = *order.callbackRate
+		}
+		if order.closePosition != nil {
+			m["closePosition"] = *order.closePosition
+		}
+		orders = append(orders, m)
+	}
+	b, err := json.Marshal(orders)
+	if err != nil {
+		return &CreateBatchOrdersResponse{}, err
+	}
+	m := params{
+		"batchOrders": string(b),
+	}
+
+	r.setFormParams(m)
+
+	data, _, err := s.c.callAPI(ctx, r, opts...)
+
+	if err != nil {
+		return &CreateBatchOrdersResponse{}, err
+	}
+
+	rawMessages := make([]*json.RawMessage, 0)
+
+	err = json.Unmarshal(data, &rawMessages)
+
+	if err != nil {
+		return &CreateBatchOrdersResponse{}, err
+	}
+
+	batchCreateOrdersResponse := new(CreateBatchOrdersResponse)
+
+	for _, j := range rawMessages {
+		o := new(Order)
+		if err := json.Unmarshal(*j, o); err != nil {
+			return &CreateBatchOrdersResponse{}, err
+		}
+
+		if o.ClientOrderID != "" {
+			batchCreateOrdersResponse.Orders = append(batchCreateOrdersResponse.Orders, o)
+			continue
+		}
+
+	}
+
+	return batchCreateOrdersResponse, nil
+
 }

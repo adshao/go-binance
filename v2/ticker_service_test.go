@@ -137,6 +137,52 @@ func (s *tickerServiceTestSuite) TestListPrices() {
 	s.assertSymbolPriceEqual(e2, prices[1])
 }
 
+func (s *tickerServiceTestSuite) TestListPricesForMultipleSymbols() {
+	data := []byte(`[
+        {
+            "symbol": "LTCBTC",
+            "price": "4.00000200"
+        },
+        {
+            "symbol": "ETHUSDT",
+            "price": "2856.76"
+        }
+    ]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newRequest()
+		s.assertRequestEqual(e, r)
+	})
+
+	symbol1, symbol2 := "ETHUSDT", "LTCBTC"
+	symbols := make([]string, 2)
+
+	symbols[0] = symbol1
+	symbols[1] = symbol2
+
+	s.assertReq(func(r *request) {
+		e := newRequest().setParam("symbols", `["ETHUSDT","LTCBTC"]`)
+		s.assertRequestEqual(e, r)
+	})
+
+	prices, err := s.client.NewListPricesService().Symbols(symbols).Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	r.Len(prices, 2)
+	e1 := &SymbolPrice{
+		Symbol: "LTCBTC",
+		Price:  "4.00000200",
+	}
+	e2 := &SymbolPrice{
+		Symbol: "ETHUSDT",
+		Price:  "2856.76",
+	}
+	s.assertSymbolPriceEqual(e1, prices[0])
+	s.assertSymbolPriceEqual(e2, prices[1])
+}
+
 func (s *tickerServiceTestSuite) TestListSinglePrice() {
 	data := []byte(`{
 		"symbol": "LTCBTC",
@@ -354,4 +400,78 @@ func (s *tickerServiceTestSuite) TestAveragePrice() {
 func (s *tickerServiceTestSuite) assertAvgPrice(e, a *AvgPrice) {
 	s.r().Equal(e.Mins, a.Mins, "Mins")
 	s.r().Equal(e.Price, a.Price, "Price")
+}
+
+func (s *tickerServiceTestSuite) TestListSymbolTicker() {
+	data := []byte(`[
+		{
+			"symbol": "ETHBTC",
+			"priceChange": "0.00004700",
+			"priceChangePercent": "0.066",
+			"weightedAvgPrice": "0.07168666",
+			"openPrice": "0.07093500",
+			"highPrice": "0.07321800",
+			"lowPrice": "0.07054200",
+			"lastPrice": "0.07098200",
+			"volume": "86992.33370000",
+			"quoteVolume": "6236.18963157",
+			"openTime": 1659097380000,
+			"closeTime": 1659183780986,
+			"firstId": 359930693,
+			"lastId": 360209854,
+			"count": 279162
+		}
+	]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	symbol := "ETHBTC"
+	windowSize := "1m" // 1 minute
+	s.assertReq(func(r *request) {
+		e := newRequest().setParam("symbol", symbol).setParam("windowSize", windowSize)
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewListSymbolTickerService().Symbol(symbol).WindowSize(windowSize).Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	e := make([]*SymbolTicker, 0)
+	e = append(e, &SymbolTicker{
+		Symbol:             "ETHBTC",
+		PriceChange:        "0.00004700",
+		PriceChangePercent: "0.066",
+		WeightedAvgPrice:   "0.07168666",
+		OpenPrice:          "0.07093500",
+		HighPrice:          "0.07321800",
+		LowPrice:           "0.07054200",
+		LastPrice:          "0.07098200",
+		Volume:             "86992.33370000",
+		QuoteVolume:        "6236.18963157",
+		OpenTime:           1659097380000,
+		CloseTime:          1659183780986,
+		FirstId:            359930693,
+		LastId:             360209854,
+		Count:              279162,
+	})
+	s.assertSymbolTicker(e, res)
+}
+
+func (s *tickerServiceTestSuite) assertSymbolTicker(e, st []*SymbolTicker) {
+	for i := range e {
+		s.r().Equal(e[i].Symbol, st[i].Symbol, "Symbol")
+		s.r().Equal(e[i].PriceChange, st[i].PriceChange, "PriceChange")
+		s.r().Equal(e[i].PriceChangePercent, st[i].PriceChangePercent, "PriceChangePercent")
+		s.r().Equal(e[i].WeightedAvgPrice, st[i].WeightedAvgPrice, "WeightedAvgPrice")
+		s.r().Equal(e[i].OpenPrice, st[i].OpenPrice, "OpenPrice")
+		s.r().Equal(e[i].HighPrice, st[i].HighPrice, "HighPrice")
+		s.r().Equal(e[i].LowPrice, st[i].LowPrice, "LowPrice")
+		s.r().Equal(e[i].LastPrice, st[i].LastPrice, "LastPrice")
+		s.r().Equal(e[i].Volume, st[i].Volume, "Volume")
+		s.r().Equal(e[i].QuoteVolume, st[i].QuoteVolume, "QuoteVolume")
+		s.r().Equal(e[i].OpenTime, st[i].OpenTime, "OpenTime")
+		s.r().Equal(e[i].CloseTime, st[i].CloseTime, "CloseTime")
+		s.r().Equal(e[i].FirstId, st[i].FirstId, "FirstId")
+		s.r().Equal(e[i].LastId, st[i].LastId, "LastId")
+		s.r().Equal(e[i].Count, st[i].Count, "Count")
+	}
 }

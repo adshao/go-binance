@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/hmac"
 	"crypto/sha256"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -65,6 +66,9 @@ type UserDataEventType string
 
 // UserDataEventReasonType define reason type for user data event
 type UserDataEventReasonType string
+
+// ForceOrderCloseType define reason type for force order
+type ForceOrderCloseType string
 
 // Endpoints
 const (
@@ -133,6 +137,7 @@ const (
 	SymbolFilterTypeMarketLotSize    SymbolFilterType = "MARKET_LOT_SIZE"
 	SymbolFilterTypeMaxNumOrders     SymbolFilterType = "MAX_NUM_ORDERS"
 	SymbolFilterTypeMaxNumAlgoOrders SymbolFilterType = "MAX_NUM_ALGO_ORDERS"
+	SymbolFilterTypeMinNotional      SymbolFilterType = "MIN_NOTIONAL"
 
 	SideEffectTypeNoSideEffect SideEffectType = "NO_SIDE_EFFECT"
 	SideEffectTypeMarginBuy    SideEffectType = "MARGIN_BUY"
@@ -163,6 +168,9 @@ const (
 	UserDataEventReasonTypeAssetTransfer       UserDataEventReasonType = "ASSET_TRANSFER"
 	UserDataEventReasonTypeOptionsPremiumFee   UserDataEventReasonType = "OPTIONS_PREMIUM_FEE"
 	UserDataEventReasonTypeOptionsSettleProfit UserDataEventReasonType = "OPTIONS_SETTLE_PROFIT"
+
+	ForceOrderCloseTypeLiquidation ForceOrderCloseType = "LIQUIDATION"
+	ForceOrderCloseTypeADL         ForceOrderCloseType = "ADL"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
@@ -200,6 +208,28 @@ func NewClient(apiKey, secretKey string) *Client {
 		UserAgent:  "Binance/golang",
 		HTTPClient: http.DefaultClient,
 		Logger:     log.New(os.Stderr, "Binance-golang ", log.LstdFlags),
+	}
+}
+
+// NewProxiedClient passing a proxy url
+func NewProxiedClient(apiKey, secretKey, proxyUrl string) *Client {
+	proxy, err := url.Parse(proxyUrl)
+	if err != nil {
+		log.Fatal(err)
+	}
+	tr := &http.Transport{
+		Proxy:           http.ProxyURL(proxy),
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	return &Client{
+		APIKey:    apiKey,
+		SecretKey: secretKey,
+		BaseURL:   getApiEndpoint(),
+		UserAgent: "Binance/golang",
+		HTTPClient: &http.Client{
+			Transport: tr,
+		},
+		Logger: log.New(os.Stderr, "Binance-golang ", log.LstdFlags),
 	}
 }
 
@@ -245,6 +275,9 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 	body := &bytes.Buffer{}
 	bodyString := r.form.Encode()
 	header := http.Header{}
+	if r.header != nil {
+		header = r.header.Clone()
+	}
 	if bodyString != "" {
 		header.Set("Content-Type", "application/x-www-form-urlencoded")
 		body = bytes.NewBufferString(bodyString)
@@ -279,14 +312,14 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 	return nil
 }
 
-func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption) (data []byte, err error) {
+func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption) (data []byte, header *http.Header, err error) {
 	err = c.parseRequest(r, opts...)
 	if err != nil {
-		return []byte{}, err
+		return []byte{}, &http.Header{}, err
 	}
 	req, err := http.NewRequest(r.method, r.fullURL, r.body)
 	if err != nil {
-		return []byte{}, err
+		return []byte{}, &http.Header{}, err
 	}
 	req = req.WithContext(ctx)
 	req.Header = r.header
@@ -297,11 +330,11 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 	}
 	res, err := f(req)
 	if err != nil {
-		return []byte{}, err
+		return []byte{}, &http.Header{}, err
 	}
 	data, err = ioutil.ReadAll(res.Body)
 	if err != nil {
-		return []byte{}, err
+		return []byte{}, &http.Header{}, err
 	}
 	defer func() {
 		cerr := res.Body.Close()
@@ -315,15 +348,15 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 	c.debug("response body: %s", string(data))
 	c.debug("response status code: %d", res.StatusCode)
 
-	if res.StatusCode >= 400 {
+	if res.StatusCode >= http.StatusBadRequest {
 		apiErr := new(common.APIError)
 		e := json.Unmarshal(data, apiErr)
 		if e != nil {
 			c.debug("failed to unmarshal json: %s", e)
 		}
-		return nil, apiErr
+		return nil, &http.Header{}, apiErr
 	}
-	return data, nil
+	return data, &res.Header, nil
 }
 
 // NewPingService init ping service
@@ -361,6 +394,16 @@ func (c *Client) NewKlinesService() *KlinesService {
 	return &KlinesService{c: c}
 }
 
+// NewIndexPriceKlinesService init index price klines service
+func (c *Client) NewIndexPriceKlinesService() *IndexPriceKlinesService {
+	return &IndexPriceKlinesService{c: c}
+}
+
+// NewMarkPriceKlinesService init markPriceKlines service
+func (c *Client) NewMarkPriceKlinesService() *MarkPriceKlinesService {
+	return &MarkPriceKlinesService{c: c}
+}
+
 // NewListPriceChangeStatsService init list prices change stats service
 func (c *Client) NewListPriceChangeStatsService() *ListPriceChangeStatsService {
 	return &ListPriceChangeStatsService{c: c}
@@ -381,6 +424,11 @@ func (c *Client) NewCreateOrderService() *CreateOrderService {
 	return &CreateOrderService{c: c}
 }
 
+// NewCreateBatchOrderService init creating batch order service
+func (c *Client) NewCreateBatchOrdersService() *CreateBatchOrdersService {
+	return &CreateBatchOrdersService{c: c}
+}
+
 // NewGetOrderService init get order service
 func (c *Client) NewGetOrderService() *GetOrderService {
 	return &GetOrderService{c: c}
@@ -394,6 +442,11 @@ func (c *Client) NewCancelOrderService() *CancelOrderService {
 // NewCancelAllOpenOrdersService init cancel all open orders service
 func (c *Client) NewCancelAllOpenOrdersService() *CancelAllOpenOrdersService {
 	return &CancelAllOpenOrdersService{c: c}
+}
+
+// NewCancelMultipleOrdersService init cancel multiple orders service
+func (c *Client) NewCancelMultipleOrdersService() *CancelMultiplesOrdersService {
+	return &CancelMultiplesOrdersService{c: c}
 }
 
 // NewListOpenOrdersService init list open orders service
@@ -471,6 +524,11 @@ func (c *Client) NewFundingRateService() *FundingRateService {
 	return &FundingRateService{c: c}
 }
 
+// NewListUserLiquidationOrdersService init list user's liquidation orders service
+func (c *Client) NewListUserLiquidationOrdersService() *ListUserLiquidationOrdersService {
+	return &ListUserLiquidationOrdersService{c: c}
+}
+
 // NewListLiquidationOrdersService init funding rate service
 func (c *Client) NewListLiquidationOrdersService() *ListLiquidationOrdersService {
 	return &ListLiquidationOrdersService{c: c}
@@ -504,4 +562,29 @@ func (c *Client) NewChangePositionModeService() *ChangePositionModeService {
 // NewGetPositionModeService init get position mode service
 func (c *Client) NewGetPositionModeService() *GetPositionModeService {
 	return &GetPositionModeService{c: c}
+}
+
+// NewGetRebateNewUserService init get rebate_newuser service
+func (c *Client) NewGetRebateNewUserService() *GetRebateNewUserService {
+	return &GetRebateNewUserService{c: c}
+}
+
+// NewCommissionRateService returns commission rate
+func (c *Client) NewCommissionRateService() *CommissionRateService {
+	return &CommissionRateService{c: c}
+}
+
+// NewGetOpenInterestService init open interest service
+func (c *Client) NewGetOpenInterestService() *GetOpenInterestService {
+	return &GetOpenInterestService{c: c}
+}
+
+// NewOpenInterestStatisticsService init open interest statistics service
+func (c *Client) NewOpenInterestStatisticsService() *OpenInterestStatisticsService {
+	return &OpenInterestStatisticsService{c: c}
+}
+
+// NewLongShortRatioService init open interest statistics service
+func (c *Client) NewLongShortRatioService() *LongShortRatioService {
+	return &LongShortRatioService{c: c}
 }

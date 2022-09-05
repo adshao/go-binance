@@ -3,6 +3,8 @@ package futures
 import (
 	"context"
 	"encoding/json"
+	"net/http"
+	"strconv"
 )
 
 // ExchangeInfoService exchange info service
@@ -13,11 +15,11 @@ type ExchangeInfoService struct {
 // Do send request
 func (s *ExchangeInfoService) Do(ctx context.Context, opts ...RequestOption) (res *ExchangeInfo, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/exchangeInfo",
 		secType:  secTypeNone,
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +65,7 @@ type Symbol struct {
 	QuotePrecision        int                      `json:"quotePrecision"`
 	UnderlyingType        string                   `json:"underlyingType"`
 	UnderlyingSubType     []string                 `json:"underlyingSubType"`
-	SettlePlan            int                      `json:"settlePlan"`
+	SettlePlan            int64                    `json:"settlePlan"`
 	TriggerProtect        string                   `json:"triggerProtect"`
 	OrderType             []OrderType              `json:"OrderType"`
 	TimeInForce           []TimeInForceType        `json:"timeInForce"`
@@ -109,6 +111,11 @@ type MaxNumOrdersFilter struct {
 // MaxNumAlgoOrdersFilter define max num algo orders filter of symbol
 type MaxNumAlgoOrdersFilter struct {
 	Limit int64 `json:"limit"`
+}
+
+// MinNotionalFilter define min notional filter of symbol
+type MinNotionalFilter struct {
+	Notional string `json:"notional"`
 }
 
 // LotSizeFilter return lot size filter of symbol
@@ -157,7 +164,13 @@ func (s *Symbol) PercentPriceFilter() *PercentPriceFilter {
 		if filter["filterType"].(string) == string(SymbolFilterTypePercentPrice) {
 			f := &PercentPriceFilter{}
 			if i, ok := filter["multiplierDecimal"]; ok {
-				f.MultiplierDecimal = int(i.(float64))
+				smd, is := i.(string)
+				if is {
+					md, _ := strconv.Atoi(smd)
+					f.MultiplierDecimal = md
+				} else {
+					f.MultiplierDecimal = int(i.(float64))
+				}
 			}
 			if i, ok := filter["multiplierUp"]; ok {
 				f.MultiplierUp = i.(string)
@@ -212,6 +225,20 @@ func (s *Symbol) MaxNumAlgoOrdersFilter() *MaxNumAlgoOrdersFilter {
 			f := &MaxNumAlgoOrdersFilter{}
 			if i, ok := filter["limit"]; ok {
 				f.Limit = int64(i.(float64))
+			}
+			return f
+		}
+	}
+	return nil
+}
+
+// MinNotionalFilter return min notional filter of symbol
+func (s *Symbol) MinNotionalFilter() *MinNotionalFilter {
+	for _, filter := range s.Filters {
+		if filter["filterType"].(string) == string(SymbolFilterTypeMinNotional) {
+			f := &MinNotionalFilter{}
+			if i, ok := filter["notional"]; ok {
+				f.Notional = i.(string)
 			}
 			return f
 		}

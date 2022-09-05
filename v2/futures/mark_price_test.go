@@ -15,13 +15,13 @@ func TestPremiumIndexService(t *testing.T) {
 }
 
 func (s *premiumIndexServiceTestSuite) TestGetPremiumIndex() {
-	data := []byte(`{
+	data := []byte(`[{
 		"symbol": "BTCUSDT",
 		"markPrice": "11012.80409769",
 		"lastFundingRate": "-0.03750000",
 		"nextFundingTime": 1562569200000,
 		"time": 1562566020000
-	}`)
+	}]`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
 
@@ -35,23 +35,24 @@ func (s *premiumIndexServiceTestSuite) TestGetPremiumIndex() {
 
 	res, err := s.client.NewPremiumIndexService().Symbol(symbol).Do(newContext())
 	s.r().NoError(err)
-	e := &PremiumIndex{
+	e := []*PremiumIndex{&PremiumIndex{
 		Symbol:          symbol,
 		MarkPrice:       "11012.80409769",
 		LastFundingRate: "-0.03750000",
 		NextFundingTime: int64(1562569200000),
 		Time:            int64(1562566020000),
+	},
 	}
 	s.assertPremiumIndexEqual(e, res)
 }
 
-func (s *premiumIndexServiceTestSuite) assertPremiumIndexEqual(e, a *PremiumIndex) {
+func (s *premiumIndexServiceTestSuite) assertPremiumIndexEqual(e, a []*PremiumIndex) {
 	r := s.r()
-	r.Equal(e.Symbol, a.Symbol, "Symbol")
-	r.Equal(e.MarkPrice, a.MarkPrice, "MarkPrice")
-	r.Equal(e.LastFundingRate, a.LastFundingRate, "LastFundingRate")
-	r.Equal(e.NextFundingTime, a.NextFundingTime, "NextFundingTime")
-	r.Equal(e.Time, a.Time, "Time")
+	r.Equal(e[0].Symbol, a[0].Symbol, "Symbol")
+	r.Equal(e[0].MarkPrice, a[0].MarkPrice, "MarkPrice")
+	r.Equal(e[0].LastFundingRate, a[0].LastFundingRate, "LastFundingRate")
+	r.Equal(e[0].NextFundingTime, a[0].NextFundingTime, "NextFundingTime")
+	r.Equal(e[0].Time, a[0].Time, "Time")
 }
 
 type fundingRateServiceTestSuite struct {
@@ -142,7 +143,8 @@ func (s *getLeverageBracketServiceTestSuite) TestGetLeverageBracket() {
 				"initialLeverage": 75,
 				"notionalCap": 10000,
 				"notionalFloor": 0,
-				"maintMarginRatio": 0.0065
+				"maintMarginRatio": 0.0065,
+				"cum": 1.2345
 			}
 		]
 	}`)
@@ -172,6 +174,7 @@ func (s *getLeverageBracketServiceTestSuite) TestGetLeverageBracket() {
 					NotionalCap:      10000,
 					NotionalFloor:    0,
 					MaintMarginRatio: 0.0065,
+					Cum:              1.2345,
 				},
 			},
 		},
@@ -190,4 +193,5 @@ func (s *getLeverageBracketServiceTestSuite) assertLeverageBracketEqual(e, a *Le
 	r.Equal(e.Brackets[0].NotionalCap, a.Brackets[0].NotionalCap, "NotionalCap")
 	r.Equal(e.Brackets[0].NotionalFloor, a.Brackets[0].NotionalFloor, "NotionalFloor")
 	r.Equal(e.Brackets[0].MaintMarginRatio, a.Brackets[0].MaintMarginRatio, "MaintMarginRatio")
+	r.Equal(e.Brackets[0].Cum, a.Brackets[0].Cum, "Cum")
 }

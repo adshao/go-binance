@@ -33,14 +33,21 @@ func (s *positionRiskServiceTestSuite) TestGetPositionRisk() {
 	]`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
+
+	symbol := "BTCUSDT"
+	recvWindow := int64(1000)
 	s.assertReq(func(r *request) {
-		e := newSignedRequest()
+		e := newSignedRequest().setParams(params{
+			"symbol":     symbol,
+			"recvWindow": recvWindow,
+		})
 		s.assertRequestEqual(e, r)
 	})
-
-	res, err := s.client.NewGetPositionRiskService().Do(newContext())
-	s.r().NoError(err)
-	s.r().Len(res, 1)
+	res, err := s.client.NewGetPositionRiskService().Symbol(symbol).
+		Do(newContext(), WithRecvWindow(recvWindow))
+	r := s.r()
+	r.NoError(err)
+	r.Len(res, 1)
 	e := &PositionRisk{
 		EntryPrice:       "10359.38000",
 		MarginType:       "isolated",

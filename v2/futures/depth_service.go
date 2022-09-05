@@ -2,6 +2,9 @@ package futures
 
 import (
 	"context"
+	"net/http"
+
+	"github.com/adshao/go-binance/v2/common"
 )
 
 // DepthService show depth info
@@ -26,14 +29,14 @@ func (s *DepthService) Limit(limit int) *DepthService {
 // Do send request
 func (s *DepthService) Do(ctx context.Context, opts ...RequestOption) (res *DepthResponse, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/depth",
 	}
 	r.setParam("symbol", s.symbol)
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -42,6 +45,8 @@ func (s *DepthService) Do(ctx context.Context, opts ...RequestOption) (res *Dept
 		return nil, err
 	}
 	res = new(DepthResponse)
+	res.Time = j.Get("E").MustInt64()
+	res.TradeTime = j.Get("T").MustInt64()
 	res.LastUpdateID = j.Get("lastUpdateId").MustInt64()
 	bidsLen := len(j.Get("bids").MustArray())
 	res.Bids = make([]Bid, bidsLen)
@@ -67,18 +72,14 @@ func (s *DepthService) Do(ctx context.Context, opts ...RequestOption) (res *Dept
 // DepthResponse define depth info with bids and asks
 type DepthResponse struct {
 	LastUpdateID int64 `json:"lastUpdateId"`
+	Time         int64 `json:"E"`
+	TradeTime    int64 `json:"T"`
 	Bids         []Bid `json:"bids"`
 	Asks         []Ask `json:"asks"`
 }
 
-// Bid define bid info with price and quantity
-type Bid struct {
-	Price    string
-	Quantity string
-}
+// Ask is a type alias for PriceLevel.
+type Ask = common.PriceLevel
 
-// Ask define ask info with price and quantity
-type Ask struct {
-	Price    string
-	Quantity string
-}
+// Bid is a type alias for PriceLevel.
+type Bid = common.PriceLevel

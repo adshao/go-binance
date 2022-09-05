@@ -2,21 +2,48 @@ package binance
 
 import (
 	"context"
-	"encoding/json"
+	"net/http"
+	"strings"
 )
 
 // ExchangeInfoService exchange info service
 type ExchangeInfoService struct {
-	c *Client
+	c       *Client
+	symbol  string
+	symbols string
+}
+
+// Symbol set symbol
+func (s *ExchangeInfoService) Symbol(symbol string) *ExchangeInfoService {
+	s.symbol = symbol
+	return s
+}
+
+// Symbols set symbol
+func (s *ExchangeInfoService) Symbols(symbols ...string) *ExchangeInfoService {
+	if len(symbols) == 0 {
+		s.symbols = "[]"
+	} else {
+		s.symbols = "[\"" + strings.Join(symbols, "\",\"") + "\"]"
+	}
+	return s
 }
 
 // Do send request
 func (s *ExchangeInfoService) Do(ctx context.Context, opts ...RequestOption) (res *ExchangeInfo, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/api/v3/exchangeInfo",
 		secType:  secTypeNone,
 	}
+	m := params{}
+	if s.symbol != "" {
+		m["symbol"] = s.symbol
+	}
+	if len(s.symbols) != 0 {
+		m["symbols"] = s.symbols
+	}
+	r.setParams(m)
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
@@ -43,23 +70,29 @@ type ExchangeInfo struct {
 type RateLimit struct {
 	RateLimitType string `json:"rateLimitType"`
 	Interval      string `json:"interval"`
+	IntervalNum   int64  `json:"intervalNum"`
 	Limit         int64  `json:"limit"`
 }
 
 // Symbol market symbol
 type Symbol struct {
-	Symbol                 string                   `json:"symbol"`
-	Status                 string                   `json:"status"`
-	BaseAsset              string                   `json:"baseAsset"`
-	BaseAssetPrecision     int                      `json:"baseAssetPrecision"`
-	QuoteAsset             string                   `json:"quoteAsset"`
-	QuotePrecision         int                      `json:"quotePrecision"`
-	OrderTypes             []string                 `json:"orderTypes"`
-	IcebergAllowed         bool                     `json:"icebergAllowed"`
-	OcoAllowed             bool                     `json:"ocoAllowed"`
-	IsSpotTradingAllowed   bool                     `json:"isSpotTradingAllowed"`
-	IsMarginTradingAllowed bool                     `json:"isMarginTradingAllowed"`
-	Filters                []map[string]interface{} `json:"filters"`
+	Symbol                     string                   `json:"symbol"`
+	Status                     string                   `json:"status"`
+	BaseAsset                  string                   `json:"baseAsset"`
+	BaseAssetPrecision         int                      `json:"baseAssetPrecision"`
+	QuoteAsset                 string                   `json:"quoteAsset"`
+	QuotePrecision             int                      `json:"quotePrecision"`
+	QuoteAssetPrecision        int                      `json:"quoteAssetPrecision"`
+	BaseCommissionPrecision    int32                    `json:"baseCommissionPrecision"`
+	QuoteCommissionPrecision   int32                    `json:"quoteCommissionPrecision"`
+	OrderTypes                 []string                 `json:"orderTypes"`
+	IcebergAllowed             bool                     `json:"icebergAllowed"`
+	OcoAllowed                 bool                     `json:"ocoAllowed"`
+	QuoteOrderQtyMarketAllowed bool                     `json:"quoteOrderQtyMarketAllowed"`
+	IsSpotTradingAllowed       bool                     `json:"isSpotTradingAllowed"`
+	IsMarginTradingAllowed     bool                     `json:"isMarginTradingAllowed"`
+	Filters                    []map[string]interface{} `json:"filters"`
+	Permissions                []string                 `json:"permissions"`
 }
 
 // LotSizeFilter define lot size filter of symbol

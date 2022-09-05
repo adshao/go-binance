@@ -2,7 +2,7 @@ package binance
 
 import (
 	"context"
-	"encoding/json"
+	"net/http"
 )
 
 // GetAccountService get account info
@@ -13,7 +13,7 @@ type GetAccountService struct {
 // Do send request
 func (s *GetAccountService) Do(ctx context.Context, opts ...RequestOption) (res *Account, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/api/v3/account",
 		secType:  secTypeSigned,
 	}
@@ -38,7 +38,10 @@ type Account struct {
 	CanTrade         bool      `json:"canTrade"`
 	CanWithdraw      bool      `json:"canWithdraw"`
 	CanDeposit       bool      `json:"canDeposit"`
+	UpdateTime       uint64    `json:"updateTime"`
+	AccountType      string    `json:"accountType"`
 	Balances         []Balance `json:"balances"`
+	Permissions      []string  `json:"permissions"`
 }
 
 // Balance define user balance of your account
@@ -84,7 +87,7 @@ func (s *GetAccountSnapshotService) Limit(limit int) *GetAccountSnapshotService 
 // Do send request
 func (s *GetAccountSnapshotService) Do(ctx context.Context, opts ...RequestOption) (res *Snapshot, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/sapi/v1/accountSnapshot",
 		secType:  secTypeSigned,
 	}
@@ -169,4 +172,43 @@ type SnapshotPositions struct {
 	PositionAmt      string `json:"positionAmt"`
 	Symbol           string `json:"symbol"`
 	UnRealizedProfit string `json:"unRealizedProfit"`
+}
+
+// GetAPIKeyPermission get API Key permission info
+type GetAPIKeyPermission struct {
+	c *Client
+}
+
+// Do send request
+func (s *GetAPIKeyPermission) Do(ctx context.Context, opts ...RequestOption) (res *APIKeyPermission, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/account/apiRestrictions",
+		secType:  secTypeSigned,
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(APIKeyPermission)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// APIKeyPermission define API key permission
+type APIKeyPermission struct {
+	IPRestrict                     bool   `json:"ipRestrict"`
+	CreateTime                     uint64 `json:"createTime"`
+	EnableWithdrawals              bool   `json:"enableWithdrawals"`
+	EnableInternalTransfer         bool   `json:"enableInternalTransfer"`
+	PermitsUniversalTransfer       bool   `json:"permitsUniversalTransfer"`
+	EnableVanillaOptions           bool   `json:"enableVanillaOptions"`
+	EnableReading                  bool   `json:"enableReading"`
+	EnableFutures                  bool   `json:"enableFutures"`
+	EnableMargin                   bool   `json:"enableMargin"`
+	EnableSpotAndMarginTrading     bool   `json:"enableSpotAndMarginTrading"`
+	TradingAuthorityExpirationTime uint64 `json:"tradingAuthorityExpirationTime"`
 }

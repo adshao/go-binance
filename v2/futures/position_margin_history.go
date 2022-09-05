@@ -3,6 +3,7 @@ package futures
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // GetPositionMarginHistoryService get position margin history service
@@ -48,7 +49,7 @@ func (s *GetPositionMarginHistoryService) Limit(limit int64) *GetPositionMarginH
 // Do send request
 func (s *GetPositionMarginHistoryService) Do(ctx context.Context, opts ...RequestOption) (res []*PositionMarginHistory, err error) {
 	r := &request{
-		method:   "GET",
+		method:   http.MethodGet,
 		endpoint: "/fapi/v1/positionMargin/history",
 		secType:  secTypeSigned,
 	}
@@ -66,7 +67,7 @@ func (s *GetPositionMarginHistoryService) Do(ctx context.Context, opts ...Reques
 		r.setParam("limit", *s.limit)
 	}
 
-	data, err := s.c.callAPI(ctx, r, opts...)
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}

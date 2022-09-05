@@ -3,21 +3,32 @@ package futures
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // GetPositionRiskService get account balance
 type GetPositionRiskService struct {
-	c *Client
+	c      *Client
+	symbol string
+}
+
+// Symbol set symbol
+func (s *GetPositionRiskService) Symbol(symbol string) *GetPositionRiskService {
+	s.symbol = symbol
+	return s
 }
 
 // Do send request
 func (s *GetPositionRiskService) Do(ctx context.Context, opts ...RequestOption) (res []*PositionRisk, err error) {
 	r := &request{
-		method:   "GET",
-		endpoint: "/fapi/v1/positionRisk",
+		method:   http.MethodGet,
+		endpoint: "/fapi/v2/positionRisk",
 		secType:  secTypeSigned,
 	}
-	data, err := s.c.callAPI(ctx, r, opts...)
+	if s.symbol != "" {
+		r.setParam("symbol", s.symbol)
+	}
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return []*PositionRisk{}, err
 	}
@@ -43,4 +54,6 @@ type PositionRisk struct {
 	Symbol           string `json:"symbol"`
 	UnRealizedProfit string `json:"unRealizedProfit"`
 	PositionSide     string `json:"positionSide"`
+	Notional         string `json:"notional"`
+	IsolatedWallet   string `json:"isolatedWallet"`
 }

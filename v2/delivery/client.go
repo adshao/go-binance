@@ -7,14 +7,15 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"github.com/adshao/go-binance/v2/common"
-	"github.com/bitly/go-simplejson"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"time"
+
+	"github.com/adshao/go-binance/v2/common"
+	"github.com/bitly/go-simplejson"
 )
 
 // SideType define side type of order
@@ -31,6 +32,9 @@ type TimeInForceType string
 
 // NewOrderRespType define response JSON verbosity
 type NewOrderRespType string
+
+// OrderExecutionType define order execution type
+type OrderExecutionType string
 
 // OrderStatusType define order status type
 type OrderStatusType string
@@ -52,6 +56,12 @@ type WorkingType string
 
 // MarginType define margin type
 type MarginType string
+
+// UserDataEventType define user data event type
+type UserDataEventType string
+
+// UserDataEventReasonType define reason type for user data event
+type UserDataEventReasonType string
 
 // Endpoints
 const (
@@ -85,6 +95,14 @@ const (
 	NewOrderRespTypeRESULT NewOrderRespType = "RESULT"
 	NewOrderRespTypeFULL   NewOrderRespType = "FULL"
 
+	OrderExecutionTypeNew         OrderExecutionType = "NEW"
+	OrderExecutionTypePartialFill OrderExecutionType = "PARTIAL_FILL"
+	OrderExecutionTypeFill        OrderExecutionType = "FILL"
+	OrderExecutionTypeCanceled    OrderExecutionType = "CANCELED"
+	OrderExecutionTypeCalculated  OrderExecutionType = "CALCULATED"
+	OrderExecutionTypeExpired     OrderExecutionType = "EXPIRED"
+	OrderExecutionTypeTrade       OrderExecutionType = "TRADE"
+
 	OrderStatusTypeNew             OrderStatusType = "NEW"
 	OrderStatusTypePartiallyFilled OrderStatusType = "PARTIALLY_FILLED"
 	OrderStatusTypeFilled          OrderStatusType = "FILLED"
@@ -117,6 +135,27 @@ const (
 
 	MarginTypeIsolated MarginType = "ISOLATED"
 	MarginTypeCrossed  MarginType = "CROSSED"
+
+	UserDataEventTypeListenKeyExpired    UserDataEventType = "listenKeyExpired"
+	UserDataEventTypeMarginCall          UserDataEventType = "MARGIN_CALL"
+	UserDataEventTypeAccountUpdate       UserDataEventType = "ACCOUNT_UPDATE"
+	UserDataEventTypeOrderTradeUpdate    UserDataEventType = "ORDER_TRADE_UPDATE"
+	UserDataEventTypeAccountConfigUpdate UserDataEventType = "ACCOUNT_CONFIG_UPDATE"
+
+	UserDataEventReasonTypeDeposit             UserDataEventReasonType = "DEPOSIT"
+	UserDataEventReasonTypeWithdraw            UserDataEventReasonType = "WITHDRAW"
+	UserDataEventReasonTypeOrder               UserDataEventReasonType = "ORDER"
+	UserDataEventReasonTypeFundingFee          UserDataEventReasonType = "FUNDING_FEE"
+	UserDataEventReasonTypeWithdrawReject      UserDataEventReasonType = "WITHDRAW_REJECT"
+	UserDataEventReasonTypeAdjustment          UserDataEventReasonType = "ADJUSTMENT"
+	UserDataEventReasonTypeInsuranceClear      UserDataEventReasonType = "INSURANCE_CLEAR"
+	UserDataEventReasonTypeAdminDeposit        UserDataEventReasonType = "ADMIN_DEPOSIT"
+	UserDataEventReasonTypeAdminWithdraw       UserDataEventReasonType = "ADMIN_WITHDRAW"
+	UserDataEventReasonTypeMarginTransfer      UserDataEventReasonType = "MARGIN_TRANSFER"
+	UserDataEventReasonTypeMarginTypeChange    UserDataEventReasonType = "MARGIN_TYPE_CHANGE"
+	UserDataEventReasonTypeAssetTransfer       UserDataEventReasonType = "ASSET_TRANSFER"
+	UserDataEventReasonTypeOptionsPremiumFee   UserDataEventReasonType = "OPTIONS_PREMIUM_FEE"
+	UserDataEventReasonTypeOptionsSettleProfit UserDataEventReasonType = "OPTIONS_SETTLE_PROFIT"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"
@@ -199,6 +238,9 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 	body := &bytes.Buffer{}
 	bodyString := r.form.Encode()
 	header := http.Header{}
+	if r.header != nil {
+		header = r.header.Clone()
+	}
 	if bodyString != "" {
 		header.Set("Content-Type", "application/x-www-form-urlencoded")
 		body = bytes.NewBufferString(bodyString)
@@ -269,7 +311,7 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 	c.debug("response body: %s", string(data))
 	c.debug("response status code: %d", res.StatusCode)
 
-	if res.StatusCode >= 400 {
+	if res.StatusCode >= http.StatusBadRequest {
 		apiErr := new(common.APIError)
 		e := json.Unmarshal(data, apiErr)
 		if e != nil {
@@ -298,6 +340,21 @@ func (c *Client) NewSetServerTimeService() *SetServerTimeService {
 // NewKlinesService init klines service
 func (c *Client) NewKlinesService() *KlinesService {
 	return &KlinesService{c: c}
+}
+
+// NewListPriceChangeStatsService init list prices change stats service
+func (c *Client) NewListPriceChangeStatsService() *ListPriceChangeStatsService {
+	return &ListPriceChangeStatsService{c: c}
+}
+
+// NewListPricesService init listing prices service
+func (c *Client) NewListPricesService() *ListPricesService {
+	return &ListPricesService{c: c}
+}
+
+// NewListBookTickersService init listing booking tickers service
+func (c *Client) NewListBookTickersService() *ListBookTickersService {
+	return &ListBookTickersService{c: c}
 }
 
 // NewStartUserStreamService init starting user stream service
@@ -355,7 +412,42 @@ func (c *Client) NewListLiquidationOrdersService() *ListLiquidationOrdersService
 	return &ListLiquidationOrdersService{c: c}
 }
 
+// NewGetAccountService init account service
+func (c *Client) NewGetAccountService() *GetAccountService {
+	return &GetAccountService{c: c}
+}
+
+// NewGetBalanceService init balance service
+func (c *Client) NewGetBalanceService() *GetBalanceService {
+	return &GetBalanceService{c: c}
+}
+
 // NewGetPositionRiskService init getting position risk service
 func (c *Client) NewGetPositionRiskService() *GetPositionRiskService {
 	return &GetPositionRiskService{c: c}
+}
+
+// NewChangeLeverageService init change leverage service
+func (c *Client) NewChangeLeverageService() *ChangeLeverageService {
+	return &ChangeLeverageService{c: c}
+}
+
+// NewChangeMarginTypeService init change margin type service
+func (c *Client) NewChangeMarginTypeService() *ChangeMarginTypeService {
+	return &ChangeMarginTypeService{c: c}
+}
+
+// NewUpdatePositionMarginService init update position margin
+func (c *Client) NewUpdatePositionMarginService() *UpdatePositionMarginService {
+	return &UpdatePositionMarginService{c: c}
+}
+
+// NewChangePositionModeService init change position mode service
+func (c *Client) NewChangePositionModeService() *ChangePositionModeService {
+	return &ChangePositionModeService{c: c}
+}
+
+// NewGetPositionModeService init get position mode service
+func (c *Client) NewGetPositionModeService() *GetPositionModeService {
+	return &GetPositionModeService{c: c}
 }

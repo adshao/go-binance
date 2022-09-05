@@ -20,6 +20,7 @@ func (s *tradeServiceTestSuite) TestListTrades() {
 			"symbol": "BNBBTC",
             "id": 28457,
             "orderId": 12345,
+			"orderListId": -1,
             "price": "4.00000100",
 			"qty": "12.00000000",
 			"quoteQty": "48.000012",
@@ -60,6 +61,7 @@ func (s *tradeServiceTestSuite) TestListTrades() {
 		ID:              28457,
 		Symbol:          "BNBBTC",
 		OrderID:         12345,
+		OrderListId:     -1,
 		Price:           "4.00000100",
 		Quantity:        "12.00000000",
 		QuoteQuantity:   "48.000012",
@@ -142,6 +144,7 @@ func (s *tradeServiceTestSuite) TestHistoricalTrades() {
             "id": 28457,
             "price": "4.00000100",
             "qty": "12.00000000",
+            "quoteQty": "48.000012",
             "time": 1499865549590,
             "isBuyerMaker": true,
             "isBestMatch": true
@@ -168,12 +171,13 @@ func (s *tradeServiceTestSuite) TestHistoricalTrades() {
 	r.NoError(err)
 	r.Len(trades, 1)
 	e := &Trade{
-		ID:           28457,
-		Price:        "4.00000100",
-		Quantity:     "12.00000000",
-		Time:         1499865549590,
-		IsBuyerMaker: true,
-		IsBestMatch:  true,
+		ID:            28457,
+		Price:         "4.00000100",
+		Quantity:      "12.00000000",
+		QuoteQuantity: "48.000012",
+		Time:          1499865549590,
+		IsBuyerMaker:  true,
+		IsBestMatch:   true,
 	}
 	s.assertTradeEqual(e, trades[0])
 }
@@ -184,6 +188,7 @@ func (s *tradeServiceTestSuite) TestRecentTrades() {
             "id": 28457,
             "price": "4.00000100",
             "qty": "12.00000000",
+            "quoteQty": "48.000012",
             "time": 1499865549590,
             "isBuyerMaker": true,
             "isBestMatch": true
@@ -207,12 +212,13 @@ func (s *tradeServiceTestSuite) TestRecentTrades() {
 	r.NoError(err)
 	r.Len(trades, 1)
 	e := &Trade{
-		ID:           28457,
-		Price:        "4.00000100",
-		Quantity:     "12.00000000",
-		Time:         1499865549590,
-		IsBuyerMaker: true,
-		IsBestMatch:  true,
+		ID:            28457,
+		Price:         "4.00000100",
+		Quantity:      "12.00000000",
+		QuoteQuantity: "48.000012",
+		Time:          1499865549590,
+		IsBuyerMaker:  true,
+		IsBestMatch:   true,
 	}
 	s.assertTradeEqual(e, trades[0])
 }
@@ -222,6 +228,7 @@ func (s *tradeServiceTestSuite) assertTradeEqual(e, a *Trade) {
 	r.Equal(e.ID, a.ID, "ID")
 	r.Equal(e.Price, a.Price, "Price")
 	r.Equal(e.Quantity, a.Quantity, "Quantity")
+	r.Equal(e.QuoteQuantity, a.QuoteQuantity, "QuoteQuantity")
 	r.Equal(e.Time, a.Time, "Time")
 	r.Equal(e.IsBuyerMaker, a.IsBuyerMaker, "IsBuyerMaker")
 	r.Equal(e.IsBestMatch, a.IsBestMatch, "IsBestMatch")
