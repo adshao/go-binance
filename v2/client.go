@@ -927,3 +927,8 @@ func (c *Client) NewInternalUniversalTransferService() *InternalUniversalTransfe
 func (c *Client) NewInternalUniversalTransferHistoryService() *InternalUniversalTransferHistoryService {
 	return &InternalUniversalTransferHistoryService{c: c}
 }
+
+// NewGetUserAsset Get user assets, just for positive data
+func (c *Client) NewGetUserAsset() *GetUserAssetService {
+	return &GetUserAssetService{c: c}
+}
