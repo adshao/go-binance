@@ -927,3 +927,8 @@ func (c *Client) NewInternalUniversalTransferService() *InternalUniversalTransfe
 func (c *Client) NewInternalUniversalTransferHistoryService() *InternalUniversalTransferHistoryService {
 	return &InternalUniversalTransferHistoryService{c: c}
 }
+
+// NewSubAccountListService Query Sub-account List (For Master Account)
+func (c *Client) NewSubAccountListService() *SubAccountListService {
+	return &SubAccountListService{c: c}
+}
