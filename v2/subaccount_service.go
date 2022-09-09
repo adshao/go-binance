@@ -110,7 +110,7 @@ func (s *SubaccountAssetsService) Do(ctx context.Context, opts ...RequestOption)
 	return res, nil
 }
 
-// TransferToSubAccountResponse define transfer to subaccount response
+// SubaccountAssetsResponse Query Sub-account Assets response
 type SubaccountAssetsResponse struct {
 	Balances []AssetBalance `json:"balances"`
 }
@@ -183,7 +183,7 @@ func (s *SubaccountSpotSummaryService) Do(ctx context.Context, opts ...RequestOp
 	return res, nil
 }
 
-// TransferToSubAccountResponse define transfer to subaccount response
+// SubaccountSpotSummaryResponse Query Sub-account Spot Assets Summary response
 type SubaccountSpotSummaryResponse struct {
 	TotalCount                int64                       `json:"totalCount"`
 	MasterAccountTotalAsset   string                      `json:"masterAccountTotalAsset"`
