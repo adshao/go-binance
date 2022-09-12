@@ -90,6 +90,13 @@ type LiquidityRewardType int
 // RewardClaimStatus define the status of claiming a reward
 type RewardClaimStatus int
 
+// RateLimitType define the rate limitation types
+// see https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#enum-definitions
+type RateLimitType string
+
+// RateLimitInterval define the rate limitation intervals
+type RateLimitInterval string
+
 // Endpoints
 const (
 	baseAPIMainURL    = "https://api.binance.com"
@@ -209,6 +216,14 @@ const (
 
 	RewardClaimPending RewardClaimStatus = 0
 	RewardClaimDone    RewardClaimStatus = 1
+
+	RateLimitTypeRequestWeight RateLimitType = "REQUEST_WEIGHT"
+	RateLimitTypeOrders        RateLimitType = "ORDERS"
+	RateLimitTypeRawRequests   RateLimitType = "RAW_REQUESTS"
+
+	RateLimitIntervalSecond RateLimitInterval = "SECOND"
+	RateLimitIntervalMinute RateLimitInterval = "MINUTE"
+	RateLimitIntervalDay    RateLimitInterval = "DAY"
 )
 
 func currentTimestamp() int64 {
@@ -601,6 +616,11 @@ func (c *Client) NewCloseUserStreamService() *CloseUserStreamService {
 // NewExchangeInfoService init exchange info service
 func (c *Client) NewExchangeInfoService() *ExchangeInfoService {
 	return &ExchangeInfoService{c: c}
+}
+
+// NewRateLimitService init rate limit service
+func (c *Client) NewRateLimitService() *RateLimitService {
+	return &RateLimitService{c: c}
 }
 
 // NewGetAssetDetailService init get asset detail service
