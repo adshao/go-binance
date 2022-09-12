@@ -948,6 +948,11 @@ func (c *Client) NewInternalUniversalTransferHistoryService() *InternalUniversal
 	return &InternalUniversalTransferHistoryService{c: c}
 }
 
+// NewSubAccountListService Query Sub-account List (For Master Account)
+func (c *Client) NewSubAccountListService() *SubAccountListService {
+	return &SubAccountListService{c: c}
+}
+
 // NewGetUserAsset Get user assets, just for positive data
 func (c *Client) NewGetUserAsset() *GetUserAssetService {
 	return &GetUserAssetService{c: c}

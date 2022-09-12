@@ -110,7 +110,7 @@ func (s *SubaccountAssetsService) Do(ctx context.Context, opts ...RequestOption)
 	return res, nil
 }
 
-// TransferToSubAccountResponse define transfer to subaccount response
+// SubaccountAssetsResponse Query Sub-account Assets response
 type SubaccountAssetsResponse struct {
 	Balances []AssetBalance `json:"balances"`
 }
@@ -183,7 +183,7 @@ func (s *SubaccountSpotSummaryService) Do(ctx context.Context, opts ...RequestOp
 	return res, nil
 }
 
-// TransferToSubAccountResponse define transfer to subaccount response
+// SubaccountSpotSummaryResponse Query Sub-account Spot Assets Summary response
 type SubaccountSpotSummaryResponse struct {
 	TotalCount                int64                       `json:"totalCount"`
 	MasterAccountTotalAsset   string                      `json:"masterAccountTotalAsset"`
@@ -193,4 +193,81 @@ type SubaccountSpotSummaryResponse struct {
 type SpotSubUserAssetBtcVoList struct {
 	Email      string `json:"email"`
 	TotalAsset string `json:"totalAsset"`
+}
+
+// SubAccountListService Query Sub-account List (For Master Account)
+// https://binance-docs.github.io/apidocs/spot/en/#query-sub-account-list-for-master-account
+type SubAccountListService struct {
+	c           *Client
+	email       *string
+	isFreeze    bool
+	page, limit int
+}
+
+func (s *SubAccountListService) Email(v string) *SubAccountListService {
+	s.email = &v
+	return s
+}
+
+func (s *SubAccountListService) IsFreeze(v bool) *SubAccountListService {
+	s.isFreeze = v
+	return s
+}
+
+func (s *SubAccountListService) Page(v int) *SubAccountListService {
+	s.page = v
+	return s
+}
+
+func (s *SubAccountListService) Limit(v int) *SubAccountListService {
+	s.limit = v
+	return s
+}
+
+func (s *SubAccountListService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountList, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/sub-account/list",
+		secType:  secTypeSigned,
+	}
+	if s.email != nil {
+		r.setParam("email", *s.email)
+	}
+	if s.isFreeze {
+		r.setParam("isFreeze", "true")
+	} else {
+		r.setParam("isFreeze", "false")
+	}
+	if s.page > 0 {
+		r.setParam("page", s.page)
+	}
+	if s.limit > 200 {
+		r.setParam("limit", 200)
+	} else if s.limit <= 0 {
+		r.setParam("limit", 10)
+	} else {
+		r.setParam("limit", s.limit)
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(SubAccountList)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type SubAccountList struct {
+	SubAccounts []SubAccount `json:"subAccounts"`
+}
+
+type SubAccount struct {
+	Email                       string `json:"email"`
+	IsFreeze                    bool   `json:"isFreeze"`
+	CreateTime                  uint64 `json:"createTime"`
+	IsManagedSubAccount         bool   `json:"isManagedSubAccount"`
+	IsAssetManagementSubAccount bool   `json:"isAssetManagementSubAccount"`
 }
