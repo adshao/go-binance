@@ -97,9 +97,10 @@ type RateLimitType string
 // RateLimitInterval define the rate limitation intervals
 type RateLimitInterval string
 
+var baseAPIMainURL = "https://api.binance.com"
+
 // Endpoints
 const (
-	baseAPIMainURL    = "https://api.binance.com"
 	baseAPITestnetURL = "https://testnet.binance.vision"
 )
 
@@ -249,6 +250,11 @@ func getAPIEndpoint() string {
 		return baseAPITestnetURL
 	}
 	return baseAPIMainURL
+}
+
+// SetBaseAPIMainURL allow users to set the url
+func SetBaseAPIMainURL(url string) {
+	baseAPIMainURL = url
 }
 
 // NewClient initialize an API client instance with API key and secret key.
