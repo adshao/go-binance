@@ -228,6 +228,71 @@ func (s *baseOrderTestSuite) assertOrderEqual(e, a *Order) {
 	r.Equal(e.PriceProtect, a.PriceProtect, "PriceProtect")
 }
 
+func (s *orderServiceTestSuite) TestGetOpenOrder() {
+	data := []byte(`{
+		  "symbol": "BTCUSDT",
+		  "orderId": 1,
+		  "clientOrderId": "myOrder1",
+		  "price": "0.1",
+		  "reduceOnly": false,
+		  "origQty": "1.0",
+		  "cumQty": "1.0",
+		  "cumQuote": "1.0",
+		  "status": "NEW",
+		  "timeInForce": "GTC",
+		  "type": "LIMIT",
+		  "side": "BUY",
+		  "stopPrice": "0.0",
+		  "time": 1499827319559,
+		  "updateTime": 1499827319559,
+		  "workingType": "CONTRACT_PRICE",
+		  "activatePrice": "10000",
+		  "priceRate":"0.1",
+		  "positionSide":"BOTH",
+		  "priceProtect": false
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	symbol := "BTCUSDT"
+	orderId := int64(1)
+	recvWindow := int64(1000)
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"symbol":     symbol,
+			"orderId":    1,
+			"recvWindow": recvWindow,
+		})
+		s.assertRequestEqual(e, r)
+	})
+	order, err := s.client.NewGetOpenOrderService().Symbol(symbol).OrderID(orderId).
+		Do(newContext(), WithRecvWindow(recvWindow))
+	r := s.r()
+	r.NoError(err)
+	e := &Order{
+		Symbol:        symbol,
+		OrderID:       orderId,
+		ClientOrderID: "myOrder1",
+		Price:         "0.1",
+		ReduceOnly:    false,
+		OrigQuantity:  "1.0",
+		CumQuantity:   "1.0",
+		CumQuote:      "1.0",
+		Status:        OrderStatusTypeNew,
+		TimeInForce:   TimeInForceTypeGTC,
+		Type:          OrderTypeLimit,
+		Side:          SideTypeBuy,
+		StopPrice:     "0.0",
+		Time:          1499827319559,
+		UpdateTime:    1499827319559,
+		WorkingType:   WorkingTypeContractPrice,
+		ActivatePrice: "10000",
+		PriceRate:     "0.1",
+		PositionSide:  "BOTH",
+	}
+	s.assertOrderEqual(e, order)
+}
+
 func (s *orderServiceTestSuite) TestGetOrder() {
 	data := []byte(`{
 		"symbol": "BTCUSDT",
