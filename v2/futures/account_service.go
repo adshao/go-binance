@@ -68,20 +68,23 @@ func (s *GetAccountService) Do(ctx context.Context, opts ...RequestOption) (res 
 // Account define account info
 type Account struct {
 	Assets                      []*AccountAsset    `json:"assets"`
-	CanDeposit                  bool               `json:"canDeposit"`
-	CanTrade                    bool               `json:"canTrade"`
-	CanWithdraw                 bool               `json:"canWithdraw"`
 	FeeTier                     int                `json:"feeTier"`
-	MaxWithdrawAmount           string             `json:"maxWithdrawAmount"`
-	Positions                   []*AccountPosition `json:"positions"`
+	CanTrade                    bool               `json:"canTrade"`
+	CanDeposit                  bool               `json:"canDeposit"`
+	CanWithdraw                 bool               `json:"canWithdraw"`
+	UpdateTime                  int64              `json:"updateTime"`
 	TotalInitialMargin          string             `json:"totalInitialMargin"`
 	TotalMaintMargin            string             `json:"totalMaintMargin"`
-	TotalMarginBalance          string             `json:"totalMarginBalance"`
-	TotalOpenOrderInitialMargin string             `json:"totalOpenOrderInitialMargin"`
-	TotalPositionInitialMargin  string             `json:"totalPositionInitialMargin"`
-	TotalUnrealizedProfit       string             `json:"totalUnrealizedProfit"`
 	TotalWalletBalance          string             `json:"totalWalletBalance"`
-	UpdateTime                  int64              `json:"updateTime"`
+	TotalUnrealizedProfit       string             `json:"totalUnrealizedProfit"`
+	TotalMarginBalance          string             `json:"totalMarginBalance"`
+	TotalPositionInitialMargin  string             `json:"totalPositionInitialMargin"`
+	TotalOpenOrderInitialMargin string             `json:"totalOpenOrderInitialMargin"`
+	TotalCrossWalletBalance     string             `json:"totalCrossWalletBalance"`
+	TotalCrossUnPnl             string             `json:"totalCrossUnPnl"`
+	AvailableBalance            string             `json:"availableBalance"`
+	MaxWithdrawAmount           string             `json:"maxWithdrawAmount"`
+	Positions                   []*AccountPosition `json:"positions"`
 }
 
 // AccountAsset define account asset
