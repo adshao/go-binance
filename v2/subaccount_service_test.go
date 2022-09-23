@@ -1,8 +1,9 @@
 package binance
 
 import (
-	"github.com/stretchr/testify/suite"
 	"testing"
+
+	"github.com/stretchr/testify/suite"
 )
 
 type subAccountServiceTestSuite struct {
@@ -11,6 +12,45 @@ type subAccountServiceTestSuite struct {
 
 func TestSubAccountService(t *testing.T) {
 	suite.Run(t, new(subAccountServiceTestSuite))
+}
+
+func (s *subAccountServiceTestSuite) TestSubaccountDepositAddressService() {
+	data := []byte(`
+	{
+		"address":"TDunhSa7jkTNuKrusUTU1MUHtqXoBPKETV",
+		"coin":"USDT",
+		"tag":"a_tag",
+		"url":"https://tronscan.org/#/address/TDunhSa7jkTNuKrusUTU1MUHtqXoBPKETV"
+	}
+	`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	email := "testsub@gmail.com"
+	coin := "a_coin"
+	network := "a_network"
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"email":   email,
+			"coin":    coin,
+			"network": network,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewSubaccountDepositAddressService().
+		Email(email).
+		Coin(coin).
+		Network(network).
+		Do(newContext())
+
+	r := s.r()
+	r.NoError(err)
+	r.Equal("TDunhSa7jkTNuKrusUTU1MUHtqXoBPKETV", res.Address, "Address")
+	r.Equal("USDT", res.Coin, "Coin")
+	r.Equal("a_tag", res.Tag, "Tag")
+	r.Equal("https://tronscan.org/#/address/TDunhSa7jkTNuKrusUTU1MUHtqXoBPKETV", res.URL, "URL")
 }
 
 func (s *subAccountServiceTestSuite) TestSubAccountListService() {
