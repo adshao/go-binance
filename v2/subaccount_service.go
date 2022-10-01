@@ -68,6 +68,71 @@ type TransferToSubAccountResponse struct {
 	TxnID int64 `json:"txnId"`
 }
 
+type SubaccountDepositAddressService struct {
+	c       *Client
+	email   string
+	coin    string
+	network string
+}
+
+// Email set email
+func (s *SubaccountDepositAddressService) Email(email string) *SubaccountDepositAddressService {
+	s.email = email
+	return s
+}
+
+// Coin set coin
+func (s *SubaccountDepositAddressService) Coin(coin string) *SubaccountDepositAddressService {
+	s.coin = coin
+	return s
+}
+
+// Network set network
+func (s *SubaccountDepositAddressService) Network(network string) *SubaccountDepositAddressService {
+	s.network = network
+	return s
+}
+
+func (s *SubaccountDepositAddressService) subaccountDepositAddress(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: endpoint,
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"email":   s.email,
+		"coin":    s.coin,
+		"network": s.network,
+	}
+	r.setParams(m)
+	data, err = s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []byte{}, err
+	}
+	return data, nil
+}
+
+// Do send request
+func (s *SubaccountDepositAddressService) Do(ctx context.Context, opts ...RequestOption) (res *SubaccountDepositAddressResponse, err error) {
+	data, err := s.subaccountDepositAddress(ctx, "/sapi/v1/capital/deposit/subAddress", opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = &SubaccountDepositAddressResponse{}
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type SubaccountDepositAddressResponse struct {
+	Address string `json:"address"`
+	Coin    string `json:"coin"`
+	Tag     string `json:"tag"`
+	URL     string `json:"url"`
+}
+
 type SubaccountAssetsService struct {
 	c     *Client
 	email string
