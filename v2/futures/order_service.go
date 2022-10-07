@@ -3,6 +3,7 @@ package futures
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -254,6 +255,57 @@ func (s *ListOpenOrdersService) Do(ctx context.Context, opts ...RequestOption) (
 	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return []*Order{}, err
+	}
+	return res, nil
+}
+
+// GetOpenOrderService query current open order
+type GetOpenOrderService struct {
+	c                 *Client
+	symbol            string
+	orderID           *int64
+	origClientOrderID *string
+}
+
+func (s *GetOpenOrderService) Symbol(symbol string) *GetOpenOrderService {
+	s.symbol = symbol
+	return s
+}
+
+func (s *GetOpenOrderService) OrderID(orderID int64) *GetOpenOrderService {
+	s.orderID = &orderID
+	return s
+}
+
+func (s *GetOpenOrderService) OrigClientOrderID(origClientOrderID string) *GetOpenOrderService {
+	s.origClientOrderID = &origClientOrderID
+	return s
+}
+
+func (s *GetOpenOrderService) Do(ctx context.Context, opts ...RequestOption) (res *Order, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/fapi/v1/openOrder",
+		secType:  secTypeSigned,
+	}
+	r.setParam("symbol", s.symbol)
+	if s.orderID == nil && s.origClientOrderID == nil {
+		return nil, errors.New("either orderId or origClientOrderId must be sent")
+	}
+	if s.orderID != nil {
+		r.setParam("orderId", *s.orderID)
+	}
+	if s.origClientOrderID != nil {
+		r.setParam("origClientOrderId", *s.origClientOrderID)
+	}
+	data, _, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(Order)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
 	}
 	return res, nil
 }

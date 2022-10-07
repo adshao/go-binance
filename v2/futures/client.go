@@ -424,7 +424,7 @@ func (c *Client) NewCreateOrderService() *CreateOrderService {
 	return &CreateOrderService{c: c}
 }
 
-// NewCreateBatchOrderService init creating batch order service
+// NewCreateBatchOrdersService init creating batch order service
 func (c *Client) NewCreateBatchOrdersService() *CreateBatchOrdersService {
 	return &CreateBatchOrdersService{c: c}
 }
@@ -447,6 +447,11 @@ func (c *Client) NewCancelAllOpenOrdersService() *CancelAllOpenOrdersService {
 // NewCancelMultipleOrdersService init cancel multiple orders service
 func (c *Client) NewCancelMultipleOrdersService() *CancelMultiplesOrdersService {
 	return &CancelMultiplesOrdersService{c: c}
+}
+
+// NewGetOpenOrderService init get open order service
+func (c *Client) NewGetOpenOrderService() *GetOpenOrderService {
+	return &GetOpenOrderService{c: c}
 }
 
 // NewListOpenOrdersService init list open orders service

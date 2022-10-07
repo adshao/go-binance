@@ -1250,6 +1250,59 @@ func (s *websocketServiceTestSuite) assertWsTradeEventEqual(e, a *WsTradeEvent) 
 	r.Equal(e.IsBuyerMaker, a.IsBuyerMaker, "IsBuyerMaker")
 }
 
+func (s *websocketServiceTestSuite) assertWsCombinedTradeEventEqual(e, a *WsCombinedTradeEvent) {
+	r := s.r()
+	r.Equal(e.Stream, a.Stream, "Stream")
+	s.assertWsTradeEventEqual(&e.Data, &a.Data)
+}
+
+func (s *websocketServiceTestSuite) TestWsCombinedTradeServe() {
+	data := []byte(`{
+		"stream": "bnbbtc@trade",
+		"data": {
+			"e": "trade",
+			"E": 123456789,
+			"s": "BNBBTC",
+			"t": 12345,
+			"p": "0.001",
+			"q": "100",
+			"b": 88,
+			"a": 50,
+			"T": 123456785,
+			"m": true,
+			"M": true
+		}
+	}`)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+
+	doneC, stopC, err := WsCombinedTradeServe([]string{"BNBBTC"}, func(event *WsCombinedTradeEvent) {
+		e := &WsCombinedTradeEvent{
+			Stream: "bnbbtc@trade",
+			Data: WsTradeEvent{
+				Event:         "trade",
+				Time:          123456789,
+				Symbol:        "BNBBTC",
+				TradeID:       12345,
+				Price:         "0.001",
+				Quantity:      "100",
+				BuyerOrderID:  88,
+				SellerOrderID: 50,
+				TradeTime:     123456785,
+				IsBuyerMaker:  true,
+			},
+		}
+
+		s.assertWsCombinedTradeEventEqual(e, event)
+	}, func(err error) {
+		s.r().EqualError(err, fakeErrMsg)
+	})
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
 func (s *websocketServiceTestSuite) TestWsAllMiniMarketsStatServe() {
 	data := []byte(`[{
   		"e": "24hrMiniTicker",

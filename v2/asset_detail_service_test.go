@@ -120,3 +120,66 @@ func (s *assetDetailServiceTestSuite) TestGetAllCoinsInfo() {
 	s.r().Equal(res[0].NetworkList[0].WithdrawEnable, false, "withdrawEnable")
 	s.r().Equal(res[0].NetworkList[1].MinConfirm, 1, "minConfirm")
 }
+
+func (s *assetDetailServiceTestSuite) TestGetUserAsset() {
+	data := []byte(`
+	[
+		{
+			"asset": "AVAX",
+			"free": "1",
+			"locked": "0",
+			"freeze": "0",
+			"withdrawing": "0",
+			"ipoable": "0",
+			"btcValuation": "0"
+		},
+		{
+			"asset": "BCH",
+			"free": "0.9",
+			"locked": "0",
+			"freeze": "0",
+			"withdrawing": "0",
+			"ipoable": "0",
+			"btcValuation": "0"
+		}
+	]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest()
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewGetUserAsset().Do(newContext())
+	s.r().NoError(err)
+	s.assertUserAssetEqual(UserAssetRecord{
+		Asset:        "AVAX",
+		Free:         "1",
+		Locked:       "0",
+		Freeze:       "0",
+		Withdrawing:  "0",
+		Ipoable:      "0",
+		BtcValuation: "0",
+	}, res[0])
+	s.assertUserAssetEqual(UserAssetRecord{
+		Asset:        "BCH",
+		Free:         "0.9",
+		Locked:       "0",
+		Freeze:       "0",
+		Withdrawing:  "0",
+		Ipoable:      "0",
+		BtcValuation: "0",
+	}, res[1])
+}
+
+func (s *assetDetailServiceTestSuite) assertUserAssetEqual(e, a UserAssetRecord) {
+	r := s.r()
+	r.Equal(e.Asset, a.Asset, "Asset")
+	r.Equal(e.Free, a.Free, "Free")
+	r.Equal(e.Locked, a.Locked, "Locked")
+	r.Equal(e.Freeze, a.Freeze, "Freeze")
+	r.Equal(e.Withdrawing, a.Withdrawing, "Withdrawing")
+	r.Equal(e.Ipoable, a.Ipoable, "Ipoable")
+	r.Equal(e.BtcValuation, a.BtcValuation, "BtcValuation")
+}

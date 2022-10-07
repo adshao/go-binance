@@ -294,3 +294,132 @@ type SavingsFixedProduct struct {
 	Type               string `json:"type"`
 	WithAreaLimitation bool   `json:"withAreaLimitation"`
 }
+
+// SavingFlexibleProductPositionsService fetches the saving flexible product positions
+type SavingFlexibleProductPositionsService struct {
+	c     *Client
+	asset string
+}
+
+// Asset sets the asset parameter.
+func (s *SavingFlexibleProductPositionsService) Asset(asset string) *SavingFlexibleProductPositionsService {
+	s.asset = asset
+	return s
+}
+
+// Do send request
+func (s *SavingFlexibleProductPositionsService) Do(ctx context.Context, opts ...RequestOption) ([]*SavingFlexibleProductPosition, error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/lending/daily/token/position",
+		secType:  secTypeSigned,
+	}
+	m := params{}
+	if s.asset != "" {
+		m["asset"] = s.asset
+	}
+	r.setParams(m)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	var res []*SavingFlexibleProductPosition
+	if err = json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// SavingFlexibleProductPosition represents a saving flexible product position.
+type SavingFlexibleProductPosition struct {
+	Asset                 string `json:"asset"`
+	ProductId             string `json:"productId"`
+	ProductName           string `json:"productName"`
+	AvgAnnualInterestRate string `json:"avgAnnualInterestRate"`
+	AnnualInterestRate    string `json:"annualInterestRate"`
+	DailyInterestRate     string `json:"dailyInterestRate"`
+	TotalInterest         string `json:"totalInterest"`
+	TotalAmount           string `json:"totalAmount"`
+	TotalPurchasedAmount  string `json:"todayPurchasedAmount"`
+	RedeemingAmount       string `json:"redeemingAmount"`
+	FreeAmount            string `json:"freeAmount"`
+	FreezeAmount          string `json:"freezeAmount,omitempty"`
+	LockedAmount          string `json:"lockedAmount,omitempty"`
+	CanRedeem             bool   `json:"canRedeem"`
+}
+
+// SavingFixedProjectPositionsService fetches the saving flexible product positions
+type SavingFixedProjectPositionsService struct {
+	c         *Client
+	asset     string
+	status    string
+	projectId string
+}
+
+// Asset sets the asset parameter.
+func (s *SavingFixedProjectPositionsService) Asset(asset string) *SavingFixedProjectPositionsService {
+	s.asset = asset
+	return s
+}
+
+// Status ("HOLDING", "REDEEMED"), default will fetch all
+func (s *SavingFixedProjectPositionsService) Status(status string) *SavingFixedProjectPositionsService {
+	s.status = status
+	return s
+}
+
+// Project ID of the fixed project/activity
+func (s *SavingFixedProjectPositionsService) ProjectID(projectId string) *SavingFixedProjectPositionsService {
+	s.projectId = projectId
+	return s
+}
+
+// Do send request
+func (s *SavingFixedProjectPositionsService) Do(ctx context.Context, opts ...RequestOption) ([]*SavingFixedProjectPosition, error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/lending/project/position/list",
+		secType:  secTypeSigned,
+	}
+	m := params{}
+	if s.asset != "" {
+		m["asset"] = s.asset
+	}
+	if s.status != "" {
+		m["status"] = s.status
+	}
+	if s.projectId != "" {
+		m["projectId"] = s.projectId
+	}
+	r.setParams(m)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	var res []*SavingFixedProjectPosition
+	if err = json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// SavingFixedProjectPosition represents a saving flexible product position.
+type SavingFixedProjectPosition struct {
+	Asset           string `json:"asset"`
+	CanTransfer     bool   `json:"canTransfer"`
+	CreateTimestamp int64  `json:"createTimestamp"`
+	Duration        int64  `json:"duration"`
+	StartTime       int64  `json:"startTime"`
+	EndTime         int64  `json:"endTime"`
+	PurchaseTime    int64  `json:"purchaseTime"`
+	RedeemDate      string `json:"redeemDate"`
+	Interest        string `json:"interest"`
+	InterestRate    string `json:"interestRate"`
+	Lot             int32  `json:"lot"`
+	PositionId      int64  `json:"positionId"`
+	Principal       string `json:"principal"`
+	ProjectId       string `json:"projectId"`
+	ProjectName     string `json:"projectName"`
+	Status          string `json:"status"`
+	ProjectType     string `json:"type"`
+}
