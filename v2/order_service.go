@@ -182,6 +182,8 @@ type CreateOrderResponse struct {
 	Fills                 []*Fill `json:"fills"`
 	MarginBuyBorrowAmount string  `json:"marginBuyBorrowAmount"` // for margin
 	MarginBuyBorrowAsset  string  `json:"marginBuyBorrowAsset"`
+	TrailingDelta         int64   `json:"trailingDelta"`
+	StopPrice             string  `json:"stopPrice"`
 }
 
 // Fill may be returned in an array of fills in a CreateOrderResponse.
@@ -532,6 +534,7 @@ type Order struct {
 	IsWorking                bool            `json:"isWorking"`
 	IsIsolated               bool            `json:"isIsolated"`
 	OrigQuoteOrderQuantity   string          `json:"origQuoteOrderQty"`
+	TrailingDelta            int64           `json:"trailingDelta"`
 }
 
 // ListOrdersService all account orders; active, canceled, or filled

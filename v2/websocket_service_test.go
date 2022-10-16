@@ -774,6 +774,7 @@ func (s *websocketServiceTestSuite) assertOrderUpdate(e, a *WsOrderUpdate) {
 	r.Equal(e.LatestVolume, a.LatestVolume, "OrigCustomOrderId")
 	r.Equal(e.OrigCustomOrderId, a.OrigCustomOrderId, "OrigCustomOrderId")
 	r.Equal(e.RejectReason, a.RejectReason, "RejectReason")
+	r.Equal(e.TrailingDelta, a.TrailingDelta, "TrailingDelta")
 }
 
 func (s *websocketServiceTestSuite) assertBalanceUpdate(e, a *WsBalanceUpdate) {

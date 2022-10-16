@@ -528,6 +528,7 @@ type WsOrderUpdate struct {
 	FilledQuoteVolume string          `json:"Z"` // the quote volume that already filled
 	LatestQuoteVolume string          `json:"Y"` // the quote volume for the latest trade
 	QuoteVolume       string          `json:"Q"`
+	TrailingDelta     int64           `json:"d"`
 }
 
 type WsOCOUpdate struct {
