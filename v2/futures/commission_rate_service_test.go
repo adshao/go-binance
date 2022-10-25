@@ -17,20 +17,18 @@ func TestCommissionRateService(t *testing.T) {
 
 func (commissionRateService *commissionRateServiceTestSuite) TestCommissionRate() {
 	data := []byte(`
-		[
-			{
-				"symbol": "BTCUSDT",
-				"makerCommissionRate": "0.001",
-				"takerCommissionRate": "0.001"
-			}
-		]
+		{
+			"symbol": "BTCUSDT",
+			"makerCommissionRate": "0.001",
+			"takerCommissionRate": "0.001"
+		}
 	`)
 	commissionRateService.mockDo(data, nil)
 	defer commissionRateService.assertDo()
 
 	symbol := "BTCUSDT"
 	commissionRateService.assertReq(func(request *request) {
-		requestParams := newRequest().setParam("symbol", symbol)
+		requestParams := newSignedRequest().setParam("symbol", symbol)
 		commissionRateService.assertRequestEqual(requestParams, request)
 	})
 	res, err := commissionRateService.client.NewCommissionRateService().Symbol(symbol).Do(newContext())
@@ -40,7 +38,7 @@ func (commissionRateService *commissionRateServiceTestSuite) TestCommissionRate(
 		MakerCommissionRate: "0.001",
 		TakerCommissionRate: "0.001",
 	}
-	commissionRateService.assertCommissionRateResponseEqual(expectation, res[0])
+	commissionRateService.assertCommissionRateResponseEqual(expectation, res)
 }
 
 func (commissionRateServiceTestSuite *commissionRateServiceTestSuite) assertCommissionRateResponseEqual(expectation, assertedData *CommissionRate) {
