@@ -11,7 +11,6 @@ package binance
 
 import (
 	"context"
-	"fmt"
 )
 
 // CreateUserUniversalTransferService submits a transfer request.
@@ -178,8 +177,7 @@ func (s *ListUserUniversalTransfer) Do(ctx context.Context) (res *TransferResult
 	if err != nil {
 		return
 	}
-	//res = make([]*TransferResult, 0)
-	fmt.Println("[debug]", string(data))
+
 	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return
@@ -198,6 +196,6 @@ type Transfer struct {
 	Amount    string `json:"amount"`
 	Type      string `json:"type"`
 	Status    string `json:"status"`
-	TranId    string `json:"tranId"`
-	Timestamp string `json:"timestamp"`
+	TranId    int64  `json:"tranId"`
+	Timestamp int64  `json:"timestamp"`
 }
