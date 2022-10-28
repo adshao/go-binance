@@ -119,7 +119,7 @@ func (s *ListUserUniversalTransfer) StartTime(v int64) *ListUserUniversalTransfe
 
 // EndTime sets the startTime parameter.
 func (s *ListUserUniversalTransfer) EndTime(v int64) *ListUserUniversalTransfer {
-	s.startTime = &v
+	s.endTime = &v
 	return s
 }
 
@@ -131,7 +131,7 @@ func (s *ListUserUniversalTransfer) Current(v int) *ListUserUniversalTransfer {
 
 // Size sets the size parameter.
 func (s *ListUserUniversalTransfer) Size(v int) *ListUserUniversalTransfer {
-	s.current = &v
+	s.size = &v
 	return s
 }
 
@@ -155,9 +155,12 @@ func (s *ListUserUniversalTransfer) Do(ctx context.Context) (res *TransferResult
 		secType:  secTypeSigned,
 	}
 	r.setParam("type", s.types)
-
-	r.setParam("startTime", *s.startTime)
-	r.setParam("endTime", *s.endTime)
+	if s.startTime != nil {
+		r.setParam("startTime", *s.startTime)
+	}
+	if s.endTime != nil {
+		r.setParam("endTime", *s.endTime)
+	}
 	if s.current != nil {
 		r.setParam("current", *s.current)
 	}
