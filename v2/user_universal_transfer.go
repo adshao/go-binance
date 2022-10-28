@@ -155,12 +155,9 @@ func (s *ListUserUniversalTransfer) Do(ctx context.Context) (res *TransferResult
 		secType:  secTypeSigned,
 	}
 	r.setParam("type", s.types)
-	if s.startTime != nil {
-		r.setParam("startTime", *s.startTime)
-	}
-	if s.endTime != nil {
-		r.setParam("endTime", *s.endTime)
-	}
+
+	r.setParam("startTime", *s.startTime)
+	r.setParam("endTime", *s.endTime)
 	if s.current != nil {
 		r.setParam("current", *s.current)
 	}
