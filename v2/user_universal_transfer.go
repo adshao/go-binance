@@ -148,7 +148,7 @@ func (s *ListUserUniversalTransfer) ToSymbol(v string) *ListUserUniversalTransfe
 }
 
 // Do sends the request.
-func (s *ListUserUniversalTransfer) Do(ctx context.Context) (res []*TransferResult, err error) {
+func (s *ListUserUniversalTransfer) Do(ctx context.Context) (res *TransferResult, err error) {
 	r := &request{
 		method:   "GET",
 		endpoint: "/sapi/v1/asset/transfer",
@@ -177,7 +177,8 @@ func (s *ListUserUniversalTransfer) Do(ctx context.Context) (res []*TransferResu
 	if err != nil {
 		return
 	}
-	res = make([]*TransferResult, 0)
+	//res = make([]*TransferResult, 0)
+
 	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return
