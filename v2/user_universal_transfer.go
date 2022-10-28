@@ -154,7 +154,7 @@ func (s *ListUserUniversalTransfer) Do(ctx context.Context) (res []*TransferResu
 		endpoint: "/sapi/v1/asset/transfer",
 		secType:  secTypeSigned,
 	}
-	r.setParam("types", s.types)
+	r.setParam("type", s.types)
 	if s.startTime != nil {
 		r.setParam("startTime", *s.startTime)
 	}
