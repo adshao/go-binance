@@ -11,6 +11,7 @@ package binance
 
 import (
 	"context"
+	"fmt"
 )
 
 // CreateUserUniversalTransferService submits a transfer request.
@@ -178,7 +179,7 @@ func (s *ListUserUniversalTransfer) Do(ctx context.Context) (res *TransferResult
 		return
 	}
 	//res = make([]*TransferResult, 0)
-
+	fmt.Println("[debug]", string(data))
 	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return
