@@ -9,33 +9,43 @@ import (
 )
 
 // Endpoints
-const (
-	baseWsMainURL          = "wss://stream.binance.com:9443/ws"
-	baseWsTestnetURL       = "wss://testnet.binance.vision/ws"
-	baseCombinedMainURL    = "wss://stream.binance.com:9443/stream?streams="
-	baseCombinedTestnetURL = "wss://testnet.binance.vision/stream?streams="
-)
-
 var (
 	// WebsocketTimeout is an interval for sending ping/pong messages if WebsocketKeepalive is enabled
 	WebsocketTimeout = time.Second * 60
 	// WebsocketKeepalive enables sending ping/pong messages to check the connection stability
 	WebsocketKeepalive = false
+	// default ws baseURL as protocol+host[+port]
+	baseURL = "wss://stream.binance.com:9443"
+	// default testnet ws baseURL as protocol+host[+port]
+	baseTestnetURL = "wss://testnet.binance.vision"
+	// derived from baseURL
+	baseWsMainURL       string
+	baseCombinedMainURL string
 )
+
+func init() {
+	if UseTestnet {
+		baseURL = baseTestnetURL
+	}
+	SetWebsocketBaseURL(baseURL)
+}
+
+// failing to set the websocket base url prior to use can lead to
+// interesting scenarios syncing an order bool when the rest client
+// is not using binance.com
+func SetWebsocketBaseURL(url string) {
+	baseURL = url
+	baseWsMainURL = fmt.Sprintf("%s/ws", baseURL)
+	baseCombinedMainURL = fmt.Sprintf("%s/stream?streams=", baseURL)
+}
 
 // getWsEndpoint return the base endpoint of the WS according the UseTestnet flag
 func getWsEndpoint() string {
-	if UseTestnet {
-		return baseWsTestnetURL
-	}
 	return baseWsMainURL
 }
 
 // getCombinedEndpoint return the base endpoint of the combined stream according the UseTestnet flag
 func getCombinedEndpoint() string {
-	if UseTestnet {
-		return baseCombinedTestnetURL
-	}
 	return baseCombinedMainURL
 }
 
