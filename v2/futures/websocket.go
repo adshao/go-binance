@@ -1,6 +1,7 @@
 package futures
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -24,7 +25,13 @@ func newWsConfig(endpoint string) *WsConfig {
 }
 
 var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	c, _, err := websocket.DefaultDialer.Dial(cfg.Endpoint, nil)
+	Dialer := websocket.Dialer{
+		Proxy:             http.ProxyFromEnvironment,
+		HandshakeTimeout:  45 * time.Second,
+		EnableCompression: false,
+	}
+
+	c, _, err := Dialer.Dial(cfg.Endpoint, nil)
 	if err != nil {
 		return nil, nil, err
 	}
