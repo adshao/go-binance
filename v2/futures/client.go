@@ -8,7 +8,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -332,7 +332,7 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 	if err != nil {
 		return []byte{}, &http.Header{}, err
 	}
-	data, err = io.ReadAll(res.Body)
+	data, err = ioutil.ReadAll(res.Body)
 	if err != nil {
 		return []byte{}, &http.Header{}, err
 	}
