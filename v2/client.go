@@ -265,7 +265,7 @@ func NewClient(apiKey, secretKey string) *Client {
 	}
 }
 
-//NewProxiedClient passing a proxy url
+// NewProxiedClient passing a proxy url
 func NewProxiedClient(apiKey, secretKey, proxyUrl string) *Client {
 	proxy, err := url.Parse(proxyUrl)
 	if err != nil {
@@ -310,6 +310,7 @@ type Client struct {
 	Logger     *log.Logger
 	TimeOffset int64
 	do         doFunc
+	UsedWeight string
 }
 
 func (c *Client) debug(format string, v ...interface{}) {
@@ -400,6 +401,9 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 	if err != nil {
 		return []byte{}, err
 	}
+
+	c.UsedWeight = res.Header.Get("X-MBX-USED-WEIGHT-1M")
+
 	defer func() {
 		cerr := res.Body.Close()
 		// Only overwrite the retured error if the original error was nil and an
