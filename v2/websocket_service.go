@@ -523,6 +523,7 @@ type WsOrderUpdate struct {
 	TransactionTime   int64           `json:"T"`
 	TradeId           int64           `json:"t"`
 	IsInOrderBook     bool            `json:"w"` // is the order in the order book?
+	WorkingTime       int64           `json:"W"` // Working Time; This is only visible if the order has been placed on the book.
 	IsMaker           bool            `json:"m"` // is this order maker?
 	CreateTime        int64           `json:"O"`
 	FilledQuoteVolume string          `json:"Z"` // the quote volume that already filled
