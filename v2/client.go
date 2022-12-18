@@ -852,6 +852,21 @@ func (c *Client) NewSpotRebateHistoryService() *SpotRebateHistoryService {
 	return &SpotRebateHistoryService{c: c}
 }
 
+// NewConvertGetQuoteService init the convert get quote service
+func (c *Client) NewConvertGetQuoteService() *ConvertGetQuoteService {
+	return &ConvertGetQuoteService{c: c}
+}
+
+// NewConvertAcceptQuoteService init the convert get quote service
+func (c *Client) NewConvertAcceptQuoteService() *ConvertAcceptQuoteService {
+	return &ConvertAcceptQuoteService{c: c}
+}
+
+// NewConvertOrderStatusService init the convert get quote service
+func (c *Client) NewConvertOrderStatusService() *ConvertOrderStatusService {
+	return &ConvertOrderStatusService{c: c}
+}
+
 // NewConvertTradeHistoryService init the convert trade history service
 func (c *Client) NewConvertTradeHistoryService() *ConvertTradeHistoryService {
 	return &ConvertTradeHistoryService{c: c}
