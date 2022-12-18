@@ -47,7 +47,7 @@ func (s *ConvertGetQuoteService) ValidTime(validTime string) *ConvertGetQuoteSer
 // Do send request
 func (s *ConvertGetQuoteService) Do(ctx context.Context, opts ...RequestOption) (*ConvertGetQuote, error) {
 	r := &request{
-		method:   http.MethodGet,
+		method:   http.MethodPost,
 		endpoint: "/sapi/v1/convert/getQuote",
 		secType:  secTypeSigned,
 	}
@@ -97,7 +97,7 @@ func (s *ConvertAcceptQuoteService) QuoteID(quoteID string) *ConvertAcceptQuoteS
 // Do send request
 func (s *ConvertAcceptQuoteService) Do(ctx context.Context, opts ...RequestOption) (*ConvertAcceptQuote, error) {
 	r := &request{
-		method:   http.MethodGet,
+		method:   http.MethodPost,
 		endpoint: "/sapi/v1/convert/acceptQuote",
 		secType:  secTypeSigned,
 	}
