@@ -8,9 +8,10 @@ import (
 
 // ExchangeInfoService exchange info service
 type ExchangeInfoService struct {
-	c       *Client
-	symbol  string
-	symbols string
+	c           *Client
+	symbol      string
+	symbols     string
+	permissions string
 }
 
 // Symbol set symbol
@@ -29,6 +30,16 @@ func (s *ExchangeInfoService) Symbols(symbols ...string) *ExchangeInfoService {
 	return s
 }
 
+// Permissions set permission
+func (s *ExchangeInfoService) Permissions(permissions ...string) *ExchangeInfoService {
+	if len(permissions) == 0 {
+		s.permissions = "[]"
+	} else {
+		s.permissions = "[\"" + strings.Join(permissions, "\",\"") + "\"]"
+	}
+	return s
+}
+
 // Do send request
 func (s *ExchangeInfoService) Do(ctx context.Context, opts ...RequestOption) (res *ExchangeInfo, err error) {
 	r := &request{
@@ -42,6 +53,9 @@ func (s *ExchangeInfoService) Do(ctx context.Context, opts ...RequestOption) (re
 	}
 	if len(s.symbols) != 0 {
 		m["symbols"] = s.symbols
+	}
+	if len(s.permissions) != 0 {
+		m["permissions"] = s.permissions
 	}
 	r.setParams(m)
 	data, err := s.c.callAPI(ctx, r, opts...)

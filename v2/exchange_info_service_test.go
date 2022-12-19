@@ -52,7 +52,8 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 				"ocoAllowed": true,
 				"isSpotTradingAllowed": true,
 				"isMarginTradingAllowed": false,
-				"filters":[{"filterType":"PRICE_FILTER","minPrice":"0.00000100","maxPrice":"100000.00000000","tickSize":"0.00000100"},{"filterType":"LOT_SIZE","minQty":"0.00100000","maxQty":"100000.00000000","stepSize":"0.00100000"},{"filterType":"MIN_NOTIONAL","minNotional":"0.00100000"},{"filterType": "MAX_NUM_ALGO_ORDERS", "maxNumAlgoOrders": 5}]
+				"filters":[{"filterType":"PRICE_FILTER","minPrice":"0.00000100","maxPrice":"100000.00000000","tickSize":"0.00000100"},{"filterType":"LOT_SIZE","minQty":"0.00100000","maxQty":"100000.00000000","stepSize":"0.00100000"},{"filterType":"MIN_NOTIONAL","minNotional":"0.00100000"},{"filterType": "MAX_NUM_ALGO_ORDERS", "maxNumAlgoOrders": 5}],
+				"permissions": ["SPOT","MARGIN"]
 			}
 		]
 	}`)
@@ -60,14 +61,16 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 	defer s.assertDo()
 	symbol := "ETHBTC"
 	symbols := []string{"ETHBTC", "LTCBTC"}
+	permissions := []string{"SPOT", "MARGIN"}
 	s.assertReq(func(r *request) {
 		e := newRequest().setParams(map[string]interface{}{
-			"symbol":  symbol,
-			"symbols": `["ETHBTC","LTCBTC"]`,
+			"symbol":      symbol,
+			"symbols":     `["ETHBTC","LTCBTC"]`,
+			"permissions": `["SPOT","MARGIN"]`,
 		})
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewExchangeInfoService().Symbol(symbol).Symbols(symbols...).Do(newContext())
+	res, err := s.client.NewExchangeInfoService().Symbol(symbol).Symbols(symbols...).Permissions(permissions...).Do(newContext())
 	s.r().NoError(err)
 	ei := &ExchangeInfo{
 		Timezone:   "UTC",
@@ -97,6 +100,7 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 					{"filterType": "MIN_NOTIONAL", "minNotional": "0.00100000"},
 					{"filterType": "MAX_NUM_ALGO_ORDERS", "maxNumAlgoOrders": 5},
 				},
+				Permissions: []string{"SPOT", "MARGIN"},
 			},
 		},
 	}
@@ -168,6 +172,8 @@ func (s *exchangeInfoServiceTestSuite) assertExchangeInfoEqual(e, a *ExchangeInf
 				}
 
 			}
+			r.Len(currentSymbol.Permissions, len(e.Symbols[i].Permissions))
+			r.Equal(e.Symbols[i].Permissions, currentSymbol.Permissions, "Permissions")
 
 			return
 		}
