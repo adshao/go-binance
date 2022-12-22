@@ -1,0 +1,25 @@
+name: Check
+
+on:
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  UnitTest:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup Go
+      uses: actions/setup-go@v3
+      with:
+        go-version-file: './v2/go.mod'
+        cache: true
+        cache-dependency-path: './v2/go.sum'
+    - name: Format
+      run: ./check.sh format
+    - name: Vet
+      run: ./check.sh vet
+    - name: UnitTest
+      run: ./check.sh unittest
