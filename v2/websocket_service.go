@@ -481,10 +481,14 @@ type WsUserDataEvent struct {
 	Time              int64             `json:"E"`
 	TransactionTime   int64             `json:"T"`
 	AccountUpdateTime int64             `json:"u"`
-	AccountUpdate     []WsAccountUpdate `json:"B"`
+	AccountUpdate     WsAccountUpdateList
 	BalanceUpdate     WsBalanceUpdate
 	OrderUpdate       WsOrderUpdate
 	OCOUpdate         WsOCOUpdate
+}
+
+type WsAccountUpdateList struct {
+	WsAccountUpdates []WsAccountUpdate `json:"B"`
 }
 
 // WsAccountUpdate define account update
@@ -537,14 +541,18 @@ type WsOrderUpdate struct {
 }
 
 type WsOCOUpdate struct {
-	Symbol          string       `json:"s"`
-	OrderListId     int64        `json:"g"`
-	ContingencyType string       `json:"c"`
-	ListStatusType  string       `json:"l"`
-	ListOrderStatus string       `json:"L"`
-	RejectReason    string       `json:"r"`
-	ClientOrderId   string       `json:"C"` // List Client Order ID
-	Orders          []WsOCOOrder `json:"O"`
+	Symbol          string `json:"s"`
+	OrderListId     int64  `json:"g"`
+	ContingencyType string `json:"c"`
+	ListStatusType  string `json:"l"`
+	ListOrderStatus string `json:"L"`
+	RejectReason    string `json:"r"`
+	ClientOrderId   string `json:"C"` // List Client Order ID
+	Orders          WsOCOOrderList
+}
+
+type WsOCOOrderList struct {
+	WsOCOOrders []WsOCOOrder `json:"O"`
 }
 
 type WsOCOOrder struct {
@@ -577,7 +585,11 @@ func WsUserDataServe(listenKey string, handler WsUserDataHandler, errHandler Err
 
 		switch UserDataEventType(j.Get("e").MustString()) {
 		case UserDataEventTypeOutboundAccountPosition:
-
+			err = json.Unmarshal(message, &event.AccountUpdate)
+			if err != nil {
+				errHandler(err)
+				return
+			}
 		case UserDataEventTypeBalanceUpdate:
 			err = json.Unmarshal(message, &event.BalanceUpdate)
 			if err != nil {
