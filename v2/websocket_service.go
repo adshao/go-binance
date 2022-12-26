@@ -527,7 +527,6 @@ type WsOrderUpdate struct {
 	FeeCost                 string          `json:"n"`
 	TransactionTime         int64           `json:"T"`
 	TradeId                 int64           `json:"t"`
-	IsInOrderBook           bool            `json:"w"` // is the order in the order book?
 	IsMaker                 bool            `json:"m"` // is this order maker?
 	CreateTime              int64           `json:"O"`
 	FilledQuoteVolume       string          `json:"Z"` // the quote volume that already filled
@@ -537,6 +536,7 @@ type WsOrderUpdate struct {
 	StrategyId              int64           `json:"j"` // Strategy ID
 	StrategyType            int64           `json:"J"` // Strategy Type
 	WorkingTime             int64           `json:"W"` // Working Time
+	IsInOrderBook           bool            `json:"w"` // is the order in the order book?
 	SelfTradePreventionMode string          `json:"V"`
 }
 
