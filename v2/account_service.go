@@ -51,6 +51,51 @@ type Balance struct {
 	Locked string `json:"locked"`
 }
 
+//--blvt
+
+// GetAccountSnapshotService all account orders; active, canceled, or filled
+type EnableSubAccountBLVTService struct {
+	c            *Client
+	subAccountId string
+}
+
+// Type set account type ("SPOT", "MARGIN", "FUTURES")
+func (s *EnableSubAccountBLVTService) SubAccountId(subAccountId string) *EnableSubAccountBLVTService {
+	s.subAccountId = subAccountId
+	return s
+}
+
+// Do send request
+func (s *EnableSubAccountBLVTService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountBLVTStatus, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/broker/subAccount/blvt",
+		secType:  secTypeSigned,
+	}
+	r.setParam("subAccountId", s.subAccountId)
+	r.setParam("blvt", true)
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return &SubAccountBLVTStatus{}, err
+	}
+	res = new(SubAccountBLVTStatus)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return &SubAccountBLVTStatus{}, err
+	}
+	return res, nil
+}
+
+// Snapshot define snapshot
+type SubAccountBLVTStatus struct {
+	Code     int            `json:"code"`
+	Msg      string         `json:"msg"`
+	Snapshot []*SnapshotVos `json:"snapshotVos"`
+}
+
+//--blvt
+
 // GetAccountSnapshotService all account orders; active, canceled, or filled
 type GetAccountSnapshotService struct {
 	c           *Client

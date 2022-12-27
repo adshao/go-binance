@@ -14,10 +14,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/adshao/go-binance/v2/common"
-	"github.com/adshao/go-binance/v2/delivery"
-	"github.com/adshao/go-binance/v2/futures"
 	"github.com/bitly/go-simplejson"
+	"github.com/flockfw64/go-binance/v2/common"
+	"github.com/flockfw64/go-binance/v2/delivery"
+	"github.com/flockfw64/go-binance/v2/futures"
 	jsoniter "github.com/json-iterator/go"
 )
 
@@ -381,6 +381,7 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 	if err != nil {
 		return []byte{}, err
 	}
+	//fmt.Println("Method", r.method, "Url", r.fullURL)
 	req, err := http.NewRequest(r.method, r.fullURL, r.body)
 	if err != nil {
 		return []byte{}, err
@@ -816,6 +817,11 @@ func (c *Client) NewAssetDividendService() *AssetDividendService {
 // NewUserUniversalTransferService
 func (c *Client) NewUserUniversalTransferService() *CreateUserUniversalTransferService {
 	return &CreateUserUniversalTransferService{c: c}
+}
+
+// ListUserUniversalTransfer
+func (c *Client) ListUserUniversalTransfer() *ListUserUniversalTransfer {
+	return &ListUserUniversalTransfer{c: c}
 }
 
 // NewAllCoinsInformation
