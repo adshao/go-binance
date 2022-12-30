@@ -2,7 +2,6 @@ package binance
 
 import (
 	"errors"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -786,11 +785,10 @@ func (s *websocketServiceTestSuite) assertUserDataEvent(e, a *WsUserDataEvent) {
 	r := s.r()
 	r.Equal(e.Event, a.Event, "Event")
 	r.Equal(e.Time, a.Time, "Time")
-	fmt.Println(e.TransactionTime, a.TransactionTime)
 	r.Equal(e.TransactionTime, a.TransactionTime, "TransactionTime")
 	r.Equal(e.AccountUpdateTime, a.AccountUpdateTime, "AccountUpdateTime")
-	for i, e := range e.AccountUpdate {
-		a := a.AccountUpdate[i]
+	for i, e := range e.AccountUpdate.WsAccountUpdates {
+		a := a.AccountUpdate.WsAccountUpdates[i]
 		s.assertAccountUpdate(&e, &a)
 	}
 	s.assertOrderUpdate(&e.OrderUpdate, &a.OrderUpdate)
@@ -830,11 +828,13 @@ func (s *websocketServiceTestSuite) TestWsUserDataServeAccountUpdate() {
 		Event:             "outboundAccountPosition",
 		Time:              1629771130464,
 		AccountUpdateTime: 1629771130463,
-		AccountUpdate: []WsAccountUpdate{
-			{
-				"LTC",
-				"503.70000000",
-				"0.00000000",
+		AccountUpdate: WsAccountUpdateList{
+			[]WsAccountUpdate{
+				{
+					"LTC",
+					"503.70000000",
+					"0.00000000",
+				},
 			},
 		},
 	}
