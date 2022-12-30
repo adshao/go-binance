@@ -322,6 +322,12 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 	return data, nil
 }
 
+// SetApiEndpoint set api Endpoint
+func (c *Client) SetApiEndpoint(url string) *Client {
+	c.BaseURL = url
+	return c
+}
+
 // NewPingService init ping service
 func (c *Client) NewPingService() *PingService {
 	return &PingService{c: c}
