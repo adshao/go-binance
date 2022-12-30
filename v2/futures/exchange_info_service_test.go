@@ -103,7 +103,7 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 					"GTX" 
 				],
 				"liquidationFee": "0.010000",
-            	"marketTakeBound": "0.30"
+				"marketTakeBound": "0.30"
 			}
 		],
 		"timezone": "UTC" 
