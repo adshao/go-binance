@@ -67,12 +67,14 @@ type Symbol struct {
 	UnderlyingSubType     []string                 `json:"underlyingSubType"`
 	SettlePlan            int64                    `json:"settlePlan"`
 	TriggerProtect        string                   `json:"triggerProtect"`
-	OrderType             []OrderType              `json:"OrderType"`
+	OrderType             []OrderType              `json:"orderType"`
 	TimeInForce           []TimeInForceType        `json:"timeInForce"`
 	Filters               []map[string]interface{} `json:"filters"`
 	QuoteAsset            string                   `json:"quoteAsset"`
 	MarginAsset           string                   `json:"marginAsset"`
 	BaseAsset             string                   `json:"baseAsset"`
+	LiquidationFee        string                   `json:"liquidationFee"`
+	MarketTakeBound       string                   `json:"marketTakeBound"`
 }
 
 // LotSizeFilter define lot size filter of symbol

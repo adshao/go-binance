@@ -87,7 +87,7 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 						"multiplierDecimal": 4
 					}
 				],
-				"OrderType": [
+				"orderType": [
 					"LIMIT",
 					"MARKET",
 					"STOP",
@@ -101,7 +101,9 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 					"IOC", 
 					"FOK", 
 					"GTX" 
-				]
+				],
+				"liquidationFee": "0.010000",
+				"marketTakeBound": "0.30"
 			}
 		],
 		"timezone": "UTC" 
@@ -156,6 +158,8 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 					{"filterType": "MAX_NUM_ALGO_ORDERS", "limit": 100},
 					{"filterType": "PERCENT_PRICE", "multiplierUp": "1.1500", "multiplierDown": "0.8500", "multiplierDecimal": 4},
 				},
+				LiquidationFee:  "0.010000",
+				MarketTakeBound: "0.30",
 			},
 		},
 	}
@@ -241,6 +245,8 @@ func (s *exchangeInfoServiceTestSuite) assertExchangeInfoEqual(e, a *ExchangeInf
 		for j, UnderlyingSubType := range e.Symbols[i].UnderlyingSubType {
 			r.Equal(UnderlyingSubType, a.Symbols[i].UnderlyingSubType[j], "UnderlyingSubType")
 		}
+		r.Equal(e.Symbols[i].LiquidationFee, a.Symbols[i].LiquidationFee, "LiquidationFee")
+		r.Equal(e.Symbols[i].MarketTakeBound, a.Symbols[i].MarketTakeBound, "MarketTakeBound")
 	}
 }
 

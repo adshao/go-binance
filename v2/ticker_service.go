@@ -239,7 +239,6 @@ func (s *ListSymbolTickerService) Symbols(symbols []string) *ListSymbolTickerSer
 //
 // - 1d...7d - for days
 //
-//
 // Units cannot be combined (e.g. 1d2h is not allowed).
 //
 // Reference: https://binance-docs.github.io/apidocs/spot/en/#rolling-window-price-change-statistics
