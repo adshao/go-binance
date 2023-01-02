@@ -116,6 +116,7 @@ type Deposit struct {
 	TransferType  int64  `json:"transferType"`
 	UnlockConfirm int64  `json:"unlockConfirm"`
 	ConfirmTimes  string `json:"confirmTimes"`
+	WalletType    int    `json:"walletType"`
 }
 
 // GetDepositsAddressService retrieves the details of a deposit address.

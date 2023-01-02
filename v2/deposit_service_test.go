@@ -81,6 +81,7 @@ func (s *depositServiceTestSuite) TestListDeposits() {
 		TransferType:  0,
 		UnlockConfirm: 12,
 		ConfirmTimes:  "12/12",
+		WalletType:    0,
 	}, deposits[0])
 	s.assertDepositEqual(&Deposit{
 		Amount:        "0.50000000",
@@ -94,6 +95,7 @@ func (s *depositServiceTestSuite) TestListDeposits() {
 		TransferType:  0,
 		UnlockConfirm: 1,
 		ConfirmTimes:  "1/1",
+		WalletType:    0,
 	}, deposits[1])
 }
 
@@ -110,6 +112,7 @@ func (s *depositServiceTestSuite) assertDepositEqual(e, a *Deposit) {
 	r.Equal(e.TransferType, a.TransferType, "TransferType")
 	r.Equal(e.UnlockConfirm, a.UnlockConfirm, "UnlockConfirm")
 	r.Equal(e.ConfirmTimes, a.ConfirmTimes, "ConfirmTimes")
+	r.Equal(e.WalletType, a.WalletType, "WalletType")
 }
 
 func (s *depositServiceTestSuite) TestGetDepositAddress() {
