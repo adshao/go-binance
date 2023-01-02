@@ -141,6 +141,7 @@ func (s *withdrawServiceTestSuite) TestListWithdraws() {
 		ConfirmNo:       3,
 		Info:            "The address is not valid. Please confirm with the recipient",
 		TxID:            "0xb5ef8c13b968a406cc62a93a8bd80f9e9a906ef1b3fcf20a2e48573c17659268",
+		WalletType:      0,
 	}, withdraws[0])
 	s.assertWithdrawEqual(&Withdraw{
 		Address:         "1FZdVHtiBqMrWdjPyRPULCUceZPJ2WLCsB",
@@ -156,6 +157,7 @@ func (s *withdrawServiceTestSuite) TestListWithdraws() {
 		ConfirmNo:       2,
 		Info:            "",
 		TxID:            "60fd9007ebfddc753455f95fafa808c4302c836e4d1eebc5a132c36c1d8ac354",
+		WalletType:      0,
 	}, withdraws[1])
 }
 
@@ -174,4 +176,5 @@ func (s *withdrawServiceTestSuite) assertWithdrawEqual(e, a *Withdraw) {
 	r.Equal(e.ConfirmNo, a.ConfirmNo, "ConfirmNo")
 	r.Equal(e.Info, a.Info, "Info")
 	r.Equal(e.TxID, a.TxID, "TxID")
+	r.Equal(e.WalletType, a.WalletType, "WalletType")
 }
