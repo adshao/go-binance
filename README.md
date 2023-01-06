@@ -30,12 +30,6 @@ Name | Description | Status
 go get github.com/aiviaio/go-binance/v2
 ```
 
-For v1 API, it has been moved to `v1` branch, please use:
-
-```shell
-go get github.com/aiviaio/go-binance/v1
-```
-
 ### Importing
 
 ```golang
