@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/aiviaio/go-binance/v2/common"
@@ -310,8 +311,8 @@ type Client struct {
 	Logger              *log.Logger
 	TimeOffset          int64
 	do                  doFunc
-	UsedRequestWeight   string
-	UsedOrdersWeight10s string
+	UsedRequestWeight   int64
+	UsedOrdersWeight10s int64
 }
 
 func (c *Client) debug(format string, v ...interface{}) {
@@ -403,8 +404,15 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 		return []byte{}, err
 	}
 
-	c.UsedRequestWeight = res.Header.Get("X-MBX-USED-WEIGHT-1M")
-	c.UsedOrdersWeight10s = res.Header.Get("X-MBX-ORDER-COUNT-10S")
+	rw, err := strconv.ParseInt(res.Header.Get("X-MBX-USED-WEIGHT-1M"), 10, 64)
+	if err == nil {
+		c.UsedRequestWeight = rw
+	}
+
+	ow, err := strconv.ParseInt(res.Header.Get("X-MBX-ORDER-COUNT-10S"), 10, 64)
+	if err == nil {
+		c.UsedOrdersWeight10s = ow
+	}
 
 	defer func() {
 		cerr := res.Body.Close()
