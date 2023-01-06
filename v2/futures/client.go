@@ -237,16 +237,18 @@ type doFunc func(req *http.Request) (*http.Response, error)
 
 // Client define API client
 type Client struct {
-	APIKey     string
-	SecretKey  string
-	BaseURL    string
-	UserAgent  string
-	HTTPClient *http.Client
-	Debug      bool
-	Logger     *log.Logger
-	TimeOffset int64
-	do         doFunc
-	UsedWeight string
+	APIKey              string
+	SecretKey           string
+	BaseURL             string
+	UserAgent           string
+	HTTPClient          *http.Client
+	Debug               bool
+	Logger              *log.Logger
+	TimeOffset          int64
+	do                  doFunc
+	UsedRequestWeight   string
+	UsedOrdersWeight1m  string
+	UsedOrdersWeight10s string
 }
 
 func (c *Client) debug(format string, v ...interface{}) {
@@ -338,7 +340,9 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 		return []byte{}, &http.Header{}, err
 	}
 
-	c.UsedWeight = res.Header.Get("X-MBX-USED-WEIGHT-1M")
+	c.UsedRequestWeight = res.Header.Get("X-MBX-USED-WEIGHT-1M")
+	c.UsedOrdersWeight1m = res.Header.Get("X-MBX-ORDER-COUNT-1M")
+	c.UsedOrdersWeight10s = res.Header.Get("X-MBX-ORDER-COUNT-10S")
 
 	defer func() {
 		cerr := res.Body.Close()
