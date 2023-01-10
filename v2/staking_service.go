@@ -2,6 +2,7 @@ package binance
 
 import (
 	"context"
+	"errors"
 	"net/http"
 )
 
@@ -214,4 +215,137 @@ type StakingHistoryTransaction struct {
 	DeliverDate int64  `json:"deliverDate"`
 	Type        string `json:"type"`
 	Status      string `json:"status"`
+}
+
+// PurchaseStakingProductService represents a staking purchase product.
+type PurchaseStakingProductService struct {
+	c         *Client
+	product   StakingProduct
+	productId *string
+	amount    *float64
+	renewable *string
+}
+
+// Product sets the product parameter.
+func (s *PurchaseStakingProductService) Product(product StakingProduct) *PurchaseStakingProductService {
+	s.product = product
+	return s
+}
+
+// ProductID sets the productId parameter.
+func (s *PurchaseStakingProductService) ProductID(productId string) *PurchaseStakingProductService {
+	s.productId = &productId
+	return s
+}
+
+// Amount sets the amount parameter.
+func (s *PurchaseStakingProductService) Amount(amount float64) *PurchaseStakingProductService {
+	s.amount = &amount
+	return s
+}
+
+// Renewable sets the renewable parameter.
+func (s *PurchaseStakingProductService) Renewable(renewable string) *PurchaseStakingProductService {
+	s.renewable = &renewable
+	return s
+}
+
+// Do sends the request.
+func (s *PurchaseStakingProductService) Do(ctx context.Context) (*PurchaseStakingProduct, error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/staking/purchase",
+		secType:  secTypeSigned,
+	}
+	r.setParam("product", s.product)
+	r.setParam("productId", s.productId)
+	r.setParam("amount", s.amount)
+	if s.renewable != nil {
+		r.setParam("renewable", *s.renewable)
+	}
+	data, err := s.c.callAPI(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+	res := new(PurchaseStakingProduct)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type PurchaseStakingProduct struct {
+	PositionID string `json:"positionId"`
+	Success    bool   `json:"success"`
+}
+
+// RedeemStakingProductService represents a redeem purchase product.
+type RedeemStakingProductService struct {
+	c          *Client
+	product    StakingProduct
+	productId  *string
+	positionId *string
+	amount     *float64
+}
+
+// Product sets the product parameter.
+func (s *RedeemStakingProductService) Product(product StakingProduct) *RedeemStakingProductService {
+	s.product = product
+	return s
+}
+
+// ProductID sets the productId parameter.
+func (s *RedeemStakingProductService) ProductID(productId string) *RedeemStakingProductService {
+	s.productId = &productId
+	return s
+}
+
+// PositionID sets the productId parameter.
+func (s *RedeemStakingProductService) PositionID(positionId string) *RedeemStakingProductService {
+	s.positionId = &positionId
+	return s
+}
+
+// Amount sets the amount parameter.
+func (s *RedeemStakingProductService) Amount(amount float64) *RedeemStakingProductService {
+	s.amount = &amount
+	return s
+}
+
+// Do sends the request.
+func (s *RedeemStakingProductService) Do(ctx context.Context) (*RedeemStakingProduct, error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/staking/redeem",
+		secType:  secTypeSigned,
+	}
+	r.setParam("product", s.product)
+	r.setParam("productId", s.productId)
+	if s.product == StakingProductLockedStaking || s.product == StakingProductLockedDeFiStaking {
+		if s.positionId == nil {
+			return nil, errors.New("Position ID should not be empty")
+		}
+		r.setParam("positionId", s.positionId)
+	}
+	if s.product == StakingProductFlexibleDeFiStaking {
+		if s.amount == nil {
+			return nil, errors.New("Amount should not be empty")
+		}
+		r.setParam("amount", s.amount)
+	}
+	data, err := s.c.callAPI(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+	res := new(RedeemStakingProduct)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type RedeemStakingProduct struct {
+	Success bool `json:"success"`
 }

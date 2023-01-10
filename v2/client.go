@@ -894,6 +894,16 @@ func (c *Client) NewStakingHistoryService() *StakingHistoryService {
 	return &StakingHistoryService{c: c}
 }
 
+// NewPurchaseStackingProductService purchase a product (Stacking)
+func (c *Client) NewPurchaseStackingProductService() *PurchaseStakingProductService {
+	return &PurchaseStakingProductService{c: c}
+}
+
+// NewRedeemStackingProductService redeem a product (Stacking)
+func (c *Client) NewRedeemStackingProductService() *RedeemStakingProductService {
+	return &RedeemStakingProductService{c: c}
+}
+
 // NewGetAllLiquidityPoolService init the get all swap pool service
 func (c *Client) NewGetAllLiquidityPoolService() *GetAllLiquidityPoolService {
 	return &GetAllLiquidityPoolService{c: c}
@@ -972,4 +982,24 @@ func (c *Client) NewSubAccountListService() *SubAccountListService {
 // NewGetUserAsset Get user assets, just for positive data
 func (c *Client) NewGetUserAsset() *GetUserAssetService {
 	return &GetUserAssetService{c: c}
+}
+
+// NewBrokerSubAccountService broker create subaccount
+func (c *Client) NewBrokerSubAccountService() *BrokerSubAccountService {
+	return &BrokerSubAccountService{c: c}
+}
+
+// NewBrokerMarginService broker enable margin subaccount
+func (c *Client) NewBrokerMarginService() *BrokerMarginService {
+	return &BrokerMarginService{c: c}
+}
+
+// NewBrokerFutureService broker enable future subaccount
+func (c *Client) NewBrokerFutureService() *BrokerFutureService {
+	return &BrokerFutureService{c: c}
+}
+
+// NewBrokerAPIKeyService broker create api key subaccount
+func (c *Client) NewBrokerAPIKeyService() *BrokerAPIKeyService {
+	return &BrokerAPIKeyService{c: c}
 }
