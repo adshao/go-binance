@@ -186,7 +186,7 @@ func (s *BrokerAPIKeyService) Do(ctx context.Context) (*BrokerAPIKey, error) {
 type BrokerAPIKey struct {
 	SubAccountID string `json:"subaccountId"`
 	APIKey       string `json:"apiKey"`
-	SecretKey    int64  `json:"secretKey"`
+	SecretKey    string `json:"secretKey"`
 	CanTrade     bool   `json:"canTrade"`
 	MarginTrade  bool   `json:"marginTrade"`
 	FuturesTrade bool   `json:"futuresTrade"`
