@@ -361,6 +361,7 @@ func (s *marginTestSuite) TestGetIsolatedMarginAccount() {
         },
         "symbol": "BTCUSDT",
         "isolatedCreated": true, 
+        "enabled": true,
         "marginLevel": "0.00000000", 
         "marginLevelStatus": "EXCESSIVE",
         "marginRatio": "0.00000000",
@@ -392,11 +393,13 @@ func (s *marginTestSuite) TestGetIsolatedMarginAccount() {
 			{
 				Symbol:            "BTCUSDT",
 				IsolatedCreated:   true,
+				Enabled:           true,
 				MarginLevel:       "0.00000000",
 				MarginLevelStatus: "EXCESSIVE",
 				MarginRatio:       "0.00000000",
 				IndexPrice:        "10000.00000000",
 				LiquidatePrice:    "1000.00000000",
+				LiquidateRate:     "1.00000000",
 				TradeEnabled:      true,
 			},
 		},
@@ -417,11 +420,15 @@ func (s *marginTestSuite) assertIsolatedMarginAccountEqual(e, a *IsolatedMarginA
 func (s *marginTestSuite) assertIsolatedMarginAssetEqual(e, a IsolatedMarginAsset) {
 	r := s.r()
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.IsolatedCreated, a.IsolatedCreated, "IsolatedCreated")
+	r.Equal(e.Enabled, a.Enabled, "Enabled")
 	r.Equal(e.IndexPrice, a.IndexPrice, "IndexPrice")
 	r.Equal(e.LiquidatePrice, a.LiquidatePrice, "LiquidatePrice")
+	r.Equal(e.LiquidateRate, a.LiquidateRate, "LiquidateRate")
 	r.Equal(e.MarginLevel, a.MarginLevel, "MarginLevel")
 	r.Equal(e.MarginLevelStatus, a.MarginLevelStatus, "MarginLevelStatus")
 	r.Equal(e.MarginRatio, a.MarginRatio, "MarginRatio")
+	r.Equal(e.TradeEnabled, a.TradeEnabled, "TradeEnabled")
 }
 
 func (s *marginTestSuite) assertMarginAccountEqual(e, a *MarginAccount) {
