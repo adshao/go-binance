@@ -12,7 +12,7 @@ type BrokerSubAccountService struct {
 // Do sends the request.
 func (s *BrokerSubAccountService) Do(ctx context.Context) (*BrokerSubAccount, error) {
 	r := &request{
-		method:   http.MethodGet,
+		method:   http.MethodPost,
 		endpoint: "/sapi/v1/broker/subAccount",
 		secType:  secTypeSigned,
 	}
@@ -55,7 +55,7 @@ func (s *BrokerMarginService) Margin(margin bool) *BrokerMarginService {
 // Do sends the request.
 func (s *BrokerMarginService) Do(ctx context.Context) (*BrokerMargin, error) {
 	r := &request{
-		method:   http.MethodGet,
+		method:   http.MethodPost,
 		endpoint: "/sapi/v1/broker/subAccount/margin",
 		secType:  secTypeSigned,
 	}
@@ -100,7 +100,7 @@ func (s *BrokerFutureService) Futures(futures bool) *BrokerFutureService {
 // Do sends the request.
 func (s *BrokerFutureService) Do(ctx context.Context) (*BrokerFuture, error) {
 	r := &request{
-		method:   http.MethodGet,
+		method:   http.MethodPost,
 		endpoint: "/sapi/v1/broker/subAccount/futures",
 		secType:  secTypeSigned,
 	}
@@ -159,7 +159,7 @@ func (s *BrokerAPIKeyService) FuturesTrade(futuresTrade bool) *BrokerAPIKeyServi
 // Do sends the request.
 func (s *BrokerAPIKeyService) Do(ctx context.Context) (*BrokerAPIKey, error) {
 	r := &request{
-		method:   http.MethodGet,
+		method:   http.MethodPost,
 		endpoint: "/sapi/v1/broker/subAccountApi",
 		secType:  secTypeSigned,
 	}

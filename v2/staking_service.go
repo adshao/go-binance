@@ -253,7 +253,7 @@ func (s *PurchaseStakingProductService) Renewable(renewable string) *PurchaseSta
 // Do sends the request.
 func (s *PurchaseStakingProductService) Do(ctx context.Context) (*PurchaseStakingProduct, error) {
 	r := &request{
-		method:   http.MethodGet,
+		method:   http.MethodPost,
 		endpoint: "/sapi/v1/staking/purchase",
 		secType:  secTypeSigned,
 	}
@@ -316,7 +316,7 @@ func (s *RedeemStakingProductService) Amount(amount float64) *RedeemStakingProdu
 // Do sends the request.
 func (s *RedeemStakingProductService) Do(ctx context.Context) (*RedeemStakingProduct, error) {
 	r := &request{
-		method:   http.MethodGet,
+		method:   http.MethodPost,
 		endpoint: "/sapi/v1/staking/redeem",
 		secType:  secTypeSigned,
 	}
