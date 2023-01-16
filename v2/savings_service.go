@@ -107,7 +107,7 @@ func (s *PurchaseSavingsFlexibleProductService) Amount(amount float64) *Purchase
 }
 
 // Do send request
-func (s *PurchaseSavingsFlexibleProductService) Do(ctx context.Context, opts ...RequestOption) (uint64, error) {
+func (s *PurchaseSavingsFlexibleProductService) Do(ctx context.Context, opts ...RequestOption) (*PurchaseSavingsFlexibleProductResponse, error) {
 	r := &request{
 		method:   http.MethodPost,
 		endpoint: "/sapi/v1/lending/daily/purchase",
@@ -120,15 +120,15 @@ func (s *PurchaseSavingsFlexibleProductService) Do(ctx context.Context, opts ...
 	r.setParams(m)
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	var res *PurchaseSavingsFlexibleProductResponse
 	if err = json.Unmarshal(data, &res); err != nil {
-		return 0, err
+		return nil, err
 	}
 
-	return res.PurchaseId, nil
+	return res, nil
 }
 
 type PurchaseSavingsFlexibleProductResponse struct {
