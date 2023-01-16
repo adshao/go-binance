@@ -258,8 +258,8 @@ func (s *PurchaseStakingProductService) Do(ctx context.Context) (*PurchaseStakin
 		secType:  secTypeSigned,
 	}
 	r.setParam("product", s.product)
-	r.setParam("productId", s.productId)
-	r.setParam("amount", s.amount)
+	r.setParam("productId", *s.productId)
+	r.setParam("amount", *s.amount)
 	if s.renewable != nil {
 		r.setParam("renewable", *s.renewable)
 	}
@@ -321,18 +321,18 @@ func (s *RedeemStakingProductService) Do(ctx context.Context) (*RedeemStakingPro
 		secType:  secTypeSigned,
 	}
 	r.setParam("product", s.product)
-	r.setParam("productId", s.productId)
+	r.setParam("productId", *s.productId)
 	if s.product == StakingProductLockedStaking || s.product == StakingProductLockedDeFiStaking {
 		if s.positionId == nil {
 			return nil, errors.New("Position ID should not be empty")
 		}
-		r.setParam("positionId", s.positionId)
+		r.setParam("positionId", *s.positionId)
 	}
 	if s.product == StakingProductFlexibleDeFiStaking {
 		if s.amount == nil {
 			return nil, errors.New("Amount should not be empty")
 		}
-		r.setParam("amount", s.amount)
+		r.setParam("amount", *s.amount)
 	}
 	data, err := s.c.callAPI(ctx, r)
 	if err != nil {

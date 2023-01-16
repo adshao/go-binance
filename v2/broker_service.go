@@ -59,8 +59,8 @@ func (s *BrokerMarginService) Do(ctx context.Context) (*BrokerMargin, error) {
 		endpoint: "/sapi/v1/broker/subAccount/margin",
 		secType:  secTypeSigned,
 	}
-	r.setParam("subaccountId", s.subaccountId)
-	r.setParam("margin", true)
+	r.setParam("subaccountId", *s.subaccountId)
+	r.setParam("margin", *s.margin)
 	data, err := s.c.callAPI(ctx, r)
 	if err != nil {
 		return nil, err
@@ -104,8 +104,8 @@ func (s *BrokerFutureService) Do(ctx context.Context) (*BrokerFuture, error) {
 		endpoint: "/sapi/v1/broker/subAccount/futures",
 		secType:  secTypeSigned,
 	}
-	r.setParam("subaccountId", s.subaccountId)
-	r.setParam("futures", true)
+	r.setParam("subaccountId", *s.subaccountId)
+	r.setParam("futures", *s.futures)
 	data, err := s.c.callAPI(ctx, r)
 	if err != nil {
 		return nil, err
@@ -163,8 +163,8 @@ func (s *BrokerAPIKeyService) Do(ctx context.Context) (*BrokerAPIKey, error) {
 		endpoint: "/sapi/v1/broker/subAccountApi",
 		secType:  secTypeSigned,
 	}
-	r.setParam("subAccountId", s.subAccountId)
-	r.setParam("canTrade", s.canTrade)
+	r.setParam("subAccountId", *s.subAccountId)
+	r.setParam("canTrade", *s.canTrade)
 	if s.marginTrade != nil {
 		r.setParam("marginTrade", *s.marginTrade)
 	}
