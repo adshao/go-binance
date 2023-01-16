@@ -261,3 +261,52 @@ func (s *dustTransferTestSuite) assertTransferResponse(e, a *DustTransferRespons
 		r.Equal(etr.TransferedAmount, a.TransferResult[i].TransferedAmount, "TransferedAmount")
 	}
 }
+
+type listDustTestSuite struct {
+	baseTestSuite
+}
+
+func TestListDustService(t *testing.T) {
+	suite.Run(t, new(listDustTestSuite))
+}
+
+func (s *listDustTestSuite) TestListDust() {
+	data := []byte(`
+		{
+			"details": [
+				{
+					"asset": "ADA",
+					"assetFullName": "ADA",
+					"amountFree": "6.21",
+					"toBTC": "0.00016848",
+					"toBNB": "0.01777302",
+					"toBNBOffExchange": "0.01741756",
+					"exchange": "0.00035546"
+				}
+			],
+			"totalTransferBtc": "0.00016848",
+			"totalTransferBNB": "0.01777302",
+			"dribbletPercentage": "0.02"
+		}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	res, err := s.client.NewListDustService().Do(newContext())
+	s.r().NoError(err)
+	e := &ListDustResponse{
+		Details: []ListDustDetail{
+			{
+				Asset:            "ADA",
+				AssetFullName:    "ADA",
+				AmountFree:       "6.21",
+				ToBTC:            "0.00016848",
+				ToBNB:            "0.01777302",
+				ToBNBOffExchange: "0.01741756",
+				Exchange:         "0.00035546",
+			},
+		},
+		TotalTransferBtc:   "0.00016848",
+		TotalTransferBNB:   "0.01777302",
+		DribbletPercentage: "0.02",
+	}
+	s.Equal(e, res)
+}
