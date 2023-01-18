@@ -1003,3 +1003,8 @@ func (c *Client) NewBrokerFutureService() *BrokerFutureService {
 func (c *Client) NewBrokerAPIKeyService() *BrokerAPIKeyService {
 	return &BrokerAPIKeyService{c: c}
 }
+
+// NewBrokerSpotSubaccountTransfer broker create api key subaccount
+func (c *Client) NewBrokerSpotSubaccountTransfer() *BrokerSpotSubaccountTransferService {
+	return &BrokerSpotSubaccountTransferService{c: c}
+}
