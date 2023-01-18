@@ -262,6 +262,6 @@ func (s *BrokerSpotSubaccountTransferService) Do(ctx context.Context) (*BrokerSp
 }
 
 type BrokerSpotSubaccountTransfer struct {
-	TxnID        string `json:"txnId"`
+	TxnID        int64  `json:"txnId"`
 	ClientTranId string `json:"clientTranId"`
 }
