@@ -191,3 +191,77 @@ type BrokerAPIKey struct {
 	MarginTrade  bool   `json:"marginTrade"`
 	FuturesTrade bool   `json:"futuresTrade"`
 }
+
+type BrokerSpotSubaccountTransferService struct {
+	c            *Client
+	fromId       *string
+	toId         *string
+	clientTranId *string
+	asset        *string
+	amount       *float64
+}
+
+// BrokerSpotSubaccountTransferService set fromId
+func (s *BrokerSpotSubaccountTransferService) FromID(fromId string) *BrokerSpotSubaccountTransferService {
+	s.fromId = &fromId
+	return s
+}
+
+// BrokerSpotSubaccountTransferService set toId
+func (s *BrokerSpotSubaccountTransferService) ToId(toId string) *BrokerSpotSubaccountTransferService {
+	s.toId = &toId
+	return s
+}
+
+// BrokerSpotSubaccountTransferService set clientTranId
+func (s *BrokerSpotSubaccountTransferService) ClientTraniD(clientTranId string) *BrokerSpotSubaccountTransferService {
+	s.clientTranId = &clientTranId
+	return s
+}
+
+// BrokerSpotSubaccountTransferService set asset
+func (s *BrokerSpotSubaccountTransferService) Asset(asset string) *BrokerSpotSubaccountTransferService {
+	s.asset = &asset
+	return s
+}
+
+// BrokerSpotSubaccountTransferService set asset
+func (s *BrokerSpotSubaccountTransferService) Amount(amount float64) *BrokerSpotSubaccountTransferService {
+	s.amount = &amount
+	return s
+}
+
+// Do sends the request.
+func (s *BrokerSpotSubaccountTransferService) Do(ctx context.Context) (*BrokerSpotSubaccountTransfer, error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v1/broker/transfer",
+		secType:  secTypeSigned,
+	}
+	r.setParam("asset", *s.asset)
+	r.setParam("amount", *s.amount)
+	if s.fromId != nil {
+		r.setParam("fromId", *s.fromId)
+	}
+	if s.toId != nil {
+		r.setParam("toId", *s.toId)
+	}
+	if s.clientTranId != nil {
+		r.setParam("clientTranId", *s.clientTranId)
+	}
+	data, err := s.c.callAPI(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+	res := new(BrokerSpotSubaccountTransfer)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type BrokerSpotSubaccountTransfer struct {
+	TxnID        string `json:"txnId"`
+	ClientTranId string `json:"clientTranId"`
+}
