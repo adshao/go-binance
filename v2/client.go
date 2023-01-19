@@ -529,6 +529,11 @@ func (c *Client) NewGetAccountService() *GetAccountService {
 	return &GetAccountService{c: c}
 }
 
+// NewEnableSubAccountBLVTService init getting account service
+func (c *Client) NewEnableSubAccountBLVTService() *EnableSubAccountBLVTService {
+	return &EnableSubAccountBLVTService{c: c}
+}
+
 // NewGetAPIKeyPermission init getting API key permission
 func (c *Client) NewGetAPIKeyPermission() *GetAPIKeyPermission {
 	return &GetAPIKeyPermission{c: c}

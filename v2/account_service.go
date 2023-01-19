@@ -68,7 +68,7 @@ func (s *EnableSubAccountBLVTService) SubAccountId(subAccountId string) *EnableS
 // Do send request
 func (s *EnableSubAccountBLVTService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountBLVTStatus, err error) {
 	r := &request{
-		method:   http.MethodGet,
+		method:   http.MethodPost,
 		endpoint: "/sapi/v1/broker/subAccount/blvt",
 		secType:  secTypeSigned,
 	}
