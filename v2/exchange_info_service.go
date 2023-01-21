@@ -3,15 +3,14 @@ package binance
 import (
 	"context"
 	"net/http"
-	"strings"
 )
 
 // ExchangeInfoService exchange info service
 type ExchangeInfoService struct {
 	c           *Client
 	symbol      string
-	symbols     string
-	permissions string
+	symbols     []string
+	permissions []string
 }
 
 // Symbol set symbol
@@ -22,21 +21,15 @@ func (s *ExchangeInfoService) Symbol(symbol string) *ExchangeInfoService {
 
 // Symbols set symbol
 func (s *ExchangeInfoService) Symbols(symbols ...string) *ExchangeInfoService {
-	if len(symbols) == 0 {
-		s.symbols = "[]"
-	} else {
-		s.symbols = "[\"" + strings.Join(symbols, "\",\"") + "\"]"
-	}
+	s.symbols = symbols
+
 	return s
 }
 
 // Permissions set permission
 func (s *ExchangeInfoService) Permissions(permissions ...string) *ExchangeInfoService {
-	if len(permissions) == 0 {
-		s.permissions = "[]"
-	} else {
-		s.permissions = "[\"" + strings.Join(permissions, "\",\"") + "\"]"
-	}
+	s.permissions = permissions
+
 	return s
 }
 

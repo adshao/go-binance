@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"reflect"
 )
 
 type secType int
@@ -44,6 +45,14 @@ func (r *request) setParam(key string, value interface{}) *request {
 	if r.query == nil {
 		r.query = url.Values{}
 	}
+
+	if reflect.TypeOf(value).Kind() == reflect.Slice {
+		v, err := json.Marshal(value)
+		if err == nil {
+			value = string(v)
+		}
+	}
+
 	r.query.Set(key, fmt.Sprintf("%v", value))
 	return r
 }
