@@ -437,6 +437,7 @@ type IsolatedMarginAsset struct {
 	BaseAsset  IsolatedUserAsset `json:"baseAsset"`
 
 	IsolatedCreated   bool   `json:"isolatedCreated"`
+	Enabled           bool   `json:"enabled"`
 	MarginLevel       string `json:"marginLevel"`
 	MarginLevelStatus string `json:"marginLevelStatus"`
 	MarginRatio       string `json:"marginRatio"`
