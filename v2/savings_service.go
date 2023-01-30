@@ -423,3 +423,80 @@ type SavingFixedProjectPosition struct {
 	Status          string `json:"status"`
 	ProjectType     string `json:"type"`
 }
+
+type InterestHistorySavingsFlexibleProductService struct {
+	c           *Client
+	lendingType string
+	asset       string
+	startTime   int64
+	endTime     int64
+	current     int64
+	size        int64
+}
+
+// LendingType represent the lendingType of the interest history flexible product
+func (s *InterestHistorySavingsFlexibleProductService) LendingType(lendingType string) *InterestHistorySavingsFlexibleProductService {
+	s.lendingType = lendingType
+	return s
+}
+
+// Asset is the asset of the interest history product
+func (s *InterestHistorySavingsFlexibleProductService) Asset(asset string) *InterestHistorySavingsFlexibleProductService {
+	s.asset = asset
+	return s
+}
+
+// StartTime is the start time of the interest history product
+func (s *InterestHistorySavingsFlexibleProductService) StartTime(startTime int64) *InterestHistorySavingsFlexibleProductService {
+	s.startTime = startTime
+	return s
+}
+
+// EndTime is the end time of the interest history product
+func (s *InterestHistorySavingsFlexibleProductService) EndTime(endTime int64) *InterestHistorySavingsFlexibleProductService {
+	s.endTime = endTime
+	return s
+}
+
+// Current is the current of the interest history product
+func (s *InterestHistorySavingsFlexibleProductService) Current(current int64) *InterestHistorySavingsFlexibleProductService {
+	s.current = current
+	return s
+}
+
+// Size is the size of the interest history product
+func (s *InterestHistorySavingsFlexibleProductService) Size(size int64) *InterestHistorySavingsFlexibleProductService {
+	s.size = size
+	return s
+}
+
+// Do send request
+func (s *InterestHistorySavingsFlexibleProductService) Do(ctx context.Context, opts ...RequestOption) error {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/lending/union/interestHistory",
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"lendingType": s.lendingType,
+	}
+	if s.asset != "" {
+		m["asset"] = s.asset
+	}
+	if s.startTime > 0 {
+		m["startTime"] = s.startTime
+	}
+	if s.endTime > 0 {
+		m["endTime"] = s.endTime
+	}
+	if s.current > 0 {
+		m["current"] = s.current
+	}
+	if s.size > 0 {
+		m["size"] = s.size
+	}
+	r.setParams(m)
+	_, err := s.c.callAPI(ctx, r, opts...)
+
+	return err
+}
