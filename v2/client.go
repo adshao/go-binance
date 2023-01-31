@@ -807,6 +807,11 @@ func (c *Client) NewDustTransferService() *DustTransferService {
 	return &DustTransferService{c: c}
 }
 
+// NewListDustService init dust list service
+func (c *Client) NewListDustService() *ListDustService {
+	return &ListDustService{c: c}
+}
+
 // NewTransferToSubAccountService transfer to subaccount service
 func (c *Client) NewTransferToSubAccountService() *TransferToSubAccountService {
 	return &TransferToSubAccountService{c: c}
