@@ -97,6 +97,9 @@ type RateLimitType string
 // RateLimitInterval define the rate limitation intervals
 type RateLimitInterval string
 
+// AccountType define the account types
+type AccountType string
+
 // Endpoints
 const (
 	baseAPIMainURL    = "https://api.binance.com"
@@ -224,6 +227,12 @@ const (
 	RateLimitIntervalSecond RateLimitInterval = "SECOND"
 	RateLimitIntervalMinute RateLimitInterval = "MINUTE"
 	RateLimitIntervalDay    RateLimitInterval = "DAY"
+
+	AccountTypeSpot           AccountType = "SPOT"
+	AccountTypeMargin         AccountType = "MARGIN"
+	AccountTypeIsolatedMargin AccountType = "ISOLATED_MARGIN"
+	AccountTypeUSDTFuture     AccountType = "USDT_FUTURE"
+	AccountTypeCoinFuture     AccountType = "COIN_FUTURE"
 )
 
 func currentTimestamp() int64 {
@@ -697,6 +706,10 @@ func (c *Client) NewGetMarginAccountService() *GetMarginAccountService {
 // NewGetIsolatedMarginAccountService init get isolated margin asset service
 func (c *Client) NewGetIsolatedMarginAccountService() *GetIsolatedMarginAccountService {
 	return &GetIsolatedMarginAccountService{c: c}
+}
+
+func (c *Client) NewIsolatedMarginTransferService() *IsolatedMarginTransferService {
+	return &IsolatedMarginTransferService{c: c}
 }
 
 // NewGetMarginAssetService init get margin asset service

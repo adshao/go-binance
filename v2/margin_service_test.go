@@ -880,3 +880,35 @@ func (s *marginTestSuite) assertIsolatedMarginAllPairsEqual(e, a *IsolatedMargin
 	r.Equal(e.IsBuyAllowed, a.IsBuyAllowed, "IsBuyAllowed")
 	r.Equal(e.IsSellAllowed, a.IsSellAllowed, "IsSellAllowed")
 }
+
+func (s *marginTestSuite) TestIsolatedMarginTransferService() {
+	data := []byte(`{"tranId": 100000001}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	var (
+		asset     = "BTC"
+		symbol    = "BTCBUSD"
+		transFrom = AccountTypeIsolatedMargin
+		transTo   = AccountTypeSpot
+		amount    = "1"
+	)
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setFormParams(params{
+			"asset":     asset,
+			"symbol":    symbol,
+			"transFrom": transFrom,
+			"transTo":   transTo,
+			"amount":    amount,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewIsolatedMarginTransferService().
+		Asset(asset).Symbol(symbol).TransFrom(transFrom).TransTo(transTo).Amount(amount).
+		Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	e := &TransactionResponse{TranID: 100000001}
+	s.r().Equal(res, e)
+}
