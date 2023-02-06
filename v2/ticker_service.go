@@ -125,6 +125,7 @@ func (s *ListPriceChangeStatsService) Do(ctx context.Context, opts ...RequestOpt
 		method:   http.MethodGet,
 		endpoint: "/api/v3/ticker/24hr",
 	}
+
 	if s.symbol != nil {
 		r.setParam("symbol", *s.symbol)
 	} else if s.symbols != nil {
