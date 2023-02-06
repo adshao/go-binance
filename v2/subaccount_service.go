@@ -2,6 +2,7 @@ package binance
 
 import (
 	"context"
+	"net/http"
 )
 
 // TransferToSubAccountService transfer to subaccount
@@ -335,4 +336,90 @@ type SubAccount struct {
 	CreateTime                  uint64 `json:"createTime"`
 	IsManagedSubAccount         bool   `json:"isManagedSubAccount"`
 	IsAssetManagementSubAccount bool   `json:"isAssetManagementSubAccount"`
+}
+
+// Get transfer history from sub-account
+// See https://binance-docs.github.io/apidocs/spot/en/#transfer-to-master-for-sub-account
+type SubTransferHistoryService struct {
+	c            *Client
+	asset        *string
+	transferType *int
+	startTime    *int64
+	endTime      *int64
+	limit        *int
+}
+
+func (s *SubTransferHistoryService) Asset(v string) *SubTransferHistoryService {
+	s.asset = &v
+	return s
+}
+
+func (s *SubTransferHistoryService) TransferType(v int) *SubTransferHistoryService {
+	s.transferType = &v
+	return s
+}
+
+func (s *SubTransferHistoryService) StartTime(v int64) *SubTransferHistoryService {
+	s.startTime = &v
+	return s
+}
+
+func (s *SubTransferHistoryService) EndTime(v int64) *SubTransferHistoryService {
+	s.endTime = &v
+	return s
+}
+
+func (s *SubTransferHistoryService) Limit(v int) *SubTransferHistoryService {
+	s.limit = &v
+	return s
+}
+
+type SubTransfer struct {
+	CounterParty    string  `json:"counterParty"`
+	Email           string  `json:"email"`
+	Type            int     `json:"type"`
+	Asset           string  `json:"asset"`
+	Qty             float64 `json:"qty,string"`
+	FromAccountType string  `json:"fromAccountType"`
+	ToAccountType   string  `json:"toAccountType"`
+	Status          string  `json:"status"`
+	TranID          int64   `json:"tranId"`
+	Time            int64   `json:"time"`
+}
+
+func (s *SubTransferHistoryService) Do(ctx context.Context) (res []*SubTransfer, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/sub-account/transfer/subUserHistory",
+		secType:  secTypeSigned,
+	}
+	if s.asset != nil {
+		r.setParam("asset", *s.asset)
+	}
+	if s.transferType != nil {
+		r.setParam("type", *s.transferType)
+	}
+	if s.startTime != nil {
+		r.setParam("startTime", *s.startTime)
+	}
+	if s.endTime != nil {
+		r.setParam("endTime", *s.endTime)
+	}
+	if s.endTime != nil {
+		r.setParam("endTime", *s.endTime)
+	}
+	if s.limit != nil {
+		r.setParam("limit", *s.limit)
+	}
+
+	data, err := s.c.callAPI(ctx, r)
+	if err != nil {
+		return
+	}
+	res = make([]*SubTransfer, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return
+	}
+	return res, nil
 }
