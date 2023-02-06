@@ -986,3 +986,8 @@ func (c *Client) NewSubAccountListService() *SubAccountListService {
 func (c *Client) NewGetUserAsset() *GetUserAssetService {
 	return &GetUserAssetService{c: c}
 }
+
+// NewSubTransferHistoryService query transfer histroy (for sub-account)
+func (c *Client) NewSubTransferHistoryService() *SubTransferHistoryService {
+	return &SubTransferHistoryService{c: c}
+}
