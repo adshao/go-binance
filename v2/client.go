@@ -97,6 +97,9 @@ type RateLimitType string
 // RateLimitInterval define the rate limitation intervals
 type RateLimitInterval string
 
+// AccountType define the account types
+type AccountType string
+
 // Endpoints
 const (
 	baseAPIMainURL    = "https://api.binance.com"
@@ -224,6 +227,12 @@ const (
 	RateLimitIntervalSecond RateLimitInterval = "SECOND"
 	RateLimitIntervalMinute RateLimitInterval = "MINUTE"
 	RateLimitIntervalDay    RateLimitInterval = "DAY"
+
+	AccountTypeSpot           AccountType = "SPOT"
+	AccountTypeMargin         AccountType = "MARGIN"
+	AccountTypeIsolatedMargin AccountType = "ISOLATED_MARGIN"
+	AccountTypeUSDTFuture     AccountType = "USDT_FUTURE"
+	AccountTypeCoinFuture     AccountType = "COIN_FUTURE"
 )
 
 func currentTimestamp() int64 {
@@ -699,6 +708,10 @@ func (c *Client) NewGetIsolatedMarginAccountService() *GetIsolatedMarginAccountS
 	return &GetIsolatedMarginAccountService{c: c}
 }
 
+func (c *Client) NewIsolatedMarginTransferService() *IsolatedMarginTransferService {
+	return &IsolatedMarginTransferService{c: c}
+}
+
 // NewGetMarginAssetService init get margin asset service
 func (c *Client) NewGetMarginAssetService() *GetMarginAssetService {
 	return &GetMarginAssetService{c: c}
@@ -792,6 +805,11 @@ func (c *Client) NewListDustLogService() *ListDustLogService {
 // NewDustTransferService init dust transfer service
 func (c *Client) NewDustTransferService() *DustTransferService {
 	return &DustTransferService{c: c}
+}
+
+// NewListDustService init dust list service
+func (c *Client) NewListDustService() *ListDustService {
+	return &ListDustService{c: c}
 }
 
 // NewTransferToSubAccountService transfer to subaccount service

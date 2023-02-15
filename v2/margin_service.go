@@ -1067,3 +1067,65 @@ type IsolatedMarginAllPair struct {
 	IsBuyAllowed  bool   `json:"isBuyAllowed"`
 	IsSellAllowed bool   `json:"isSellAllowed"`
 }
+
+// IsolatedMarginTransferService transfer assets between spot and isolated margin.
+type IsolatedMarginTransferService struct {
+	c *Client
+
+	asset     string
+	symbol    string
+	transFrom AccountType
+	transTo   AccountType
+	amount    string
+}
+
+func (s *IsolatedMarginTransferService) Symbol(symbol string) *IsolatedMarginTransferService {
+	s.symbol = symbol
+	return s
+}
+
+func (s *IsolatedMarginTransferService) Asset(asset string) *IsolatedMarginTransferService {
+	s.asset = asset
+	return s
+}
+
+// TransFrom supports account types: "SPOT", "ISOLATED_MARGIN"
+func (s *IsolatedMarginTransferService) TransFrom(transFrom AccountType) *IsolatedMarginTransferService {
+	s.transFrom = transFrom
+	return s
+}
+
+// TransTo supports account types: "SPOT", "ISOLATED_MARGIN"
+func (s *IsolatedMarginTransferService) TransTo(transTo AccountType) *IsolatedMarginTransferService {
+	s.transTo = transTo
+	return s
+}
+
+func (s *IsolatedMarginTransferService) Amount(amount string) *IsolatedMarginTransferService {
+	s.amount = amount
+	return s
+}
+
+// Do send request
+func (s *IsolatedMarginTransferService) Do(ctx context.Context, opts ...RequestOption) (res *TransactionResponse, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v1/margin/isolated/transfer",
+		secType:  secTypeSigned,
+	}
+	r.setFormParam("asset", s.asset)
+	r.setFormParam("symbol", s.symbol)
+	r.setFormParam("transFrom", s.transFrom)
+	r.setFormParam("transTo", s.transTo)
+	r.setFormParam("amount", s.amount)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(TransactionResponse)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}

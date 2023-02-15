@@ -137,3 +137,45 @@ type DustTransferResult struct {
 	TranID              int64  `json:"tranId"`
 	TransferedAmount    string `json:"transferedAmount"`
 }
+
+// ListDustService get list of dust to BNB.
+// See https://binance-docs.github.io/apidocs/spot/en/#get-assets-that-can-be-converted-into-bnb-user_data
+type ListDustService struct {
+	c *Client
+}
+
+// Do sends the request.
+func (s *ListDustService) Do(ctx context.Context) (res *ListDustResponse, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v1/asset/dust-btc",
+		secType:  secTypeSigned,
+	}
+	data, err := s.c.callAPI(ctx, r)
+	if err != nil {
+		return
+	}
+	res = new(ListDustResponse)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return
+	}
+	return res, nil
+}
+
+type ListDustDetail struct {
+	Asset            string `json:"asset"`
+	AssetFullName    string `json:"assetFullName"`
+	AmountFree       string `json:"amountFree"`
+	ToBTC            string `json:"toBTC"`
+	ToBNB            string `json:"toBNB"`
+	ToBNBOffExchange string `json:"toBNBOffExchange"`
+	Exchange         string `json:"exchange"`
+}
+
+type ListDustResponse struct {
+	Details            []ListDustDetail `json:"details"`
+	TotalTransferBtc   string           `json:"totalTransferBtc"`
+	TotalTransferBNB   string           `json:"totalTransferBNB"`
+	DribbletPercentage string           `json:"dribbletPercentage"`
+}
