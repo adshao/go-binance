@@ -991,3 +991,7 @@ func (c *Client) NewGetUserAsset() *GetUserAssetService {
 func (c *Client) NewSubTransferHistoryService() *SubTransferHistoryService {
 	return &SubTransferHistoryService{c: c}
 }
+
+func (c *Client) NewSimpleEarnService() *SimpleEarnService {
+	return &SimpleEarnService{c: c}
+}

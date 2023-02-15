@@ -405,9 +405,6 @@ func (s *SubTransferHistoryService) Do(ctx context.Context) (res []*SubTransfer,
 	if s.endTime != nil {
 		r.setParam("endTime", *s.endTime)
 	}
-	if s.endTime != nil {
-		r.setParam("endTime", *s.endTime)
-	}
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
 	}
