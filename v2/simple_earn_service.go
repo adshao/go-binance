@@ -63,6 +63,9 @@ type EarnHistory struct {
 	ProductName string
 	PurchaseID  int64
 	Status      string
+	Type        string
+	Time        int64
+	Interest    float64 `json:",string"`
 }
 
 func (s *SimpleEarnService) Do(ctx context.Context, dataType DataType) (res []*EarnHistory, err error) {
