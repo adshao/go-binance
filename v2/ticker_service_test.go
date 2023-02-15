@@ -233,7 +233,9 @@ func (s *tickerServiceTestSuite) TestPriceChangeStats() {
         "closeTime": 1499869899040,
         "firstId": 28385,
         "lastId": 28460,
-        "count": 76
+        "count": 76,
+        "bidQty": "300.00000000",
+        "askQty": "400.00000000"
     }`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
@@ -266,6 +268,8 @@ func (s *tickerServiceTestSuite) TestPriceChangeStats() {
 		FristID:            28385,
 		LastID:             28460,
 		Count:              76,
+		BidQty:             "300.00000000",
+		AskQty:             "400.00000000",
 	}
 	s.assertPriceChangeStatsEqual(e, stats[0])
 }
