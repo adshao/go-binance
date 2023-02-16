@@ -144,7 +144,9 @@ type PriceChangeStats struct {
 	LastPrice          string `json:"lastPrice"`
 	LastQty            string `json:"lastQty"`
 	BidPrice           string `json:"bidPrice"`
+	BidQty             string `json:"bidQty"`
 	AskPrice           string `json:"askPrice"`
+	AskQty             string `json:"askQty"`
 	OpenPrice          string `json:"openPrice"`
 	HighPrice          string `json:"highPrice"`
 	LowPrice           string `json:"lowPrice"`
