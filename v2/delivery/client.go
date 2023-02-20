@@ -457,3 +457,8 @@ func (c *Client) NewChangePositionModeService() *ChangePositionModeService {
 func (c *Client) NewGetPositionModeService() *GetPositionModeService {
 	return &GetPositionModeService{c: c}
 }
+
+// NewGetOpenInterestService init open interest service
+func (c *Client) NewGetOpenInterestService() *GetOpenInterestService {
+	return &GetOpenInterestService{c: c}
+}
