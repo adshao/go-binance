@@ -130,7 +130,7 @@ func (s *ListPriceChangeStatsService) Do(ctx context.Context, opts ...RequestOpt
 		r.setParam("symbol", *s.symbol)
 	} else if s.symbols != nil {
 		s, _ := json.Marshal(s.symbols)
-		r.setParam("symbols", string(s))
+		r.setParam("symbols", s)
 	}
 
 	data, err := s.c.callAPI(ctx, r, opts...)
