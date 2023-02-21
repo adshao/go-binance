@@ -296,4 +296,5 @@ type AccountTrade struct {
 	PositionSide    PositionSideType `json:"positionSide"`
 	Symbol          string           `json:"symbol"`
 	Time            int64            `json:"time"`
+	MarginAsset     string           `json:"marginAsset"`
 }
