@@ -296,6 +296,103 @@ func (s *tickerServiceTestSuite) assertPriceChangeStatsEqual(e, a *PriceChangeSt
 	r.Equal(e.Count, a.Count, "Count")
 }
 
+func (s *tickerServiceTestSuite) TestMultiplePriceChangeStats() {
+	data := []byte(`[{
+    	"symbol": "BNBBTC",
+    	"priceChange": "-94.99999800",
+    	"priceChangePercent": "-95.960",
+    	"weightedAvgPrice": "0.29628482",
+    	"prevClosePrice": "0.10002000",
+    	"lastPrice": "4.00000200",
+    	"lastQty": "200.00000000",
+    	"bidPrice": "4.00000000",
+    	"askPrice": "4.00000200",
+    	"openPrice": "99.00000000",
+    	"highPrice": "100.00000000",
+    	"lowPrice": "0.10000000",
+    	"volume": "8913.30000000",
+    	"quoteVolume": "15.30000000",
+    	"openTime": 1499783499040,
+    	"closeTime": 1499869899040,
+    	"firstId": 28385,
+    	"lastId": 28460,
+    	"count": 76
+  	},{
+    	"symbol": "ETHBTC",
+    	"priceChange": "-194.99999800",
+    	"priceChangePercent": "-195.960",
+    	"weightedAvgPrice": "10.29628482",
+    	"prevClosePrice": "10.10002000",
+    	"lastPrice": "14.00000200",
+    	"lastQty": "1200.00000000",
+    	"bidPrice": "14.00000000",
+    	"askPrice": "14.00000200",
+    	"openPrice": "199.00000000",
+    	"highPrice": "1100.00000000",
+    	"lowPrice": "10.10000000",
+    	"volume": "18913.30000000",
+    	"quoteVolume": "115.30000000",
+    	"openTime": 1499783499041,
+    	"closeTime": 1499869899041,
+    	"firstId": 28381,
+    	"lastId": 28461,
+    	"count": 71
+  	}]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newRequest().setParam("symbols", `["BNBBTC","ETHBTC"]`)
+		s.assertRequestEqual(e, r)
+	})
+	res, err := s.client.NewListPriceChangeStatsService().Symbols([]string{"BNBBTC", "ETHBTC"}).Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	e := []*PriceChangeStats{
+		{
+			Symbol:             "BNBBTC",
+			PriceChange:        "-94.99999800",
+			PriceChangePercent: "-95.960",
+			WeightedAvgPrice:   "0.29628482",
+			PrevClosePrice:     "0.10002000",
+			LastPrice:          "4.00000200",
+			BidPrice:           "4.00000000",
+			AskPrice:           "4.00000200",
+			OpenPrice:          "99.00000000",
+			HighPrice:          "100.00000000",
+			LowPrice:           "0.10000000",
+			Volume:             "8913.30000000",
+			QuoteVolume:        "15.30000000",
+			OpenTime:           1499783499040,
+			CloseTime:          1499869899040,
+			FristID:            28385,
+			LastID:             28460,
+			Count:              76,
+		},
+		{
+			Symbol:             "ETHBTC",
+			PriceChange:        "-194.99999800",
+			PriceChangePercent: "-195.960",
+			WeightedAvgPrice:   "10.29628482",
+			PrevClosePrice:     "10.10002000",
+			LastPrice:          "14.00000200",
+			BidPrice:           "14.00000000",
+			AskPrice:           "14.00000200",
+			OpenPrice:          "199.00000000",
+			HighPrice:          "1100.00000000",
+			LowPrice:           "10.10000000",
+			Volume:             "18913.30000000",
+			QuoteVolume:        "115.30000000",
+			OpenTime:           1499783499041,
+			CloseTime:          1499869899041,
+			FristID:            28381,
+			LastID:             28461,
+			Count:              71,
+		},
+	}
+	s.assertListPriceChangeStatsEqual(e, res)
+}
+
 func (s *tickerServiceTestSuite) TestListPriceChangeStats() {
 	data := []byte(`[{
     	"symbol": "BNBBTC",

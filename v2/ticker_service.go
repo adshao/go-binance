@@ -96,13 +96,20 @@ type SymbolPrice struct {
 
 // ListPriceChangeStatsService show stats of price change in last 24 hours for all symbols
 type ListPriceChangeStatsService struct {
-	c      *Client
-	symbol *string
+	c       *Client
+	symbol  *string
+	symbols []string
 }
 
 // Symbol set symbol
 func (s *ListPriceChangeStatsService) Symbol(symbol string) *ListPriceChangeStatsService {
 	s.symbol = &symbol
+	return s
+}
+
+// Symbols set symbols
+func (s *ListPriceChangeStatsService) Symbols(symbols []string) *ListPriceChangeStatsService {
+	s.symbols = symbols
 	return s
 }
 
@@ -118,9 +125,13 @@ func (s *ListPriceChangeStatsService) Do(ctx context.Context, opts ...RequestOpt
 		method:   http.MethodGet,
 		endpoint: "/api/v3/ticker/24hr",
 	}
+
 	if s.symbol != nil {
 		r.setParam("symbol", *s.symbol)
+	} else if s.symbols != nil {
+		r.setParam("symbols", s.symbols)
 	}
+
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return res, err
