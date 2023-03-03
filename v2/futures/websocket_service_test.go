@@ -466,7 +466,7 @@ func (s *websocketServiceTestSuite) TestWsCombinedKlineServe() {
 
 func (s *websocketServiceTestSuite) TestContinuousKlineServe() {
 	data := []byte(`{
-		"e": "kline",
+		"e": "continuous_kline",
 		"E": 123456789,
 		"ps": "BTCUSDT",
 		"ct": "PERPETUAL",
@@ -492,34 +492,39 @@ func (s *websocketServiceTestSuite) TestContinuousKlineServe() {
 	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
 
-	doneC, stopC, err := WsContinuousKlineServe("ETHBTC", "PERPETUAL", "1m", func(event *WsContinuousKlineEvent) {
-		e := &WsContinuousKlineEvent{
-			Event:        "kline",
-			Time:         123456789,
-			PairSymbol:   "BTCUSDT",
-			ContractType: "PERPETUAL",
-			Kline: WsContinuousKline{
-				StartTime:            123400000,
-				EndTime:              123460000,
-				Interval:             "1m",
-				FirstTradeID:         100,
-				LastTradeID:          200,
-				Open:                 "0.0010",
-				Close:                "0.0020",
-				High:                 "0.0025",
-				Low:                  "0.0015",
-				Volume:               "1000",
-				TradeNum:             100,
-				IsFinal:              false,
-				QuoteVolume:          "1.0000",
-				ActiveBuyVolume:      "500",
-				ActiveBuyQuoteVolume: "0.500",
-			},
-		}
-		s.assertWsContinuousKlineEventEqual(e, event)
-	}, func(err error) {
-		s.r().EqualError(err, fakeErrMsg)
-	})
+	doneC, stopC, err := WsContinuousKlineServe(&WsContinuousKlineSubcribeArgs{
+		Pair:         "BTCUSDT",
+		ContractType: "PERPETUAL",
+		Interval:     "1m",
+	},
+		func(event *WsContinuousKlineEvent) {
+			e := &WsContinuousKlineEvent{
+				Event:        "continuous_kline",
+				Time:         123456789,
+				PairSymbol:   "BTCUSDT",
+				ContractType: "PERPETUAL",
+				Kline: WsContinuousKline{
+					StartTime:            123400000,
+					EndTime:              123460000,
+					Interval:             "1m",
+					FirstTradeID:         100,
+					LastTradeID:          200,
+					Open:                 "0.0010",
+					Close:                "0.0020",
+					High:                 "0.0025",
+					Low:                  "0.0015",
+					Volume:               "1000",
+					TradeNum:             100,
+					IsFinal:              false,
+					QuoteVolume:          "1.0000",
+					ActiveBuyVolume:      "500",
+					ActiveBuyQuoteVolume: "0.500",
+				},
+			}
+			s.assertWsContinuousKlineEventEqual(e, event)
+		}, func(err error) {
+			s.r().EqualError(err, fakeErrMsg)
+		})
 	s.r().NoError(err)
 	stopC <- struct{}{}
 	<-doneC
@@ -552,7 +557,7 @@ func (s *websocketServiceTestSuite) TestWsCombinedContinuousKlineServe() {
 	data := []byte(`{
 	"stream":"ethbtc_perpetual@continuousKline_1m",
 	"data": {
-        "e": "kline",
+        "e": "continuous_kline",
         "E": 1499404907056,
         "ps": "ETHBTC",
 		"ct": "PERPETUAL",
@@ -580,7 +585,7 @@ func (s *websocketServiceTestSuite) TestWsCombinedContinuousKlineServe() {
 	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
 
-	input := []WsPairContractTypeIntervalPair{
+	input := []*WsContinuousKlineSubcribeArgs{
 		{
 			Pair:         "ETHBTC",
 			ContractType: "PERPETUAL",
@@ -589,7 +594,7 @@ func (s *websocketServiceTestSuite) TestWsCombinedContinuousKlineServe() {
 	}
 	doneC, stopC, err := WsCombinedContinuousKlineServe(input, func(event *WsContinuousKlineEvent) {
 		e := &WsContinuousKlineEvent{
-			Event:        "kline",
+			Event:        "continuous_kline",
 			Time:         1499404907056,
 			PairSymbol:   "ETHBTC",
 			ContractType: "PERPETUAL",

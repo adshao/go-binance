@@ -310,7 +310,8 @@ type WsContinuousKline struct {
 	ActiveBuyQuoteVolume string `json:"Q"`
 }
 
-type WsPairContractTypeIntervalPair struct {
+// WsContinuousKlineSubcribeArgs used with WsContinuousKlineServe or WsCombinedContinuousKlineServe
+type WsContinuousKlineSubcribeArgs struct {
 	Pair         string
 	ContractType string
 	Interval     string
@@ -320,10 +321,10 @@ type WsPairContractTypeIntervalPair struct {
 type WsContinuousKlineHandler func(event *WsContinuousKlineEvent)
 
 // WsContinuousKlineServe serve websocket continuous kline handler with a pair and contractType and interval like 15m, 30s
-func WsContinuousKlineServe(pair string, contractType string, interval string, handler WsContinuousKlineHandler,
+func WsContinuousKlineServe(subscribeArgs *WsContinuousKlineSubcribeArgs, handler WsContinuousKlineHandler,
 	errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	endpoint := fmt.Sprintf("%s/%s_%s@continuousKline_%s", getWsEndpoint(), strings.ToLower(pair),
-		strings.ToLower(contractType), interval)
+	endpoint := fmt.Sprintf("%s/%s_%s@continuousKline_%s", getWsEndpoint(), strings.ToLower(subscribeArgs.Pair),
+		strings.ToLower(subscribeArgs.ContractType), subscribeArgs.Interval)
 	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		event := new(WsContinuousKlineEvent)
@@ -337,11 +338,11 @@ func WsContinuousKlineServe(pair string, contractType string, interval string, h
 	return wsServe(cfg, wsHandler, errHandler)
 }
 
-// WsCombinedContinuousKlineServe is similar to WsKlineServe, but it handles multiple pairs of different contractType with it interval
-func WsCombinedContinuousKlineServe(PairContractTypeIntervalList []WsPairContractTypeIntervalPair,
+// WsCombinedContinuousKlineServe is similar to WsContinuousKlineServe, but it handles multiple pairs of different contractType with its interval
+func WsCombinedContinuousKlineServe(subscribeArgsList []*WsContinuousKlineSubcribeArgs,
 	handler WsContinuousKlineHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := getCombinedEndpoint()
-	for _, val := range PairContractTypeIntervalList {
+	for _, val := range subscribeArgsList {
 		endpoint += fmt.Sprintf("%s_%s@continuousKline_%s", strings.ToLower(val.Pair),
 			strings.ToLower(val.ContractType), val.Interval) + "/"
 	}

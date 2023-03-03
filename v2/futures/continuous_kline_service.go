@@ -104,7 +104,7 @@ func (s *ContinuousKlinesService) Do(ctx context.Context, opts ...RequestOption)
 	return res, nil
 }
 
-// Kline define kline info
+// ContinuousKline define ContinuousKline info
 type ContinuousKline struct {
 	OpenTime                 int64  `json:"openTime"`
 	Open                     string `json:"open"`
