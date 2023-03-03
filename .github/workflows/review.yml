@@ -1,0 +1,20 @@
+name: Code Review
+
+on:
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  code-review:
+    if: github.event.comment.user.login == 'adshao' && startsWith(github.event.comment.body, 'chatgpt')
+    runs-on: ubuntu-latest
+    steps:
+    - name: OpenAI ChatGPT Code Review
+      uses: adshao/chatgpt-code-review-action@v0.1.2
+      with:
+        LANGUAGE: 'English'
+        PROGRAMMING_LANGUAGE: 'Go'
+        REVIEW_COMMENT_PREFIX: 'chatgpt:'
+        FULL_REVIEW_COMMENT: 'chatgpt'
+        OPENAI_TOKEN: ${{ secrets.OPENAI_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
