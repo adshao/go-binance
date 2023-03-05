@@ -20,6 +20,7 @@ import (
 	"github.com/adshao/go-binance/v2/common"
 	"github.com/adshao/go-binance/v2/delivery"
 	"github.com/adshao/go-binance/v2/futures"
+	"github.com/adshao/go-binance/v2/options"
 )
 
 // SideType define side type of order
@@ -307,6 +308,11 @@ func NewFuturesClient(apiKey, secretKey string) *futures.Client {
 // NewDeliveryClient initialize client for coin-M futures API
 func NewDeliveryClient(apiKey, secretKey string) *delivery.Client {
 	return delivery.NewClient(apiKey, secretKey)
+}
+
+// NewOptionsClient initialize client for options API
+func NewOptionsClient(apiKey, secretKey string) *options.Client {
+	return options.NewClient(apiKey, secretKey)
 }
 
 type doFunc func(req *http.Request) (*http.Response, error)
