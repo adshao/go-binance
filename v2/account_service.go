@@ -10,25 +10,6 @@ type GetAccountService struct {
 	c *Client
 }
 
-// Do send request
-func (s *GetAccountService) Do(ctx context.Context, opts ...RequestOption) (res *Account, err error) {
-	r := &request{
-		method:   http.MethodGet,
-		endpoint: "/api/v3/account",
-		secType:  secTypeSigned,
-	}
-	data, err := s.c.callAPI(ctx, r, opts...)
-	if err != nil {
-		return nil, err
-	}
-	res = new(Account)
-	err = json.Unmarshal(data, res)
-	if err != nil {
-		return nil, err
-	}
-	return res, nil
-}
-
 // Account define account info
 type Account struct {
 	MakerCommission  int64     `json:"makerCommission"`
