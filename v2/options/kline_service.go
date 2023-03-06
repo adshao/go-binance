@@ -79,7 +79,6 @@ func (s *KlinesService) Do(ctx context.Context, opts ...RequestOption) (res []*K
 			err = fmt.Errorf("invalid kline response")
 			return []*Kline{}, err
 		}
-		//amount:2.35 close:235 closeTime:1677931200000 high:235 interval:4h low:235 open:235 openTime:1677916800000 takerAmount:2.35 takerVolume:0.01 tradeCount:1 volume:0.01
 		res[i] = &Kline{
 			OpenTime:                 item.Get("openTime").MustInt64(),
 			Open:                     item.Get("open").MustString(),
