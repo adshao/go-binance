@@ -366,3 +366,8 @@ func (c *Client) SetApiEndpoint(url string) *Client {
 func (c *Client) NewKlinesService() *KlinesService {
 	return &KlinesService{c: c}
 }
+
+// NewDepthService init depth service
+func (c *Client) NewDepthService() *DepthService {
+	return &DepthService{c: c}
+}
