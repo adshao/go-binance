@@ -371,3 +371,8 @@ func (c *Client) NewKlinesService() *KlinesService {
 func (c *Client) NewDepthService() *DepthService {
 	return &DepthService{c: c}
 }
+
+// NewExchangeInfoService init exchange info service
+func (c *Client) NewExchangeInfoService() *ExchangeInfoService {
+	return &ExchangeInfoService{c: c}
+}
