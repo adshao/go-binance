@@ -25,6 +25,9 @@ type SideType string
 // PositionSideType define position side type of order
 type PositionSideType string
 
+// OptionSideType define option side type of order
+type OptionSideType string
+
 // OrderType define order type
 type OrderType string
 
@@ -85,6 +88,9 @@ const (
 	PositionSideTypeLong  PositionSideType = "LONG"
 	PositionSideTypeShort PositionSideType = "SHORT"
 
+	OptionSideTypeCall OptionSideType = "CALL"
+	OptionSideTypePut  OptionSideType = "PUT"
+
 	OrderTypeLimit              OrderType = "LIMIT"
 	OrderTypeMarket             OrderType = "MARKET"
 	OrderTypeStop               OrderType = "STOP"
@@ -117,6 +123,7 @@ const (
 	OrderStatusTypeExpired         OrderStatusType = "EXPIRED"
 	OrderStatusTypeNewInsurance    OrderStatusType = "NEW_INSURANCE"
 	OrderStatusTypeNewADL          OrderStatusType = "NEW_ADL"
+	OrderStatusTypeAccepted        OrderStatusType = "ACCEPTED"
 
 	SymbolTypeFuture SymbolType = "FUTURE"
 
@@ -375,4 +382,39 @@ func (c *Client) NewDepthService() *DepthService {
 // NewExchangeInfoService init exchange info service
 func (c *Client) NewExchangeInfoService() *ExchangeInfoService {
 	return &ExchangeInfoService{c: c}
+}
+
+// NewCreateOrderService init creating order service
+func (c *Client) NewCreateOrderService() *CreateOrderService {
+	return &CreateOrderService{c: c}
+}
+
+// NewListOpenOrdersService init list open orders service
+func (c *Client) NewListOpenOrdersService() *ListOpenOrdersService {
+	return &ListOpenOrdersService{c: c}
+}
+
+// NewGetOrderService init get order service
+func (c *Client) NewGetOrderService() *GetOrderService {
+	return &GetOrderService{c: c}
+}
+
+// NewCancelOrderService init cancel order service
+func (c *Client) NewCancelOrderService() *CancelOrderService {
+	return &CancelOrderService{c: c}
+}
+
+// NewCancelAllOpenOrdersService init cancel all open orders service
+func (c *Client) NewCancelAllOpenOrdersService() *CancelAllOpenOrdersService {
+	return &CancelAllOpenOrdersService{c: c}
+}
+
+// NewCancelMultipleOrdersService init cancel multiple orders service
+func (c *Client) NewCancelMultipleOrdersService() *CancelMultiplesOrdersService {
+	return &CancelMultiplesOrdersService{c: c}
+}
+
+// NewCreateBatchOrdersService init creating batch order service
+func (c *Client) NewCreateBatchOrdersService() *CreateBatchOrdersService {
+	return &CreateBatchOrdersService{c: c}
 }
