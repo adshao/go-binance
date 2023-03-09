@@ -464,6 +464,167 @@ func (s *websocketServiceTestSuite) TestWsCombinedKlineServe() {
 	<-doneC
 }
 
+func (s *websocketServiceTestSuite) TestContinuousKlineServe() {
+	data := []byte(`{
+		"e": "continuous_kline",
+		"E": 123456789,
+		"ps": "BTCUSDT",
+		"ct": "PERPETUAL",
+		"k": {
+		  "t": 123400000,
+		  "T": 123460000,
+		  "i": "1m",
+		  "f": 100,
+		  "L": 200,
+		  "o": "0.0010",
+		  "c": "0.0020",
+		  "h": "0.0025",
+		  "l": "0.0015",
+		  "v": "1000",
+		  "n": 100,
+		  "x": false,
+		  "q": "1.0000",
+		  "V": "500",
+		  "Q": "0.500"
+		}
+	  }`)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+
+	doneC, stopC, err := WsContinuousKlineServe(&WsContinuousKlineSubcribeArgs{
+		Pair:         "BTCUSDT",
+		ContractType: "PERPETUAL",
+		Interval:     "1m",
+	},
+		func(event *WsContinuousKlineEvent) {
+			e := &WsContinuousKlineEvent{
+				Event:        "continuous_kline",
+				Time:         123456789,
+				PairSymbol:   "BTCUSDT",
+				ContractType: "PERPETUAL",
+				Kline: WsContinuousKline{
+					StartTime:            123400000,
+					EndTime:              123460000,
+					Interval:             "1m",
+					FirstTradeID:         100,
+					LastTradeID:          200,
+					Open:                 "0.0010",
+					Close:                "0.0020",
+					High:                 "0.0025",
+					Low:                  "0.0015",
+					Volume:               "1000",
+					TradeNum:             100,
+					IsFinal:              false,
+					QuoteVolume:          "1.0000",
+					ActiveBuyVolume:      "500",
+					ActiveBuyQuoteVolume: "0.500",
+				},
+			}
+			s.assertWsContinuousKlineEventEqual(e, event)
+		}, func(err error) {
+			s.r().EqualError(err, fakeErrMsg)
+		})
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
+func (s *websocketServiceTestSuite) assertWsContinuousKlineEventEqual(e, a *WsContinuousKlineEvent) {
+	r := s.r()
+	r.Equal(e.Event, a.Event, "Event")
+	r.Equal(e.Time, a.Time, "Time")
+	r.Equal(e.PairSymbol, a.PairSymbol, "PairSymbol")
+	ek, ak := e.Kline, a.Kline
+	r.Equal(ek.StartTime, ak.StartTime, "StartTime")
+	r.Equal(ek.EndTime, ak.EndTime, "EndTime")
+	r.Equal(ek.Interval, ak.Interval, "Interval")
+	r.Equal(ek.FirstTradeID, ak.FirstTradeID, "FirstTradeID")
+	r.Equal(ek.LastTradeID, ak.LastTradeID, "LastTradeID")
+	r.Equal(ek.Open, ak.Open, "Open")
+	r.Equal(ek.Close, ak.Close, "Close")
+	r.Equal(ek.High, ak.High, "High")
+	r.Equal(ek.Low, ak.Low, "Low")
+	r.Equal(ek.Volume, ak.Volume, "Volume")
+	r.Equal(ek.TradeNum, ak.TradeNum, "TradeNum")
+	r.Equal(ek.IsFinal, ak.IsFinal, "IsFinal")
+	r.Equal(ek.QuoteVolume, ak.QuoteVolume, "QuoteVolume")
+	r.Equal(ek.ActiveBuyVolume, ak.ActiveBuyVolume, "ActiveBuyVolume")
+	r.Equal(ek.ActiveBuyQuoteVolume, ak.ActiveBuyQuoteVolume, "ActiveBuyQuoteVolume")
+}
+
+func (s *websocketServiceTestSuite) TestWsCombinedContinuousKlineServe() {
+	data := []byte(`{
+	"stream":"ethbtc_perpetual@continuousKline_1m",
+	"data": {
+        "e": "continuous_kline",
+        "E": 1499404907056,
+        "ps": "ETHBTC",
+		"ct": "PERPETUAL",
+        "k": {
+            "t": 1499404860000,
+            "T": 1499404919999,
+            "s": "ETHBTC",
+            "i": "1m",
+            "f": 77462,
+            "L": 77465,
+            "o": "0.10278577",
+            "c": "0.10278645",
+            "h": "0.10278712",
+            "l": "0.10278518",
+            "v": "17.47929838",
+            "n": 4,
+            "x": false,
+            "q": "1.79662878",
+            "V": "2.34879839",
+            "Q": "0.24142166",
+            "B": "13279784.01349473"
+        }
+	}}`)
+	fakeErrMsg := "fake error"
+	s.mockWsServe(data, errors.New(fakeErrMsg))
+	defer s.assertWsServe()
+
+	input := []*WsContinuousKlineSubcribeArgs{
+		{
+			Pair:         "ETHBTC",
+			ContractType: "PERPETUAL",
+			Interval:     "1m",
+		},
+	}
+	doneC, stopC, err := WsCombinedContinuousKlineServe(input, func(event *WsContinuousKlineEvent) {
+		e := &WsContinuousKlineEvent{
+			Event:        "continuous_kline",
+			Time:         1499404907056,
+			PairSymbol:   "ETHBTC",
+			ContractType: "PERPETUAL",
+			Kline: WsContinuousKline{
+				StartTime:            1499404860000,
+				EndTime:              1499404919999,
+				Interval:             "1m",
+				FirstTradeID:         77462,
+				LastTradeID:          77465,
+				Open:                 "0.10278577",
+				Close:                "0.10278645",
+				High:                 "0.10278712",
+				Low:                  "0.10278518",
+				Volume:               "17.47929838",
+				TradeNum:             4,
+				IsFinal:              false,
+				QuoteVolume:          "1.79662878",
+				ActiveBuyVolume:      "2.34879839",
+				ActiveBuyQuoteVolume: "0.24142166",
+			},
+		}
+		s.assertWsContinuousKlineEventEqual(e, event)
+	}, func(err error) {
+		s.r().EqualError(err, fakeErrMsg)
+	})
+	s.r().NoError(err)
+	stopC <- struct{}{}
+	<-doneC
+}
+
 func (s *websocketServiceTestSuite) TestMiniMarketTickerServe() {
 	data := []byte(`{
 		"e": "24hrMiniTicker", 

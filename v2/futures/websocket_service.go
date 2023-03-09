@@ -282,6 +282,95 @@ func WsCombinedKlineServe(symbolIntervalPair map[string]string, handler WsKlineH
 	return wsServe(cfg, wsHandler, errHandler)
 }
 
+// WsContinuousKlineEvent define websocket continuous kline event
+type WsContinuousKlineEvent struct {
+	Event        string            `json:"e"`
+	Time         int64             `json:"E"`
+	PairSymbol   string            `json:"ps"`
+	ContractType string            `json:"ct"`
+	Kline        WsContinuousKline `json:"k"`
+}
+
+// WsContinuousKline define websocket continuous kline
+type WsContinuousKline struct {
+	StartTime            int64  `json:"t"`
+	EndTime              int64  `json:"T"`
+	Interval             string `json:"i"`
+	FirstTradeID         int64  `json:"f"`
+	LastTradeID          int64  `json:"L"`
+	Open                 string `json:"o"`
+	Close                string `json:"c"`
+	High                 string `json:"h"`
+	Low                  string `json:"l"`
+	Volume               string `json:"v"`
+	TradeNum             int64  `json:"n"`
+	IsFinal              bool   `json:"x"`
+	QuoteVolume          string `json:"q"`
+	ActiveBuyVolume      string `json:"V"`
+	ActiveBuyQuoteVolume string `json:"Q"`
+}
+
+// WsContinuousKlineSubcribeArgs used with WsContinuousKlineServe or WsCombinedContinuousKlineServe
+type WsContinuousKlineSubcribeArgs struct {
+	Pair         string
+	ContractType string
+	Interval     string
+}
+
+// WsContinuousKlineHandler handle websocket continuous kline event
+type WsContinuousKlineHandler func(event *WsContinuousKlineEvent)
+
+// WsContinuousKlineServe serve websocket continuous kline handler with a pair and contractType and interval like 15m, 30s
+func WsContinuousKlineServe(subscribeArgs *WsContinuousKlineSubcribeArgs, handler WsContinuousKlineHandler,
+	errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/%s_%s@continuousKline_%s", getWsEndpoint(), strings.ToLower(subscribeArgs.Pair),
+		strings.ToLower(subscribeArgs.ContractType), subscribeArgs.Interval)
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		event := new(WsContinuousKlineEvent)
+		err := json.Unmarshal(message, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+// WsCombinedContinuousKlineServe is similar to WsContinuousKlineServe, but it handles multiple pairs of different contractType with its interval
+func WsCombinedContinuousKlineServe(subscribeArgsList []*WsContinuousKlineSubcribeArgs,
+	handler WsContinuousKlineHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := getCombinedEndpoint()
+	for _, val := range subscribeArgsList {
+		endpoint += fmt.Sprintf("%s_%s@continuousKline_%s", strings.ToLower(val.Pair),
+			strings.ToLower(val.ContractType), val.Interval) + "/"
+	}
+	endpoint = endpoint[:len(endpoint)-1]
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		j, err := newJSON(message)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		data := j.Get("data").MustMap()
+
+		jsonData, _ := json.Marshal(data)
+
+		event := new(WsContinuousKlineEvent)
+		err = json.Unmarshal(jsonData, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
 // WsMiniMarketTickerEvent define websocket mini market ticker event.
 type WsMiniMarketTickerEvent struct {
 	Event       string `json:"e"`

@@ -400,6 +400,11 @@ func (c *Client) NewKlinesService() *KlinesService {
 	return &KlinesService{c: c}
 }
 
+// NewContinuousKlinesService init continuous klines service
+func (c *Client) NewContinuousKlinesService() *ContinuousKlinesService {
+	return &ContinuousKlinesService{c: c}
+}
+
 // NewIndexPriceKlinesService init index price klines service
 func (c *Client) NewIndexPriceKlinesService() *IndexPriceKlinesService {
 	return &IndexPriceKlinesService{c: c}
