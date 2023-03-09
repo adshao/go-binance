@@ -515,16 +515,16 @@ type CreateBatchOrdersResponse struct {
 
 // SingleOrder define single order info returned by batch create request
 type SingleOrder struct {
-	OrderID       int64           `json:"orderId"`
-	Symbol        string          `json:"symbol"`
-	Price         string          `json:"price"`
-	Quantity      string          `json:"quantity"`
-	Side          SideType        `json:"side"`
-	Type          OrderType       `json:"type"`
-	ReduceOnly    bool            `json:"reduceOnly"`
-	PostOnly      bool            `json:"postOnly"`
-	ClientOrderID string          `json:"clientOrderId"`
-	Mmp           bool            `json:"mmp"`
+	OrderID       int64     `json:"orderId"`
+	Symbol        string    `json:"symbol"`
+	Price         string    `json:"price"`
+	Quantity      string    `json:"quantity"`
+	Side          SideType  `json:"side"`
+	Type          OrderType `json:"type"`
+	ReduceOnly    bool      `json:"reduceOnly"`
+	PostOnly      bool      `json:"postOnly"`
+	ClientOrderID string    `json:"clientOrderId"`
+	Mmp           bool      `json:"mmp"`
 }
 
 func (s *CreateBatchOrdersService) OrderList(orders []*CreateOrderService) *CreateBatchOrdersService {
@@ -601,10 +601,16 @@ func (s *CreateBatchOrdersService) Do(ctx context.Context, opts ...RequestOption
 			return &CreateBatchOrdersResponse{}, err
 		}
 
+		/*
+		TODO: the following 4 lines are copied from futures package, not sure why there is
+		such condition check and it looks wrong to me. Need to double confirm.
+		
 		if o.ClientOrderID != "" {
 			batchCreateOrdersResponse.Orders = append(batchCreateOrdersResponse.Orders, o)
 			continue
 		}
+		*/
+		batchCreateOrdersResponse.Orders = append(batchCreateOrdersResponse.Orders, o)
 
 	}
 
