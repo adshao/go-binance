@@ -182,6 +182,10 @@ type CreateOrderResponse struct {
 	Fills                 []*Fill `json:"fills"`
 	MarginBuyBorrowAmount string  `json:"marginBuyBorrowAmount"` // for margin
 	MarginBuyBorrowAsset  string  `json:"marginBuyBorrowAsset"`
+
+	OrderListID  int64 `json:"orderListId"`
+	StrategyID   int64 `json:"strategyId"`
+	StrategyType int64 `json:"strategyType"`
 }
 
 // Fill may be returned in an array of fills in a CreateOrderResponse.
