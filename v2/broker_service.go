@@ -265,3 +265,117 @@ type BrokerSpotSubaccountTransfer struct {
 	TxnID        int64  `json:"txnId"`
 	ClientTranId string `json:"clientTranId"`
 }
+
+type BrokerSpotTransferHistoryService struct {
+	c             *Client
+	fromId        *string
+	toId          *string
+	clientTranId  *string
+	showAllStatus *bool
+	startTime     *int64
+	endTime       *int64
+	page          *int
+	limit         *int
+}
+
+// BrokerSpotTransferHistoryService set fromId
+func (s *BrokerSpotTransferHistoryService) FromID(fromId string) *BrokerSpotTransferHistoryService {
+	s.fromId = &fromId
+	return s
+}
+
+// BrokerSpotTransferHistoryService set toId
+func (s *BrokerSpotTransferHistoryService) ToId(toId string) *BrokerSpotTransferHistoryService {
+	s.toId = &toId
+	return s
+}
+
+// BrokerSpotTransferHistoryService set clientTranId
+func (s *BrokerSpotTransferHistoryService) ClientTraniD(clientTranId string) *BrokerSpotTransferHistoryService {
+	s.clientTranId = &clientTranId
+	return s
+}
+
+// BrokerSpotTransferHistoryService set showAllStatus
+func (s *BrokerSpotTransferHistoryService) ShowAllStatus(showAllStatus bool) *BrokerSpotTransferHistoryService {
+	s.showAllStatus = &showAllStatus
+	return s
+}
+
+// BrokerSpotTransferHistoryService set startTime
+func (s *BrokerSpotTransferHistoryService) StartTime(startTime int64) *BrokerSpotTransferHistoryService {
+	s.startTime = &startTime
+	return s
+}
+
+// BrokerSpotTransferHistoryService set page
+func (s *BrokerSpotTransferHistoryService) Page(page int) *BrokerSpotTransferHistoryService {
+	s.page = &page
+	return s
+}
+
+// BrokerSpotTransferHistoryService set limit
+func (s *BrokerSpotTransferHistoryService) Limit(limit int) *BrokerSpotTransferHistoryService {
+	s.limit = &limit
+	return s
+}
+
+// BrokerSpotTransferHistoryService set endTime
+func (s *BrokerSpotTransferHistoryService) EndTime(endTime int64) *BrokerSpotTransferHistoryService {
+	s.endTime = &endTime
+	return s
+}
+
+// Do sends the request.
+func (s *BrokerSpotTransferHistoryService) Do(ctx context.Context) (*[]BrokerSpotTransferHistory, error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/broker/transfer",
+		secType:  secTypeSigned,
+	}
+	if s.fromId != nil {
+		r.setParam("fromId", *s.fromId)
+	}
+	if s.toId != nil {
+		r.setParam("toId", *s.toId)
+	}
+	if s.clientTranId != nil {
+		r.setParam("clientTranId", *s.clientTranId)
+	}
+	if s.showAllStatus != nil {
+		r.setParam("showAllStatus", *s.showAllStatus)
+	}
+	if s.startTime != nil {
+		r.setParam("startTime", *s.startTime)
+	}
+	if s.endTime != nil {
+		r.setParam("endTime", *s.endTime)
+	}
+	if s.page != nil {
+		r.setParam("page", *s.page)
+	}
+	if s.limit != nil {
+		r.setParam("limit", *s.limit)
+	}
+	data, err := s.c.callAPI(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+	res := new([]BrokerSpotTransferHistory)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type BrokerSpotTransferHistory struct {
+	FromId       string `json:"fromId"`
+	ToId         string `json:"toId"`
+	Asset        string `json:"asset"`
+	Qty          string `json:"qty"`
+	Time         int64  `json:"time"`
+	TxnId        string `json:"txnId"`
+	ClientTranId string `json:"clientTranId"`
+	Status       string `json:"status"`
+}

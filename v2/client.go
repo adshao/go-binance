@@ -1013,3 +1013,8 @@ func (c *Client) NewBrokerAPIKeyService() *BrokerAPIKeyService {
 func (c *Client) NewBrokerSpotSubaccountTransfer() *BrokerSpotSubaccountTransferService {
 	return &BrokerSpotSubaccountTransferService{c: c}
 }
+
+// NewBrokerSpotTransferHistory broker transfer history
+func (c *Client) NewBrokerSpotTransferHistory() *BrokerSpotTransferHistoryService {
+	return &BrokerSpotTransferHistoryService{c: c}
+}
