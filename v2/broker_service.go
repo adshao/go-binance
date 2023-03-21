@@ -375,7 +375,7 @@ type BrokerSpotTransferHistory struct {
 	Asset        string `json:"asset"`
 	Qty          string `json:"qty"`
 	Time         int64  `json:"time"`
-	TxnId        string `json:"txnId"`
+	TxnId        int64  `json:"txnId"`
 	ClientTranId string `json:"clientTranId"`
 	Status       string `json:"status"`
 }
