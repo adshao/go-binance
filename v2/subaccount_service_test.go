@@ -108,3 +108,108 @@ func (s *subAccountServiceTestSuite) assertSubAccountEqual(e, a SubAccount) {
 	r.Equal(e.IsManagedSubAccount, a.IsManagedSubAccount, "IsManagedSubAccount")
 	r.Equal(e.IsAssetManagementSubAccount, a.IsAssetManagementSubAccount, "IsAssetManagementSubAccount")
 }
+
+func (s *subAccountServiceTestSuite) TestSubManagedSubAccountDepositService() {
+	data := []byte(` { "tranId": 12345678 } `)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	email := "testsub@gmail.com"
+	asset := "USDT"
+	amount := 1.0
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"toEmail": email,
+			"asset":   asset,
+			"amount":  amount,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewManagedSubAccountDepositService().
+		ToEmail(email).
+		Asset(asset).
+		Amount(amount).
+		Do(newContext())
+
+	r := s.r()
+	r.NoError(err)
+
+	r.Equal(int64(12345678), res.ID)
+}
+
+func (s *subAccountServiceTestSuite) TestSubManagedSubAccountWithdrawalService() {
+	data := []byte(` { "tranId": 12345678 } `)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	email := "testsub@gmail.com"
+	asset := "USDT"
+	amount := 1.0
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"fromEmail": email,
+			"asset":     asset,
+			"amount":    amount,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewManagedSubAccountWithdrawalService().
+		FromEmail(email).
+		Asset(asset).
+		Amount(amount).
+		Do(newContext())
+
+	r := s.r()
+	r.NoError(err)
+
+	r.Equal(int64(12345678), res.ID)
+}
+
+func (s *subAccountServiceTestSuite) TestSubManagedSubAccountAssetsService() {
+	data := []byte(`
+		[
+			{
+			"coin": "INJ",                
+			"name": "Injective Protocol", 
+			"totalBalance": "0",          
+			"availableBalance": "0",      
+			"inOrder": "0",                
+			"btcValue": "0"               
+			}
+		]
+	`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	email := "testsub@gmail.com"
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{"email": email})
+		s.assertRequestEqual(e, r)
+	})
+
+	assets, err := s.client.NewManagedSubAccountAssetsService().Email(email).Do(newContext())
+
+	r := s.r()
+	r.NoError(err)
+
+	s.assertAssetsEqual(&ManagedSubAccountAsset{
+		Coin:             "INJ",
+		Name:             "Injective Protocol",
+		TotalBalance:     "0",
+		AvailableBalance: "0",
+		InOrder:          "0",
+		BtcValue:         "0",
+	}, assets[0])
+}
+
+func (s *subAccountServiceTestSuite) assertAssetsEqual(e, a *ManagedSubAccountAsset) {
+	r := s.r()
+	r.Equal(e.Coin, a.Coin, "Coin")
+	r.Equal(e.Name, a.Name, "Name")
+	r.Equal(e.TotalBalance, a.TotalBalance, "TotalBalance")
+	r.Equal(e.AvailableBalance, a.AvailableBalance, "AvailableBalance")
+	r.Equal(e.InOrder, a.InOrder, "InOrder")
+	r.Equal(e.BtcValue, a.BtcValue, "BtcValue")
+}

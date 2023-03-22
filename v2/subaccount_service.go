@@ -417,6 +417,11 @@ func (s *ManagedSubAccountWithdrawalService) Amount(amount float64) *ManagedSubA
 	return s
 }
 
+func (s *ManagedSubAccountWithdrawalService) TransferDate(val int64) *ManagedSubAccountWithdrawalService {
+	s.transferDate = val
+	return s
+}
+
 type ManagedSubAccountWithdrawalResponse struct {
 	ID int64 `json:"tranId"`
 }
