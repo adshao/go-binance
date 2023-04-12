@@ -227,7 +227,7 @@ func (s *ListAccountTradeService) Symbol(symbol string) *ListAccountTradeService
 
 // OrderID set orderId
 func (s *ListAccountTradeService) OrderID(orderID int64) *ListAccountTradeService {
-	s.startTime = &orderID
+	s.orderId = &orderID
 	return s
 }
 
