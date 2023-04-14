@@ -1001,3 +1001,8 @@ func (c *Client) NewManagedSubAccountWithdrawalService() *ManagedSubAccountWithd
 func (c *Client) NewManagedSubAccountAssetsService() *ManagedSubAccountAssetsService {
 	return &ManagedSubAccountAssetsService{c: c}
 }
+
+// NewSubAccountFuturesAccountService Get Detail on Sub-account's Futures Account (For Master Account)
+func (c *Client) NewSubAccountFuturesAccountService() *SubAccountFuturesAccountService {
+	return &SubAccountFuturesAccountService{c: c}
+}

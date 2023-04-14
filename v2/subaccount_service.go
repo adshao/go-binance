@@ -497,3 +497,67 @@ func (s *ManagedSubAccountAssetsService) Do(ctx context.Context, opts ...Request
 
 	return res, nil
 }
+
+// SubAccountFuturesAccountService Get Detail on Sub-account's Futures Account (For Master Account)
+// https://binance-docs.github.io/apidocs/spot/en/#get-detail-on-sub-account-39-s-futures-account-for-master-account
+type SubAccountFuturesAccountService struct {
+	c     *Client
+	email *string
+}
+
+func (s *SubAccountFuturesAccountService) Email(v string) *SubAccountFuturesAccountService {
+	s.email = &v
+	return s
+}
+
+func (s *SubAccountFuturesAccountService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountFuturesAccount, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/sub-account/futures/account",
+		secType:  secTypeSigned,
+	}
+	if s.email != nil {
+		r.setParam("email", *s.email)
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(SubAccountFuturesAccount)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type SubAccountFuturesAccount struct {
+	Email                       string                          `json:"email"`
+	Asset                       string                          `json:"asset"`
+	Assets                      []SubAccountFuturesAccountAsset `json:"assets"`
+	CanDeposit                  bool                            `json:"canDeposit"`
+	CanTrade                    bool                            `json:"canTrade"`
+	CanWithdraw                 bool                            `json:"canWithdraw"`
+	FeeTier                     int                             `json:"feeTier"`
+	MaxWithdrawAmount           string                          `json:"maxWithdrawAmount"`
+	TotalInitialMargin          string                          `json:"totalInitialMargin"`
+	TotalMaintenanceMargin      string                          `json:"totalMaintenanceMargin"`
+	TotalMarginBalance          string                          `json:"totalMarginBalance"`
+	TotalOpenOrderInitialMargin string                          `json:"totalOpenOrderInitialMargin"`
+	TotalPositionInitialMargin  string                          `json:"totalPositionInitialMargin"`
+	TotalUnrealizedProfit       string                          `json:"totalUnrealizedProfit"`
+	TotalWalletBalance          string                          `json:"totalWalletBalance"`
+	UpdateTime                  int64                           `json:"updateTime"`
+}
+
+type SubAccountFuturesAccountAsset struct {
+	Asset                  string `json:"asset"`
+	InitialMargin          string `json:"initialMargin"`
+	MaintenanceMargin      string `json:"maintenanceMargin"`
+	MarginBalance          string `json:"marginBalance"`
+	MaxWithdrawAmount      string `json:"maxWithdrawAmount"`
+	OpenOrderInitialMargin string `json:"openOrderInitialMargin"`
+	PositionInitialMargin  string `json:"positionInitialMargin"`
+	UnrealizedProfit       string `json:"unrealizedProfit"`
+	WalletBalance          string `json:"walletBalance"`
+}
