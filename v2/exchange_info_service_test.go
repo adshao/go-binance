@@ -118,12 +118,12 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 		TickSize: "0.00000100",
 	}
 	s.assertPriceFilterEqual(ePriceFilter, res.Symbols[0].PriceFilter())
-	eMinNotionalFilter := &MinNotionalFilter{
+	eMinNotionalFilter := &NotionalFilter{
 		MinNotional:      "0.00100000",
 		AveragePriceMins: 0,
 		ApplyToMarket:    false,
 	}
-	s.assertMinNotionalFilterEqual(eMinNotionalFilter, res.Symbols[0].MinNotionalFilter())
+	s.assertMinNotionalFilterEqual(eMinNotionalFilter, res.Symbols[0].NotionalFilter())
 	eMaxNumAlgoOrdersFilter := &MaxNumAlgoOrdersFilter{
 		MaxNumAlgoOrders: 5,
 	}
@@ -203,7 +203,7 @@ func (s *exchangeInfoServiceTestSuite) assertPercentPriceFilterEqual(e, a *Perce
 	r.Equal(e.MultiplierDown, a.MultiplierDown, "MultiplierDown")
 }
 
-func (s *exchangeInfoServiceTestSuite) assertMinNotionalFilterEqual(e, a *MinNotionalFilter) {
+func (s *exchangeInfoServiceTestSuite) assertMinNotionalFilterEqual(e, a *NotionalFilter) {
 	r := s.r()
 	r.Equal(e.MinNotional, a.MinNotional, "MinNotional")
 	r.Equal(e.AveragePriceMins, a.AveragePriceMins, "AveragePriceMins")
