@@ -213,3 +213,91 @@ func (s *subAccountServiceTestSuite) assertAssetsEqual(e, a *ManagedSubAccountAs
 	r.Equal(e.InOrder, a.InOrder, "InOrder")
 	r.Equal(e.BtcValue, a.BtcValue, "BtcValue")
 }
+
+func (s *subAccountServiceTestSuite) TestSubAccountFuturesService() {
+	data := []byte(`
+		{
+		    "email": "abc@test.com",
+		    "asset": "USDT",
+		    "assets":[
+		        {
+		            "asset": "USDT",
+		            "initialMargin": "0.00000000",
+		            "maintenanceMargin": "0.00000000",
+		            "marginBalance": "0.88308000",
+		            "maxWithdrawAmount": "0.88308000",
+		            "openOrderInitialMargin": "0.00000000",
+		            "positionInitialMargin": "0.00000000",
+		            "unrealizedProfit": "0.00000000",
+		            "walletBalance": "0.88308000"
+		         }
+		    ],
+		    "canDeposit": true,
+		    "canTrade": true,
+		    "canWithdraw": true,
+		    "feeTier": 2,
+		    "maxWithdrawAmount": "0.88308000",
+		    "totalInitialMargin": "0.00000000",
+		    "totalMaintenanceMargin": "0.00000000",
+		    "totalMarginBalance": "0.88308000",
+		    "totalOpenOrderInitialMargin": "0.00000000",
+		    "totalPositionInitialMargin": "0.00000000",
+		    "totalUnrealizedProfit": "0.00000000",
+		    "totalWalletBalance": "0.88308000",
+		    "updateTime": 1576756674610
+		 }
+	`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	email := "abc@test.com"
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{"email": email})
+		s.assertRequestEqual(e, r)
+	})
+
+	account, err := s.client.NewSubAccountFuturesAccountService().Email(email).Do(newContext())
+
+	r := s.r()
+	r.NoError(err)
+	r.Equal("abc@test.com", account.Email, "Email")
+	r.Equal("USDT", account.Asset, "Asset")
+	r.Equal(true, account.CanDeposit, "CanDeposit")
+	r.Equal(true, account.CanTrade, "CanTrade")
+	r.Equal(true, account.CanWithdraw, "CanWithdraw")
+	r.Equal(2, account.FeeTier, "FeeTier")
+	r.Equal("0.88308000", account.MaxWithdrawAmount, "MaxWithdrawAmount")
+	r.Equal("0.00000000", account.TotalInitialMargin, "TotalInitialMargin")
+	r.Equal("0.00000000", account.TotalMaintenanceMargin, "TotalMaintenanceMargin")
+	r.Equal("0.88308000", account.TotalMarginBalance, "TotalMarginBalance")
+	r.Equal("0.00000000", account.TotalOpenOrderInitialMargin, "TotalOpenOrderInitialMargin")
+	r.Equal("0.00000000", account.TotalPositionInitialMargin, "TotalPositionInitialMargin")
+	r.Equal("0.00000000", account.TotalUnrealizedProfit, "TotalUnrealizedProfit")
+	r.Equal("0.88308000", account.TotalWalletBalance, "TotalWalletBalance")
+	r.Equal(int64(1576756674610), account.UpdateTime, "UpdateTime")
+
+	s.assertAccountFuturesAssetsEqual(&SubAccountFuturesAccountAsset{
+		Asset:                  "USDT",
+		InitialMargin:          "0.00000000",
+		MaintenanceMargin:      "0.00000000",
+		MarginBalance:          "0.88308000",
+		MaxWithdrawAmount:      "0.88308000",
+		OpenOrderInitialMargin: "0.00000000",
+		PositionInitialMargin:  "0.00000000",
+		UnrealizedProfit:       "0.00000000",
+		WalletBalance:          "0.88308000",
+	}, &account.Assets[0])
+}
+
+func (s *subAccountServiceTestSuite) assertAccountFuturesAssetsEqual(e, a *SubAccountFuturesAccountAsset) {
+	r := s.r()
+	r.Equal(e.Asset, a.Asset, "Asset")
+	r.Equal(e.InitialMargin, a.InitialMargin, "InitialMargin")
+	r.Equal(e.MaintenanceMargin, a.MaintenanceMargin, "MaintenanceMargin")
+	r.Equal(e.MarginBalance, a.MarginBalance, "MarginBalance")
+	r.Equal(e.MaxWithdrawAmount, a.MaxWithdrawAmount, "MaxWithdrawAmount")
+	r.Equal(e.OpenOrderInitialMargin, a.OpenOrderInitialMargin, "OpenOrderInitialMargin")
+	r.Equal(e.PositionInitialMargin, a.PositionInitialMargin, "PositionInitialMargin")
+	r.Equal(e.UnrealizedProfit, a.UnrealizedProfit, "UnrealizedProfit")
+	r.Equal(e.WalletBalance, a.WalletBalance, "WalletBalance")
+}
