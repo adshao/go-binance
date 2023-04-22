@@ -124,7 +124,15 @@ type PercentPriceFilter struct {
 }
 
 // MinNotionalFilter define min notional filter of symbol
+// Deprecated: use NotionalFilter instead
 type MinNotionalFilter struct {
+	MinNotional      string `json:"minNotional"`
+	AveragePriceMins int    `json:"avgPriceMins"`
+	ApplyToMarket    bool   `json:"applyToMarket"`
+}
+
+// NotionalFilter define min notional filter of symbol
+type NotionalFilter struct {
 	MinNotional      string `json:"minNotional"`
 	AveragePriceMins int    `json:"avgPriceMins"`
 	ApplyToMarket    bool   `json:"applyToMarket"`
@@ -208,10 +216,31 @@ func (s *Symbol) PercentPriceFilter() *PercentPriceFilter {
 }
 
 // MinNotionalFilter return min notional filter of symbol
-func (s *Symbol) MinNotionalFilter() *MinNotionalFilter {
+// Deprecated: use NotionalFilter instead
+func (s *Symbol) MinNotionalFilter() *NotionalFilter {
 	for _, filter := range s.Filters {
-		if filter["filterType"].(string) == string(SymbolFilterTypeMinNotional) {
-			f := &MinNotionalFilter{}
+		if filter["filterType"].(string) == string(SymbolFilterTypeNotional) {
+			f := &NotionalFilter{}
+			if i, ok := filter["minNotional"]; ok {
+				f.MinNotional = i.(string)
+			}
+			if i, ok := filter["avgPriceMins"]; ok {
+				f.AveragePriceMins = int(i.(float64))
+			}
+			if i, ok := filter["applyToMarket"]; ok {
+				f.ApplyToMarket = i.(bool)
+			}
+			return f
+		}
+	}
+	return nil
+}
+
+// NotionalFilter return min notional filter of symbol
+func (s *Symbol) NotionalFilter() *NotionalFilter {
+	for _, filter := range s.Filters {
+		if filter["filterType"].(string) == string(SymbolFilterTypeNotional) {
+			f := &NotionalFilter{}
 			if i, ok := filter["minNotional"]; ok {
 				f.MinNotional = i.(string)
 			}

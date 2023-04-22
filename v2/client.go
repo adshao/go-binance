@@ -151,10 +151,12 @@ const (
 	SymbolStatusTypeAuctionMatch SymbolStatusType = "AUCTION_MATCH"
 	SymbolStatusTypeBreak        SymbolStatusType = "BREAK"
 
-	SymbolFilterTypeLotSize          SymbolFilterType = "LOT_SIZE"
-	SymbolFilterTypePriceFilter      SymbolFilterType = "PRICE_FILTER"
-	SymbolFilterTypePercentPrice     SymbolFilterType = "PERCENT_PRICE"
-	SymbolFilterTypeMinNotional      SymbolFilterType = "MIN_NOTIONAL"
+	SymbolFilterTypeLotSize      SymbolFilterType = "LOT_SIZE"
+	SymbolFilterTypePriceFilter  SymbolFilterType = "PRICE_FILTER"
+	SymbolFilterTypePercentPrice SymbolFilterType = "PERCENT_PRICE"
+	// Deprecated: use SymbolFilterTypePercentPrice instead
+	SymbolFilterTypeMinNotional      SymbolFilterType = "NOTIONAL"
+	SymbolFilterTypeNotional         SymbolFilterType = "NOTIONAL"
 	SymbolFilterTypeIcebergParts     SymbolFilterType = "ICEBERG_PARTS"
 	SymbolFilterTypeMarketLotSize    SymbolFilterType = "MARKET_LOT_SIZE"
 	SymbolFilterTypeMaxNumAlgoOrders SymbolFilterType = "MAX_NUM_ALGO_ORDERS"
