@@ -159,6 +159,64 @@ func WsMarkPriceServeWithRate(symbol string, rate time.Duration, handler WsMarkP
 	return wsMarkPriceServe(endpoint, handler, errHandler)
 }
 
+func wsCombinedMarkPriceServe(endpoint string, handler WsMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		j, err := newJSON(message)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		data := j.Get("data").MustMap()
+		jsonData, _ := json.Marshal(data)
+
+		event := new(WsMarkPriceEvent)
+		err = json.Unmarshal(jsonData, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		handler(event)
+	}
+
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+// WsCombinedMarkPriceServe is similar to WsMarkPriceServe, but it handles multiple symbols
+func WsCombinedMarkPriceServe(symbols []string, handler WsMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := getCombinedEndpoint()
+	for _, s := range symbols {
+		endpoint += fmt.Sprintf("%s@markPrice", strings.ToLower(s)) + "/"
+	}
+	endpoint = endpoint[:len(endpoint)-1]
+
+	return wsCombinedMarkPriceServe(endpoint, handler, errHandler)
+}
+
+// WsCombinedMarkPriceServeWithRate is similar to WsMarkPriceServeWithRate, but it for multiple symbols
+func WsCombinedMarkPriceServeWithRate(symbolLevels map[string]time.Duration, handler WsMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := getCombinedEndpoint()
+	for symbol, rate := range symbolLevels {
+		var rateStr string
+		switch rate {
+		case 3 * time.Second:
+			rateStr = ""
+		case 1 * time.Second:
+			rateStr = "@1s"
+		default:
+			return nil, nil, fmt.Errorf("invalid rate. Symbol %s (rate %d)", symbol, rate)
+		}
+
+		endpoint += fmt.Sprintf("%s@markPrice%s", strings.ToLower(symbol), rateStr) + "/"
+	}
+
+	endpoint = endpoint[:len(endpoint)-1]
+
+	return wsCombinedMarkPriceServe(endpoint, handler, errHandler)
+}
+
 // WsAllMarkPriceEvent defines an array of websocket markPriceUpdate events.
 type WsAllMarkPriceEvent []*WsMarkPriceEvent
 
