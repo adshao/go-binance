@@ -1,8 +1,6 @@
 name: Code Review
 
 on:
-  pull_request:
-    types: [opened]
   issue_comment:
     types: [created, edited]
 
