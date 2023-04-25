@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/adshao/go-binance/v2/common"
 	"net/http"
 	"strings"
 )
@@ -800,8 +801,13 @@ type CreateBatchOrdersService struct {
 	orders []*CreateOrderService
 }
 
+type BatchOrderResponse struct {
+	Order *Order
+	Error *common.APIError
+}
+
 type CreateBatchOrdersResponse struct {
-	Orders []*Order
+	Orders []*BatchOrderResponse
 }
 
 func (s *CreateBatchOrdersService) OrderList(orders []*CreateOrderService) *CreateBatchOrdersService {
@@ -894,10 +900,18 @@ func (s *CreateBatchOrdersService) Do(ctx context.Context, opts ...RequestOption
 		}
 
 		if o.ClientOrderID != "" {
-			batchCreateOrdersResponse.Orders = append(batchCreateOrdersResponse.Orders, o)
-			continue
+			batchCreateOrdersResponse.Orders = append(batchCreateOrdersResponse.Orders, &BatchOrderResponse{
+				Order: o,
+			})
+		} else {
+			apiErr := new(common.APIError)
+			if err := json.Unmarshal(*j, apiErr); err != nil {
+				return &CreateBatchOrdersResponse{}, err
+			}
+			batchCreateOrdersResponse.Orders = append(batchCreateOrdersResponse.Orders, &BatchOrderResponse{
+				Error: apiErr,
+			})
 		}
-
 	}
 
 	return batchCreateOrdersResponse, nil

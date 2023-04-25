@@ -1,6 +1,8 @@
 package futures
 
 import (
+	"encoding/json"
+	"github.com/adshao/go-binance/v2/common"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -612,4 +614,193 @@ func (s *orderServiceTestSuite) assertLiquidationEqual(e, a *LiquidationOrder) {
 	r.Equal(e.TimeInForce, a.TimeInForce, "TimeInForce")
 	r.Equal(e.Type, a.Type, "Type")
 	r.Equal(e.Side, a.Side, "Side")
+}
+
+func (s *orderServiceTestSuite) TestCreateBatchOrders() {
+	data := []byte(`[{
+		"clientOrderId": "testOrder",
+		"cumQuote": "0",
+		"executedQty": "0",
+		"orderId": 22542179,
+		"origQty": "10",
+		"price": "10000",
+		"reduceOnly": false,
+		"side": "SELL",
+		"status": "NEW",
+		"stopPrice": "0",
+		"symbol": "BTCUSDT",
+		"timeInForce": "GTC",
+		"type": "LIMIT",
+		"updateTime": 1566818724722,
+		"workingType": "CONTRACT_PRICE",
+		"activatePrice": "1000",
+		"priceRate": "0.1",
+		"positionSide": "BOTH",
+		"closePosition": false,
+		"priceProtect": true
+	},
+	{
+        "code": -2022, 
+        "msg": "ReduceOnly Order is rejected."
+    }]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	symbol := "BTCUSDT"
+	side := SideTypeSell
+	orderType := OrderTypeLimit
+	timeInForce := TimeInForceTypeGTC
+	positionSide := PositionSideTypeBoth
+	quantity := "10"
+	price := "10000"
+	newClientOrderID := "testOrder"
+	reduceOnly := false
+	stopPrice := "0"
+	activationPrice := "1000"
+	callbackRate := "0.1"
+	workingType := WorkingTypeContractPrice
+	priceProtect := true
+	newOrderResponseType := NewOrderRespTypeRESULT
+	closePosition := false
+
+	var orderList []*CreateOrderService
+	orderList = append(orderList, &CreateOrderService{
+		symbol:           symbol,
+		side:             side,
+		orderType:        orderType,
+		timeInForce:      &timeInForce,
+		positionSide:     &positionSide,
+		quantity:         quantity,
+		reduceOnly:       &reduceOnly,
+		price:            &price,
+		newClientOrderID: &newClientOrderID,
+		stopPrice:        &stopPrice,
+		workingType:      &workingType,
+		activationPrice:  &activationPrice,
+		callbackRate:     &callbackRate,
+		priceProtect:     &priceProtect,
+		newOrderRespType: newOrderResponseType,
+		closePosition:    &closePosition,
+	})
+
+	orderList = append(orderList, &CreateOrderService{
+		symbol:           symbol,
+		side:             side,
+		orderType:        orderType,
+		timeInForce:      &timeInForce,
+		positionSide:     &positionSide,
+		quantity:         quantity,
+		reduceOnly:       &reduceOnly,
+		price:            &price,
+		newClientOrderID: &newClientOrderID,
+		stopPrice:        &stopPrice,
+		workingType:      &workingType,
+		activationPrice:  &activationPrice,
+		callbackRate:     &callbackRate,
+		priceProtect:     &priceProtect,
+		newOrderRespType: newOrderResponseType,
+		closePosition:    &closePosition,
+	})
+
+	var orders []params
+	for _, order := range orderList {
+		m := params{
+			"symbol":           order.symbol,
+			"side":             order.side,
+			"type":             order.orderType,
+			"timeInForce":      order.timeInForce,
+			"positionSide":     order.positionSide,
+			"quantity":         order.quantity,
+			"reduceOnly":       order.reduceOnly,
+			"price":            order.price,
+			"newClientOrderId": order.newClientOrderID,
+			"stopPrice":        order.stopPrice,
+			"workingType":      order.workingType,
+			"activationPrice":  order.activationPrice,
+			"callbackRate":     order.callbackRate,
+			"priceProtect":     order.priceProtect,
+			"newOrderRespType": order.newOrderRespType,
+			"closePosition":    order.closePosition,
+		}
+		orders = append(orders, m)
+	}
+
+	s.assertReq(func(r *request) {
+		b, _ := json.Marshal(orders)
+		e := newSignedRequest().setFormParams(params{
+			"batchOrders": string(b),
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewCreateBatchOrdersService().OrderList(orderList).Do(newContext())
+	s.r().NoError(err)
+	e := &CreateBatchOrdersResponse{
+		Orders: []*BatchOrderResponse{
+			{
+				Order: &Order{
+					ClientOrderID:    newClientOrderID,
+					CumQuote:         "0",
+					ExecutedQuantity: "0",
+					OrderID:          22542179,
+					OrigQuantity:     "10",
+					PositionSide:     positionSide,
+					Price:            "10000",
+					ReduceOnly:       false,
+					Side:             SideTypeSell,
+					Status:           OrderStatusTypeNew,
+					StopPrice:        "0",
+					Symbol:           symbol,
+					TimeInForce:      TimeInForceTypeGTC,
+					Type:             OrderTypeLimit,
+					UpdateTime:       1566818724722,
+					WorkingType:      WorkingTypeContractPrice,
+					ActivatePrice:    activationPrice,
+					PriceRate:        callbackRate,
+					ClosePosition:    false,
+					PriceProtect:     priceProtect,
+				},
+			},
+			{
+				Error: &common.APIError{
+					Code:    -2022,
+					Message: "ReduceOnly Order is rejected.",
+				},
+			},
+		},
+	}
+	s.assertCreateBatchOrdersResponseEqual(e, res)
+}
+
+func (s *baseOrderTestSuite) assertCreateBatchOrdersResponseEqual(e, a *CreateBatchOrdersResponse) {
+	r := s.r()
+
+	r.Equal(len(e.Orders), len(a.Orders))
+
+	// normal
+	eOrder, aOrder := e.Orders[0].Order, a.Orders[0].Order
+	r.Equal(eOrder.ClientOrderID, aOrder.ClientOrderID, "ClientOrderID")
+	r.Equal(eOrder.CumQuote, aOrder.CumQuote, "CumQuote")
+	r.Equal(eOrder.PriceProtect, aOrder.PriceProtect, "PriceProtect")
+	r.Equal(eOrder.ExecutedQuantity, aOrder.ExecutedQuantity, "ExecutedQuantity")
+	r.Equal(eOrder.OrderID, aOrder.OrderID, "OrderID")
+	r.Equal(eOrder.OrigQuantity, aOrder.OrigQuantity, "OrigQuantity")
+	r.Equal(eOrder.PositionSide, aOrder.PositionSide, "PositionSide")
+	r.Equal(eOrder.Price, aOrder.Price, "Price")
+	r.Equal(eOrder.ReduceOnly, aOrder.ReduceOnly, "ReduceOnly")
+	r.Equal(eOrder.Side, aOrder.Side, "Side")
+	r.Equal(eOrder.Status, aOrder.Status, "Status")
+	r.Equal(eOrder.StopPrice, aOrder.StopPrice, "StopPrice")
+	r.Equal(eOrder.Symbol, aOrder.Symbol, "Symbol")
+	r.Equal(eOrder.TimeInForce, aOrder.TimeInForce, "TimeInForce")
+	r.Equal(eOrder.Type, aOrder.Type, "Type")
+	r.Equal(eOrder.UpdateTime, aOrder.UpdateTime, "UpdateTime")
+	r.Equal(eOrder.WorkingType, aOrder.WorkingType, "WorkingType")
+	r.Equal(eOrder.ActivatePrice, aOrder.ActivatePrice, "ActivatePrice")
+	r.Equal(eOrder.PriceRate, aOrder.PriceRate, "PriceRate")
+	r.Equal(eOrder.ClosePosition, aOrder.ClosePosition, "ClosePosition")
+
+	// error
+	r.Equal(e.Orders[1].Error.Code, a.Orders[1].Error.Code, "Code")
+	r.Equal(e.Orders[1].Error.Message, a.Orders[1].Error.Message, "Message")
+
 }
