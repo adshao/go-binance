@@ -14,11 +14,12 @@ import (
 	"os"
 	"time"
 
+	"github.com/bitly/go-simplejson"
+	jsoniter "github.com/json-iterator/go"
+
 	"github.com/adshao/go-binance/v2/common"
 	"github.com/adshao/go-binance/v2/delivery"
 	"github.com/adshao/go-binance/v2/futures"
-	"github.com/bitly/go-simplejson"
-	jsoniter "github.com/json-iterator/go"
 )
 
 // SideType define side type of order
@@ -155,7 +156,7 @@ const (
 	SymbolFilterTypePriceFilter  SymbolFilterType = "PRICE_FILTER"
 	SymbolFilterTypePercentPrice SymbolFilterType = "PERCENT_PRICE"
 	// Deprecated: use SymbolFilterTypePercentPrice instead
-	SymbolFilterTypeMinNotional      SymbolFilterType = "NOTIONAL"
+	SymbolFilterTypeMinNotional      SymbolFilterType = "MIN_NOTIONAL"
 	SymbolFilterTypeNotional         SymbolFilterType = "NOTIONAL"
 	SymbolFilterTypeIcebergParts     SymbolFilterType = "ICEBERG_PARTS"
 	SymbolFilterTypeMarketLotSize    SymbolFilterType = "MARKET_LOT_SIZE"

@@ -131,11 +131,13 @@ type MinNotionalFilter struct {
 	ApplyToMarket    bool   `json:"applyToMarket"`
 }
 
-// NotionalFilter define min notional filter of symbol
+// NotionalFilter define notional filter of symbol
 type NotionalFilter struct {
 	MinNotional      string `json:"minNotional"`
-	AveragePriceMins int    `json:"avgPriceMins"`
-	ApplyToMarket    bool   `json:"applyToMarket"`
+	ApplyMinToMarket bool   `json:"applyMinToMarket"`
+	MaxNotional      string `json:"maxNotional"`
+	ApplyMaxToMarket bool   `json:"applyMaxToMarket"`
+	AvgPriceMins     int    `json:"avgPriceMins"`
 }
 
 // IcebergPartsFilter define iceberg part filter of symbol
@@ -217,10 +219,10 @@ func (s *Symbol) PercentPriceFilter() *PercentPriceFilter {
 
 // MinNotionalFilter return min notional filter of symbol
 // Deprecated: use NotionalFilter instead
-func (s *Symbol) MinNotionalFilter() *NotionalFilter {
+func (s *Symbol) MinNotionalFilter() *MinNotionalFilter {
 	for _, filter := range s.Filters {
-		if filter["filterType"].(string) == string(SymbolFilterTypeNotional) {
-			f := &NotionalFilter{}
+		if filter["filterType"].(string) == string(SymbolFilterTypeMinNotional) {
+			f := &MinNotionalFilter{}
 			if i, ok := filter["minNotional"]; ok {
 				f.MinNotional = i.(string)
 			}
@@ -236,7 +238,7 @@ func (s *Symbol) MinNotionalFilter() *NotionalFilter {
 	return nil
 }
 
-// NotionalFilter return min notional filter of symbol
+// NotionalFilter return notional filter of symbol
 func (s *Symbol) NotionalFilter() *NotionalFilter {
 	for _, filter := range s.Filters {
 		if filter["filterType"].(string) == string(SymbolFilterTypeNotional) {
@@ -244,11 +246,17 @@ func (s *Symbol) NotionalFilter() *NotionalFilter {
 			if i, ok := filter["minNotional"]; ok {
 				f.MinNotional = i.(string)
 			}
-			if i, ok := filter["avgPriceMins"]; ok {
-				f.AveragePriceMins = int(i.(float64))
+			if i, ok := filter["applyMinToMarket"]; ok {
+				f.ApplyMinToMarket = i.(bool)
 			}
-			if i, ok := filter["applyToMarket"]; ok {
-				f.ApplyToMarket = i.(bool)
+			if i, ok := filter["maxNotional"]; ok {
+				f.MaxNotional = i.(string)
+			}
+			if i, ok := filter["applyMaxToMarket"]; ok {
+				f.ApplyMaxToMarket = i.(bool)
+			}
+			if i, ok := filter["avgPriceMins"]; ok {
+				f.AvgPriceMins = int(i.(float64))
 			}
 			return f
 		}
