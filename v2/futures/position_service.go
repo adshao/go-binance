@@ -211,3 +211,66 @@ func (s *GetPositionModeService) Do(ctx context.Context, opts ...RequestOption) 
 	}
 	return res, nil
 }
+
+// ChangeMultiAssetModeService change user's multi-asset mode
+type ChangeMultiAssetModeService struct {
+	c                 *Client
+	multiAssetsMargin string
+}
+
+// MultiAssetsMargin set multiAssetsMargin
+func (s *ChangeMultiAssetModeService) MultiAssetsMargin(multiAssetsMargin bool) *ChangeMultiAssetModeService {
+	if multiAssetsMargin {
+		s.multiAssetsMargin = "true"
+	} else {
+		s.multiAssetsMargin = "false"
+	}
+	return s
+}
+
+// Do send request
+func (s *ChangeMultiAssetModeService) Do(ctx context.Context, opts ...RequestOption) (err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/fapi/v1/multiAssetsMargin",
+		secType:  secTypeSigned,
+	}
+	r.setFormParams(params{
+		"multiAssetsMargin": s.multiAssetsMargin,
+	})
+	_, _, err = s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// GetMultiAssetModeService get user's multi-asset mode
+type GetMultiAssetModeService struct {
+	c *Client
+}
+
+// Response of user's multi-asset mode
+type MultiAssetMode struct {
+	MultiAssetsMargin bool `json:"multiAssetsMargin"`
+}
+
+// Do send request
+func (s *GetMultiAssetModeService) Do(ctx context.Context, opts ...RequestOption) (res *MultiAssetMode, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/fapi/v1/multiAssetsMargin",
+		secType:  secTypeSigned,
+	}
+	r.setFormParams(params{})
+	data, _, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = &MultiAssetMode{}
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}

@@ -581,6 +581,16 @@ func (c *Client) NewGetPositionModeService() *GetPositionModeService {
 	return &GetPositionModeService{c: c}
 }
 
+// NewChangeMultiAssetModeService init change multi-asset mode service
+func (c *Client) NewChangeMultiAssetModeService() *ChangeMultiAssetModeService {
+	return &ChangeMultiAssetModeService{c: c}
+}
+
+// NewGetMultiAssetModeService init get multi-asset mode service
+func (c *Client) NewGetMultiAssetModeService() *GetMultiAssetModeService {
+	return &GetMultiAssetModeService{c: c}
+}
+
 // NewGetRebateNewUserService init get rebate_newuser service
 func (c *Client) NewGetRebateNewUserService() *GetRebateNewUserService {
 	return &GetRebateNewUserService{c: c}
