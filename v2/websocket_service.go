@@ -2,6 +2,7 @@ package binance
 
 import (
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -101,7 +102,7 @@ func wsPartialDepthServe(endpoint string, symbol string, handler WsPartialDepthH
 func WsCombinedPartialDepthServe(symbolLevels map[string]string, handler WsPartialDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := getCombinedEndpoint()
 	for s, l := range symbolLevels {
-		endpoint += fmt.Sprintf("%s@depth%s@100ms", strings.ToLower(s), l) + "/"
+		endpoint += fmt.Sprintf("%s@depth%s", strings.ToLower(s), l) + "/"
 	}
 	endpoint = endpoint[:len(endpoint)-1]
 	cfg := newWsConfig(endpoint)
@@ -230,19 +231,24 @@ func wsCombinedDepthServe(endpoint string, handler WsDepthHandler, errHandler Er
 	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		j, err := newJSON(message)
+
+		log.Println(j)
 		if err != nil {
 			errHandler(err)
 			return
 		}
+
 		event := new(WsDepthEvent)
 		stream := j.Get("stream").MustString()
 		symbol := strings.Split(stream, "@")[0]
+
 		event.Symbol = strings.ToUpper(symbol)
 		data := j.Get("data").MustMap()
+		event.Event = data["e"].(string)
 		event.Time, _ = data["E"].(stdjson.Number).Int64()
 		event.LastUpdateID, _ = data["u"].(stdjson.Number).Int64()
 		event.FirstUpdateID, _ = data["U"].(stdjson.Number).Int64()
-		event.LastUpdateIDInLastStream, _ = data["pu"].(stdjson.Number).Int64()
+		// event.LastUpdateIDInLastStream, _ = data["pu"].(stdjson.Number).Int64()
 		bidsLen := len(data["b"].([]interface{}))
 		event.Bids = make([]Bid, bidsLen)
 		for i := 0; i < bidsLen; i++ {
