@@ -248,7 +248,7 @@ func wsCombinedDepthServe(endpoint string, handler WsDepthHandler, errHandler Er
 		event.Time, _ = data["E"].(stdjson.Number).Int64()
 		event.LastUpdateID, _ = data["u"].(stdjson.Number).Int64()
 		event.FirstUpdateID, _ = data["U"].(stdjson.Number).Int64()
-		// event.LastUpdateIDInLastStream, _ = data["pu"].(stdjson.Number).Int64()
+		event.LastUpdateIDInLastStream, _ = data["pu"].(stdjson.Number).Int64()
 		bidsLen := len(data["b"].([]interface{}))
 		event.Bids = make([]Bid, bidsLen)
 		for i := 0; i < bidsLen; i++ {
