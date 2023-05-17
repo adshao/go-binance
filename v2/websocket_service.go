@@ -2,7 +2,6 @@ package binance
 
 import (
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -232,7 +231,6 @@ func wsCombinedDepthServe(endpoint string, handler WsDepthHandler, errHandler Er
 	wsHandler := func(message []byte) {
 		j, err := newJSON(message)
 
-		log.Println(j)
 		if err != nil {
 			errHandler(err)
 			return
