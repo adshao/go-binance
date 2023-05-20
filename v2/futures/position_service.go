@@ -152,16 +152,12 @@ func (s *UpdatePositionMarginService) Do(ctx context.Context, opts ...RequestOpt
 // ChangePositionModeService change user's position mode
 type ChangePositionModeService struct {
 	c        *Client
-	dualSide string
+	dualSide bool
 }
 
 // Change user's position mode: true - Hedge Mode, false - One-way Mode
 func (s *ChangePositionModeService) DualSide(dualSide bool) *ChangePositionModeService {
-	if dualSide {
-		s.dualSide = "true"
-	} else {
-		s.dualSide = "false"
-	}
+	s.dualSide = dualSide
 	return s
 }
 
@@ -215,16 +211,12 @@ func (s *GetPositionModeService) Do(ctx context.Context, opts ...RequestOption) 
 // ChangeMultiAssetModeService change user's multi-asset mode
 type ChangeMultiAssetModeService struct {
 	c                 *Client
-	multiAssetsMargin string
+	multiAssetsMargin bool
 }
 
 // MultiAssetsMargin set multiAssetsMargin
 func (s *ChangeMultiAssetModeService) MultiAssetsMargin(multiAssetsMargin bool) *ChangeMultiAssetModeService {
-	if multiAssetsMargin {
-		s.multiAssetsMargin = "true"
-	} else {
-		s.multiAssetsMargin = "false"
-	}
+	s.multiAssetsMargin = multiAssetsMargin
 	return s
 }
 
