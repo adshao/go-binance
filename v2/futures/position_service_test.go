@@ -122,3 +122,35 @@ func (s *positionServiceTestSuite) TestGetPositionMode() {
 	s.r().NoError(err)
 	s.r().Equal(res.DualSidePosition, true)
 }
+
+func (s *positionServiceTestSuite) TestChangeMultiAssetMode() {
+	data := []byte(`{
+		"code": 200,
+		"msg": "success"
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setFormParams(params{
+			"multiAssetsMargin": "true",
+		})
+		s.assertRequestEqual(e, r)
+	})
+	err := s.client.NewChangeMultiAssetModeService().MultiAssetsMargin(true).Do(newContext())
+	s.r().NoError(err)
+}
+
+func (s *positionServiceTestSuite) TestGetMultiAssetMode() {
+	data := []byte(`{
+		"multiAssetsMargin": true
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setFormParams(params{})
+		s.assertRequestEqual(e, r)
+	})
+	res, err := s.client.NewGetMultiAssetModeService().Do(newContext())
+	s.r().NoError(err)
+	s.r().Equal(res.MultiAssetsMargin, true)
+}
