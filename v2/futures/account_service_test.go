@@ -71,7 +71,12 @@ func (s *accountServiceTestSuite) TestGetAccount() {
 				"openOrderInitialMargin": "0.00000000",
 				"positionInitialMargin": "0.33683000",
 				"unrealizedProfit": "-0.44537584",
-				"walletBalance": "9.19485176"
+				"walletBalance": "9.19485176",
+				"crossWalletBalance": "23.72469206",
+				"crossUnPnl": "0.00000000",
+				"availableBalance": "126.72469206",
+				"marginAvailable": true,
+				"updateTime": 1625474304765
 			}
 		 ],
 		 "canDeposit": true,
@@ -79,6 +84,7 @@ func (s *accountServiceTestSuite) TestGetAccount() {
 		 "canWithdraw": true,
 		 "feeTier": 2,
 		 "maxWithdrawAmount": "8.41264592",
+		 "multiAssetsMargin": false,
 		 "positions": [
 			 {
 				"isolated": false, 
@@ -93,8 +99,8 @@ func (s *accountServiceTestSuite) TestGetAccount() {
 				"maxNotional": "250000",
 				"positionSide": "BOTH",
 				"positionAmt": "0.436",
-				"notional":"0.1234",
-				"isolatedWallet":"0.5678",
+				"bidNotional": "0",
+				"askNotional": "0",
 				"updateTime":1618646402359
 			 }
 		 ],
@@ -128,6 +134,11 @@ func (s *accountServiceTestSuite) TestGetAccount() {
 				PositionInitialMargin:  "0.33683000",
 				UnrealizedProfit:       "-0.44537584",
 				WalletBalance:          "9.19485176",
+				CrossWalletBalance:     "23.72469206",
+				CrossUnPnl:             "0.00000000",
+				AvailableBalance:       "126.72469206",
+				MarginAvailable:        true,
+				UpdateTime:             1625474304765,
 			},
 		},
 		CanTrade:          true,
@@ -135,6 +146,7 @@ func (s *accountServiceTestSuite) TestGetAccount() {
 		CanDeposit:        true,
 		FeeTier:           2,
 		MaxWithdrawAmount: "8.41264592",
+		MultiAssetsMargin: false,
 		Positions: []*AccountPosition{
 			{
 				Isolated:               false,
@@ -149,8 +161,8 @@ func (s *accountServiceTestSuite) TestGetAccount() {
 				MaxNotional:            "250000",
 				PositionSide:           "BOTH",
 				PositionAmt:            "0.436",
-				Notional:               "0.1234",
-				IsolatedWallet:         "0.5678",
+				BidNotional:            "0",
+				AskNotional:            "0",
 				UpdateTime:             1618646402359,
 			},
 		},
@@ -181,6 +193,7 @@ func (s *accountServiceTestSuite) assertAccountEqual(e, a *Account) {
 	r.Equal(e.TotalUnrealizedProfit, a.TotalUnrealizedProfit, "TotalUnrealizedProfit")
 	r.Equal(e.TotalWalletBalance, a.TotalWalletBalance, "TotalWalletBalance")
 	r.Equal(e.UpdateTime, a.UpdateTime, "UpdateTime")
+	r.Equal(e.MultiAssetsMargin, a.MultiAssetsMargin, "MultiAssetsMargin")
 
 	r.Len(a.Assets, len(e.Assets))
 	for i := 0; i < len(a.Assets); i++ {
@@ -193,6 +206,11 @@ func (s *accountServiceTestSuite) assertAccountEqual(e, a *Account) {
 		r.Equal(e.Assets[i].PositionInitialMargin, a.Assets[i].PositionInitialMargin, "PositionInitialMargin")
 		r.Equal(e.Assets[i].UnrealizedProfit, a.Assets[i].UnrealizedProfit, "UnrealizedProfit")
 		r.Equal(e.Assets[i].WalletBalance, a.Assets[i].WalletBalance, "WalletBalance")
+		r.Equal(e.Assets[i].CrossWalletBalance, a.Assets[i].CrossWalletBalance, "CrossWalletBalance")
+		r.Equal(e.Assets[i].CrossUnPnl, a.Assets[i].CrossUnPnl, "CrossUnPnl")
+		r.Equal(e.Assets[i].AvailableBalance, a.Assets[i].AvailableBalance, "AvailableBalance")
+		r.Equal(e.Assets[i].MarginAvailable, a.Assets[i].MarginAvailable, "MarginAvailable")
+		r.Equal(e.Assets[i].UpdateTime, a.Assets[i].UpdateTime, "UpdateTime")
 	}
 
 	r.Len(a.Positions, len(e.Positions))
@@ -209,8 +227,8 @@ func (s *accountServiceTestSuite) assertAccountEqual(e, a *Account) {
 		r.Equal(e.Positions[i].MaxNotional, a.Positions[i].MaxNotional, "MaxNotional")
 		r.Equal(e.Positions[i].PositionSide, a.Positions[i].PositionSide, "PositionSide")
 		r.Equal(e.Positions[i].PositionAmt, a.Positions[i].PositionAmt, "PositionAmt")
-		r.Equal(e.Positions[i].Notional, a.Positions[i].Notional, "Notional")
-		r.Equal(e.Positions[i].IsolatedWallet, a.Positions[i].IsolatedWallet, "IsolatedWallet")
+		r.Equal(e.Positions[i].BidNotional, a.Positions[i].BidNotional, "BidNotional")
+		r.Equal(e.Positions[i].AskNotional, a.Positions[i].AskNotional, "AskNotional")
 		r.Equal(e.Positions[i].UpdateTime, a.Positions[i].UpdateTime, "UpdateTime")
 	}
 }
