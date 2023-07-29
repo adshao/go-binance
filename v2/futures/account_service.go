@@ -50,7 +50,7 @@ type GetAccountService struct {
 func (s *GetAccountService) Do(ctx context.Context, opts ...RequestOption) (res *Account, err error) {
 	r := &request{
 		method:   http.MethodGet,
-		endpoint: "/fapi/v1/account",
+		endpoint: "/fapi/v2/account",
 		secType:  secTypeSigned,
 	}
 	data, _, err := s.c.callAPI(ctx, r, opts...)
@@ -73,6 +73,7 @@ type Account struct {
 	CanDeposit                  bool               `json:"canDeposit"`
 	CanWithdraw                 bool               `json:"canWithdraw"`
 	UpdateTime                  int64              `json:"updateTime"`
+	MultiAssetsMargin           bool               `json:"multiAssetsMargin"`
 	TotalInitialMargin          string             `json:"totalInitialMargin"`
 	TotalMaintMargin            string             `json:"totalMaintMargin"`
 	TotalWalletBalance          string             `json:"totalWalletBalance"`
@@ -98,6 +99,11 @@ type AccountAsset struct {
 	PositionInitialMargin  string `json:"positionInitialMargin"`
 	UnrealizedProfit       string `json:"unrealizedProfit"`
 	WalletBalance          string `json:"walletBalance"`
+	CrossWalletBalance     string `json:"crossWalletBalance"`
+	CrossUnPnl             string `json:"crossUnPnl"`
+	AvailableBalance       string `json:"availableBalance"`
+	MarginAvailable        bool   `json:"marginAvailable"`
+	UpdateTime             int64  `json:"updateTime"`
 }
 
 // AccountPosition define account position
@@ -114,7 +120,7 @@ type AccountPosition struct {
 	MaxNotional            string           `json:"maxNotional"`
 	PositionSide           PositionSideType `json:"positionSide"`
 	PositionAmt            string           `json:"positionAmt"`
-	Notional               string           `json:"notional"`
-	IsolatedWallet         string           `json:"isolatedWallet"`
+	BidNotional            string           `json:"bidNotional"`
+	AskNotional            string           `json:"askNotional"`
 	UpdateTime             int64            `json:"updateTime"`
 }
