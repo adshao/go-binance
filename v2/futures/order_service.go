@@ -137,8 +137,10 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 		"symbol":           s.symbol,
 		"side":             s.side,
 		"type":             s.orderType,
-		"quantity":         s.quantity,
 		"newOrderRespType": s.newOrderRespType,
+	}
+	if s.quantity != "" {
+		m["quantity"] = s.quantity
 	}
 	if s.positionSide != nil {
 		m["positionSide"] = *s.positionSide
