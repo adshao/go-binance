@@ -120,6 +120,7 @@ type AccountPosition struct {
 	MaxNotional            string           `json:"maxNotional"`
 	PositionSide           PositionSideType `json:"positionSide"`
 	PositionAmt            string           `json:"positionAmt"`
+	Notional               string           `json:"notional"`
 	BidNotional            string           `json:"bidNotional"`
 	AskNotional            string           `json:"askNotional"`
 	UpdateTime             int64            `json:"updateTime"`
