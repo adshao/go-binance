@@ -8,12 +8,12 @@ jobs:
   code-review:
     if: |
       github.event_name == 'pull_request' ||
-        (github.event.comment.user.login == 'adshao' &&
+        (github.event.comment.user.login == 'size12' &&
           startsWith(github.event.comment.body, 'chatgpt'))
     runs-on: ubuntu-latest
     steps:
     - name: OpenAI ChatGPT Code Review
-      uses: adshao/chatgpt-code-review-action@v0.2.5
+      uses: size12/chatgpt-code-review-action@v0.2.5
       with:
         PROGRAMMING_LANGUAGE: 'Go'
         REVIEW_COMMENT_PREFIX: 'chatgpt:'

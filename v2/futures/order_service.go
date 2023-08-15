@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -18,16 +19,16 @@ type CreateOrderService struct {
 	orderType        OrderType
 	timeInForce      *TimeInForceType
 	quantity         string
-	reduceOnly       *bool
+	reduceOnly       *string
 	price            *string
 	newClientOrderID *string
 	stopPrice        *string
 	workingType      *WorkingType
 	activationPrice  *string
 	callbackRate     *string
-	priceProtect     *bool
+	priceProtect     *string
 	newOrderRespType NewOrderRespType
-	closePosition    *bool
+	closePosition    *string
 }
 
 // Symbol set symbol
@@ -68,7 +69,8 @@ func (s *CreateOrderService) Quantity(quantity string) *CreateOrderService {
 
 // ReduceOnly set reduceOnly
 func (s *CreateOrderService) ReduceOnly(reduceOnly bool) *CreateOrderService {
-	s.reduceOnly = &reduceOnly
+	reduceOnlyStr := strconv.FormatBool(reduceOnly) // for not destruction pointers code style.
+	s.reduceOnly = &reduceOnlyStr
 	return s
 }
 
@@ -110,7 +112,8 @@ func (s *CreateOrderService) CallbackRate(callbackRate string) *CreateOrderServi
 
 // PriceProtect set priceProtect
 func (s *CreateOrderService) PriceProtect(priceProtect bool) *CreateOrderService {
-	s.priceProtect = &priceProtect
+	priceProtectStr := strconv.FormatBool(priceProtect) // for not destruction pointers code style.
+	s.priceProtect = &priceProtectStr
 	return s
 }
 
@@ -122,7 +125,8 @@ func (s *CreateOrderService) NewOrderResponseType(newOrderResponseType NewOrderR
 
 // ClosePosition set closePosition
 func (s *CreateOrderService) ClosePosition(closePosition bool) *CreateOrderService {
-	s.closePosition = &closePosition
+	closePositionStr := strconv.FormatBool(closePosition)
+	s.closePosition = &closePositionStr
 	return s
 }
 
