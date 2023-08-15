@@ -26,9 +26,9 @@ type CreateOrderService struct {
 	workingType      *WorkingType
 	activationPrice  *string
 	callbackRate     *string
-	priceProtect     *bool
+	priceProtect     *string
 	newOrderRespType NewOrderRespType
-	closePosition    *bool
+	closePosition    *string
 }
 
 // Symbol set symbol
@@ -112,7 +112,8 @@ func (s *CreateOrderService) CallbackRate(callbackRate string) *CreateOrderServi
 
 // PriceProtect set priceProtect
 func (s *CreateOrderService) PriceProtect(priceProtect bool) *CreateOrderService {
-	s.priceProtect = &priceProtect
+	priceProtectStr := strconv.FormatBool(priceProtect) // for not destruction pointers code style.
+	s.priceProtect = &priceProtectStr
 	return s
 }
 
@@ -124,7 +125,8 @@ func (s *CreateOrderService) NewOrderResponseType(newOrderResponseType NewOrderR
 
 // ClosePosition set closePosition
 func (s *CreateOrderService) ClosePosition(closePosition bool) *CreateOrderService {
-	s.closePosition = &closePosition
+	closePositionStr := strconv.FormatBool(closePosition)
+	s.closePosition = &closePositionStr
 	return s
 }
 
