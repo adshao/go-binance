@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
@@ -19,7 +18,7 @@ type CreateOrderService struct {
 	orderType        OrderType
 	timeInForce      *TimeInForceType
 	quantity         string
-	reduceOnly       *string
+	reduceOnly       *bool
 	price            *string
 	newClientOrderID *string
 	stopPrice        *string
@@ -69,8 +68,7 @@ func (s *CreateOrderService) Quantity(quantity string) *CreateOrderService {
 
 // ReduceOnly set reduceOnly
 func (s *CreateOrderService) ReduceOnly(reduceOnly bool) *CreateOrderService {
-	reduceOnlyStr := strconv.FormatBool(reduceOnly) // for not destruction pointers code style.
-	s.reduceOnly = &reduceOnlyStr
+	s.reduceOnly = &reduceOnly
 	return s
 }
 
