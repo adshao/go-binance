@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/size12/go-binance/v2/common"
+	"github.com/adshao/go-binance/v2/common"
 )
 
 // ListBookTickersService list best price/qty on the order book for a symbol or symbols
