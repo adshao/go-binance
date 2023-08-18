@@ -54,6 +54,7 @@ func (s *GetAccountService) Do(ctx context.Context, opts ...RequestOption) (res 
 		endpoint: "/dapi/v1/account",
 		secType:  secTypeSigned,
 	}
+
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
