@@ -2,7 +2,6 @@ package binance
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 )
 
@@ -53,7 +52,6 @@ func (s *PayTradeHistoryService) Do(ctx context.Context, opts ...RequestOption) 
 		return nil, err
 	}
 	res := PayTradeHistory{}
-	fmt.Println(string(data))
 	if err = json.Unmarshal(data, &res); err != nil {
 		return nil, err
 	}
