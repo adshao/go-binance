@@ -64,8 +64,8 @@ type VIPLoanAsset struct {
 }
 
 type VipLoanableAssets struct {
-	Rows  []CryptoLoanAsset `json:"rows"`
-	Total int64             `json:"total"`
+	Rows  []VIPLoanAsset `json:"rows"`
+	Total int64          `json:"total"`
 }
 
 type VipLoanService struct {
@@ -86,6 +86,43 @@ func (s *VipLoanService) Do(ctx context.Context, opts ...RequestOption) (res *Vi
 	}
 
 	res = new(VipLoanableAssets)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type FlexibleLoanAsset struct {
+	LoanCoin             string `json:"loanCoin"`
+	FlexibleInterestRate string `json:"flexibleInterestRate"`
+	FlexibleMinLimit     string `json:"flexibleMinLimit"`
+	FlexibleMaxLimit     string `json:"flexibleMaxLimit"`
+}
+
+type FlexibleLoanableAssets struct {
+	Rows  []FlexibleLoanAsset `json:"rows"`
+	Total int64               `json:"total"`
+}
+
+type FlexibleLoanService struct {
+	c *Client
+}
+
+// Do send request
+func (s *FlexibleLoanService) Do(ctx context.Context, opts ...RequestOption) (res *FlexibleLoanableAssets, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/loan/flexible/loanable/data",
+		secType:  secTypeSigned,
+	}
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	res = new(FlexibleLoanableAssets)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err

@@ -1004,6 +1004,10 @@ func (c *Client) NewVipLoanService() *VipLoanService {
 	return &VipLoanService{c: c}
 }
 
+func (c *Client) NewFlexibleLoanService() *FlexibleLoanService {
+	return &FlexibleLoanService{c: c}
+}
+
 func (c *Client) NewIsolatedMarginDataService() *IsolatedMarginDataService {
 	return &IsolatedMarginDataService{c: c}
 }
