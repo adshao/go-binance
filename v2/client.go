@@ -995,3 +995,19 @@ func (c *Client) NewSubTransferHistoryService() *SubTransferHistoryService {
 func (c *Client) NewSimpleEarnService() *SimpleEarnService {
 	return &SimpleEarnService{c: c}
 }
+
+func (c *Client) NewCryptoLoanService() *CryptoLoanService {
+	return &CryptoLoanService{c: c}
+}
+
+func (c *Client) NewVipLoanService() *VipLoanService {
+	return &VipLoanService{c: c}
+}
+
+func (c *Client) NewIsolatedMarginDataService() *IsolatedMarginDataService {
+	return &IsolatedMarginDataService{c: c}
+}
+
+func (c *Client) NewCrossMarginDataService() *CrossMarginDataService {
+	return &CrossMarginDataService{c: c}
+}
