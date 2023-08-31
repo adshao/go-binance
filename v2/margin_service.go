@@ -1129,3 +1129,75 @@ func (s *IsolatedMarginTransferService) Do(ctx context.Context, opts ...RequestO
 	}
 	return res, nil
 }
+
+type IsolatedMarginData struct {
+	VipLevel int64  `json:"vipLevel"`
+	Symbol   string `json:"symbol"`
+	Leverage string `json:"leverage"`
+	Data     []struct {
+		Coin          string `json:"coin"`
+		DailyInterest string `json:"dailyInterest"`
+		BorrowLimit   string `json:"borrowLimit"`
+	} `json:"data"`
+}
+
+type IsolatedMarginDataService struct {
+	c *Client
+}
+
+// Do send request
+func (s *IsolatedMarginDataService) Do(ctx context.Context, opts ...RequestOption) (res *[]IsolatedMarginData, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/margin/isolatedMarginData",
+		secType:  secTypeSigned,
+	}
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	res = new([]IsolatedMarginData)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type CrossMarginData struct {
+	VipLevel        int64    `json:"vipLevel"`
+	Coin            string   `json:"coin"`
+	TransferIn      bool     `json:"transferIn"`
+	Borrowable      bool     `json:"borrowable"`
+	DailyInterest   string   `json:"dailyInterest"`
+	YearlyInterest  string   `json:"yearlyInterest"`
+	BorrowLimit     string   `json:"borrowLimit"`
+	MarginablePairs []string `json:"marginablePairs"`
+}
+
+type CrossMarginDataService struct {
+	c *Client
+}
+
+// Do send request
+func (s *CrossMarginDataService) Do(ctx context.Context, opts ...RequestOption) (res *[]CrossMarginData, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/margin/crossMarginData",
+		secType:  secTypeSigned,
+	}
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	res = new([]CrossMarginData)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
