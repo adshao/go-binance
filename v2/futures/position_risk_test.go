@@ -18,6 +18,7 @@ func (s *positionRiskServiceTestSuite) TestGetPositionRisk() {
 	data := []byte(`[
 		{
 			"entryPrice": "10359.38000",
+			"breakEvenPrice": "10387.38000",
 			"marginType": "isolated",
 			"isAutoAddMargin": "false",
 			"isolatedMargin": "3.15899368",
@@ -50,6 +51,7 @@ func (s *positionRiskServiceTestSuite) TestGetPositionRisk() {
 	r.Len(res, 1)
 	e := &PositionRisk{
 		EntryPrice:       "10359.38000",
+		BreakEvenPrice:   "10387.38000",
 		MarginType:       "isolated",
 		IsAutoAddMargin:  "false",
 		IsolatedMargin:   "3.15899368",
@@ -68,6 +70,7 @@ func (s *positionRiskServiceTestSuite) TestGetPositionRisk() {
 func (s *positionRiskServiceTestSuite) assertPositionRiskEqual(e, a *PositionRisk) {
 	r := s.r()
 	r.Equal(e.EntryPrice, a.EntryPrice, "EntryPrice")
+	r.Equal(e.BreakEvenPrice, a.BreakEvenPrice, "BreakEvenPrice")
 	r.Equal(e.MarginType, a.MarginType, "MarginType")
 	r.Equal(e.IsAutoAddMargin, a.IsAutoAddMargin, "IsAutoAddMargin")
 	r.Equal(e.IsolatedMargin, a.IsolatedMargin, "IsolatedMargin")

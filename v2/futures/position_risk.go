@@ -43,6 +43,7 @@ func (s *GetPositionRiskService) Do(ctx context.Context, opts ...RequestOption) 
 // PositionRisk define position risk info
 type PositionRisk struct {
 	EntryPrice       string `json:"entryPrice"`
+	BreakEvenPrice   string `json:"breakEvenPrice"`
 	MarginType       string `json:"marginType"`
 	IsAutoAddMargin  string `json:"isAutoAddMargin"`
 	IsolatedMargin   string `json:"isolatedMargin"`
