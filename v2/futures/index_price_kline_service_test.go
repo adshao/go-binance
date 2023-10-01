@@ -55,7 +55,7 @@ func (s *indexPriceKlineServiceTestSuite) TestKlines() {
 	endTime := int64(1499040000001)
 	s.assertReq(func(r *request) {
 		e := newRequest().setParams(params{
-			"symbol":    symbol,
+			"pair":      symbol,
 			"interval":  interval,
 			"limit":     limit,
 			"startTime": startTime,
@@ -63,9 +63,13 @@ func (s *indexPriceKlineServiceTestSuite) TestKlines() {
 		})
 		s.assertRequestEqual(e, r)
 	})
-	klines, err := s.client.NewKlinesService().Symbol(symbol).
-		Interval(interval).Limit(limit).StartTime(startTime).
-		EndTime(endTime).Do(newContext())
+	klines, err := s.client.NewIndexPriceKlinesService().
+		Pair(symbol).
+		Interval(interval).
+		Limit(limit).
+		StartTime(startTime).
+		EndTime(endTime).
+		Do(newContext())
 	s.r().NoError(err)
 	s.Len(klines, 2)
 	kline1 := &Kline{
