@@ -214,7 +214,7 @@ func (s *tickerServiceTestSuite) TestPriceChangeStats() {
 		Volume:             "8913.30000000",
 		OpenTime:           1499783499040,
 		CloseTime:          1499869899040,
-		FristID:            28385,
+		FirstID:            28385,
 		LastID:             28460,
 		Count:              76,
 	}
@@ -236,7 +236,7 @@ func (s *tickerServiceTestSuite) assertPriceChangeStatsEqual(e, a *PriceChangeSt
 	r.Equal(e.Volume, a.Volume, "Volume")
 	r.Equal(e.OpenTime, a.OpenTime, "OpenTime")
 	r.Equal(e.CloseTime, a.CloseTime, "CloseTime")
-	r.Equal(e.FristID, a.FristID, "FristID")
+	r.Equal(e.FirstID, a.FirstID, "FirstID")
 	r.Equal(e.LastID, a.LastID, "LastID")
 	r.Equal(e.Count, a.Count, "Count")
 }
@@ -289,7 +289,7 @@ func (s *tickerServiceTestSuite) TestListPriceChangeStats() {
 			QuoteVolume:        "15.30000000",
 			OpenTime:           1499783499040,
 			CloseTime:          1499869899040,
-			FristID:            28385,
+			FirstID:            28385,
 			LastID:             28460,
 			Count:              76,
 		},
