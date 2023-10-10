@@ -536,6 +536,11 @@ func (c *Client) NewPremiumIndexService() *PremiumIndexService {
 	return &PremiumIndexService{c: c}
 }
 
+// NewPremiumIndexKlinesService init premium index klines service
+func (c *Client) NewPremiumIndexKlinesService() *PremiumIndexKlinesService {
+	return &PremiumIndexKlinesService{c: c}
+}
+
 // NewFundingRateService init funding rate service
 func (c *Client) NewFundingRateService() *FundingRateService {
 	return &FundingRateService{c: c}

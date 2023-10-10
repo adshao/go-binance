@@ -6,15 +6,15 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type indexPriceKlineServiceTestSuite struct {
+type premiumIndexKlinesServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestIndexPriceKlineService(t *testing.T) {
-	suite.Run(t, new(indexPriceKlineServiceTestSuite))
+func TestPremiumIndexKlinesService(t *testing.T) {
+	suite.Run(t, new(premiumIndexKlinesServiceTestSuite))
 }
 
-func (s *indexPriceKlineServiceTestSuite) TestKlines() {
+func (s *premiumIndexKlinesServiceTestSuite) TestKlines() {
 	data := []byte(`[
         [
             1499040000000,
@@ -55,7 +55,7 @@ func (s *indexPriceKlineServiceTestSuite) TestKlines() {
 	endTime := int64(1499040000001)
 	s.assertReq(func(r *request) {
 		e := newRequest().setParams(params{
-			"pair":      symbol,
+			"symbol":    symbol,
 			"interval":  interval,
 			"limit":     limit,
 			"startTime": startTime,
@@ -63,8 +63,8 @@ func (s *indexPriceKlineServiceTestSuite) TestKlines() {
 		})
 		s.assertRequestEqual(e, r)
 	})
-	klines, err := s.client.NewIndexPriceKlinesService().
-		Pair(symbol).
+	klines, err := s.client.NewPremiumIndexKlinesService().
+		Symbol(symbol).
 		Interval(interval).
 		Limit(limit).
 		StartTime(startTime).
@@ -92,7 +92,7 @@ func (s *indexPriceKlineServiceTestSuite) TestKlines() {
 	s.assertKlineEqual(kline2, klines[1])
 }
 
-func (s *indexPriceKlineServiceTestSuite) assertKlineEqual(e, a *Kline) {
+func (s *premiumIndexKlinesServiceTestSuite) assertKlineEqual(e, a *Kline) {
 	r := s.r()
 	r.Equal(e.OpenTime, a.OpenTime, "OpenTime")
 	r.Equal(e.Open, a.Open, "Open")
