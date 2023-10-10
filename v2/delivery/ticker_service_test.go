@@ -345,7 +345,7 @@ func (s *tickerServiceTestSuite) TestListPriceChangeStats() {
 		BaseVolume:         "138965.76942775",
 		OpenTime:           1623748920000,
 		CloseTime:          1623835355736,
-		FristID:            172749700,
+		FirstID:            172749700,
 		LastID:             173464362,
 		Count:              714658,
 	}
@@ -364,7 +364,7 @@ func (s *tickerServiceTestSuite) TestListPriceChangeStats() {
 		BaseVolume:         "648179.55304919",
 		OpenTime:           1623748920000,
 		CloseTime:          1623835355187,
-		FristID:            138575549,
+		FirstID:            138575549,
 		LastID:             139103143,
 		Count:              527595,
 	}
@@ -423,7 +423,7 @@ func (s *tickerServiceTestSuite) TestSinglePriceChangeStats() {
 		BaseVolume:         "137750.93213717",
 		OpenTime:           1623752520000,
 		CloseTime:          1623838964257,
-		FristID:            172782522,
+		FirstID:            172782522,
 		LastID:             173490102,
 		Count:              707576,
 	}
@@ -498,7 +498,7 @@ func (s *tickerServiceTestSuite) TestPriceChangeStatsWithPair() {
 		BaseVolume:         "8300.32545198",
 		OpenTime:           1623755580000,
 		CloseTime:          1623842010140,
-		FristID:            7516015,
+		FirstID:            7516015,
 		LastID:             7591268,
 		Count:              75254,
 	}
@@ -517,7 +517,7 @@ func (s *tickerServiceTestSuite) TestPriceChangeStatsWithPair() {
 		BaseVolume:         "13637.88521626",
 		OpenTime:           1623755580000,
 		CloseTime:          1623842010656,
-		FristID:            32157829,
+		FirstID:            32157829,
 		LastID:             32307537,
 		Count:              149709,
 	}
@@ -541,7 +541,7 @@ func (s *tickerServiceTestSuite) assertPriceChangeStatsEqual(e, a *PriceChangeSt
 	r.Equal(e.BaseVolume, a.BaseVolume, "BaseVolume")
 	r.Equal(e.OpenTime, a.OpenTime, "OpenTime")
 	r.Equal(e.CloseTime, a.CloseTime, "CloseTime")
-	r.Equal(e.FristID, a.FristID, "FristID")
+	r.Equal(e.FirstID, a.FirstID, "FirstID")
 	r.Equal(e.LastID, a.LastID, "LastID")
 	r.Equal(e.Count, a.Count, "Count")
 }
