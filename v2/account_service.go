@@ -31,17 +31,18 @@ func (s *GetAccountService) Do(ctx context.Context, opts ...RequestOption) (res 
 
 // Account define account info
 type Account struct {
-	MakerCommission  int64     `json:"makerCommission"`
-	TakerCommission  int64     `json:"takerCommission"`
-	BuyerCommission  int64     `json:"buyerCommission"`
-	SellerCommission int64     `json:"sellerCommission"`
-	CanTrade         bool      `json:"canTrade"`
-	CanWithdraw      bool      `json:"canWithdraw"`
-	CanDeposit       bool      `json:"canDeposit"`
-	UpdateTime       uint64    `json:"updateTime"`
-	AccountType      string    `json:"accountType"`
-	Balances         []Balance `json:"balances"`
-	Permissions      []string  `json:"permissions"`
+	MakerCommission  int64           `json:"makerCommission"`
+	TakerCommission  int64           `json:"takerCommission"`
+	BuyerCommission  int64           `json:"buyerCommission"`
+	SellerCommission int64           `json:"sellerCommission"`
+	CommissionRates  CommissionRates `json:"commissionRates"`
+	CanTrade         bool            `json:"canTrade"`
+	CanWithdraw      bool            `json:"canWithdraw"`
+	CanDeposit       bool            `json:"canDeposit"`
+	UpdateTime       uint64          `json:"updateTime"`
+	AccountType      string          `json:"accountType"`
+	Balances         []Balance       `json:"balances"`
+	Permissions      []string        `json:"permissions"`
 }
 
 // Balance define user balance of your account
@@ -58,6 +59,13 @@ type GetAccountSnapshotService struct {
 	startTime   *int64
 	endTime     *int64
 	limit       *int
+}
+
+type CommissionRates struct {
+	Maker  string `json:"maker"`
+	Taker  string `json:"taker"`
+	Buyer  string `json:"buyer"`
+	Seller string `json:"seller"`
 }
 
 // Type set account type ("SPOT", "MARGIN", "FUTURES")

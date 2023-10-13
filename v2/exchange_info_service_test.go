@@ -52,7 +52,7 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 				"ocoAllowed": true,
 				"isSpotTradingAllowed": true,
 				"isMarginTradingAllowed": false,
-				"filters":[{"filterType":"PRICE_FILTER","minPrice":"0.00000100","maxPrice":"100000.00000000","tickSize":"0.00000100"},{"filterType":"LOT_SIZE","minQty":"0.00100000","maxQty":"100000.00000000","stepSize":"0.00100000"},{"filterType":"MIN_NOTIONAL","minNotional":"0.00100000"},{"filterType": "MAX_NUM_ALGO_ORDERS", "maxNumAlgoOrders": 5}],
+				"filters":[{"filterType":"PRICE_FILTER","minPrice":"0.00000100","maxPrice":"100000.00000000","tickSize":"0.00000100"},{"filterType":"LOT_SIZE","minQty":"0.00100000","maxQty":"100000.00000000","stepSize":"0.00100000"},{"filterType":"NOTIONAL","minNotional":"5.00000000", "applyMinToMarket": true, "maxNotional": "9000000.00000000", "applyMaxToMarket": false, "avgPriceMins": 5},{"filterType": "MAX_NUM_ALGO_ORDERS", "maxNumAlgoOrders": 5}],
 				"permissions": ["SPOT","MARGIN"]
 			}
 		]
@@ -97,7 +97,7 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 				Filters: []map[string]interface{}{
 					{"filterType": "PRICE_FILTER", "minPrice": "0.00000100", "maxPrice": "100000.00000000", "tickSize": "0.00000100"},
 					{"filterType": "LOT_SIZE", "minQty": "0.00100000", "maxQty": "100000.00000000", "stepSize": "0.00100000"},
-					{"filterType": "MIN_NOTIONAL", "minNotional": "0.00100000"},
+					{"filterType": "NOTIONAL", "minNotional": "5.00000000", "applyMinToMarket": true, "maxNotional": "9000000.00000000", "applyMaxToMarket": false, "avgPriceMins": 5},
 					{"filterType": "MAX_NUM_ALGO_ORDERS", "maxNumAlgoOrders": 5},
 				},
 				Permissions: []string{"SPOT", "MARGIN"},
@@ -118,12 +118,14 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 		TickSize: "0.00000100",
 	}
 	s.assertPriceFilterEqual(ePriceFilter, res.Symbols[0].PriceFilter())
-	eMinNotionalFilter := &MinNotionalFilter{
-		MinNotional:      "0.00100000",
-		AveragePriceMins: 0,
-		ApplyToMarket:    false,
+	eMinNotionalFilter := &NotionalFilter{
+		MinNotional:      "5.00000000",
+		ApplyMinToMarket: true,
+		MaxNotional:      "9000000.00000000",
+		ApplyMaxToMarket: false,
+		AvgPriceMins:     5,
 	}
-	s.assertMinNotionalFilterEqual(eMinNotionalFilter, res.Symbols[0].MinNotionalFilter())
+	s.assertMinNotionalFilterEqual(eMinNotionalFilter, res.Symbols[0].NotionalFilter())
 	eMaxNumAlgoOrdersFilter := &MaxNumAlgoOrdersFilter{
 		MaxNumAlgoOrders: 5,
 	}
@@ -167,7 +169,7 @@ func (s *exchangeInfoServiceTestSuite) assertExchangeInfoEqual(e, a *ExchangeInf
 					r.Equal(e.Symbols[i].Filters[fi]["minQty"], currentFilter["minQty"], "minQty")
 					r.Equal(e.Symbols[i].Filters[fi]["maxQty"], currentFilter["maxQty"], "maxQty")
 					r.Equal(e.Symbols[i].Filters[fi]["stepSize"], currentFilter["stepSize"], "stepSize")
-				case "MIN_NOTIONAL":
+				case "NOTIONAL":
 					r.Equal(e.Symbols[i].Filters[fi]["minNotional"], currentFilter["minNotional"], "minNotional")
 				}
 
@@ -203,11 +205,13 @@ func (s *exchangeInfoServiceTestSuite) assertPercentPriceFilterEqual(e, a *Perce
 	r.Equal(e.MultiplierDown, a.MultiplierDown, "MultiplierDown")
 }
 
-func (s *exchangeInfoServiceTestSuite) assertMinNotionalFilterEqual(e, a *MinNotionalFilter) {
+func (s *exchangeInfoServiceTestSuite) assertMinNotionalFilterEqual(e, a *NotionalFilter) {
 	r := s.r()
 	r.Equal(e.MinNotional, a.MinNotional, "MinNotional")
-	r.Equal(e.AveragePriceMins, a.AveragePriceMins, "AveragePriceMins")
-	r.Equal(e.ApplyToMarket, a.ApplyToMarket, "ApplyToMarket")
+	r.Equal(e.ApplyMinToMarket, a.ApplyMinToMarket, "ApplyMinToMarket")
+	r.Equal(e.MaxNotional, a.MaxNotional, "MaxNotional")
+	r.Equal(e.ApplyMaxToMarket, a.ApplyMaxToMarket, "ApplyMaxToMarket")
+	r.Equal(e.AvgPriceMins, a.AvgPriceMins, "AvgPriceMins")
 }
 
 func (s *exchangeInfoServiceTestSuite) assertIcebergPartsFilterEqual(e, a *IcebergPartsFilter) {

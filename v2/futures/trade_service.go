@@ -212,6 +212,7 @@ func (s *RecentTradesService) Do(ctx context.Context, opts ...RequestOption) (re
 type ListAccountTradeService struct {
 	c         *Client
 	symbol    string
+	orderId   *int64
 	startTime *int64
 	endTime   *int64
 	fromID    *int64
@@ -221,6 +222,12 @@ type ListAccountTradeService struct {
 // Symbol set symbol
 func (s *ListAccountTradeService) Symbol(symbol string) *ListAccountTradeService {
 	s.symbol = symbol
+	return s
+}
+
+// OrderID set orderId
+func (s *ListAccountTradeService) OrderID(orderID int64) *ListAccountTradeService {
+	s.orderId = &orderID
 	return s
 }
 
@@ -256,6 +263,9 @@ func (s *ListAccountTradeService) Do(ctx context.Context, opts ...RequestOption)
 		secType:  secTypeSigned,
 	}
 	r.setParam("symbol", s.symbol)
+	if s.orderId != nil {
+		r.setParam("orderId", *s.orderId)
+	}
 	if s.startTime != nil {
 		r.setParam("startTime", *s.startTime)
 	}

@@ -14,11 +14,12 @@ import (
 	"os"
 	"time"
 
+	"github.com/bitly/go-simplejson"
+	jsoniter "github.com/json-iterator/go"
+
 	"github.com/adshao/go-binance/v2/common"
 	"github.com/adshao/go-binance/v2/delivery"
 	"github.com/adshao/go-binance/v2/futures"
-	"github.com/bitly/go-simplejson"
-	jsoniter "github.com/json-iterator/go"
 )
 
 // SideType define side type of order
@@ -151,10 +152,12 @@ const (
 	SymbolStatusTypeAuctionMatch SymbolStatusType = "AUCTION_MATCH"
 	SymbolStatusTypeBreak        SymbolStatusType = "BREAK"
 
-	SymbolFilterTypeLotSize          SymbolFilterType = "LOT_SIZE"
-	SymbolFilterTypePriceFilter      SymbolFilterType = "PRICE_FILTER"
-	SymbolFilterTypePercentPrice     SymbolFilterType = "PERCENT_PRICE"
+	SymbolFilterTypeLotSize      SymbolFilterType = "LOT_SIZE"
+	SymbolFilterTypePriceFilter  SymbolFilterType = "PRICE_FILTER"
+	SymbolFilterTypePercentPrice SymbolFilterType = "PERCENT_PRICE"
+	// Deprecated: use SymbolFilterTypePercentPrice instead
 	SymbolFilterTypeMinNotional      SymbolFilterType = "MIN_NOTIONAL"
+	SymbolFilterTypeNotional         SymbolFilterType = "NOTIONAL"
 	SymbolFilterTypeIcebergParts     SymbolFilterType = "ICEBERG_PARTS"
 	SymbolFilterTypeMarketLotSize    SymbolFilterType = "MARKET_LOT_SIZE"
 	SymbolFilterTypeMaxNumAlgoOrders SymbolFilterType = "MAX_NUM_ALGO_ORDERS"
@@ -987,7 +990,27 @@ func (c *Client) NewGetUserAsset() *GetUserAssetService {
 	return &GetUserAssetService{c: c}
 }
 
-// NewSubTransferHistoryService query transfer histroy (for sub-account)
+// NewManagedSubAccountDepositService Deposit Assets Into The Managed Sub-account（For Investor Master Account）
+func (c *Client) NewManagedSubAccountDepositService() *ManagedSubAccountDepositService {
+	return &ManagedSubAccountDepositService{c: c}
+}
+
+// NewManagedSubAccountWithdrawalService Withdrawal Assets From The Managed Sub-account（For Investor Master Account）
+func (c *Client) NewManagedSubAccountWithdrawalService() *ManagedSubAccountWithdrawalService {
+	return &ManagedSubAccountWithdrawalService{c: c}
+}
+
+// NewManagedSubAccountAssetsService Withdrawal Assets From The Managed Sub-account（For Investor Master Account）
+func (c *Client) NewManagedSubAccountAssetsService() *ManagedSubAccountAssetsService {
+	return &ManagedSubAccountAssetsService{c: c}
+}
+
+// NewSubAccountFuturesAccountService Get Detail on Sub-account's Futures Account (For Master Account)
+func (c *Client) NewSubAccountFuturesAccountService() *SubAccountFuturesAccountService {
+	return &SubAccountFuturesAccountService{c: c}
+}
+
+// NewSubTransferHistoryService query transfer history (for sub-account)
 func (c *Client) NewSubTransferHistoryService() *SubTransferHistoryService {
 	return &SubTransferHistoryService{c: c}
 }

@@ -159,6 +159,64 @@ func WsMarkPriceServeWithRate(symbol string, rate time.Duration, handler WsMarkP
 	return wsMarkPriceServe(endpoint, handler, errHandler)
 }
 
+func wsCombinedMarkPriceServe(endpoint string, handler WsMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		j, err := newJSON(message)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		data := j.Get("data").MustMap()
+		jsonData, _ := json.Marshal(data)
+
+		event := new(WsMarkPriceEvent)
+		err = json.Unmarshal(jsonData, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		handler(event)
+	}
+
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+// WsCombinedMarkPriceServe is similar to WsMarkPriceServe, but it handles multiple symbols
+func WsCombinedMarkPriceServe(symbols []string, handler WsMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := getCombinedEndpoint()
+	for _, s := range symbols {
+		endpoint += fmt.Sprintf("%s@markPrice", strings.ToLower(s)) + "/"
+	}
+	endpoint = endpoint[:len(endpoint)-1]
+
+	return wsCombinedMarkPriceServe(endpoint, handler, errHandler)
+}
+
+// WsCombinedMarkPriceServeWithRate is similar to WsMarkPriceServeWithRate, but it for multiple symbols
+func WsCombinedMarkPriceServeWithRate(symbolLevels map[string]time.Duration, handler WsMarkPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := getCombinedEndpoint()
+	for symbol, rate := range symbolLevels {
+		var rateStr string
+		switch rate {
+		case 3 * time.Second:
+			rateStr = ""
+		case 1 * time.Second:
+			rateStr = "@1s"
+		default:
+			return nil, nil, fmt.Errorf("invalid rate. Symbol %s (rate %d)", symbol, rate)
+		}
+
+		endpoint += fmt.Sprintf("%s@markPrice%s", strings.ToLower(symbol), rateStr) + "/"
+	}
+
+	endpoint = endpoint[:len(endpoint)-1]
+
+	return wsCombinedMarkPriceServe(endpoint, handler, errHandler)
+}
+
 // WsAllMarkPriceEvent defines an array of websocket markPriceUpdate events.
 type WsAllMarkPriceEvent []*WsMarkPriceEvent
 
@@ -276,6 +334,95 @@ func WsCombinedKlineServe(symbolIntervalPair map[string]string, handler WsKlineH
 			return
 		}
 		event.Symbol = strings.ToUpper(symbol)
+
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+// WsContinuousKlineEvent define websocket continuous kline event
+type WsContinuousKlineEvent struct {
+	Event        string            `json:"e"`
+	Time         int64             `json:"E"`
+	PairSymbol   string            `json:"ps"`
+	ContractType string            `json:"ct"`
+	Kline        WsContinuousKline `json:"k"`
+}
+
+// WsContinuousKline define websocket continuous kline
+type WsContinuousKline struct {
+	StartTime            int64  `json:"t"`
+	EndTime              int64  `json:"T"`
+	Interval             string `json:"i"`
+	FirstTradeID         int64  `json:"f"`
+	LastTradeID          int64  `json:"L"`
+	Open                 string `json:"o"`
+	Close                string `json:"c"`
+	High                 string `json:"h"`
+	Low                  string `json:"l"`
+	Volume               string `json:"v"`
+	TradeNum             int64  `json:"n"`
+	IsFinal              bool   `json:"x"`
+	QuoteVolume          string `json:"q"`
+	ActiveBuyVolume      string `json:"V"`
+	ActiveBuyQuoteVolume string `json:"Q"`
+}
+
+// WsContinuousKlineSubcribeArgs used with WsContinuousKlineServe or WsCombinedContinuousKlineServe
+type WsContinuousKlineSubcribeArgs struct {
+	Pair         string
+	ContractType string
+	Interval     string
+}
+
+// WsContinuousKlineHandler handle websocket continuous kline event
+type WsContinuousKlineHandler func(event *WsContinuousKlineEvent)
+
+// WsContinuousKlineServe serve websocket continuous kline handler with a pair and contractType and interval like 15m, 30s
+func WsContinuousKlineServe(subscribeArgs *WsContinuousKlineSubcribeArgs, handler WsContinuousKlineHandler,
+	errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/%s_%s@continuousKline_%s", getWsEndpoint(), strings.ToLower(subscribeArgs.Pair),
+		strings.ToLower(subscribeArgs.ContractType), subscribeArgs.Interval)
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		event := new(WsContinuousKlineEvent)
+		err := json.Unmarshal(message, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+// WsCombinedContinuousKlineServe is similar to WsContinuousKlineServe, but it handles multiple pairs of different contractType with its interval
+func WsCombinedContinuousKlineServe(subscribeArgsList []*WsContinuousKlineSubcribeArgs,
+	handler WsContinuousKlineHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := getCombinedEndpoint()
+	for _, val := range subscribeArgsList {
+		endpoint += fmt.Sprintf("%s_%s@continuousKline_%s", strings.ToLower(val.Pair),
+			strings.ToLower(val.ContractType), val.Interval) + "/"
+	}
+	endpoint = endpoint[:len(endpoint)-1]
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		j, err := newJSON(message)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+
+		data := j.Get("data").MustMap()
+
+		jsonData, _ := json.Marshal(data)
+
+		event := new(WsContinuousKlineEvent)
+		err = json.Unmarshal(jsonData, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
 
 		handler(event)
 	}
