@@ -1027,8 +1027,8 @@ func (c *Client) NewVipLoanService() *VipLoanService {
 	return &VipLoanService{c: c}
 }
 
-func (c *Client) NewFlexibleLoanService() *FlexibleLoanService {
-	return &FlexibleLoanService{c: c}
+func (c *Client) NewGetFlexibleLoanAssetsDataService() *GetFlexibleLoanAssetsDataService {
+	return &GetFlexibleLoanAssetsDataService{c: c}
 }
 
 func (c *Client) NewIsolatedMarginDataService() *IsolatedMarginDataService {
@@ -1037,4 +1037,16 @@ func (c *Client) NewIsolatedMarginDataService() *IsolatedMarginDataService {
 
 func (c *Client) NewCrossMarginDataService() *CrossMarginDataService {
 	return &CrossMarginDataService{c: c}
+}
+
+func (c *Client) NewFlexibleLoanBorrowService() *FlexibleLoanBorrowService {
+	return &FlexibleLoanBorrowService{c: c}
+}
+
+func (c *Client) NewGetFlexibleLoanOngoingOrdersService() *GetFlexibleLoanOngoingOrdersService {
+	return &GetFlexibleLoanOngoingOrdersService{c: c}
+}
+
+func (c *Client) NewFlexibleLoanRepayService() *FlexibleLoanRepayService {
+	return &FlexibleLoanRepayService{c: c}
 }

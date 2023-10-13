@@ -105,12 +105,12 @@ type FlexibleLoanableAssets struct {
 	Total int64               `json:"total"`
 }
 
-type FlexibleLoanService struct {
+type GetFlexibleLoanAssetsDataService struct {
 	c *Client
 }
 
 // Do send request
-func (s *FlexibleLoanService) Do(ctx context.Context, opts ...RequestOption) (res *FlexibleLoanableAssets, err error) {
+func (s *GetFlexibleLoanAssetsDataService) Do(ctx context.Context, opts ...RequestOption) (res *FlexibleLoanableAssets, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/loan/flexible/loanable/data",
@@ -123,6 +123,82 @@ func (s *FlexibleLoanService) Do(ctx context.Context, opts ...RequestOption) (re
 	}
 
 	res = new(FlexibleLoanableAssets)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type FlexibleLoanBorrowService struct {
+	c                *Client
+	loanCoin         string
+	loanAmount       float64
+	collateralCoin   string
+	collateralAmount *float64
+}
+
+type FlexibleBorrowStatus string
+
+const (
+	FlexibleBorrowStatusSucceeds   FlexibleBorrowStatus = "Succeeds"
+	FlexibleBorrowStatusFailed     FlexibleBorrowStatus = "Failed"
+	FlexibleBorrowStatusProcessing FlexibleBorrowStatus = "Processing"
+)
+
+type FlexibleLoanBorrowResp struct {
+	LoanCoin         string               `json:"loanCoin"`
+	LoanAmount       string               `json:"loanAmount"`
+	CollateralCoin   string               `json:"collateralCoin"`
+	CollateralAmount string               `json:"collateralAmount"`
+	Status           FlexibleBorrowStatus `json:"status"`
+}
+
+// LoanCoin set loanCoin
+func (s *FlexibleLoanBorrowService) LoanCoin(loanCoin string) *FlexibleLoanBorrowService {
+	s.loanCoin = loanCoin
+	return s
+}
+
+// LoanAmount set loanAmount
+func (s *FlexibleLoanBorrowService) LoanAmount(loanAmount float64) *FlexibleLoanBorrowService {
+	s.loanAmount = loanAmount
+	return s
+}
+
+// CollateralCoin set collateralCoin
+func (s *FlexibleLoanBorrowService) CollateralCoin(coll string) *FlexibleLoanBorrowService {
+	s.collateralCoin = coll
+	return s
+}
+
+// CollateralAmount set collateralAmount
+func (s *FlexibleLoanBorrowService) CollateralAmount(collAmt float64) *FlexibleLoanBorrowService {
+	s.collateralAmount = &collAmt
+	return s
+}
+
+// Do send request
+func (s *FlexibleLoanBorrowService) Do(ctx context.Context, opts ...RequestOption) (res *FlexibleLoanBorrowResp, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v1/loan/flexible/borrow",
+		secType:  secTypeSigned,
+	}
+
+	r.setParam("loanCoin", s.loanCoin)
+	r.setParam("loanAmount", s.loanAmount)
+	r.setParam("collateralCoin", s.collateralCoin)
+	if s.collateralAmount != nil {
+		r.setParam("collateralAmount", *s.collateralAmount)
+	}
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	res = new(FlexibleLoanBorrowResp)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
