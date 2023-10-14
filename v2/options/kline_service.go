@@ -80,18 +80,18 @@ func (s *KlinesService) Do(ctx context.Context, opts ...RequestOption) (res []*K
 			return []*Kline{}, err
 		}
 		res[i] = &Kline{
-			OpenTime:                 item.Get("openTime").MustInt64(),
-			Open:                     item.Get("open").MustString(),
-			High:                     item.Get("high").MustString(),
-			Low:                      item.Get("low").MustString(),
-			Close:                    item.Get("close").MustString(),
-			CloseTime:                item.Get("closeTime").MustInt64(),
-			Amount:                   item.Get("amount").MustString(),
-			TakerAmount:              item.Get("takerAmount").MustString(),
-			Volume:                   item.Get("volume").MustString(),
-			TakerVolume:              item.Get("takerVolume").MustString(),
-			Interval:                 item.Get("interval").MustString(),
-			TradeCount:               item.Get("tradeCount").MustInt64(),
+			OpenTime:    item.Get("openTime").MustInt64(),
+			Open:        item.Get("open").MustString(),
+			High:        item.Get("high").MustString(),
+			Low:         item.Get("low").MustString(),
+			Close:       item.Get("close").MustString(),
+			CloseTime:   item.Get("closeTime").MustInt64(),
+			Amount:      item.Get("amount").MustString(),
+			TakerAmount: item.Get("takerAmount").MustString(),
+			Volume:      item.Get("volume").MustString(),
+			TakerVolume: item.Get("takerVolume").MustString(),
+			Interval:    item.Get("interval").MustString(),
+			TradeCount:  item.Get("tradeCount").MustInt64(),
 		}
 	}
 	return res, nil
@@ -99,16 +99,16 @@ func (s *KlinesService) Do(ctx context.Context, opts ...RequestOption) (res []*K
 
 // Kline define kline info
 type Kline struct {
-	OpenTime                 int64  `json:"openTime"`
-	Open                     string `json:"open"`
-	High                     string `json:"high"`
-	Low                      string `json:"low"`
-	Close                    string `json:"close"`
-	CloseTime                int64  `json:"closeTime"`
-	Amount                   string `json:"amount"`
-	TakerAmount              string `json:"takerAmount"`
-	Volume                   string `json:"volume"`
-	TakerVolume              string `json:"takerVolume"`
-	Interval                 string `json:"interval"`
-	TradeCount               int64  `json:"tradeCount"`
+	OpenTime    int64  `json:"openTime"`
+	Open        string `json:"open"`
+	High        string `json:"high"`
+	Low         string `json:"low"`
+	Close       string `json:"close"`
+	CloseTime   int64  `json:"closeTime"`
+	Amount      string `json:"amount"`
+	TakerAmount string `json:"takerAmount"`
+	Volume      string `json:"volume"`
+	TakerVolume string `json:"takerVolume"`
+	Interval    string `json:"interval"`
+	TradeCount  int64  `json:"tradeCount"`
 }

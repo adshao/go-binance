@@ -16,20 +16,20 @@ func TestKlineService(t *testing.T) {
 
 func (s *klineServiceTestSuite) TestKlines() {
 	/*
-	OpenTime                 int64  `json:"openTime"`
-	Open                     string `json:"open"`
-	High                     string `json:"high"`
-	Low                      string `json:"low"`
-	Close                    string `json:"close"`
-	CloseTime                int64  `json:"closeTime"`
-	Amount                   string `json:"amount"`
-	TakerAmount              string `json:"takerAmount"`
-	Volume                   string `json:"volume"`
-	TakerVolume              string `json:"takerVolume"`
-	Interval                 string `json:"interval"`
-	TradeCount               int64  `json:"tradeCount"`
-*/
-			//amount:2.35 close:235 closeTime:1677931200000 high:235 interval:4h low:235 open:235 openTime:1677916800000 takerAmount:2.35 takerVolume:0.01 tradeCount:1 volume:0.01
+		OpenTime                 int64  `json:"openTime"`
+		Open                     string `json:"open"`
+		High                     string `json:"high"`
+		Low                      string `json:"low"`
+		Close                    string `json:"close"`
+		CloseTime                int64  `json:"closeTime"`
+		Amount                   string `json:"amount"`
+		TakerAmount              string `json:"takerAmount"`
+		Volume                   string `json:"volume"`
+		TakerVolume              string `json:"takerVolume"`
+		Interval                 string `json:"interval"`
+		TradeCount               int64  `json:"tradeCount"`
+	*/
+	//amount:2.35 close:235 closeTime:1677931200000 high:235 interval:4h low:235 open:235 openTime:1677916800000 takerAmount:2.35 takerVolume:0.01 tradeCount:1 volume:0.01
 	data := []byte(`[
         {
 			"openTime":1499040000000,
@@ -84,32 +84,32 @@ func (s *klineServiceTestSuite) TestKlines() {
 	s.r().NoError(err)
 	s.Len(klines, 2)
 	kline1 := &Kline{
-		OpenTime:                 1499040000000,
-		Open:                     "0.01634790",
-		High:                     "0.80000000",
-		Low:                      "0.01575800",
-		Close:                    "0.01577100",
-		CloseTime:                1499644799999,
-		Amount:                   "34.66",
-		TakerAmount:              "7.6",
-		Volume:                   "1.06",
-		TakerVolume:              "1.02",
-		Interval:                 "15m",
-		TradeCount:               14,
+		OpenTime:    1499040000000,
+		Open:        "0.01634790",
+		High:        "0.80000000",
+		Low:         "0.01575800",
+		Close:       "0.01577100",
+		CloseTime:   1499644799999,
+		Amount:      "34.66",
+		TakerAmount: "7.6",
+		Volume:      "1.06",
+		TakerVolume: "1.02",
+		Interval:    "15m",
+		TradeCount:  14,
 	}
 	kline2 := &Kline{
-		OpenTime:                 1499040000001,
-		Open:                     "0.01634790",
-		High:                     "0.80000000",
-		Low:                      "0.01575800",
-		Close:                    "0.01577101",
-		CloseTime:                1499644799999,
-		Amount:                   "17.15",
-		TakerAmount:              "4.6",
-		Volume:                   "0.06",
-		TakerVolume:              "0.02",
-		Interval:                 "15m",
-		TradeCount:               5,
+		OpenTime:    1499040000001,
+		Open:        "0.01634790",
+		High:        "0.80000000",
+		Low:         "0.01575800",
+		Close:       "0.01577101",
+		CloseTime:   1499644799999,
+		Amount:      "17.15",
+		TakerAmount: "4.6",
+		Volume:      "0.06",
+		TakerVolume: "0.02",
+		Interval:    "15m",
+		TradeCount:  5,
 	}
 	s.assertKlineEqual(kline1, klines[0])
 	s.assertKlineEqual(kline2, klines[1])

@@ -44,7 +44,7 @@ func (s *depthServiceTestSuite) TestDepth() {
 	s.r().NoError(err)
 	e := &DepthResponse{
 		TradeTime: 1589436922972,
-		UpdateID: 1027024,
+		UpdateID:  1027024,
 		Bids: []Bid{
 			{
 				Price:    "4.00000000",

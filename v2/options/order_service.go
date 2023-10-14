@@ -602,13 +602,13 @@ func (s *CreateBatchOrdersService) Do(ctx context.Context, opts ...RequestOption
 		}
 
 		/*
-		TODO: the following 4 lines are copied from futures package, not sure why there is
-		such condition check and it looks wrong to me. Need to double confirm.
-		
-		if o.ClientOrderID != "" {
-			batchCreateOrdersResponse.Orders = append(batchCreateOrdersResponse.Orders, o)
-			continue
-		}
+			TODO: the following 4 lines are copied from futures package, not sure why there is
+			such condition check and it looks wrong to me. Need to double confirm.
+
+			if o.ClientOrderID != "" {
+				batchCreateOrdersResponse.Orders = append(batchCreateOrdersResponse.Orders, o)
+				continue
+			}
 		*/
 		batchCreateOrdersResponse.Orders = append(batchCreateOrdersResponse.Orders, o)
 
