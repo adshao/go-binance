@@ -17,9 +17,9 @@ type FlexibleLoanRepayService struct {
 type FlexibleLoanRepayStatus string
 
 const (
-	FlexibleLoanRepaid   FlexibleBorrowStatus = "Repaid"
-	FlexibleLoanRepaying FlexibleBorrowStatus = "Repaying"
-	FlexibleLoanFailed   FlexibleBorrowStatus = "Failed"
+	FlexibleLoanRepaid   FlexibleLoanRepayStatus = "Repaid"
+	FlexibleLoanRepaying FlexibleLoanRepayStatus = "Repaying"
+	FlexibleLoanFailed   FlexibleLoanRepayStatus = "Failed"
 )
 
 type FlexibleLoanRepayResp struct {
