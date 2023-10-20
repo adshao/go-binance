@@ -104,3 +104,10 @@ func WithHeaders(header http.Header) RequestOption {
 		r.header = header.Clone()
 	}
 }
+
+// WithExtraForm add extra form data of the request
+func WithExtraForm(m map[string]any) RequestOption {
+	return func(r *request) {
+		r.setFormParams(m)
+	}
+}
