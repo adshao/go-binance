@@ -1058,3 +1058,7 @@ func (c *Client) NewFlexibleLoanAdjustLTVService() *FlexibleLoanAdjustLTVService
 func (c *Client) NewGetFlexibleLoanBorrowHistoryService() *GetFlexibleLoanBorrowHistoryService {
 	return &GetFlexibleLoanBorrowHistoryService{c: c}
 }
+
+func (c *Client) NewGetFlexibleLoanRepayHistoryService() *GetFlexibleLoanRepayHistoryService {
+	return &GetFlexibleLoanRepayHistoryService{c: c}
+}
