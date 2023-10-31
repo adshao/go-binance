@@ -561,3 +561,94 @@ type SubAccountFuturesAccountAsset struct {
 	UnrealizedProfit       string `json:"unrealizedProfit"`
 	WalletBalance          string `json:"walletBalance"`
 }
+
+type SubAccountResponse struct {
+	Email        string `json:"email"`
+	SubAccountID string `json:"subaccountId"`
+}
+
+type SubAccountService struct {
+	c *Client
+}
+
+// Do send request
+func (s *SubAccountService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountResponse, err error) {
+	r := &request{
+		method:   "POST",
+		endpoint: "/sapi/v1/broker/subAccount",
+		secType:  secTypeSigned,
+	}
+	m := params{}
+	r.setParams(m)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	res = new(SubAccountResponse)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type SubAccountAPIKeyResponse struct {
+	APIKey    string `json:"apiKey"`
+	SecretKey string `json:"secretKey"`
+}
+
+type SubAccountApiKeyService struct {
+	c            *Client
+	canTrade     bool
+	futuresTrade bool
+	marginTrade  bool
+	subAccountID string
+}
+
+func (s *SubAccountApiKeyService) CanTrade(canTrade bool) *SubAccountApiKeyService {
+	s.canTrade = canTrade
+	return s
+}
+
+func (s *SubAccountApiKeyService) FuturesTrade(futuresTrade bool) *SubAccountApiKeyService {
+	s.futuresTrade = futuresTrade
+	return s
+}
+
+func (s *SubAccountApiKeyService) MarginTrade(marginTrade bool) *SubAccountApiKeyService {
+	s.marginTrade = marginTrade
+	return s
+}
+
+func (s *SubAccountApiKeyService) SubAccountID(subAccountID string) *SubAccountApiKeyService {
+	s.subAccountID = subAccountID
+	return s
+}
+
+// Do send request
+func (s *SubAccountApiKeyService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountAPIKeyResponse, err error) {
+	r := &request{
+		method:   "POST",
+		endpoint: "/sapi/v1/broker/subAccountApi",
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"subAccountId": s.subAccountID,
+		"canTrade":     s.canTrade,
+		"futuresTrade": s.futuresTrade,
+		"marginTrade":  s.marginTrade,
+	}
+	r.setParams(m)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	res = new(SubAccountAPIKeyResponse)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
