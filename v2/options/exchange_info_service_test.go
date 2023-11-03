@@ -153,12 +153,14 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 	}
 	s.assertExchangeInfoEqual(ei, res)
 	s.r().Len(ei.OptionSymbols[0].Filters, 2, "Filters")
+
 	ePriceFilter := &PriceFilter{
 		MinPrice: "0.02",
 		MaxPrice: "80000.01",
 		TickSize: "0.01",
 	}
 	s.assertPriceFilterEqual(ePriceFilter, res.OptionSymbols[0].PriceFilter())
+
 	eLotSizeFilter := &LotSizeFilter{
 		MinQuantity: "0.01",
 		MaxQuantity: "100",
@@ -209,6 +211,20 @@ func (s *exchangeInfoServiceTestSuite) assertExchangeInfoEqual(e, a *ExchangeInf
 		r.Equal(e.OptionSymbols[i].PriceScale, a.OptionSymbols[i].PriceScale, "PriceScale")
 		r.Equal(e.OptionSymbols[i].QuantityScale, a.OptionSymbols[i].QuantityScale, "QuantityScale")
 		r.Equal(e.OptionSymbols[i].QuoteAsset, a.OptionSymbols[i].QuoteAsset, "QuoteAsset")
+
+		for fi, currentFilter := range a.OptionSymbols[i].Filters {
+			r.Len(currentFilter, len(e.OptionSymbols[i].Filters[fi]))
+			switch currentFilter["filterType"] {
+			case "PRICE_FILTER":
+				r.Equal(e.OptionSymbols[i].PriceFilter().MinPrice, a.OptionSymbols[i].PriceFilter().MinPrice, "MinPrice")
+				r.Equal(e.OptionSymbols[i].PriceFilter().MaxPrice, a.OptionSymbols[i].PriceFilter().MaxPrice, "MaxPrice")
+				r.Equal(e.OptionSymbols[i].PriceFilter().TickSize, a.OptionSymbols[i].PriceFilter().TickSize, "TickSize")
+			case "LOT_SIZE":
+				r.Equal(e.OptionSymbols[i].LotSizeFilter().MinQuantity, a.OptionSymbols[i].LotSizeFilter().MinQuantity, "MinQuantity")
+				r.Equal(e.OptionSymbols[i].LotSizeFilter().MaxQuantity, a.OptionSymbols[i].LotSizeFilter().MaxQuantity, "MaxQuantity")
+				r.Equal(e.OptionSymbols[i].LotSizeFilter().StepSize, a.OptionSymbols[i].LotSizeFilter().StepSize, "StepSize")
+			}
+		}
 	}
 
 	r.Len(a.RateLimits, len(e.RateLimits), "RateLimits")
@@ -232,28 +248,4 @@ func (s *exchangeInfoServiceTestSuite) assertPriceFilterEqual(e, a *PriceFilter)
 	r.Equal(e.MaxPrice, a.MaxPrice, "MaxPrice")
 	r.Equal(e.MinPrice, a.MinPrice, "MinPrice")
 	r.Equal(e.TickSize, a.TickSize, "TickSize")
-}
-
-func (s *exchangeInfoServiceTestSuite) assertPercentPriceFilterEqual(e, a *PercentPriceFilter) {
-	r := s.r()
-	r.Equal(e.MultiplierDecimal, a.MultiplierDecimal, "MultiplierDecimal")
-	r.Equal(e.MultiplierUp, a.MultiplierUp, "MultiplierUp")
-	r.Equal(e.MultiplierDown, a.MultiplierDown, "MultiplierDown")
-}
-
-func (s *exchangeInfoServiceTestSuite) assertMarketLotSizeFilterEqual(e, a *MarketLotSizeFilter) {
-	r := s.r()
-	r.Equal(e.MaxQuantity, a.MaxQuantity, "MaxQuantity")
-	r.Equal(e.MinQuantity, a.MinQuantity, "MinQuantity")
-	r.Equal(e.StepSize, a.StepSize, "StepSize")
-}
-
-func (s *exchangeInfoServiceTestSuite) assertMaxNumOrdersFilterEqual(e, a *MaxNumOrdersFilter) {
-	r := s.r()
-	r.Equal(e.Limit, a.Limit, "Limit")
-}
-
-func (s *exchangeInfoServiceTestSuite) assertMaxNumAlgoOrdersFilterEqual(e, a *MaxNumAlgoOrdersFilter) {
-	r := s.r()
-	r.Equal(e.Limit, a.Limit, "Limit")
 }

@@ -52,7 +52,51 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 				"ocoAllowed": true,
 				"isSpotTradingAllowed": true,
 				"isMarginTradingAllowed": false,
-				"filters":[{"filterType":"PRICE_FILTER","minPrice":"0.00000100","maxPrice":"100000.00000000","tickSize":"0.00000100"},{"filterType":"LOT_SIZE","minQty":"0.00100000","maxQty":"100000.00000000","stepSize":"0.00100000"},{"filterType":"NOTIONAL","minNotional":"5.00000000", "applyMinToMarket": true, "maxNotional": "9000000.00000000", "applyMaxToMarket": false, "avgPriceMins": 5},{"filterType": "MAX_NUM_ALGO_ORDERS", "maxNumAlgoOrders": 5}],
+				"filters":[{
+					"filterType": "PRICE_FILTER",
+					"minPrice": "0.00001000",
+					"maxPrice": "922327.00000000",
+					"tickSize": "0.00001000"
+				}, {
+					"filterType": "LOT_SIZE",
+					"minQty": "0.00010000",
+					"maxQty": "100000.00000000",
+					"stepSize": "0.00010000"
+				}, {
+					"filterType": "ICEBERG_PARTS",
+					"limit": 10
+				}, {
+					"filterType": "MARKET_LOT_SIZE",
+					"minQty": "0.00000000",
+					"maxQty": "3373.58569748",
+					"stepSize": "0.00000000"
+				}, {
+					"filterType": "TRAILING_DELTA",
+					"minTrailingAboveDelta": 10,
+					"maxTrailingAboveDelta": 2000,
+					"minTrailingBelowDelta": 10,
+					"maxTrailingBelowDelta": 2000
+				}, {
+					"filterType": "PERCENT_PRICE_BY_SIDE",
+					"bidMultiplierUp": "5",
+					"bidMultiplierDown": "0.2",
+					"askMultiplierUp": "5",
+					"askMultiplierDown": "0.2",
+					"avgPriceMins": 5
+				}, {
+					"filterType": "NOTIONAL",
+					"minNotional": "0.00010000",
+					"applyMinToMarket": true,
+					"maxNotional": "9000000.00000000",
+					"applyMaxToMarket": false,
+					"avgPriceMins": 5
+				}, {
+					"filterType": "MAX_NUM_ORDERS",
+					"maxNumOrders": 200
+				}, {
+					"filterType": "MAX_NUM_ALGO_ORDERS",
+					"maxNumAlgoOrders": 5
+				}],
 				"permissions": ["SPOT","MARGIN"]
 			}
 		]
@@ -95,9 +139,14 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 				IsSpotTradingAllowed:   true,
 				IsMarginTradingAllowed: false,
 				Filters: []map[string]interface{}{
-					{"filterType": "PRICE_FILTER", "minPrice": "0.00000100", "maxPrice": "100000.00000000", "tickSize": "0.00000100"},
-					{"filterType": "LOT_SIZE", "minQty": "0.00100000", "maxQty": "100000.00000000", "stepSize": "0.00100000"},
-					{"filterType": "NOTIONAL", "minNotional": "5.00000000", "applyMinToMarket": true, "maxNotional": "9000000.00000000", "applyMaxToMarket": false, "avgPriceMins": 5},
+					{"filterType": "PRICE_FILTER", "minPrice": "0.00001000", "maxPrice": "922327.00000000", "tickSize": "0.00001000"},
+					{"filterType": "LOT_SIZE", "minQty": "0.00010000", "maxQty": "100000.00000000", "stepSize": "0.00010000"},
+					{"filterType": "ICEBERG_PARTS", "limit": 10},
+					{"filterType": "MARKET_LOT_SIZE", "minQty": "0.00000000", "maxQty": "3373.58569748", "stepSize": "0.00000000"},
+					{"filterType": "TRAILING_DELTA", "minTrailingAboveDelta": 10, "maxTrailingAboveDelta": 2000, "minTrailingBelowDelta": 10, "maxTrailingBelowDelta": 2000},
+					{"filterType": "PERCENT_PRICE_BY_SIDE", "bidMultiplierUp": "5", "bidMultiplierDown": "0.2", "askMultiplierUp": "5", "askMultiplierDown": "0.2", "avgPriceMins": 5},
+					{"filterType": "NOTIONAL", "minNotional": "0.00010000", "applyMinToMarket": true, "maxNotional": "9000000.00000000", "applyMaxToMarket": false, "avgPriceMins": 5},
+					{"filterType": "MAX_NUM_ORDERS", "maxNumOrders": 200},
 					{"filterType": "MAX_NUM_ALGO_ORDERS", "maxNumAlgoOrders": 5},
 				},
 				Permissions: []string{"SPOT", "MARGIN"},
@@ -106,26 +155,63 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 	}
 	s.assertExchangeInfoEqual(ei, res)
 
-	eLotSizeFilter := &LotSizeFilter{
-		MaxQuantity: "100000.00000000",
-		MinQuantity: "0.00100000",
-		StepSize:    "0.00100000",
-	}
-	s.assertLotSizeFilterEqual(eLotSizeFilter, res.Symbols[0].LotSizeFilter())
 	ePriceFilter := &PriceFilter{
-		MaxPrice: "100000.00000000",
-		MinPrice: "0.00000100",
-		TickSize: "0.00000100",
+		MaxPrice: "922327.00000000",
+		MinPrice: "0.00001000",
+		TickSize: "0.00001000",
 	}
 	s.assertPriceFilterEqual(ePriceFilter, res.Symbols[0].PriceFilter())
+
+	eLotSizeFilter := &LotSizeFilter{
+		MaxQuantity: "100000.00000000",
+		MinQuantity: "0.00010000",
+		StepSize:    "0.00010000",
+	}
+	s.assertLotSizeFilterEqual(eLotSizeFilter, res.Symbols[0].LotSizeFilter())
+
+	eIcebergPartsFilter := &IcebergPartsFilter{
+		Limit: 10,
+	}
+	s.assertIcebergPartsFilterEqual(eIcebergPartsFilter, res.Symbols[0].IcebergPartsFilter())
+
+	eMarketLotSizeFilter := &MarketLotSizeFilter{
+		MinQuantity: "0.00000000",
+		MaxQuantity: "3373.58569748",
+		StepSize:    "0.00000000",
+	}
+	s.assertMarketLotSizeFilterEqual(eMarketLotSizeFilter, res.Symbols[0].MarketLotSizeFilter())
+
+	eTrailingDeltaFilter := &TrailingDeltaFilter{
+		MinTrailingAboveDelta: 10,
+		MaxTrailingAboveDelta: 2000,
+		MinTrailingBelowDelta: 10,
+		MaxTrailingBelowDelta: 2000,
+	}
+	s.assertTrailingDeltaFilterEqual(eTrailingDeltaFilter, res.Symbols[0].TrailingDeltaFilter())
+
+	ePercentPriceBySideFilter := &PercentPriceBySideFilter{
+		BidMultiplierUp:   "5",
+		BidMultiplierDown: "0.2",
+		AskMultiplierUp:   "5",
+		AskMultiplierDown: "0.2",
+		AveragePriceMins:  5,
+	}
+	s.assertPercentPriceBySideFilterEqual(ePercentPriceBySideFilter, res.Symbols[0].PercentPriceBySideFilter())
+
 	eMinNotionalFilter := &NotionalFilter{
-		MinNotional:      "5.00000000",
+		MinNotional:      "0.00010000",
 		ApplyMinToMarket: true,
 		MaxNotional:      "9000000.00000000",
 		ApplyMaxToMarket: false,
 		AvgPriceMins:     5,
 	}
 	s.assertMinNotionalFilterEqual(eMinNotionalFilter, res.Symbols[0].NotionalFilter())
+
+	eMaxNumOrdersFilter := &MaxNumOrdersFilter{
+		MaxNumOrders: 200,
+	}
+	s.assertMaxNumOrdersFilterEqual(eMaxNumOrdersFilter, res.Symbols[0].MaxNumOrdersFilter())
+
 	eMaxNumAlgoOrdersFilter := &MaxNumAlgoOrdersFilter{
 		MaxNumAlgoOrders: 5,
 	}
@@ -158,22 +244,48 @@ func (s *exchangeInfoServiceTestSuite) assertExchangeInfoEqual(e, a *ExchangeInf
 			r.Equal(e.Symbols[i].OrderTypes, currentSymbol.OrderTypes, "OrderTypes")
 			r.Equal(e.Symbols[i].IcebergAllowed, currentSymbol.IcebergAllowed, "IcebergAllowed")
 			r.Len(currentSymbol.Filters, len(e.Symbols[i].Filters))
+
 			for fi, currentFilter := range currentSymbol.Filters {
 				r.Len(currentFilter, len(e.Symbols[i].Filters[fi]))
 				switch currentFilter["filterType"] {
 				case "PRICE_FILTER":
-					r.Equal(e.Symbols[i].Filters[fi]["minPrice"], currentFilter["minPrice"], "minPrice")
-					r.Equal(e.Symbols[i].Filters[fi]["maxPrice"], currentFilter["maxPrice"], "maxPrice")
-					r.Equal(e.Symbols[i].Filters[fi]["tickSize"], currentFilter["tickSize"], "tickSize")
+					r.Equal(e.Symbols[i].PriceFilter().MinPrice, currentSymbol.PriceFilter().MinPrice, "MinPrice")
+					r.Equal(e.Symbols[i].PriceFilter().MaxPrice, currentSymbol.PriceFilter().MaxPrice, "MaxPrice")
+					r.Equal(e.Symbols[i].PriceFilter().TickSize, currentSymbol.PriceFilter().TickSize, "TickSize")
 				case "LOT_SIZE":
-					r.Equal(e.Symbols[i].Filters[fi]["minQty"], currentFilter["minQty"], "minQty")
-					r.Equal(e.Symbols[i].Filters[fi]["maxQty"], currentFilter["maxQty"], "maxQty")
-					r.Equal(e.Symbols[i].Filters[fi]["stepSize"], currentFilter["stepSize"], "stepSize")
+					r.Equal(e.Symbols[i].LotSizeFilter().MinQuantity, currentSymbol.LotSizeFilter().MinQuantity, "MinQuantity")
+					r.Equal(e.Symbols[i].LotSizeFilter().MaxQuantity, currentSymbol.LotSizeFilter().MaxQuantity, "MaxQuantity")
+					r.Equal(e.Symbols[i].LotSizeFilter().StepSize, currentSymbol.LotSizeFilter().StepSize, "StepSize")
+				case "ICEBERG_PARTS":
+					r.Equal(e.Symbols[i].IcebergPartsFilter().Limit, currentSymbol.IcebergPartsFilter().Limit, "Limit")
+				case "MARKET_LOT_SIZE":
+					r.Equal(e.Symbols[i].MarketLotSizeFilter().MinQuantity, currentSymbol.MarketLotSizeFilter().MinQuantity, "MinQuantity")
+					r.Equal(e.Symbols[i].MarketLotSizeFilter().MaxQuantity, currentSymbol.MarketLotSizeFilter().MaxQuantity, "MaxQuantity")
+					r.Equal(e.Symbols[i].MarketLotSizeFilter().StepSize, currentSymbol.MarketLotSizeFilter().StepSize, "StepSize")
+				case "TRAILING_DELTA":
+					r.Equal(e.Symbols[i].TrailingDeltaFilter().MinTrailingAboveDelta, currentSymbol.TrailingDeltaFilter().MinTrailingAboveDelta, "MinTrailingAboveDelta")
+					r.Equal(e.Symbols[i].TrailingDeltaFilter().MaxTrailingAboveDelta, currentSymbol.TrailingDeltaFilter().MaxTrailingAboveDelta, "MaxTrailingAboveDelta")
+					r.Equal(e.Symbols[i].TrailingDeltaFilter().MinTrailingBelowDelta, currentSymbol.TrailingDeltaFilter().MinTrailingBelowDelta, "MinTrailingBelowDelta")
+					r.Equal(e.Symbols[i].TrailingDeltaFilter().MaxTrailingBelowDelta, currentSymbol.TrailingDeltaFilter().MaxTrailingBelowDelta, "MaxTrailingBelowDelta")
+				case "PERCENT_PRICE_BY_SIDE":
+					r.Equal(e.Symbols[i].PercentPriceBySideFilter().BidMultiplierUp, currentSymbol.PercentPriceBySideFilter().BidMultiplierUp, "BidMultiplierUp")
+					r.Equal(e.Symbols[i].PercentPriceBySideFilter().BidMultiplierDown, currentSymbol.PercentPriceBySideFilter().BidMultiplierDown, "BidMultiplierDown")
+					r.Equal(e.Symbols[i].PercentPriceBySideFilter().AskMultiplierUp, currentSymbol.PercentPriceBySideFilter().AskMultiplierUp, "AskMultiplierUp")
+					r.Equal(e.Symbols[i].PercentPriceBySideFilter().AskMultiplierDown, currentSymbol.PercentPriceBySideFilter().AskMultiplierDown, "AskMultiplierDown")
+					r.Equal(e.Symbols[i].PercentPriceBySideFilter().AveragePriceMins, currentSymbol.PercentPriceBySideFilter().AveragePriceMins, "AveragePriceMins")
 				case "NOTIONAL":
-					r.Equal(e.Symbols[i].Filters[fi]["minNotional"], currentFilter["minNotional"], "minNotional")
+					r.Equal(e.Symbols[i].NotionalFilter().MinNotional, currentSymbol.NotionalFilter().MinNotional, "MinNotional")
+					r.Equal(e.Symbols[i].NotionalFilter().ApplyMinToMarket, currentSymbol.NotionalFilter().ApplyMinToMarket, "ApplyMinToMarket")
+					r.Equal(e.Symbols[i].NotionalFilter().MaxNotional, currentSymbol.NotionalFilter().MaxNotional, "MaxNotional")
+					r.Equal(e.Symbols[i].NotionalFilter().ApplyMaxToMarket, currentSymbol.NotionalFilter().ApplyMaxToMarket, "ApplyMaxToMarket")
+					r.Equal(e.Symbols[i].NotionalFilter().AvgPriceMins, currentSymbol.NotionalFilter().AvgPriceMins, "AvgPriceMins")
+				case "MAX_NUM_ORDERS":
+					r.Equal(e.Symbols[i].MaxNumOrdersFilter().MaxNumOrders, currentSymbol.MaxNumOrdersFilter().MaxNumOrders, "MaxNumOrders")
+				case "MAX_NUM_ALGO_ORDERS":
+					r.Equal(e.Symbols[i].MaxNumAlgoOrdersFilter().MaxNumAlgoOrders, currentSymbol.MaxNumAlgoOrdersFilter().MaxNumAlgoOrders, "MaxNumAlgoOrders")
 				}
-
 			}
+
 			r.Len(currentSymbol.Permissions, len(e.Symbols[i].Permissions))
 			r.Equal(e.Symbols[i].Permissions, currentSymbol.Permissions, "Permissions")
 
@@ -198,11 +310,13 @@ func (s *exchangeInfoServiceTestSuite) assertPriceFilterEqual(e, a *PriceFilter)
 	r.Equal(e.TickSize, a.TickSize, "TickSize")
 }
 
-func (s *exchangeInfoServiceTestSuite) assertPercentPriceFilterEqual(e, a *PercentPriceFilter) {
+func (s *exchangeInfoServiceTestSuite) assertPercentPriceBySideFilterEqual(e, a *PercentPriceBySideFilter) {
 	r := s.r()
 	r.Equal(e.AveragePriceMins, a.AveragePriceMins, "AveragePriceMins")
-	r.Equal(e.MultiplierUp, a.MultiplierUp, "MultiplierUp")
-	r.Equal(e.MultiplierDown, a.MultiplierDown, "MultiplierDown")
+	r.Equal(e.BidMultiplierUp, a.BidMultiplierUp, "BidMultiplierUp")
+	r.Equal(e.BidMultiplierDown, a.BidMultiplierDown, "BidMultiplierDown")
+	r.Equal(e.AskMultiplierUp, a.AskMultiplierUp, "AskMultiplierUp")
+	r.Equal(e.AskMultiplierDown, a.AskMultiplierDown, "AskMultiplierDown")
 }
 
 func (s *exchangeInfoServiceTestSuite) assertMinNotionalFilterEqual(e, a *NotionalFilter) {
@@ -224,6 +338,19 @@ func (s *exchangeInfoServiceTestSuite) assertMarketLotSizeFilterEqual(e, a *Mark
 	r.Equal(e.MaxQuantity, a.MaxQuantity, "MaxQuantity")
 	r.Equal(e.MinQuantity, a.MinQuantity, "MinQuantity")
 	r.Equal(e.StepSize, a.StepSize, "StepSize")
+}
+
+func (s *exchangeInfoServiceTestSuite) assertTrailingDeltaFilterEqual(e, a *TrailingDeltaFilter) {
+	r := s.r()
+	r.Equal(e.MinTrailingAboveDelta, a.MinTrailingAboveDelta, "MinTrailingAboveDelta")
+	r.Equal(e.MaxTrailingAboveDelta, a.MaxTrailingAboveDelta, "MaxTrailingAboveDelta")
+	r.Equal(e.MinTrailingBelowDelta, a.MinTrailingBelowDelta, "MinTrailingBelowDelta")
+	r.Equal(e.MaxTrailingBelowDelta, a.MaxTrailingBelowDelta, "MaxTrailingBelowDelta")
+}
+
+func (s *exchangeInfoServiceTestSuite) assertMaxNumOrdersFilterEqual(e, a *MaxNumOrdersFilter) {
+	r := s.r()
+	r.Equal(e.MaxNumOrders, a.MaxNumOrders, "MaxNumOrders")
 }
 
 func (s *exchangeInfoServiceTestSuite) assertMaxNumAlgoOrdersFilterEqual(e, a *MaxNumAlgoOrdersFilter) {
