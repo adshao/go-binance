@@ -1,4 +1,4 @@
-module github.com/adshao/go-binance/v2
+module github.com/tixey/go-binance/v2
 
 go 1.18
 
@@ -7,6 +7,7 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/json-iterator/go v1.1.12
 	github.com/stretchr/testify v1.8.1
+	
 )
 
 require (
