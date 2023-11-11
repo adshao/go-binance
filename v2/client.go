@@ -142,6 +142,7 @@ const (
 	OrderStatusTypePendingCancel   OrderStatusType = "PENDING_CANCEL"
 	OrderStatusTypeRejected        OrderStatusType = "REJECTED"
 	OrderStatusTypeExpired         OrderStatusType = "EXPIRED"
+	OrderStatusExpiredInMatch      OrderStatusType = "EXPIRED_IN_MATCH" // STP Expired
 
 	SymbolTypeSpot SymbolType = "SPOT"
 
