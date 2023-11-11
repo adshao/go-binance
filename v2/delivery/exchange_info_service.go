@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+
+	"github.com/adshao/go-binance/v2/common"
 )
 
 // ExchangeInfoService exchange info service
@@ -91,7 +93,7 @@ type PriceFilter struct {
 
 // PercentPriceFilter define percent price filter of symbol
 type PercentPriceFilter struct {
-	MultiplierDecimal int    `json:"multiplierDecimal"`
+	MultiplierDecimal string `json:"multiplierDecimal"`
 	MultiplierUp      string `json:"multiplierUp"`
 	MultiplierDown    string `json:"multiplierDown"`
 }
@@ -105,6 +107,11 @@ type MarketLotSizeFilter struct {
 
 // MaxNumOrdersFilter define max num orders filter of symbol
 type MaxNumOrdersFilter struct {
+	Limit int64 `json:"limit"`
+}
+
+// MaxNumAlgoOrdersFilter define max num orders filter of symbol of algo
+type MaxNumAlgoOrdersFilter struct {
 	Limit int64 `json:"limit"`
 }
 
@@ -154,7 +161,7 @@ func (s *Symbol) PercentPriceFilter() *PercentPriceFilter {
 		if filter["filterType"].(string) == string(SymbolFilterTypePercentPrice) {
 			f := &PercentPriceFilter{}
 			if i, ok := filter["multiplierDecimal"]; ok {
-				f.MultiplierDecimal = int(i.(float64))
+				f.MultiplierDecimal = i.(string)
 			}
 			if i, ok := filter["multiplierUp"]; ok {
 				f.MultiplierUp = i.(string)
@@ -194,7 +201,25 @@ func (s *Symbol) MaxNumOrdersFilter() *MaxNumOrdersFilter {
 		if filter["filterType"].(string) == string(SymbolFilterTypeMaxNumOrders) {
 			f := &MaxNumOrdersFilter{}
 			if i, ok := filter["limit"]; ok {
-				f.Limit = int64(i.(float64))
+				if limit, okk := common.ToInt64(i); okk == nil {
+					f.Limit = limit
+				}
+			}
+			return f
+		}
+	}
+	return nil
+}
+
+// MaxNumAlgoOrdersFilter return max num orders filter of symbol
+func (s *Symbol) MaxNumAlgoOrdersFilter() *MaxNumAlgoOrdersFilter {
+	for _, filter := range s.Filters {
+		if filter["filterType"].(string) == string(SymbolFilterTypeMaxNumAlgoOrders) {
+			f := &MaxNumAlgoOrdersFilter{}
+			if i, ok := filter["limit"]; ok {
+				if limit, okk := common.ToInt64(i); okk == nil {
+					f.Limit = limit
+				}
 			}
 			return f
 		}

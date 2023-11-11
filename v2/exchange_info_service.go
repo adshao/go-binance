@@ -3,6 +3,8 @@ package binance
 import (
 	"context"
 	"net/http"
+
+	"github.com/adshao/go-binance/v2/common"
 )
 
 // ExchangeInfoService exchange info service
@@ -116,19 +118,13 @@ type PriceFilter struct {
 	TickSize string `json:"tickSize"`
 }
 
-// PercentPriceFilter define percent price filter of symbol
-type PercentPriceFilter struct {
-	AveragePriceMins int    `json:"avgPriceMins"`
-	MultiplierUp     string `json:"multiplierUp"`
-	MultiplierDown   string `json:"multiplierDown"`
-}
-
-// MinNotionalFilter define min notional filter of symbol
-// Deprecated: use NotionalFilter instead
-type MinNotionalFilter struct {
-	MinNotional      string `json:"minNotional"`
-	AveragePriceMins int    `json:"avgPriceMins"`
-	ApplyToMarket    bool   `json:"applyToMarket"`
+// PERCENT_PRICE_BY_SIDE define percent price filter of symbol by side
+type PercentPriceBySideFilter struct {
+	AveragePriceMins  int    `json:"avgPriceMins"`
+	BidMultiplierUp   string `json:"bidMultiplierUp"`
+	BidMultiplierDown string `json:"bidMultiplierDown"`
+	AskMultiplierUp   string `json:"askMultiplierUp"`
+	AskMultiplierDown string `json:"askMultiplierDown"`
 }
 
 // NotionalFilter define notional filter of symbol
@@ -150,6 +146,22 @@ type MarketLotSizeFilter struct {
 	MaxQuantity string `json:"maxQty"`
 	MinQuantity string `json:"minQty"`
 	StepSize    string `json:"stepSize"`
+}
+
+// Spot trading supports tracking stop orders
+// Tracking stop loss sets an automatic trigger price based on market price using a new parameter trailingDelta
+type TrailingDeltaFilter struct {
+	MinTrailingAboveDelta int `json:"minTrailingAboveDelta"`
+	MaxTrailingAboveDelta int `json:"maxTrailingAboveDelta"`
+	MinTrailingBelowDelta int `json:"minTrailingBelowDelta"`
+	MaxTrailingBelowDelta int `json:"maxTrailingBelowDelta"`
+}
+
+// The "Algo" order is STOP_ LOSS, STOP_ LOS_ LIMITED, TAKE_ PROFIT and TAKE_ PROFIT_ Limit Stop Loss Order.
+// Therefore, orders other than the above types are non conditional(Algo) orders, and MaxNumOrders defines the maximum
+// number of orders placed for these types of orders
+type MaxNumOrdersFilter struct {
+	MaxNumOrders int `json:"maxNumOrders"`
 }
 
 // MaxNumAlgoOrdersFilter define max num algo orders filter of symbol
@@ -197,40 +209,27 @@ func (s *Symbol) PriceFilter() *PriceFilter {
 	return nil
 }
 
-// PercentPriceFilter return percent price filter of symbol
-func (s *Symbol) PercentPriceFilter() *PercentPriceFilter {
+// PercentPriceBySideFilter return percent price filter of symbol
+func (s *Symbol) PercentPriceBySideFilter() *PercentPriceBySideFilter {
 	for _, filter := range s.Filters {
-		if filter["filterType"].(string) == string(SymbolFilterTypePercentPrice) {
-			f := &PercentPriceFilter{}
+		if filter["filterType"].(string) == string(SymbolFilterTypePercentPriceBySide) {
+			f := &PercentPriceBySideFilter{}
 			if i, ok := filter["avgPriceMins"]; ok {
-				f.AveragePriceMins = int(i.(float64))
+				if apm, okk := common.ToInt(i); okk == nil {
+					f.AveragePriceMins = apm
+				}
 			}
-			if i, ok := filter["multiplierUp"]; ok {
-				f.MultiplierUp = i.(string)
+			if i, ok := filter["bidMultiplierUp"]; ok {
+				f.BidMultiplierUp = i.(string)
 			}
-			if i, ok := filter["multiplierDown"]; ok {
-				f.MultiplierDown = i.(string)
+			if i, ok := filter["bidMultiplierDown"]; ok {
+				f.BidMultiplierDown = i.(string)
 			}
-			return f
-		}
-	}
-	return nil
-}
-
-// MinNotionalFilter return min notional filter of symbol
-// Deprecated: use NotionalFilter instead
-func (s *Symbol) MinNotionalFilter() *MinNotionalFilter {
-	for _, filter := range s.Filters {
-		if filter["filterType"].(string) == string(SymbolFilterTypeMinNotional) {
-			f := &MinNotionalFilter{}
-			if i, ok := filter["minNotional"]; ok {
-				f.MinNotional = i.(string)
+			if i, ok := filter["askMultiplierUp"]; ok {
+				f.AskMultiplierUp = i.(string)
 			}
-			if i, ok := filter["avgPriceMins"]; ok {
-				f.AveragePriceMins = int(i.(float64))
-			}
-			if i, ok := filter["applyToMarket"]; ok {
-				f.ApplyToMarket = i.(bool)
+			if i, ok := filter["askMultiplierDown"]; ok {
+				f.AskMultiplierDown = i.(string)
 			}
 			return f
 		}
@@ -256,7 +255,9 @@ func (s *Symbol) NotionalFilter() *NotionalFilter {
 				f.ApplyMaxToMarket = i.(bool)
 			}
 			if i, ok := filter["avgPriceMins"]; ok {
-				f.AvgPriceMins = int(i.(float64))
+				if apm, okk := common.ToInt(i); okk == nil {
+					f.AvgPriceMins = apm
+				}
 			}
 			return f
 		}
@@ -270,7 +271,9 @@ func (s *Symbol) IcebergPartsFilter() *IcebergPartsFilter {
 		if filter["filterType"].(string) == string(SymbolFilterTypeIcebergParts) {
 			f := &IcebergPartsFilter{}
 			if i, ok := filter["limit"]; ok {
-				f.Limit = int(i.(float64))
+				if limit, okk := common.ToInt(i); okk == nil {
+					f.Limit = limit
+				}
 			}
 			return f
 		}
@@ -298,13 +301,62 @@ func (s *Symbol) MarketLotSizeFilter() *MarketLotSizeFilter {
 	return nil
 }
 
+//For specific meanings, please refer to the type definition MaxNumOrders
+func (s *Symbol) MaxNumOrdersFilter() *MaxNumOrdersFilter {
+	for _, filter := range s.Filters {
+		if filter["filterType"].(string) == string(SymbolFilterTypeMaxNumOrders) {
+			f := &MaxNumOrdersFilter{}
+			if i, ok := filter["maxNumOrders"]; ok {
+				if mno, okk := common.ToInt(i); okk == nil {
+					f.MaxNumOrders = mno
+				}
+			}
+			return f
+		}
+	}
+	return nil
+}
+
 // MaxNumAlgoOrdersFilter return max num algo orders filter of symbol
 func (s *Symbol) MaxNumAlgoOrdersFilter() *MaxNumAlgoOrdersFilter {
 	for _, filter := range s.Filters {
 		if filter["filterType"].(string) == string(SymbolFilterTypeMaxNumAlgoOrders) {
 			f := &MaxNumAlgoOrdersFilter{}
 			if i, ok := filter["maxNumAlgoOrders"]; ok {
-				f.MaxNumAlgoOrders = int(i.(float64))
+				if mnao, okk := common.ToInt(i); okk == nil {
+					f.MaxNumAlgoOrders = mnao
+				}
+			}
+			return f
+		}
+	}
+	return nil
+}
+
+// For specific meanings, please refer to the type definition TrailingDeltaFilter
+func (s *Symbol) TrailingDeltaFilter() *TrailingDeltaFilter {
+	for _, filter := range s.Filters {
+		if filter["filterType"].(string) == string(SymbolFilterTypeTrailingDelta) {
+			f := &TrailingDeltaFilter{}
+			if i, ok := filter["minTrailingAboveDelta"]; ok {
+				if mtad, okk := common.ToInt(i); okk == nil {
+					f.MinTrailingAboveDelta = mtad
+				}
+			}
+			if i, ok := filter["maxTrailingAboveDelta"]; ok {
+				if mtad, okk := common.ToInt(i); okk == nil {
+					f.MaxTrailingAboveDelta = mtad
+				}
+			}
+			if i, ok := filter["minTrailingBelowDelta"]; ok {
+				if mtbd, okk := common.ToInt(i); okk == nil {
+					f.MinTrailingBelowDelta = mtbd
+				}
+			}
+			if i, ok := filter["maxTrailingBelowDelta"]; ok {
+				if mtbd, okk := common.ToInt(i); okk == nil {
+					f.MaxTrailingBelowDelta = mtbd
+				}
 			}
 			return f
 		}
