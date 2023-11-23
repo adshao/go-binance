@@ -561,3 +561,49 @@ type SubAccountFuturesAccountAsset struct {
 	UnrealizedProfit       string `json:"unrealizedProfit"`
 	WalletBalance          string `json:"walletBalance"`
 }
+
+// SubaccountFuturesSummaryV1Service Get Summary of Sub-account's Futures Account (For Master Account)
+// https://binance-docs.github.io/apidocs/spot/en/#get-summary-of-sub-account-39-s-futures-account-for-master-account
+type SubAccountFuturesSummaryV1Service struct {
+	c *Client
+}
+
+func (s *SubAccountFuturesSummaryV1Service) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountFuturesSummaryV1, err error) {
+	r := &request{
+		method:   "GET",
+		endpoint: "/sapi/v1/sub-account/futures/accountSummary",
+		secType:  secTypeSigned,
+	}
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(SubAccountFuturesSummaryV1)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type SubAccountFuturesSummaryCommon struct {
+	Asset                       string `json:"asset"`
+	TotalInitialMargin          string `json:"totalInitialMargin"`
+	TotalMaintenanceMargin      string `json:"totalMaintenanceMargin"`
+	TotalMarginBalance          string `json:"totalMarginBalance"`
+	TotalOpenOrderInitialMargin string `json:"totalOpenOrderInitialMargin"`
+	TotalPositionInitialMargin  string `json:"totalPositionInitialMargin"`
+	TotalUnrealizedProfit       string `json:"totalUnrealizedProfit"`
+	TotalWalletBalance          string `json:"totalWalletBalance"`
+}
+
+type SubAccountFuturesSummaryV1 struct {
+	SubAccountFuturesSummaryCommon
+	SubAccountList []SubAccountFuturesSummaryV1SubAccountList `json:"subAccountList"`
+}
+
+type SubAccountFuturesSummaryV1SubAccountList struct {
+	Email string `json:"email"`
+	SubAccountFuturesSummaryCommon
+}
