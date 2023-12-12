@@ -1033,8 +1033,6 @@ type WsOrderTradeUpdate struct {
 	STP                  string             `json:"V"`   // STP mode
 	PriceMode            string             `json:"pm"`  // Price match mode
 	GTD                  int64              `json:"gtd"` // TIF GTD order auto cancel time
-	//si                   int64              `json:"si"`  // ignore
-	//ss                   int64              `json:"ss"`  // ignore
 }
 
 // WsAccountConfigUpdate define account config update
