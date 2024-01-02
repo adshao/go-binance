@@ -1,8 +1,10 @@
 package futures
 
 import (
+	"context"
 	"testing"
 
+	"github.com/adshao/go-binance/v2/common"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -612,4 +614,94 @@ func (s *orderServiceTestSuite) assertLiquidationEqual(e, a *LiquidationOrder) {
 	r.Equal(e.TimeInForce, a.TimeInForce, "TimeInForce")
 	r.Equal(e.Type, a.Type, "Type")
 	r.Equal(e.Side, a.Side, "Side")
+}
+
+func (s *orderServiceTestSuite) TestCreateBatchOrders() {
+	data := []byte(`[
+		{
+			"code": -2014, 
+			"msg": "API-key format invalid."
+		},
+		{
+			"clientOrderId": "testOrder",
+			"cumQty": "0",
+			"cumQuote": "0",
+			"executedQty": "0",
+			"orderId": 22542179,
+			"avgPrice": "0.00000",
+			"origQty": "10",
+			"price": "100",
+			"reduceOnly": false,
+			"side": "BUY",
+			"positionSide": "SHORT",
+			"status": "NEW",
+			"stopPrice": "9300",
+			"symbol": "BTCUSDT",
+			"timeInForce": "GTC",
+			"type": "TRAILING_STOP_MARKET",
+			"origType": "TRAILING_STOP_MARKET",
+			"activatePrice": "9020",
+			"priceRate": "0.3",
+			"updateTime": 1566818724722,
+			"workingType": "CONTRACT_PRICE",
+			"priceProtect": false,            
+			"priceMatch": "NONE",             
+			"selfTradePreventionMode": "NONE", 
+			"goodTillDate": 0
+		},
+		{
+			"code": -2022, 
+			"msg": "ReduceOnly Order is rejected."
+		}
+	]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	res, err := s.client.NewCreateBatchOrdersService().OrderList([]*CreateOrderService{{}, {}, {}}).Do(context.Background())
+	r := s.r()
+	r.NoError(err)
+
+	e := &CreateBatchOrdersResponse{
+		N: 3,
+		Orders: []*Order{
+			{
+				Symbol:           "BTCUSDT",
+				OrderID:          22542179,
+				ClientOrderID:    "testOrder",
+				Price:            "100",
+				ReduceOnly:       false,
+				OrigQuantity:     "10",
+				ExecutedQuantity: "0",
+				CumQuantity:      "0",
+				CumQuote:         "0",
+				Status:           "NEW",
+				TimeInForce:      "GTC",
+				Type:             "TRAILING_STOP_MARKET",
+				Side:             "BUY",
+				StopPrice:        "9300",
+				Time:             0,
+				UpdateTime:       1566818724722,
+				WorkingType:      "CONTRACT_PRICE",
+				ActivatePrice:    "9020",
+				PriceRate:        "0.3",
+				AvgPrice:         "0.00000",
+				OrigType:         "TRAILING_STOP_MARKET",
+				PositionSide:     "SHORT",
+				PriceProtect:     false,
+				ClosePosition:    false,
+			},
+		},
+		Errors: []error{
+			&common.APIError{
+				Code:    -2014,
+				Message: "API-key format invalid.",
+			},
+			nil,
+			&common.APIError{
+				Code:    -2022,
+				Message: "ReduceOnly Order is rejected.",
+			},
+		},
+	}
+	r.EqualValues(e, res)
 }
