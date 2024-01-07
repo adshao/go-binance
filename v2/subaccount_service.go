@@ -2,6 +2,7 @@ package binance
 
 import (
 	"context"
+	"net/http"
 )
 
 // TransferToSubAccountService transfer to subaccount
@@ -646,7 +647,7 @@ func (s *SubAccountFuturesTransferV1Service) TransferType(v int) *SubAccountFutu
 
 func (s *SubAccountFuturesTransferV1Service) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountFuturesTransferResponse, err error) {
 	r := &request{
-		method:   "POST",
+		method:   http.MethodPost,
 		endpoint: "/sapi/v1/sub-account/futures/transfer",
 		secType:  secTypeSigned,
 	}
@@ -656,7 +657,7 @@ func (s *SubAccountFuturesTransferV1Service) Do(ctx context.Context, opts ...Req
 		"amount": s.amount,
 		"type":   s.transferType,
 	}
-	r.setFormParams(m)
+	r.setParams(m)
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
