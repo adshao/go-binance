@@ -671,5 +671,5 @@ func (s *SubAccountFuturesTransferV1Service) Do(ctx context.Context, opts ...Req
 }
 
 type SubAccountFuturesTransferResponse struct {
-	TxnID int64 `json:"txnId"`
+	TxnID string `json:"txnId"`
 }

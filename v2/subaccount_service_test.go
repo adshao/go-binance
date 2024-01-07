@@ -305,7 +305,7 @@ func (s *subAccountServiceTestSuite) assertAccountFuturesAssetsEqual(e, a *SubAc
 func (s *subAccountServiceTestSuite) TestSubAccountFuturesTransferService() {
 	data := []byte(`
 		{
-		    "txnId": "123456789",
+		    "txnId": "123456789"
 		}
 	`)
 	s.mockDo(data, nil)
