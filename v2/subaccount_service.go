@@ -671,5 +671,6 @@ func (s *SubAccountFuturesTransferV1Service) Do(ctx context.Context, opts ...Req
 }
 
 type SubAccountFuturesTransferResponse struct {
-	TxnID string `json:"txnId"`
+	// seems api doc bug, return `tranId` as int64 actually in production environment
+	TranID int64 `json:"tranId"`
 }
