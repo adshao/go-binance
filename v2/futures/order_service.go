@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+
+	"github.com/adshao/go-binance/v2/common"
 )
 
 // CreateOrderService create order
@@ -802,8 +804,23 @@ type CreateBatchOrdersService struct {
 	orders []*CreateOrderService
 }
 
+// CreateBatchOrdersResponse contains the response from CreateBatchOrders operation
 type CreateBatchOrdersResponse struct {
+	// Total number of messages in the response
+	N int
+	// List of orders which were placed successfully which can have a length between 0 and N
 	Orders []*Order
+	// List of errors of length N, where each item corresponds to a nil value if
+	// the order from that specific index was placed succeessfully OR an non-nil *APIError if there was an error with
+	// the order at that index
+	Errors []error
+}
+
+func newCreateBatchOrdersResponse(n int) *CreateBatchOrdersResponse {
+	return &CreateBatchOrdersResponse{
+		N:      n,
+		Errors: make([]error, n),
+	}
 }
 
 func (s *CreateBatchOrdersService) OrderList(orders []*CreateOrderService) *CreateBatchOrdersService {
@@ -882,26 +899,30 @@ func (s *CreateBatchOrdersService) Do(ctx context.Context, opts ...RequestOption
 	rawMessages := make([]*json.RawMessage, 0)
 
 	err = json.Unmarshal(data, &rawMessages)
-
 	if err != nil {
 		return &CreateBatchOrdersResponse{}, err
 	}
 
-	batchCreateOrdersResponse := new(CreateBatchOrdersResponse)
-
-	for _, j := range rawMessages {
-		o := new(Order)
-		if err := json.Unmarshal(*j, o); err != nil {
-			return &CreateBatchOrdersResponse{}, err
+	batchCreateOrdersResponse := newCreateBatchOrdersResponse(len(rawMessages))
+	for i, j := range rawMessages {
+		// check if response is an API error
+		e := new(common.APIError)
+		if err := json.Unmarshal(*j, e); err != nil {
+			return nil, err
 		}
 
-		if o.ClientOrderID != "" {
-			batchCreateOrdersResponse.Orders = append(batchCreateOrdersResponse.Orders, o)
+		if e.Code > 0 || e.Message != "" {
+			batchCreateOrdersResponse.Errors[i] = e
 			continue
 		}
 
+		o := new(Order)
+		if err := json.Unmarshal(*j, o); err != nil {
+			return nil, err
+		}
+
+		batchCreateOrdersResponse.Orders = append(batchCreateOrdersResponse.Orders, o)
 	}
 
 	return batchCreateOrdersResponse, nil
-
 }
