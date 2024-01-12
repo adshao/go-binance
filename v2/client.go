@@ -1022,3 +1022,8 @@ func (c *Client) NewSubAccountFuturesAccountService() *SubAccountFuturesAccountS
 func (c *Client) NewSubAccountFuturesSummaryV1Service() *SubAccountFuturesSummaryV1Service {
 	return &SubAccountFuturesSummaryV1Service{c: c}
 }
+
+// NewSubAccountFuturesTransferV1Service Futures Transfer for Sub-account (For Master Account)
+func (c *Client) NewSubAccountFuturesTransferV1Service() *SubAccountFuturesTransferV1Service {
+	return &SubAccountFuturesTransferV1Service{c: c}
+}

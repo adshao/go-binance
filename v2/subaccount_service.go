@@ -2,6 +2,7 @@ package binance
 
 import (
 	"context"
+	"net/http"
 )
 
 // TransferToSubAccountService transfer to subaccount
@@ -606,4 +607,70 @@ type SubAccountFuturesSummaryV1 struct {
 type SubAccountFuturesSummaryV1SubAccountList struct {
 	Email string `json:"email"`
 	SubAccountFuturesSummaryCommon
+}
+
+// SubAccountFuturesTransferV1Service Futures Transfer for Sub-account (For Master Account)
+// https://binance-docs.github.io/apidocs/spot/en/#futures-transfer-for-sub-account-for-master-account
+type SubAccountFuturesTransferV1Service struct {
+	c      *Client
+	email  string
+	asset  string
+	amount float64
+	/*
+		1: transfer from subaccount's spot account to its USDT-margined futures account
+		2: transfer from subaccount's USDT-margined futures account to its spot account
+		3: transfer from subaccount's spot account to its COIN-margined futures account
+		4:transfer from subaccount's COIN-margined futures account to its spot account
+	*/
+	transferType int
+}
+
+func (s *SubAccountFuturesTransferV1Service) Email(v string) *SubAccountFuturesTransferV1Service {
+	s.email = v
+	return s
+}
+
+func (s *SubAccountFuturesTransferV1Service) Asset(v string) *SubAccountFuturesTransferV1Service {
+	s.asset = v
+	return s
+}
+
+func (s *SubAccountFuturesTransferV1Service) Amount(v float64) *SubAccountFuturesTransferV1Service {
+	s.amount = v
+	return s
+}
+
+func (s *SubAccountFuturesTransferV1Service) TransferType(v int) *SubAccountFuturesTransferV1Service {
+	s.transferType = v
+	return s
+}
+
+func (s *SubAccountFuturesTransferV1Service) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountFuturesTransferResponse, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v1/sub-account/futures/transfer",
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"email":  s.email,
+		"asset":  s.asset,
+		"amount": s.amount,
+		"type":   s.transferType,
+	}
+	r.setParams(m)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(SubAccountFuturesTransferResponse)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type SubAccountFuturesTransferResponse struct {
+	// seems api doc bug, return `tranId` as int64 actually in production environment
+	TranID int64 `json:"tranId"`
 }

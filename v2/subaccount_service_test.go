@@ -301,3 +301,35 @@ func (s *subAccountServiceTestSuite) assertAccountFuturesAssetsEqual(e, a *SubAc
 	r.Equal(e.UnrealizedProfit, a.UnrealizedProfit, "UnrealizedProfit")
 	r.Equal(e.WalletBalance, a.WalletBalance, "WalletBalance")
 }
+
+func (s *subAccountServiceTestSuite) TestSubAccountFuturesTransferService() {
+	data := []byte(`
+		{
+		    "tranId": 123456789
+		}
+	`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	email := "abc@test.com"
+	asset := "USDT"
+	amount := 1.0
+	tType := 1
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().
+			setParams(params{
+				"email":  email,
+				"asset":  asset,
+				"amount": amount,
+				"type":   tType,
+			})
+		s.assertRequestEqual(e, r)
+	})
+
+	response, err := s.client.NewSubAccountFuturesTransferV1Service().Email(email).Asset(asset).Amount(amount).TransferType(tType).Do(newContext())
+
+	r := s.r()
+	r.NoError(err)
+	r.Equal(int64(123456789), response.TranID, "TranID")
+
+}
