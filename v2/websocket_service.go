@@ -269,8 +269,22 @@ type WsKlineHandler func(event *WsKlineEvent)
 
 // WsCombinedKlineServe is similar to WsKlineServe, but it handles multiple symbols with it interval
 func WsCombinedKlineServe(symbolIntervalPair map[string]string, handler WsKlineHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
-	endpoint := getCombinedEndpoint()
+	symbolIntervalPair2 := make([]string, 0, len(symbolIntervalPair)*2)
 	for symbol, interval := range symbolIntervalPair {
+		symbolIntervalPair2 = append(symbolIntervalPair2, symbol, interval)
+	}
+	return WsCombinedKlineServe2(symbolIntervalPair2, handler, errHandler)
+}
+
+// WsCombinedKlineServe2 .
+func WsCombinedKlineServe2(symbolIntervalPair []string, handler WsKlineHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	if len(symbolIntervalPair)%2 != 0 {
+		return nil, nil, fmt.Errorf("symbolIntervalPair must be a multiple of 2")
+	}
+	endpoint := getCombinedEndpoint()
+	for i := 0; i < len(symbolIntervalPair); i += 2 {
+		symbol := symbolIntervalPair[i]
+		interval := symbolIntervalPair[i+1]
 		endpoint += fmt.Sprintf("%s@kline_%s", strings.ToLower(symbol), interval) + "/"
 	}
 	endpoint = endpoint[:len(endpoint)-1]
