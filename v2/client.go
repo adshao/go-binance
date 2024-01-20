@@ -103,9 +103,9 @@ type RateLimitInterval string
 type AccountType string
 
 // Endpoints
-const (
-	baseAPIMainURL    = "https://api.binance.com"
-	baseAPITestnetURL = "https://testnet.binance.vision"
+var (
+	BaseAPIMainURL    = "https://api.binance.com"
+	BaseAPITestnetURL = "https://testnet.binance.vision"
 )
 
 // UseTestnet switch all the API endpoints from production to the testnet
@@ -261,9 +261,9 @@ func newJSON(data []byte) (j *simplejson.Json, err error) {
 // getAPIEndpoint return the base endpoint of the Rest API according the UseTestnet flag
 func getAPIEndpoint() string {
 	if UseTestnet {
-		return baseAPITestnetURL
+		return BaseAPITestnetURL
 	}
-	return baseAPIMainURL
+	return BaseAPIMainURL
 }
 
 // NewClient initialize an API client instance with API key and secret key.
