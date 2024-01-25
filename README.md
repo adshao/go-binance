@@ -17,36 +17,37 @@ Make sure you have read binance API document before continuing.
 
 Name | Description | Status
 ------------ | ------------ | ------------
-[rest-api.md](https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md) | Details on the Rest API (/api) | <input type="checkbox" checked> Implemented
+[Rest API](https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md) | Details on the Rest API (/api) | <input type="checkbox" checked> Implemented
 [web-socket-streams.md](https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md) | Details on available streams and payloads | <input type="checkbox" checked>  Implemented
-[user-data-stream.md](https://github.com/binance/binance-spot-api-docs/blob/master/user-data-stream.md) | Details on the dedicated account stream | <input type="checkbox" checked>  Implemented
-[margin-api.md](https://binance-docs.github.io/apidocs/spot/en) | Details on the Margin API (/sapi) | <input type="checkbox" checked>  Implemented
-[futures-api.md](https://binance-docs.github.io/apidocs/futures/en/#general-info) | Details on the Futures API (/fapi) | <input type="checkbox" checked>  Partially Implemented
-[delivery-api.md](https://binance-docs.github.io/apidocs/delivery/en/#general-info) | Details on the Coin-M Futures API (/dapi) | <input type="checkbox" checked>  Partially Implemented
+[User data stream](https://github.com/binance/binance-spot-api-docs/blob/master/user-data-stream.md) | Details on the dedicated account stream | <input type="checkbox" checked>  Implemented
+[Margin API](https://binance-docs.github.io/apidocs/spot/en) | Details on the Margin API (/sapi) | <input type="checkbox" checked>  Implemented
+[Futures API](https://binance-docs.github.io/apidocs/futures/en/#general-info) | Details on the Futures API (/fapi) | <input type="checkbox" checked>  Partially Implemented
+[Delivery API](https://binance-docs.github.io/apidocs/delivery/en/#general-info) | Details on the Coin-M Futures API (/dapi) | <input type="checkbox" checked>  Partially Implemented
+[Link API](https://binance-docs.github.io/Brokerage-API/Brokerage_Operation_Endpoints) | Brokerage API (/sapi) | <input type="checkbox" checked>  Partially Implemented
 
 ### Installation
 
 ```shell
-go get github.com/adshao/go-binance/v2
+go get github.com/appostrav/go-binance/v2
 ```
 
 For v1 API, it has been moved to `v1` branch, please use:
 
 ```shell
-go get github.com/adshao/go-binance/v1
+go get github.com/appostrav/go-binance/v1
 ```
 
 ### Importing
 
 ```golang
 import (
-    "github.com/adshao/go-binance/v2"
+    "github.com/appostrav/go-binance/v2"
 )
 ```
 
 ### Documentation
 
-[![GoDoc](https://godoc.org/github.com/adshao/go-binance?status.svg)](https://godoc.org/github.com/adshao/go-binance)
+[![GoDoc](https://godoc.org/github.com/appostrav/go-binance?status.svg)](https://godoc.org/github.com/appostrav/go-binance)
 
 ### REST API
 
@@ -68,7 +69,7 @@ A service instance stands for a REST API endpoint and is initialized by client.N
 
 Simply call API in chain style. Call Do() in the end to send HTTP request.
 
-Following are some simple examples, please refer to [godoc](https://godoc.org/github.com/adshao/go-binance) for full references.
+Following are some simple examples, please refer to [godoc](https://godoc.org/github.com/appostrav/go-binance) for full references.
 
 #### Create Order
 
@@ -322,7 +323,7 @@ Use the `binance.UseTestnet` flag before calling the client creation and the web
 
 ```go
 import (
-    "github.com/adshao/go-binance/v2"
+    "github.com/appostrav/go-binance/v2"
 )
 
 binance.UseTestnet = true
@@ -335,7 +336,7 @@ Use the `futures.UseTestnet` flag before calling the client creation and the web
 
 ```go
 import (
-    "github.com/adshao/go-binance/v2/futures"
+    "github.com/appostrav/go-binance/v2/futures"
 )
 
 futures.UseTestnet = true
@@ -348,7 +349,7 @@ Use the `delivery.UseTestnet` flag before calling the client creation and the we
 
 ```go
 import (
-    "github.com/adshao/go-binance/v2/delivery"
+    "github.com/appostrav/go-binance/v2/delivery"
 )
 
 delivery.UseTestnet = true
