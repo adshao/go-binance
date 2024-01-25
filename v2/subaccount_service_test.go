@@ -333,3 +333,120 @@ func (s *subAccountServiceTestSuite) TestSubAccountFuturesTransferService() {
 	r.Equal(int64(123456789), response.TranID, "TranID")
 
 }
+
+func (s *subAccountServiceTestSuite) TestCreateSubAccountService() {
+	data := []byte(`
+		{
+			"subaccountId": "1",
+			"email": "vai_42038996_47411276_brokersubuser@lac.info",
+			"tag":"bob123d"	
+		}
+	`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	tag := "bob123d"
+	var recvWindow int64 = 1544433328000
+	var timestamp int64 = 1544433328000
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().
+			setParams(params{
+				"tag":        tag,
+				"recvWindow": recvWindow,
+				"timestamp":  timestamp,
+			})
+		s.assertRequestEqual(e, r)
+	})
+
+	response, err := s.client.NewCreateSubAccountService().Tag(tag).RecvWindow(recvWindow).Timestamp(timestamp).Do(newContext())
+
+	r := s.r()
+	r.NoError(err)
+	r.Equal("1", response.SubaccountId, "subaccountId")
+	r.Equal("vai_42038996_47411276_brokersubuser@lac.info", response.Email, "email")
+	r.Equal("bob123d", response.Tag, "tag")
+
+}
+func (s *subAccountServiceTestSuite) TestSubAccountEnableFuturesService() {
+	data := []byte(`
+		{
+			"subaccountId": "1",
+			"enableFutures": true,
+			"updateTime": 1570801523523
+		}
+	`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	subaccountId := "1"
+	futures := true
+	var recvWindow int64 = 1544433328000
+	var timestamp int64 = 1544433328000
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().
+			setParams(params{
+				"subaccountId": subaccountId,
+				"futures":      futures,
+				"recvWindow":   recvWindow,
+				"timestamp":    timestamp,
+			})
+		s.assertRequestEqual(e, r)
+	})
+
+	response, err := s.client.NewSubAccountEnableFutureService().SubAccountId(subaccountId).Futures(futures).RecvWindow(recvWindow).Timestamp(timestamp).Do(newContext())
+
+	r := s.r()
+	r.NoError(err)
+	r.Equal("1", response.SubaccountId, "subaccountId")
+	r.Equal(true, response.EnableFutures, "enableFutures")
+	r.Equal(int64(1570801523523), response.UpdateTime, "updateTime")
+
+}
+func (s *subAccountServiceTestSuite) TestCreateApiKeyService() {
+	data := []byte(`
+		{
+			"subaccountId": "1",
+			"apiKey":"vmPUZE6mv9SD5VNHk4HlWFsOr6aKE2zvsw0MuIgwCIPy6utIco14y7Ju91duEh8A",
+			"secretKey":"NhqPtmdSJYdKjVHjA7PZj4Mge3R5YNiP1e3UZjInClVN65XAbvqqM6A7H5fATj0",
+			"canTrade": true,
+			"marginTrade": false,
+			"futuresTrade": false	
+		}
+	`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	subaccountId := "1"
+	canTrade := true
+	marginTrade := true
+	futuresTrade := true
+	var recvWindow int64 = 1544433328000
+	var timestamp int64 = 1544433328000
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().
+			setParams(params{
+				"subaccountId": subaccountId,
+				"canTrade":     canTrade,
+				"marginTrade":  marginTrade,
+				"futuresTrade": futuresTrade,
+				"recvWindow":   recvWindow,
+				"timestamp":    timestamp,
+			})
+		s.assertRequestEqual(e, r)
+	})
+
+	response, err := s.client.NewCreateApiKeyService().SubAccountId(subaccountId).CanTrade(canTrade).
+		MarginTrade(marginTrade).FuturesTrade(futuresTrade).RecvWindow(recvWindow).Timestamp(timestamp).Do(newContext())
+
+	r := s.r()
+	r.NoError(err)
+	r.Equal("1", response.SubaccountId, "subaccountId")
+	r.Equal("vmPUZE6mv9SD5VNHk4HlWFsOr6aKE2zvsw0MuIgwCIPy6utIco14y7Ju91duEh8A", response.ApiKey, "apiKey")
+	r.Equal("NhqPtmdSJYdKjVHjA7PZj4Mge3R5YNiP1e3UZjInClVN65XAbvqqM6A7H5fATj0", response.SecretKey, "secretKey")
+	r.Equal(true, response.CanTrade, "canTrade")
+	r.Equal(false, response.MarginTrade, "marginTrade")
+	r.Equal(false, response.FuturesTrade, "futuresTrade")
+}

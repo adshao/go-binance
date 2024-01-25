@@ -674,3 +674,192 @@ type SubAccountFuturesTransferResponse struct {
 	// seems api doc bug, return `tranId` as int64 actually in production environment
 	TranID int64 `json:"tranId"`
 }
+
+// Do Create Sub Account
+type CreateSubAccountService struct {
+	c          *Client
+	tag        string
+	recvWindow int64
+	timestamp  int64
+}
+
+func (s *CreateSubAccountService) Tag(v string) *CreateSubAccountService {
+	s.tag = v
+	return s
+}
+
+func (s *CreateSubAccountService) RecvWindow(v int64) *CreateSubAccountService {
+	s.recvWindow = v
+	return s
+}
+
+func (s *CreateSubAccountService) Timestamp(v int64) *CreateSubAccountService {
+	s.recvWindow = v
+	return s
+}
+
+func (s *CreateSubAccountService) Do(ctx context.Context, opts ...RequestOption) (res *CreateSubAccountResponse, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v1/broker/subAccount",
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"tag":        s.tag,
+		"recvWindow": s.recvWindow,
+		"timestamp":  s.timestamp,
+	}
+	r.setParams(m)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(CreateSubAccountResponse)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type CreateSubAccountResponse struct {
+	SubaccountId string `json:"subaccountId"`
+	Email        string `json:"email"`
+	Tag          string `json:"tag"`
+}
+
+// Enable Futures for Sub Account
+type SubAccountEnableFuturesService struct {
+	c            *Client
+	subAccountId string
+	futures      bool
+	recvWindow   int64
+	timestamp    int64
+}
+
+func (s *SubAccountEnableFuturesService) SubAccountId(v string) *SubAccountEnableFuturesService {
+	s.subAccountId = v
+	return s
+}
+
+func (s *SubAccountEnableFuturesService) Futures(v bool) *SubAccountEnableFuturesService {
+	s.futures = v
+	return s
+}
+
+func (s *SubAccountEnableFuturesService) RecvWindow(v int64) *SubAccountEnableFuturesService {
+	s.recvWindow = v
+	return s
+}
+
+func (s *SubAccountEnableFuturesService) Timestamp(v int64) *SubAccountEnableFuturesService {
+	s.timestamp = v
+	return s
+}
+
+func (s *SubAccountEnableFuturesService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountEnableFuturesResponse, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v1/broker/subAccount/futures",
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"subaccountId": s.subAccountId,
+		"futures":      s.futures,
+		"recvWindow":   s.recvWindow,
+		"timestamp":    s.timestamp,
+	}
+	r.setParams(m)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(SubAccountEnableFuturesResponse)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type SubAccountEnableFuturesResponse struct {
+	SubaccountId  string `json:"subaccountId"`
+	EnableFutures bool   `json:"enableFutures"`
+	UpdateTime    int64  `json:"updateTime"`
+}
+
+type CreateApiKeyService struct {
+	c            *Client
+	subAccountId string
+	canTrade     bool
+	marginTrade  bool
+	futuresTrade bool
+	recvWindow   int64
+	timestamp    int64
+}
+
+func (s *CreateApiKeyService) SubAccountId(v string) *CreateApiKeyService {
+	s.subAccountId = v
+	return s
+}
+
+func (s *CreateApiKeyService) CanTrade(v bool) *CreateApiKeyService {
+	s.canTrade = v
+	return s
+}
+
+func (s *CreateApiKeyService) MarginTrade(v bool) *CreateApiKeyService {
+	s.marginTrade = v
+	return s
+}
+
+func (s *CreateApiKeyService) FuturesTrade(v bool) *CreateApiKeyService {
+	s.futuresTrade = v
+	return s
+}
+
+func (s *CreateApiKeyService) RecvWindow(v int64) *CreateApiKeyService {
+	s.recvWindow = v
+	return s
+}
+
+func (s *CreateApiKeyService) Timestamp(v int64) *CreateApiKeyService {
+	s.timestamp = v
+	return s
+}
+
+func (s *CreateApiKeyService) Do(ctx context.Context, opts ...RequestOption) (res *CreateApiKeyResponse, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v1/broker/subAccountApi",
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"subaccountId": s.subAccountId,
+		"canTrade":     s.canTrade,
+		"marginTrade":  s.marginTrade,
+		"futuresTrade": s.futuresTrade,
+		"recvWindow":   s.recvWindow,
+		"timestamp":    s.timestamp,
+	}
+	r.setParams(m)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(CreateApiKeyResponse)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type CreateApiKeyResponse struct {
+	SubaccountId string `json:"subaccountId"`
+	ApiKey       string `json:"apiKey"`
+	SecretKey    string `json:"secretKey"`
+	CanTrade     bool   `json:"canTrade"`
+	MarginTrade  bool   `json:"marginTrade"`
+	FuturesTrade bool   `json:"futuresTrade"`
+}

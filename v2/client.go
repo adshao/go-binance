@@ -1027,3 +1027,16 @@ func (c *Client) NewSubAccountFuturesSummaryV1Service() *SubAccountFuturesSummar
 func (c *Client) NewSubAccountFuturesTransferV1Service() *SubAccountFuturesTransferV1Service {
 	return &SubAccountFuturesTransferV1Service{c: c}
 }
+
+// NewCreateSubAccountService Create a Sub Account
+func (c *Client) NewCreateSubAccountService() *CreateSubAccountService {
+	return &CreateSubAccountService{c: c}
+}
+
+func (c *Client) NewSubAccountEnableFutureService() *SubAccountEnableFuturesService {
+	return &SubAccountEnableFuturesService{c: c}
+}
+
+func (c *Client) NewCreateApiKeyService() *CreateApiKeyService {
+	return &CreateApiKeyService{c: c}
+}
