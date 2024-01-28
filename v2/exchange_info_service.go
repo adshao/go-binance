@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/adshao/go-binance/v2/common"
+	"github.com/appostrav/go-binance/v2/common"
 )
 
 // ExchangeInfoService exchange info service
@@ -301,7 +301,7 @@ func (s *Symbol) MarketLotSizeFilter() *MarketLotSizeFilter {
 	return nil
 }
 
-//For specific meanings, please refer to the type definition MaxNumOrders
+// For specific meanings, please refer to the type definition MaxNumOrders
 func (s *Symbol) MaxNumOrdersFilter() *MaxNumOrdersFilter {
 	for _, filter := range s.Filters {
 		if filter["filterType"].(string) == string(SymbolFilterTypeMaxNumOrders) {

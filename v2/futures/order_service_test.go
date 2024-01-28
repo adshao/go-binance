@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/adshao/go-binance/v2/common"
+	"github.com/appostrav/go-binance/v2/common"
 	"github.com/stretchr/testify/suite"
 )
 
