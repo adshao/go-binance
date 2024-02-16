@@ -345,9 +345,9 @@ func (s *subAccountServiceTestSuite) TestCreateSubAccountService() {
 	s.mockDo(data, nil)
 	defer s.assertDo()
 
-	tag := "bob123d"
-	var recvWindow int64 = 1544433328000
-	var timestamp int64 = 1544433328000
+	tag := ""
+	var recvWindow int64 = 1544433328001
+	var timestamp int64 = 1544433328001
 
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().
