@@ -337,7 +337,7 @@ func (s *subAccountServiceTestSuite) TestSubAccountFuturesTransferService() {
 func (s *subAccountServiceTestSuite) TestCreateSubAccountService() {
 	data := []byte(`
 		{
-			"subaccountId": "1",
+			"subAccountId": "1",
 			"email": "vai_42038996_47411276_brokersubuser@lac.info",
 			"tag":"bob123d"	
 		}
@@ -363,7 +363,7 @@ func (s *subAccountServiceTestSuite) TestCreateSubAccountService() {
 
 	r := s.r()
 	r.NoError(err)
-	r.Equal("1", response.SubaccountId, "subaccountId")
+	r.Equal("1", response.SubaccountId, "subAccountId")
 	r.Equal("vai_42038996_47411276_brokersubuser@lac.info", response.Email, "email")
 	r.Equal("bob123d", response.Tag, "tag")
 
@@ -371,7 +371,7 @@ func (s *subAccountServiceTestSuite) TestCreateSubAccountService() {
 func (s *subAccountServiceTestSuite) TestSubAccountEnableFuturesService() {
 	data := []byte(`
 		{
-			"subaccountId": "1",
+			"subAccountId": "1",
 			"enableFutures": true,
 			"updateTime": 1570801523523
 		}
@@ -387,7 +387,7 @@ func (s *subAccountServiceTestSuite) TestSubAccountEnableFuturesService() {
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().
 			setParams(params{
-				"subaccountId": subaccountId,
+				"subAccountId": subaccountId,
 				"futures":      futures,
 				"recvWindow":   recvWindow,
 				"timestamp":    timestamp,
@@ -399,7 +399,7 @@ func (s *subAccountServiceTestSuite) TestSubAccountEnableFuturesService() {
 
 	r := s.r()
 	r.NoError(err)
-	r.Equal("1", response.SubaccountId, "subaccountId")
+	r.Equal("1", response.SubaccountId, "subAccountId")
 	r.Equal(true, response.EnableFutures, "enableFutures")
 	r.Equal(int64(1570801523523), response.UpdateTime, "updateTime")
 
@@ -407,7 +407,7 @@ func (s *subAccountServiceTestSuite) TestSubAccountEnableFuturesService() {
 func (s *subAccountServiceTestSuite) TestCreateApiKeyService() {
 	data := []byte(`
 		{
-			"subaccountId": "1",
+			"subAccountId": "1",
 			"apiKey":"vmPUZE6mv9SD5VNHk4HlWFsOr6aKE2zvsw0MuIgwCIPy6utIco14y7Ju91duEh8A",
 			"secretKey":"NhqPtmdSJYdKjVHjA7PZj4Mge3R5YNiP1e3UZjInClVN65XAbvqqM6A7H5fATj0",
 			"canTrade": true,
@@ -428,7 +428,7 @@ func (s *subAccountServiceTestSuite) TestCreateApiKeyService() {
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().
 			setParams(params{
-				"subaccountId": subaccountId,
+				"subAccountId": subaccountId,
 				"canTrade":     canTrade,
 				"marginTrade":  marginTrade,
 				"futuresTrade": futuresTrade,
@@ -443,7 +443,7 @@ func (s *subAccountServiceTestSuite) TestCreateApiKeyService() {
 
 	r := s.r()
 	r.NoError(err)
-	r.Equal("1", response.SubaccountId, "subaccountId")
+	r.Equal("1", response.SubaccountId, "subAccountId")
 	r.Equal("vmPUZE6mv9SD5VNHk4HlWFsOr6aKE2zvsw0MuIgwCIPy6utIco14y7Ju91duEh8A", response.ApiKey, "apiKey")
 	r.Equal("NhqPtmdSJYdKjVHjA7PZj4Mge3R5YNiP1e3UZjInClVN65XAbvqqM6A7H5fATj0", response.SecretKey, "secretKey")
 	r.Equal(true, response.CanTrade, "canTrade")

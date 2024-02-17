@@ -723,7 +723,7 @@ func (s *CreateSubAccountService) Do(ctx context.Context, opts ...RequestOption)
 }
 
 type CreateSubAccountResponse struct {
-	SubaccountId string `json:"subaccountId"`
+	SubaccountId string `json:"subAccountId"`
 	Email        string `json:"email"`
 	Tag          string `json:"tag"`
 }
@@ -764,7 +764,7 @@ func (s *SubAccountEnableFuturesService) Do(ctx context.Context, opts ...Request
 		secType:  secTypeSigned,
 	}
 	m := params{
-		"subaccountId": s.subAccountId,
+		"subAccountId": s.subAccountId,
 		"futures":      s.futures,
 		"recvWindow":   s.recvWindow,
 		"timestamp":    s.timestamp,
@@ -783,7 +783,7 @@ func (s *SubAccountEnableFuturesService) Do(ctx context.Context, opts ...Request
 }
 
 type SubAccountEnableFuturesResponse struct {
-	SubaccountId  string `json:"subaccountId"`
+	SubaccountId  string `json:"subAccountId"`
 	EnableFutures bool   `json:"enableFutures"`
 	UpdateTime    int64  `json:"updateTime"`
 }
@@ -835,7 +835,7 @@ func (s *CreateApiKeyService) Do(ctx context.Context, opts ...RequestOption) (re
 		secType:  secTypeSigned,
 	}
 	m := params{
-		"subaccountId": s.subAccountId,
+		"subAccountId": s.subAccountId,
 		"canTrade":     s.canTrade,
 		"marginTrade":  s.marginTrade,
 		"futuresTrade": s.futuresTrade,
@@ -856,7 +856,7 @@ func (s *CreateApiKeyService) Do(ctx context.Context, opts ...RequestOption) (re
 }
 
 type CreateApiKeyResponse struct {
-	SubaccountId string `json:"subaccountId"`
+	SubaccountId string `json:"subAccountId"`
 	ApiKey       string `json:"apiKey"`
 	SecretKey    string `json:"secretKey"`
 	CanTrade     bool   `json:"canTrade"`
