@@ -1040,3 +1040,6 @@ func (c *Client) NewSubAccountEnableFutureService() *SubAccountEnableFuturesServ
 func (c *Client) NewCreateApiKeyService() *CreateApiKeyService {
 	return &CreateApiKeyService{c: c}
 }
+func (c *Client) NewUpdateSubAccountIPRestrictionService() *UpdateSubAccountIPRestrictionService {
+	return &UpdateSubAccountIPRestrictionService{c: c}
+}

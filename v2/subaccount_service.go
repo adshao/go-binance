@@ -863,3 +863,82 @@ type CreateApiKeyResponse struct {
 	MarginTrade  bool   `json:"marginTrade"`
 	FuturesTrade bool   `json:"futuresTrade"`
 }
+
+type UpdateSubAccountIPRestrictionService struct {
+	c                *Client
+	subAccountId     string
+	subAccountAPIKey string
+	status           Status
+	ipAddress        string
+	recvWindow       int64
+	timestamp        int64
+}
+
+func (s *UpdateSubAccountIPRestrictionService) SubAccountId(v string) *UpdateSubAccountIPRestrictionService {
+	s.subAccountId = v
+	return s
+}
+
+func (s *UpdateSubAccountIPRestrictionService) SubAccountAPIKey(v string) *UpdateSubAccountIPRestrictionService {
+	s.subAccountAPIKey = v
+	return s
+}
+
+func (s *UpdateSubAccountIPRestrictionService) IpAddress(v string) *UpdateSubAccountIPRestrictionService {
+	s.ipAddress = v
+	return s
+}
+
+type Status string
+
+const StatusUnrestricted Status = "1"
+const StatusRestricted Status = "2"
+
+func (s *UpdateSubAccountIPRestrictionService) Status(v Status) *UpdateSubAccountIPRestrictionService {
+	s.status = v
+	return s
+}
+
+func (s *UpdateSubAccountIPRestrictionService) RecvWindow(v int64) *UpdateSubAccountIPRestrictionService {
+	s.recvWindow = v
+	return s
+}
+
+func (s *UpdateSubAccountIPRestrictionService) Timestamp(v int64) *UpdateSubAccountIPRestrictionService {
+	s.timestamp = v
+	return s
+}
+
+func (s *UpdateSubAccountIPRestrictionService) Do(ctx context.Context, opts ...RequestOption) (res *UpdateSubAccountIPRestrictionResponse, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v2/broker/subAccountApi/ipRestriction",
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"subAccountId":     s.subAccountId,
+		"subAccountAPIKey": s.subAccountAPIKey,
+		"status":           s.status,
+		"ipAddress":        s.ipAddress,
+		"recvWindow":       s.recvWindow,
+		"timestamp":        s.timestamp,
+	}
+	r.setParams(m)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(UpdateSubAccountIPRestrictionResponse)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type UpdateSubAccountIPRestrictionResponse struct {
+	Status     string   `json:"status"`
+	IpList     []string `json:"ipList"`
+	UpdateTime int64    `json:"updateTime"`
+	ApiKey     string   `json:"apiKey"`
+}

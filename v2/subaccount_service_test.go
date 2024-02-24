@@ -404,6 +404,7 @@ func (s *subAccountServiceTestSuite) TestSubAccountEnableFuturesService() {
 	r.Equal(int64(1570801523523), response.UpdateTime, "updateTime")
 
 }
+
 func (s *subAccountServiceTestSuite) TestCreateApiKeyService() {
 	data := []byte(`
 		{
@@ -449,4 +450,50 @@ func (s *subAccountServiceTestSuite) TestCreateApiKeyService() {
 	r.Equal(true, response.CanTrade, "canTrade")
 	r.Equal(false, response.MarginTrade, "marginTrade")
 	r.Equal(false, response.FuturesTrade, "futuresTrade")
+}
+
+func (s *subAccountServiceTestSuite) TestUpdateSubAccountIPRestrictionService() {
+	data := []byte(`
+		{
+			    "status": "2", 
+    			"ipList": [
+        			"69.210.67.14",
+        			"8.34.21.10"
+    			],
+				"updateTime": 1636371437000,
+    			"apiKey": "k5V49ldtn4tszj6W3hystegdfvmGbqDzjmkCtpTvC0G74WhK7yd4rfCTo4lShf"
+		}
+	`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	subaccountId := "1"
+	subAccountApiKey := "k5V49ldtn4tszj6W3hystegdfvmGbqDzjmkCtpTvC0G74WhK7yd4rfCTo4lShf"
+	status := StatusRestricted
+	ipAddress := "69.210.67.14, 8.34.21.10"
+	var recvWindow int64 = 1636371437000
+	var timestamp int64 = 1636371437000
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().
+			setParams(params{
+				"subAccountId":     subaccountId,
+				"subAccountAPIKey": subAccountApiKey,
+				"status":           status,
+				"ipAddress":        ipAddress,
+				"recvWindow":       recvWindow,
+				"timestamp":        timestamp,
+			})
+		s.assertRequestEqual(e, r)
+	})
+
+	response, err := s.client.NewUpdateSubAccountIPRestrictionService().SubAccountId(subaccountId).SubAccountAPIKey(subAccountApiKey).
+		IpAddress(ipAddress).Status(status).RecvWindow(recvWindow).Timestamp(timestamp).Do(newContext())
+
+	r := s.r()
+	r.NoError(err)
+	r.Equal("2", response.Status, "status")
+	r.Equal([]string{"69.210.67.14", "8.34.21.10"}, response.IpList, "ipList")
+	r.Equal(int64(1636371437000), response.UpdateTime, "updateTime")
+	r.Equal("k5V49ldtn4tszj6W3hystegdfvmGbqDzjmkCtpTvC0G74WhK7yd4rfCTo4lShf", response.ApiKey, "apiKey")
 }
