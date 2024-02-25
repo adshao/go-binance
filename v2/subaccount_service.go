@@ -942,3 +942,86 @@ type UpdateSubAccountIPRestrictionResponse struct {
 	UpdateTime int64    `json:"updateTime"`
 	ApiKey     string   `json:"apiKey"`
 }
+
+// Query Sub Account
+type QuerySubAccountService struct {
+	c            *Client
+	subAccountID *string
+	page         *int64
+	size         *int64
+	recvWindow   *int64
+	timestamp    int64
+}
+
+func (s *QuerySubAccountService) SubAccountID(v string) *QuerySubAccountService {
+	s.subAccountID = &v
+	return s
+}
+
+func (s *QuerySubAccountService) RecvWindow(v int64) *QuerySubAccountService {
+	s.recvWindow = &v
+	return s
+}
+
+func (s *QuerySubAccountService) Timestamp(v int64) *QuerySubAccountService {
+	s.timestamp = v
+	return s
+}
+
+func (s *QuerySubAccountService) Do(ctx context.Context, opts ...RequestOption) ([]*LinkSubAccount, error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/broker/subAccount",
+		secType:  secTypeSigned,
+	}
+
+	r.setParams(params{
+		"timestamp": s.timestamp,
+	})
+
+	if s.recvWindow != nil {
+		r.setParams(params{
+			"recvWindow": *s.recvWindow,
+		})
+	}
+
+	if s.page != nil {
+		r.setParams(params{
+			"page": *s.page,
+		})
+	}
+
+	if s.size != nil {
+		r.setParams(params{
+			"size": *s.size,
+		})
+	}
+
+	if s.subAccountID != nil {
+		r.setParams(params{
+			"subAccountId": *s.subAccountID,
+		})
+	}
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	var res []*LinkSubAccount
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type LinkSubAccount struct {
+	SubaccountID          string  `json:"subaccountId"`
+	Email                 string  `json:"email"`
+	Tag                   string  `json:"tag"`
+	MakerCommission       float64 `json:"makerCommission"`
+	TakerCommission       float64 `json:"takerCommission"`
+	MarginMakerCommission int     `json:"marginMakerCommission"`
+	MarginTakerCommission int     `json:"marginTakerCommission"`
+	CreateTime            int64   `json:"createTime"`
+}
