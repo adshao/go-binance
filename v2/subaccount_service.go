@@ -963,6 +963,11 @@ func (s *QuerySubAccountService) RecvWindow(v int64) *QuerySubAccountService {
 	return s
 }
 
+func (s *QuerySubAccountService) Page(v int64) *QuerySubAccountService {
+	s.page = &v
+	return s
+}
+
 func (s *QuerySubAccountService) Timestamp(v int64) *QuerySubAccountService {
 	s.timestamp = v
 	return s
