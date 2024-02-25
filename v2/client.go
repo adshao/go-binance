@@ -983,6 +983,11 @@ func (c *Client) NewInternalUniversalTransferService() *InternalUniversalTransfe
 	return &InternalUniversalTransferService{c: c}
 }
 
+// NewBrokerUniversalTransferService Universal Transfer (For Master Account)
+func (c *Client) NewBrokerUniversalTransferService() *BrokerInternalUniversalTransferService {
+	return &BrokerInternalUniversalTransferService{c: c}
+}
+
 // NewInternalUniversalTransferHistoryService Query Universal Transfer History (For Master Account)
 func (c *Client) NewInternalUniversalTransferHistoryService() *InternalUniversalTransferHistoryService {
 	return &InternalUniversalTransferHistoryService{c: c}
