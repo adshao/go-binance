@@ -1016,12 +1016,6 @@ func (s *QuerySubAccountService) Do(ctx context.Context, opts ...RequestOption) 
 }
 
 type LinkSubAccount struct {
-	SubaccountID          string  `json:"subaccountId"`
-	Email                 string  `json:"email"`
-	Tag                   string  `json:"tag"`
-	MakerCommission       float64 `json:"makerCommission"`
-	TakerCommission       float64 `json:"takerCommission"`
-	MarginMakerCommission int     `json:"marginMakerCommission"`
-	MarginTakerCommission int     `json:"marginTakerCommission"`
-	CreateTime            int64   `json:"createTime"`
+	SubaccountID string `json:"subaccountId"`
+	Email        string `json:"email"`
 }
