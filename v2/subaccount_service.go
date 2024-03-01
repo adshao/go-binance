@@ -1024,3 +1024,51 @@ type LinkSubAccount struct {
 	SubaccountID string `json:"subaccountId"`
 	Email        string `json:"email"`
 }
+
+// Delete Sub Account Api Key
+type DeleteSubAccountApiKeyService struct {
+	c                *Client
+	subAccountID     string
+	subAccountApiKey string
+	recvWindow       int64
+	timestamp        int64
+}
+
+func (s *DeleteSubAccountApiKeyService) SubAccountID(v string) *DeleteSubAccountApiKeyService {
+	s.subAccountID = v
+	return s
+}
+func (s *DeleteSubAccountApiKeyService) SubAccountAPIKey(v string) *DeleteSubAccountApiKeyService {
+	s.subAccountApiKey = v
+	return s
+}
+func (s *DeleteSubAccountApiKeyService) RecvWindow(v int64) *DeleteSubAccountApiKeyService {
+	s.recvWindow = v
+	return s
+}
+func (s *DeleteSubAccountApiKeyService) Timestamp(v int64) *DeleteSubAccountApiKeyService {
+	s.timestamp = v
+	return s
+}
+
+func (s *DeleteSubAccountApiKeyService) Do(ctx context.Context, opts ...RequestOption) error {
+	r := &request{
+		method:   http.MethodDelete,
+		endpoint: "/sapi/v1/broker/subAccountApi",
+		secType:  secTypeSigned,
+	}
+
+	m := params{
+		"subAccountId":     s.subAccountID,
+		"subAccountApiKey": s.subAccountApiKey,
+		"recvWindow":       s.recvWindow,
+		"timestamp":        s.timestamp,
+	}
+	r.setParams(m)
+
+	_, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return err
+	}
+	return nil
+}

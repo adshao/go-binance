@@ -1057,3 +1057,6 @@ func (c *Client) NewQuerySubAccountService() *QuerySubAccountService {
 func (c *Client) NewCustomRequestService() *CustomRequestService {
 	return &CustomRequestService{c: c}
 }
+func (c *Client) NewDeleteSubAccountApiKeyService() *DeleteSubAccountApiKeyService {
+	return &DeleteSubAccountApiKeyService{c: c}
+}

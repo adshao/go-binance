@@ -497,3 +497,34 @@ func (s *subAccountServiceTestSuite) TestUpdateSubAccountIPRestrictionService() 
 	r.Equal(int64(1636371437000), response.UpdateTime, "updateTime")
 	r.Equal("k5V49ldtn4tszj6W3hystegdfvmGbqDzjmkCtpTvC0G74WhK7yd4rfCTo4lShf", response.ApiKey, "apiKey")
 }
+
+func (s *subAccountServiceTestSuite) TestDeleteSubAccountApiKeyService() {
+	data := []byte(`
+		{
+		}
+	`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	subaccountId := "1"
+	subAccountApiKey := "k5V49ldtn4tszj6W3hystegdfvmGbqDzjmkCtpTvC0G74WhK7yd4rfCTo4lShf"
+	var recvWindow int64 = 1636371437000
+	var timestamp int64 = 1636371437000
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().
+			setParams(params{
+				"subAccountId":     subaccountId,
+				"subAccountApiKey": subAccountApiKey,
+				"recvWindow":       recvWindow,
+				"timestamp":        timestamp,
+			})
+		s.assertRequestEqual(e, r)
+	})
+
+	err := s.client.NewDeleteSubAccountApiKeyService().SubAccountID(subaccountId).SubAccountAPIKey(subAccountApiKey).
+		RecvWindow(recvWindow).Timestamp(timestamp).Do(newContext())
+
+	r := s.r()
+	r.NoError(err)
+}
