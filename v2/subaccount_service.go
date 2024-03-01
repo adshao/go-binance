@@ -867,7 +867,7 @@ type CreateApiKeyResponse struct {
 type UpdateSubAccountIPRestrictionService struct {
 	c                *Client
 	subAccountId     string
-	subAccountAPIKey string
+	subAccountApiKey string
 	status           Status
 	ipAddress        string
 	recvWindow       int64
@@ -879,8 +879,8 @@ func (s *UpdateSubAccountIPRestrictionService) SubAccountId(v string) *UpdateSub
 	return s
 }
 
-func (s *UpdateSubAccountIPRestrictionService) SubAccountAPIKey(v string) *UpdateSubAccountIPRestrictionService {
-	s.subAccountAPIKey = v
+func (s *UpdateSubAccountIPRestrictionService) SubAccountApiKey(v string) *UpdateSubAccountIPRestrictionService {
+	s.subAccountApiKey = v
 	return s
 }
 
@@ -917,7 +917,7 @@ func (s *UpdateSubAccountIPRestrictionService) Do(ctx context.Context, opts ...R
 	}
 	m := params{
 		"subAccountId":     s.subAccountId,
-		"subAccountAPIKey": s.subAccountAPIKey,
+		"subAccountApiKey": s.subAccountApiKey,
 		"status":           s.status,
 		"ipAddress":        s.ipAddress,
 		"recvWindow":       s.recvWindow,
