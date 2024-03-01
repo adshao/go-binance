@@ -478,7 +478,7 @@ func (s *subAccountServiceTestSuite) TestUpdateSubAccountIPRestrictionService() 
 		e := newSignedRequest().
 			setParams(params{
 				"subAccountId":     subaccountId,
-				"subAccountAPIKey": subAccountApiKey,
+				"subAccountApiKey": subAccountApiKey,
 				"status":           status,
 				"ipAddress":        ipAddress,
 				"recvWindow":       recvWindow,
@@ -487,7 +487,7 @@ func (s *subAccountServiceTestSuite) TestUpdateSubAccountIPRestrictionService() 
 		s.assertRequestEqual(e, r)
 	})
 
-	response, err := s.client.NewUpdateSubAccountIPRestrictionService().SubAccountId(subaccountId).SubAccountAPIKey(subAccountApiKey).
+	response, err := s.client.NewUpdateSubAccountIPRestrictionService().SubAccountId(subaccountId).SubAccountApiKey(subAccountApiKey).
 		IpAddress(ipAddress).Status(status).RecvWindow(recvWindow).Timestamp(timestamp).Do(newContext())
 
 	r := s.r()
