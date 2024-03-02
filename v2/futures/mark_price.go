@@ -119,7 +119,7 @@ type FundingRate struct {
 	Symbol      string `json:"symbol"`
 	FundingRate string `json:"fundingRate"`
 	FundingTime int64  `json:"fundingTime"`
-	MarkPrice   int64  `json:"markPrice"`
+	MarkPrice   string `json:"markPrice"`
 }
 
 // GetLeverageBracketService get funding rate
