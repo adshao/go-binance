@@ -474,18 +474,17 @@ type WsCombinedTradeEvent struct {
 
 // WsUserDataEvent define user data event
 type WsUserDataEvent struct {
-	Event             UserDataEventType `json:"e"`
-	Time              int64             `json:"E"`
-	TransactionTime   int64             `json:"T"`
-	AccountUpdateTime int64             `json:"u"`
-	AccountUpdate     WsAccountUpdateList
-	BalanceUpdate     WsBalanceUpdate
-	OrderUpdate       WsOrderUpdate
-	OCOUpdate         WsOCOUpdate
+	Event         UserDataEventType `json:"e"`
+	Time          int64             `json:"E"`
+	AccountUpdate WsAccountUpdateList
+	BalanceUpdate WsBalanceUpdate
+	OrderUpdate   WsOrderUpdate
+	OCOUpdate     WsOCOUpdate
 }
 
 type WsAccountUpdateList struct {
-	WsAccountUpdates []WsAccountUpdate `json:"B"`
+	AccountUpdateTime int64             `json:"u"`
+	WsAccountUpdates  []WsAccountUpdate `json:"B"`
 }
 
 // WsAccountUpdate define account update
@@ -496,8 +495,9 @@ type WsAccountUpdate struct {
 }
 
 type WsBalanceUpdate struct {
-	Asset  string `json:"a"`
-	Change string `json:"d"`
+	Asset           string `json:"a"`
+	Change          string `json:"d"`
+	TransactionTime int64  `json:"T"`
 }
 
 type WsOrderUpdate struct {
@@ -509,7 +509,6 @@ type WsOrderUpdate struct {
 	Volume                  string          `json:"q"`
 	Price                   string          `json:"p"`
 	StopPrice               string          `json:"P"`
-	TrailingDelta           int64           `json:"d"` // Trailing Delta
 	IceBergVolume           string          `json:"F"`
 	OrderListId             int64           `json:"g"` // for OCO
 	OrigCustomOrderId       string          `json:"C"` // customized order ID for the original order
@@ -524,17 +523,35 @@ type WsOrderUpdate struct {
 	FeeCost                 string          `json:"n"`
 	TransactionTime         int64           `json:"T"`
 	TradeId                 int64           `json:"t"`
+	IgnoreI                 int64           `json:"I"` // ignore
 	IsInOrderBook           bool            `json:"w"` // is the order in the order book?
 	IsMaker                 bool            `json:"m"` // is this order maker?
+	IgnoreM                 bool            `json:"M"` // ignore
 	CreateTime              int64           `json:"O"`
 	FilledQuoteVolume       string          `json:"Z"` // the quote volume that already filled
 	LatestQuoteVolume       string          `json:"Y"` // the quote volume for the latest trade
 	QuoteVolume             string          `json:"Q"`
-	TrailingTime            int64           `json:"D"` // Trailing Time
-	StrategyId              int64           `json:"j"` // Strategy ID
-	StrategyType            int64           `json:"J"` // Strategy Type
-	WorkingTime             int64           `json:"W"` // Working Time
 	SelfTradePreventionMode string          `json:"V"`
+
+	//These are fields that appear in the payload only if certain conditions are met.
+	TrailingDelta              int64  `json:"d"` // Appears only for trailing stop orders.
+	TrailingTime               int64  `json:"D"`
+	StrategyId                 int64  `json:"j"` // Appears only if the strategyId parameter was provided upon order placement.
+	StrategyType               int64  `json:"J"` // Appears only if the strategyType parameter was provided upon order placement.
+	PreventedMatchId           int64  `json:"v"` // Appears only for orders that expired due to STP.
+	PreventedQuantity          string `json:"A"`
+	LastPreventedQuantity      string `json:"B"`
+	TradeGroupId               int64  `json:"u"`
+	CounterOrderId             int64  `json:"U"`
+	CounterSymbol              string `json:"Cs"`
+	PreventedExecutionQuantity string `json:"pl"`
+	PreventedExecutionPrice    string `json:"pL"`
+	PreventedExecutionQuoteQty string `json:"pY"`
+	WorkingTime                int64  `json:"W"` // Appears when the order is working on the book
+	MatchType                  string `json:"b"`
+	AllocationId               int64  `json:"a"`
+	WorkingFloor               string `json:"k"`  // Appears for orders that could potentially have allocations
+	UsedSor                    bool   `json:"uS"` // Appears for orders that used SOR
 }
 
 type WsOCOUpdate struct {
@@ -545,6 +562,7 @@ type WsOCOUpdate struct {
 	ListOrderStatus string `json:"L"`
 	RejectReason    string `json:"r"`
 	ClientOrderId   string `json:"C"` // List Client Order ID
+	TransactionTime int64  `json:"T"`
 	Orders          WsOCOOrderList
 }
 
@@ -599,12 +617,6 @@ func WsUserDataServe(listenKey string, handler WsUserDataHandler, errHandler Err
 				errHandler(err)
 				return
 			}
-			// Unmarshal has case sensitive problem
-			event.TransactionTime = j.Get("T").MustInt64()
-			event.OrderUpdate.TransactionTime = j.Get("T").MustInt64()
-			event.OrderUpdate.Id = j.Get("i").MustInt64()
-			event.OrderUpdate.TradeId = j.Get("t").MustInt64()
-			event.OrderUpdate.FeeAsset = j.Get("N").MustString()
 		case UserDataEventTypeListStatus:
 			err = json.Unmarshal(message, &event.OCOUpdate)
 			if err != nil {
