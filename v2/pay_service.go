@@ -39,10 +39,10 @@ func (s *PayTradeHistoryService) Do(ctx context.Context, opts ...RequestOption) 
 		secType:  secTypeSigned,
 	}
 	if s.startTimestamp != nil {
-		r.setParam("startTimestamp", *s.startTimestamp)
+		r.setParam("startTime", *s.startTimestamp)
 	}
 	if s.endTimestamp != nil {
-		r.setParam("endTimestamp", *s.endTimestamp)
+		r.setParam("endTime", *s.endTimestamp)
 	}
 	if s.limit != nil {
 		r.setParam("limit", *s.limit)
