@@ -204,29 +204,34 @@ func (s *CreateOrderService) Do(ctx context.Context, opts ...RequestOption) (res
 
 // CreateOrderResponse define create order response
 type CreateOrderResponse struct {
-	Symbol            string           `json:"symbol"`
-	OrderID           int64            `json:"orderId"`
-	ClientOrderID     string           `json:"clientOrderId"`
-	Price             string           `json:"price"`
-	OrigQuantity      string           `json:"origQty"`
-	ExecutedQuantity  string           `json:"executedQty"`
-	CumQuote          string           `json:"cumQuote"`
-	ReduceOnly        bool             `json:"reduceOnly"`
-	Status            OrderStatusType  `json:"status"`
-	StopPrice         string           `json:"stopPrice"`
-	TimeInForce       TimeInForceType  `json:"timeInForce"`
-	Type              OrderType        `json:"type"`
-	Side              SideType         `json:"side"`
-	UpdateTime        int64            `json:"updateTime"`
-	WorkingType       WorkingType      `json:"workingType"`
-	ActivatePrice     string           `json:"activatePrice"`
-	PriceRate         string           `json:"priceRate"`
-	AvgPrice          string           `json:"avgPrice"`
-	PositionSide      PositionSideType `json:"positionSide"`
-	ClosePosition     bool             `json:"closePosition"`
-	PriceProtect      bool             `json:"priceProtect"`
-	RateLimitOrder10s string           `json:"rateLimitOrder10s,omitempty"`
-	RateLimitOrder1m  string           `json:"rateLimitOrder1m,omitempty"`
+	Symbol                  string           `json:"symbol"`                      //
+	OrderID                 int64            `json:"orderId"`                     //
+	ClientOrderID           string           `json:"clientOrderId"`               //
+	Price                   string           `json:"price"`                       //
+	OrigQuantity            string           `json:"origQty"`                     //
+	ExecutedQuantity        string           `json:"executedQty"`                 //
+	CumQuote                string           `json:"cumQuote"`                    //
+	ReduceOnly              bool             `json:"reduceOnly"`                  //
+	Status                  OrderStatusType  `json:"status"`                      //
+	StopPrice               string           `json:"stopPrice"`                   // please ignore when order type is TRAILING_STOP_MARKET
+	TimeInForce             TimeInForceType  `json:"timeInForce"`                 //
+	Type                    OrderType        `json:"type"`                        //
+	Side                    SideType         `json:"side"`                        //
+	UpdateTime              int64            `json:"updateTime"`                  // update time
+	WorkingType             WorkingType      `json:"workingType"`                 //
+	ActivatePrice           string           `json:"activatePrice"`               // activation price, only return with TRAILING_STOP_MARKET order
+	PriceRate               string           `json:"priceRate"`                   // callback rate, only return with TRAILING_STOP_MARKET order
+	AvgPrice                string           `json:"avgPrice"`                    //
+	PositionSide            PositionSideType `json:"positionSide"`                //
+	ClosePosition           bool             `json:"closePosition"`               // if Close-All
+	PriceProtect            bool             `json:"priceProtect"`                // if conditional order trigger is protected
+	PriceMatch              string           `json:"priceMatch"`                  // price match mode
+	SelfTradePreventionMode string           `json:"selfTradePreventionMode"`     // self trading preventation mode
+	GoodTillDate            int64            `json:"goodTillDate"`                // order pre-set auto cancel time for TIF GTD order
+	CumQty                  string           `json:"cumQty"`                      //
+	OrigType                OrderType        `json:"origType"`                    //
+	RateLimitOrder10s       string           `json:"rateLimitOrder10s,omitempty"` //
+	RateLimitOrder1m        string           `json:"rateLimitOrder1m,omitempty"`  //
 }
 
 // ListOpenOrdersService list opened orders
@@ -368,30 +373,33 @@ func (s *GetOrderService) Do(ctx context.Context, opts ...RequestOption) (res *O
 
 // Order define order info
 type Order struct {
-	Symbol           string           `json:"symbol"`
-	OrderID          int64            `json:"orderId"`
-	ClientOrderID    string           `json:"clientOrderId"`
-	Price            string           `json:"price"`
-	ReduceOnly       bool             `json:"reduceOnly"`
-	OrigQuantity     string           `json:"origQty"`
-	ExecutedQuantity string           `json:"executedQty"`
-	CumQuantity      string           `json:"cumQty"`
-	CumQuote         string           `json:"cumQuote"`
-	Status           OrderStatusType  `json:"status"`
-	TimeInForce      TimeInForceType  `json:"timeInForce"`
-	Type             OrderType        `json:"type"`
-	Side             SideType         `json:"side"`
-	StopPrice        string           `json:"stopPrice"`
-	Time             int64            `json:"time"`
-	UpdateTime       int64            `json:"updateTime"`
-	WorkingType      WorkingType      `json:"workingType"`
-	ActivatePrice    string           `json:"activatePrice"`
-	PriceRate        string           `json:"priceRate"`
-	AvgPrice         string           `json:"avgPrice"`
-	OrigType         string           `json:"origType"`
-	PositionSide     PositionSideType `json:"positionSide"`
-	PriceProtect     bool             `json:"priceProtect"`
-	ClosePosition    bool             `json:"closePosition"`
+	Symbol                  string           `json:"symbol"`
+	OrderID                 int64            `json:"orderId"`
+	ClientOrderID           string           `json:"clientOrderId"`
+	Price                   string           `json:"price"`
+	ReduceOnly              bool             `json:"reduceOnly"`
+	OrigQuantity            string           `json:"origQty"`
+	ExecutedQuantity        string           `json:"executedQty"`
+	CumQuantity             string           `json:"cumQty"`
+	CumQuote                string           `json:"cumQuote"`
+	Status                  OrderStatusType  `json:"status"`
+	TimeInForce             TimeInForceType  `json:"timeInForce"`
+	Type                    OrderType        `json:"type"`
+	Side                    SideType         `json:"side"`
+	StopPrice               string           `json:"stopPrice"`
+	Time                    int64            `json:"time"`
+	UpdateTime              int64            `json:"updateTime"`
+	WorkingType             WorkingType      `json:"workingType"`
+	ActivatePrice           string           `json:"activatePrice"`
+	PriceRate               string           `json:"priceRate"`
+	AvgPrice                string           `json:"avgPrice"`
+	OrigType                OrderType        `json:"origType"`
+	PositionSide            PositionSideType `json:"positionSide"`
+	PriceProtect            bool             `json:"priceProtect"`
+	ClosePosition           bool             `json:"closePosition"`
+	PriceMatch              string           `json:"priceMatch"`
+	SelfTradePreventionMode string           `json:"selfTradePreventionMode"`
+	GoodTillDate            int64            `json:"goodTillDate"`
 }
 
 // ListOrdersService all account orders; active, canceled, or filled
