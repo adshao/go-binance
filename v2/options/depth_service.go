@@ -2,9 +2,8 @@ package options
 
 import (
 	"context"
+	"github.com/Issengaard/go-binance/v2/common"
 	"net/http"
-
-	"github.com/adshao/go-binance/v2/common"
 )
 
 // DepthService show depth info

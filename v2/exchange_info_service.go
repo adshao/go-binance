@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/adshao/go-binance/v2/common"
+	"github.com/Issengaard/go-binance/v2/common"
 )
 
 // ExchangeInfoService exchange info service
