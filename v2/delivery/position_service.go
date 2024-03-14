@@ -119,7 +119,7 @@ func (s *UpdatePositionMarginService) Amount(amount string) *UpdatePositionMargi
 	return s
 }
 
-// Type set action type: 1: Add postion margin，2: Reduce postion margin
+// Type set action type: 1: Add position margin，2: Reduce position margin
 func (s *UpdatePositionMarginService) Type(actionType int) *UpdatePositionMarginService {
 	s.actionType = actionType
 	return s
