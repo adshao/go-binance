@@ -58,10 +58,14 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 						"limit": 200
 					},
 					{
+						"limit": 20,
+						"filterType": "MAX_NUM_ALGO_ORDERS"
+					},
+					{
 						"filterType": "PERCENT_PRICE", 
 						"multiplierUp": "1.0500", 
 						"multiplierDown": "0.9500", 
-						"multiplierDecimal": 4
+						"multiplierDecimal": "4"
 					}
 				],
 				"OrderType": [ 
@@ -146,37 +150,48 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 					{"filterType": "LOT_SIZE", "minQty": "1", "maxQty": "100000", "stepSize": "1"},
 					{"filterType": "MARKET_LOT_SIZE", "maxQty": "100000", "minQty": "1", "stepSize": "1"},
 					{"filterType": "MAX_NUM_ORDERS", "limit": 200},
-					{"filterType": "PERCENT_PRICE", "multiplierUp": "1.0500", "multiplierDown": "0.9500", "multiplierDecimal": 4},
+					{"filterType": "MAX_NUM_ALGO_ORDERS", "limit": 20},
+					{"filterType": "PERCENT_PRICE", "multiplierUp": "1.0500", "multiplierDown": "0.9500", "multiplierDecimal": "4"},
 				},
 			},
 		},
 	}
 	s.assertExchangeInfoEqual(ei, res)
-	s.r().Len(ei.Symbols[0].Filters, 5, "Filters")
+	s.r().Len(ei.Symbols[0].Filters, 6, "Filters")
+
 	ePriceFilter := &PriceFilter{
 		MaxPrice: "100000",
 		MinPrice: "0.1",
 		TickSize: "0.1",
 	}
 	s.assertPriceFilterEqual(ePriceFilter, res.Symbols[0].PriceFilter())
+
 	eLotSizeFilter := &LotSizeFilter{
 		MaxQuantity: "100000",
 		MinQuantity: "1",
 		StepSize:    "1",
 	}
 	s.assertLotSizeFilterEqual(eLotSizeFilter, res.Symbols[0].LotSizeFilter())
+
 	eMarketLotSizeFilter := &MarketLotSizeFilter{
 		MaxQuantity: "100000",
 		MinQuantity: "1",
 		StepSize:    "1",
 	}
 	s.assertMarketLotSizeFilterEqual(eMarketLotSizeFilter, res.Symbols[0].MarketLotSizeFilter())
+
 	eMaxNumOrdersFilter := &MaxNumOrdersFilter{
 		Limit: 200,
 	}
 	s.assertMaxNumOrdersFilterEqual(eMaxNumOrdersFilter, res.Symbols[0].MaxNumOrdersFilter())
+
+	eMaxNumAlgoOrdersFilter := &MaxNumAlgoOrdersFilter{
+		Limit: 20,
+	}
+	s.assertMaxNumAlgoOrdersFilterEqual(eMaxNumAlgoOrdersFilter, res.Symbols[0].MaxNumAlgoOrdersFilter())
+
 	ePercentPriceFilter := &PercentPriceFilter{
-		MultiplierDecimal: 4,
+		MultiplierDecimal: "4",
 		MultiplierUp:      "1.0500",
 		MultiplierDown:    "0.9500",
 	}
@@ -219,6 +234,33 @@ func (s *exchangeInfoServiceTestSuite) assertExchangeInfoEqual(e, a *ExchangeInf
 		r.Equal(e.Symbols[i].PricePrecision, a.Symbols[i].PricePrecision, "PricePrecision")
 		r.Equal(e.Symbols[i].QuantityPrecision, a.Symbols[i].QuantityPrecision, "QuantityPrecision")
 		r.Equal(e.Symbols[i].RequiredMarginPercent, a.Symbols[i].RequiredMarginPercent, "RequiredMarginPercent")
+
+		for fi, currentFilter := range a.Symbols[i].Filters {
+			r.Len(currentFilter, len(e.Symbols[i].Filters[fi]))
+			switch currentFilter["filterType"] {
+			case "PRICE_FILTER":
+				r.Equal(e.Symbols[i].PriceFilter().MinPrice, a.Symbols[i].PriceFilter().MinPrice, "MinPrice")
+				r.Equal(e.Symbols[i].PriceFilter().MaxPrice, a.Symbols[i].PriceFilter().MaxPrice, "MaxPrice")
+				r.Equal(e.Symbols[i].PriceFilter().TickSize, a.Symbols[i].PriceFilter().TickSize, "TickSize")
+			case "LOT_SIZE":
+				r.Equal(e.Symbols[i].LotSizeFilter().MinQuantity, a.Symbols[i].LotSizeFilter().MinQuantity, "MinQuantity")
+				r.Equal(e.Symbols[i].LotSizeFilter().MaxQuantity, a.Symbols[i].LotSizeFilter().MaxQuantity, "MaxQuantity")
+				r.Equal(e.Symbols[i].LotSizeFilter().StepSize, a.Symbols[i].LotSizeFilter().StepSize, "StepSize")
+			case "MARKET_LOT_SIZE":
+				r.Equal(e.Symbols[i].MarketLotSizeFilter().MinQuantity, a.Symbols[i].MarketLotSizeFilter().MinQuantity, "MinQuantity")
+				r.Equal(e.Symbols[i].MarketLotSizeFilter().MaxQuantity, a.Symbols[i].MarketLotSizeFilter().MaxQuantity, "MaxQuantity")
+				r.Equal(e.Symbols[i].MarketLotSizeFilter().StepSize, a.Symbols[i].MarketLotSizeFilter().StepSize, "StepSize")
+			case "MAX_NUM_ORDERS":
+				r.Equal(e.Symbols[i].MaxNumOrdersFilter().Limit, a.Symbols[i].MaxNumOrdersFilter().Limit, "Limit")
+			case "MAX_NUM_ALGO_ORDERS":
+				r.Equal(e.Symbols[i].MaxNumAlgoOrdersFilter().Limit, a.Symbols[i].MaxNumAlgoOrdersFilter().Limit, "Limit")
+			case "PERCENT_PRICE":
+				r.Equal(e.Symbols[i].PercentPriceFilter().MultiplierDecimal, a.Symbols[i].PercentPriceFilter().MultiplierDecimal, "MultiplierDecimal")
+				r.Equal(e.Symbols[i].PercentPriceFilter().MultiplierUp, a.Symbols[i].PercentPriceFilter().MultiplierUp, "MultiplierUp")
+				r.Equal(e.Symbols[i].PercentPriceFilter().MultiplierDown, a.Symbols[i].PercentPriceFilter().MultiplierDown, "MultiplierDown")
+			}
+		}
+
 		r.Len(a.Symbols[i].OrderType, len(e.Symbols[i].OrderType))
 		for j, orderType := range e.Symbols[i].OrderType {
 			r.Equal(orderType, a.Symbols[i].OrderType[j], "OrderType")
@@ -259,6 +301,11 @@ func (s *exchangeInfoServiceTestSuite) assertMarketLotSizeFilterEqual(e, a *Mark
 }
 
 func (s *exchangeInfoServiceTestSuite) assertMaxNumOrdersFilterEqual(e, a *MaxNumOrdersFilter) {
+	r := s.r()
+	r.Equal(e.Limit, a.Limit, "Limit")
+}
+
+func (s *exchangeInfoServiceTestSuite) assertMaxNumAlgoOrdersFilterEqual(e, a *MaxNumAlgoOrdersFilter) {
 	r := s.r()
 	r.Equal(e.Limit, a.Limit, "Limit")
 }

@@ -1,4 +1,4 @@
-package futures
+package options
 
 import (
 	"fmt"
@@ -102,12 +102,5 @@ func WithHeader(key, value string, replace bool) RequestOption {
 func WithHeaders(header http.Header) RequestOption {
 	return func(r *request) {
 		r.header = header.Clone()
-	}
-}
-
-// WithExtraForm add extra form data of the request
-func WithExtraForm(m map[string]any) RequestOption {
-	return func(r *request) {
-		r.setFormParams(m)
 	}
 }

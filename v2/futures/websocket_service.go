@@ -999,36 +999,40 @@ type WsPosition struct {
 
 // WsOrderTradeUpdate define order trade update
 type WsOrderTradeUpdate struct {
-	Symbol               string             `json:"s"`
-	ClientOrderID        string             `json:"c"`
-	Side                 SideType           `json:"S"`
-	Type                 OrderType          `json:"o"`
-	TimeInForce          TimeInForceType    `json:"f"`
-	OriginalQty          string             `json:"q"`
-	OriginalPrice        string             `json:"p"`
-	AveragePrice         string             `json:"ap"`
-	StopPrice            string             `json:"sp"`
-	ExecutionType        OrderExecutionType `json:"x"`
-	Status               OrderStatusType    `json:"X"`
-	ID                   int64              `json:"i"`
-	LastFilledQty        string             `json:"l"`
-	AccumulatedFilledQty string             `json:"z"`
-	LastFilledPrice      string             `json:"L"`
-	CommissionAsset      string             `json:"N"`
-	Commission           string             `json:"n"`
-	TradeTime            int64              `json:"T"`
-	TradeID              int64              `json:"t"`
-	BidsNotional         string             `json:"b"`
-	AsksNotional         string             `json:"a"`
-	IsMaker              bool               `json:"m"`
-	IsReduceOnly         bool               `json:"R"`
-	WorkingType          WorkingType        `json:"wt"`
-	OriginalType         OrderType          `json:"ot"`
-	PositionSide         PositionSideType   `json:"ps"`
-	IsClosingPosition    bool               `json:"cp"`
-	ActivationPrice      string             `json:"AP"`
-	CallbackRate         string             `json:"cr"`
-	RealizedPnL          string             `json:"rp"`
+	Symbol               string             `json:"s"`   // Symbol
+	ClientOrderID        string             `json:"c"`   // Client order ID
+	Side                 SideType           `json:"S"`   // Side
+	Type                 OrderType          `json:"o"`   // Order type
+	TimeInForce          TimeInForceType    `json:"f"`   // Time in force
+	OriginalQty          string             `json:"q"`   // Original quantity
+	OriginalPrice        string             `json:"p"`   // Original price
+	AveragePrice         string             `json:"ap"`  // Average price
+	StopPrice            string             `json:"sp"`  // Stop price. Please ignore with TRAILING_STOP_MARKET order
+	ExecutionType        OrderExecutionType `json:"x"`   // Execution type
+	Status               OrderStatusType    `json:"X"`   // Order status
+	ID                   int64              `json:"i"`   // Order ID
+	LastFilledQty        string             `json:"l"`   // Order Last Filled Quantity
+	AccumulatedFilledQty string             `json:"z"`   // Order Filled Accumulated Quantity
+	LastFilledPrice      string             `json:"L"`   // Last Filled Price
+	CommissionAsset      string             `json:"N"`   // Commission Asset, will not push if no commission
+	Commission           string             `json:"n"`   // Commission, will not push if no commission
+	TradeTime            int64              `json:"T"`   // Order Trade Time
+	TradeID              int64              `json:"t"`   // Trade ID
+	BidsNotional         string             `json:"b"`   // Bids Notional
+	AsksNotional         string             `json:"a"`   // Asks Notional
+	IsMaker              bool               `json:"m"`   // Is this trade the maker side?
+	IsReduceOnly         bool               `json:"R"`   // Is this reduce only
+	WorkingType          WorkingType        `json:"wt"`  // Stop Price Working Type
+	OriginalType         OrderType          `json:"ot"`  // Original Order Type
+	PositionSide         PositionSideType   `json:"ps"`  // Position Side
+	IsClosingPosition    bool               `json:"cp"`  // If Close-All, pushed with conditional order
+	ActivationPrice      string             `json:"AP"`  // Activation Price, only puhed with TRAILING_STOP_MARKET order
+	CallbackRate         string             `json:"cr"`  // Callback Rate, only puhed with TRAILING_STOP_MARKET order
+	PriceProtect         bool               `json:"pP"`  // If price protection is turned on
+	RealizedPnL          string             `json:"rp"`  // Realized Profit of the trade
+	STP                  string             `json:"V"`   // STP mode
+	PriceMode            string             `json:"pm"`  // Price match mode
+	GTD                  int64              `json:"gtd"` // TIF GTD order auto cancel time
 }
 
 // WsAccountConfigUpdate define account config update
