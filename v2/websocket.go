@@ -10,6 +10,8 @@ import (
 // WsHandler handle raw websocket message
 type WsHandler func(message []byte)
 
+type WsWithTSHandler func(message []byte, received time.Time)
+
 // ErrHandler handles errors
 type ErrHandler func(err error)
 
@@ -22,6 +24,56 @@ func newWsConfig(endpoint string) *WsConfig {
 	return &WsConfig{
 		Endpoint: endpoint,
 	}
+}
+
+var wsServeWithTS = func(cfg *WsConfig, handler WsWithTSHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	Dialer := websocket.Dialer{
+		Proxy:             http.ProxyFromEnvironment,
+		HandshakeTimeout:  45 * time.Second,
+		EnableCompression: false,
+	}
+
+	c, _, err := Dialer.Dial(cfg.Endpoint, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	c.SetReadLimit(655350)
+	doneC = make(chan struct{})
+	stopC = make(chan struct{})
+	go func() {
+		// This function will exit either on error from
+		// websocket.Conn.ReadMessage or when the stopC channel is
+		// closed by the client.
+		defer close(doneC)
+		if WebsocketKeepalive {
+			keepAlive(c, WebsocketTimeout)
+		}
+		// Wait for the stopC channel to be closed.  We do that in a
+		// separate goroutine because ReadMessage is a blocking
+		// operation.
+		silent := false
+		go func() {
+			select {
+			case <-stopC:
+				silent = true
+			case <-doneC:
+			}
+			c.Close()
+		}()
+		for {
+			_, message, err := c.ReadMessage()
+			receivedTS := time.Now().UTC()
+
+			if err != nil {
+				if !silent {
+					errHandler(err)
+				}
+				return
+			}
+			handler(message, receivedTS)
+		}
+	}()
+	return
 }
 
 var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
@@ -60,6 +112,8 @@ var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (don
 		}()
 		for {
 			_, message, err := c.ReadMessage()
+			receivedTS := time.Now().UTC()
+
 			if err != nil {
 				if !silent {
 					errHandler(err)

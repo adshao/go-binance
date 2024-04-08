@@ -772,13 +772,16 @@ type WsMiniMarketsStatEvent struct {
 
 // WsBookTickerEvent define websocket best book ticker event.
 type WsBookTickerEvent struct {
-	UpdateID     int64  `json:"u"`
-	Symbol       string `json:"s"`
-	BestBidPrice string `json:"b"`
-	BestBidQty   string `json:"B"`
-	BestAskPrice string `json:"a"`
-	BestAskQty   string `json:"A"`
+	UpdateID          int64  `json:"u"`
+	Symbol            string `json:"s"`
+	BestBidPrice      string `json:"b"`
+	BestBidQty        string `json:"B"`
+	BestAskPrice      string `json:"a"`
+	BestAskQty        string `json:"A"`
+	receivedTimestamp time.Time
 }
+
+func (w *WsBookTickerEvent) ReceivedTimestamp() time.Time { return w.receivedTimestamp }
 
 type WsCombinedBookTickerEvent struct {
 	Data   *WsBookTickerEvent `json:"data"`
@@ -792,16 +795,18 @@ type WsBookTickerHandler func(event *WsBookTickerEvent)
 func WsBookTickerServe(symbol string, handler WsBookTickerHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := fmt.Sprintf("%s/%s@bookTicker", getWsEndpoint(), strings.ToLower(symbol))
 	cfg := newWsConfig(endpoint)
-	wsHandler := func(message []byte) {
+	wsHandler := func(message []byte, received time.Time) {
 		event := new(WsBookTickerEvent)
 		err := json.Unmarshal(message, &event)
 		if err != nil {
 			errHandler(err)
 			return
 		}
+
+		event.receivedTimestamp = received
 		handler(event)
 	}
-	return wsServe(cfg, wsHandler, errHandler)
+	return wsServeWithTS(cfg, wsHandler, errHandler)
 }
 
 // WsCombinedBookTickerServe is similar to WsBookTickerServe, but it is for multiple symbols
