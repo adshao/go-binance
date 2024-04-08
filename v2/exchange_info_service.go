@@ -255,7 +255,12 @@ func (s *Symbol) NotionalFilter() *NotionalFilter {
 				f.ApplyMaxToMarket = i.(bool)
 			}
 			if i, ok := filter["avgPriceMins"]; ok {
-				f.AvgPriceMins = int(i.(float64))
+				switch v := i.(type) {
+				case float64:
+					f.AvgPriceMins = int(v)
+				case int:
+					f.AvgPriceMins = v
+				}
 			}
 			return f
 		}
