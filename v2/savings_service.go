@@ -423,3 +423,168 @@ type SavingFixedProjectPosition struct {
 	Status          string `json:"status"`
 	ProjectType     string `json:"type"`
 }
+
+// GetFlexibleProductPositionService: https://binance-docs.github.io/apidocs/spot/en/#get-flexible-product-position-user_data
+type GetFlexibleProductPositionService struct {
+	c         *Client
+	productId string
+	current   int64
+	size      int64
+}
+
+func (s *GetFlexibleProductPositionService) ProductId(productId string) *GetFlexibleProductPositionService {
+	s.productId = productId
+	return s
+}
+
+// Currently querying the page. Start from 1. Default:1
+func (s *GetFlexibleProductPositionService) Current(current int64) *GetFlexibleProductPositionService {
+	s.current = current
+	return s
+}
+
+// Default:10, Max:100
+func (s *GetFlexibleProductPositionService) Size(size int64) *GetFlexibleProductPositionService {
+	s.size = size
+	return s
+}
+
+func (s *GetFlexibleProductPositionService) Do(ctx context.Context, opts ...RequestOption) (GetFlexibleProductPositionResponse, error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/simple-earn/flexible/position",
+		secType:  secTypeSigned,
+	}
+	m := params{}
+	if s.productId != "" {
+		m["productId"] = s.productId
+	}
+	if s.current != 0 {
+		m["current"] = s.current
+	}
+	if s.size != 0 {
+		m["size"] = s.size
+	}
+	r.setParams(m)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return GetFlexibleProductPositionResponse{}, err
+	}
+	var res GetFlexibleProductPositionResponse
+	if err = json.Unmarshal(data, &res); err != nil {
+		return GetFlexibleProductPositionResponse{}, err
+	}
+	return res, nil
+}
+
+type GetFlexibleProductPositionResponse struct {
+	Rows  []FlexibleProductPosition `json:"rows,omitempty"`
+	Total int                       `json:"total,omitempty"`
+}
+
+type FlexibleProductPosition struct {
+	TotalAmount                    string             `json:"totalAmount,omitempty"`
+	TierAnnualPercentageRate       map[string]float64 `json:"tierAnnualPercentageRate,omitempty"`
+	LatestAnnualPercentageRate     string             `json:"latestAnnualPercentageRate,omitempty"`
+	YesterdayAirdropPercentageRate string             `json:"yesterdayAirdropPercentageRate,omitempty"`
+	Asset                          string             `json:"asset,omitempty"`
+	AirDropAsset                   string             `json:"airDropAsset,omitempty"`
+	CanRedeem                      bool               `json:"canRedeem,omitempty"`
+	CollateralAmount               string             `json:"collateralAmount,omitempty"`
+	ProductID                      string             `json:"productId,omitempty"`
+	YesterdayRealTimeRewards       string             `json:"yesterdayRealTimeRewards,omitempty"`
+	CumulativeBonusRewards         string             `json:"cumulativeBonusRewards,omitempty"`
+	CumulativeRealTimeRewards      string             `json:"cumulativeRealTimeRewards,omitempty"`
+	CumulativeTotalRewards         string             `json:"cumulativeTotalRewards,omitempty"`
+	AutoSubscribe                  bool               `json:"autoSubscribe,omitempty"`
+}
+
+// https://binance-docs.github.io/apidocs/spot/en/#get-locked-product-position-user_data
+type GetLockedProductPositionService struct {
+	c          *Client
+	asset      string
+	positionId string
+	productId  string
+	current    int64
+	size       int64
+}
+
+func (s *GetLockedProductPositionService) Asset(asset string) *GetLockedProductPositionService {
+	s.asset = asset
+	return s
+}
+
+func (s *GetLockedProductPositionService) PositionID(positionId string) *GetLockedProductPositionService {
+	s.positionId = positionId
+	return s
+}
+
+func (s *GetLockedProductPositionService) ProductId(productId string) *GetLockedProductPositionService {
+	s.productId = productId
+	return s
+}
+
+// Currently querying the page. Start from 1. Default:1
+func (s *GetLockedProductPositionService) Current(current int64) *GetLockedProductPositionService {
+	s.current = current
+	return s
+}
+
+// Default:10, Max:100
+func (s *GetLockedProductPositionService) Size(size int64) *GetLockedProductPositionService {
+	s.size = size
+	return s
+}
+
+func (s *GetLockedProductPositionService) Do(ctx context.Context, opts ...RequestOption) (GetLockedProductPositionResponse, error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/simple-earn/locked/position",
+		secType:  secTypeSigned,
+	}
+	m := params{}
+	if s.asset != "" {
+		m["asset"] = s.asset
+	}
+	if s.positionId != "" {
+		m["positionId"] = s.positionId
+	}
+	if s.productId != "" {
+		m["productId"] = s.productId
+	}
+	if s.current != 0 {
+		m["current"] = s.current
+	}
+	if s.size != 0 {
+		m["size"] = s.size
+	}
+	r.setParams(m)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return GetLockedProductPositionResponse{}, err
+	}
+	var res GetLockedProductPositionResponse
+	if err = json.Unmarshal(data, &res); err != nil {
+		return GetLockedProductPositionResponse{}, err
+	}
+	return res, nil
+}
+
+type GetLockedProductPositionResponse struct {
+	Rows  []LockedProductPosition `json:"rows,omitempty"`
+	Total int                     `json:"total,omitempty"`
+}
+type LockedProductPosition struct {
+	PositionID   string `json:"positionId,omitempty"`
+	ProjectID    string `json:"projectId,omitempty"`
+	Asset        string `json:"asset,omitempty"`
+	Amount       string `json:"amount,omitempty"`
+	PurchaseTime string `json:"purchaseTime,omitempty"`
+	Duration     string `json:"duration,omitempty"`
+	AccrualDays  string `json:"accrualDays,omitempty"`
+	RewardAsset  string `json:"rewardAsset,omitempty"`
+	Apy          string `json:"APY,omitempty"`
+	IsRenewable  bool   `json:"isRenewable,omitempty"`
+	IsAutoRenew  bool   `json:"isAutoRenew,omitempty"`
+	RedeemDate   string `json:"redeemDate,omitempty"`
+}

@@ -396,3 +396,150 @@ func (s *savingsServiceTestSuite) assertSavingFixedProjectPositionsService(e, a 
 	r.Equal(e.Status, a.Status, "Status")
 	r.Equal(e.ProjectType, a.ProjectType, "ProjectType")
 }
+
+func (s *savingsServiceTestSuite) TestGetFlexibleProductPositionService() {
+	data := []byte(`{
+		"rows":[
+		  {
+			"totalAmount": "75.46000000",
+			"tierAnnualPercentageRate": {
+			  "0-5BTC": 0.05,
+			  "5-10BTC": 0.03
+			},
+			"latestAnnualPercentageRate": "0.02599895",
+			"yesterdayAirdropPercentageRate": "0.02599895",
+			"asset": "USDT",
+			"airDropAsset": "BETH",
+			"canRedeem": true,
+			"collateralAmount": "232.23123213",
+			"productId": "USDT001",
+			"yesterdayRealTimeRewards": "0.10293829",
+			"cumulativeBonusRewards": "0.22759183",
+			"cumulativeRealTimeRewards": "0.22759183",
+			"cumulativeTotalRewards": "0.45459183",
+			"autoSubscribe": true
+		  }
+		],
+		"total": 1
+	}`)
+
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{})
+		s.assertRequestEqual(e, r)
+	})
+
+	positionsList, err := s.client.NewGetFlexibleProductPosition().
+		Do(newContext())
+	r := s.r()
+	r.NoError(err)
+
+	r.Len(positionsList.Rows, 1)
+	s.assertFlexibleProductPosition(&FlexibleProductPosition{
+		TotalAmount: "75.46000000",
+		TierAnnualPercentageRate: map[string]float64{
+			"0-5BTC":  0.05,
+			"5-10BTC": 0.03,
+		},
+		LatestAnnualPercentageRate:     "0.02599895",
+		YesterdayAirdropPercentageRate: "0.02599895",
+		Asset:                          "USDT",
+		AirDropAsset:                   "BETH",
+		CanRedeem:                      true,
+		CollateralAmount:               "232.23123213",
+		ProductID:                      "USDT001",
+		YesterdayRealTimeRewards:       "0.10293829",
+		CumulativeBonusRewards:         "0.22759183",
+		CumulativeRealTimeRewards:      "0.22759183",
+		CumulativeTotalRewards:         "0.45459183",
+		AutoSubscribe:                  true,
+	}, &positionsList.Rows[0])
+}
+
+func (s *savingsServiceTestSuite) assertFlexibleProductPosition(e, a *FlexibleProductPosition) {
+	r := s.r()
+	r.Equal(e.TotalAmount, a.TotalAmount, "TotalAmount")
+	r.Equal(e.TierAnnualPercentageRate, a.TierAnnualPercentageRate, "TierAnnualPercentageRate")
+	r.Equal(e.LatestAnnualPercentageRate, a.LatestAnnualPercentageRate, "LatestAnnualPercentageRate")
+	r.Equal(e.YesterdayAirdropPercentageRate, a.YesterdayAirdropPercentageRate, "YesterdayAirdropPercentageRate")
+	r.Equal(e.Asset, a.Asset, "Asset")
+	r.Equal(e.AirDropAsset, a.AirDropAsset, "AirDropAsset")
+	r.Equal(e.CanRedeem, a.CanRedeem, "CanRedeem")
+	r.Equal(e.CollateralAmount, a.CollateralAmount, "CollateralAmount")
+	r.Equal(e.ProductID, a.ProductID, "ProductID")
+	r.Equal(e.YesterdayRealTimeRewards, a.YesterdayRealTimeRewards, "YesterdayRealTimeRewards")
+	r.Equal(e.CumulativeBonusRewards, a.CumulativeBonusRewards, "CumulativeBonusRewards")
+	r.Equal(e.CumulativeRealTimeRewards, a.CumulativeRealTimeRewards, "CumulativeRealTimeRewards")
+	r.Equal(e.CumulativeTotalRewards, a.CumulativeTotalRewards, "CumulativeTotalRewards")
+	r.Equal(e.AutoSubscribe, a.AutoSubscribe, "AutoSubscribe")
+}
+
+func (s *savingsServiceTestSuite) TestGetLockedProductPositionService() {
+	data := []byte(`{
+		"rows":[
+		  {
+			"positionId": "123123",
+			"projectId": "Axs*90",
+			"asset": "AXS",
+			"amount": "122.09202928",
+			"purchaseTime": "1646182276000",
+			"duration": "60",
+			"accrualDays": "4",
+			"rewardAsset": "AXS",
+			"APY": "0.23",
+			"isRenewable": true,
+			"isAutoRenew": true,
+			"redeemDate": "1732182276000"
+		  }
+		],
+		"total": 1
+	  }`)
+
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"asset": "AXS",
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	positionsList, err := s.client.NewGetLockedProductPosition().
+		Asset("AXS").
+		Do(newContext())
+	r := s.r()
+	r.NoError(err)
+
+	r.Len(positionsList.Rows, 1)
+	s.assertLockedProductPosition(&LockedProductPosition{
+		PositionID:   "123123",
+		ProjectID:    "Axs*90",
+		Asset:        "AXS",
+		Amount:       "122.09202928",
+		PurchaseTime: "1646182276000",
+		Duration:     "60",
+		AccrualDays:  "4",
+		RewardAsset:  "AXS",
+		Apy:          "0.23",
+		IsRenewable:  true,
+		IsAutoRenew:  true,
+		RedeemDate:   "1732182276000",
+	}, &positionsList.Rows[0])
+}
+
+func (s *savingsServiceTestSuite) assertLockedProductPosition(e, a *LockedProductPosition) {
+	r := s.r()
+	r.Equal(e.PositionID, a.PositionID, "PositionID")
+	r.Equal(e.ProjectID, a.ProjectID, "ProjectID")
+	r.Equal(e.Asset, a.Asset, "Asset")
+	r.Equal(e.Amount, a.Amount, "Amount")
+	r.Equal(e.PurchaseTime, a.PurchaseTime, "PurchaseTime")
+	r.Equal(e.Duration, a.Duration, "Duration")
+	r.Equal(e.AccrualDays, a.AccrualDays, "AccrualDays")
+	r.Equal(e.RewardAsset, a.RewardAsset, "RewardAsset")
+	r.Equal(e.Apy, a.Apy, "Apy")
+	r.Equal(e.IsRenewable, a.IsRenewable, "IsRenewable")
+	r.Equal(e.IsAutoRenew, a.IsAutoRenew, "IsAutoRenew")
+	r.Equal(e.RedeemDate, a.RedeemDate, "RedeemDate")
+}
