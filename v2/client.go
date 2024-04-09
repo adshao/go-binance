@@ -569,6 +569,14 @@ func (c *Client) NewSavingFixedProjectPositionsService() *SavingFixedProjectPosi
 	return &SavingFixedProjectPositionsService{c: c}
 }
 
+func (c *Client) NewGetFlexibleProductPosition() *GetFlexibleProductPositionService {
+	return &GetFlexibleProductPositionService{c: c}
+}
+
+func (c *Client) NewGetLockedProductPosition() *GetLockedProductPositionService {
+	return &GetLockedProductPositionService{c: c}
+}
+
 // NewListSavingsFlexibleProductsService get flexible products list (Savings)
 func (c *Client) NewListSavingsFlexibleProductsService() *ListSavingsFlexibleProductsService {
 	return &ListSavingsFlexibleProductsService{c: c}
