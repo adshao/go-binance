@@ -226,7 +226,7 @@ type CreateOrderResponse struct {
 	ClosePosition           bool             `json:"closePosition"`               // if Close-All
 	PriceProtect            bool             `json:"priceProtect"`                // if conditional order trigger is protected
 	PriceMatch              string           `json:"priceMatch"`                  // price match mode
-	SelfTradePreventionMode string           `json:"selfTradePreventionMode"`     // self trading preventation mode
+	SelfTradePreventionMode string           `json:"selfTradePreventionMode"`     // self trading prevention mode
 	GoodTillDate            int64            `json:"goodTillDate"`                // order pre-set auto cancel time for TIF GTD order
 	CumQty                  string           `json:"cumQty"`                      //
 	OrigType                OrderType        `json:"origType"`                    //
