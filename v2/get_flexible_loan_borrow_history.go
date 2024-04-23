@@ -69,7 +69,7 @@ func (s *GetFlexibleLoanBorrowHistoryService) EndTime(endTime int64) *GetFlexibl
 func (s *GetFlexibleLoanBorrowHistoryService) Do(ctx context.Context, opts ...RequestOption) (res *GetFlexibleLoanBorrowHistoryResp, err error) {
 	r := &request{
 		method:   http.MethodGet,
-		endpoint: "/sapi/v1/loan/flexible/borrow/history",
+		endpoint: "/sapi/v2/loan/flexible/borrow/history",
 		secType:  secTypeSigned,
 	}
 

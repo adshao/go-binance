@@ -54,7 +54,7 @@ func (s *GetFlexibleLoanOngoingOrdersService) Limit(limit int64) *GetFlexibleLoa
 func (s *GetFlexibleLoanOngoingOrdersService) Do(ctx context.Context, opts ...RequestOption) (res *GetFlexibleLoanOngoingOrdersResp, err error) {
 	r := &request{
 		method:   http.MethodGet,
-		endpoint: "/sapi/v1/loan/flexible/ongoing/orders",
+		endpoint: "/sapi/v2/loan/flexible/ongoing/orders",
 		secType:  secTypeSigned,
 	}
 

@@ -65,7 +65,7 @@ func (s *FlexibleLoanAdjustLTVService) Direction(direction FLAdjustLTVDirection)
 func (s *FlexibleLoanAdjustLTVService) Do(ctx context.Context, opts ...RequestOption) (res *FlexibleLoanAdjustLTVResp, err error) {
 	r := &request{
 		method:   http.MethodPost,
-		endpoint: "/sapi/v1/loan/flexible/adjust/ltv",
+		endpoint: "/sapi/v2/loan/flexible/adjust/ltv",
 		secType:  secTypeSigned,
 	}
 

@@ -66,7 +66,7 @@ func (s *FlexibleLoanRepayService) FullRepayment(fullRepayment bool) *FlexibleLo
 func (s *FlexibleLoanRepayService) Do(ctx context.Context, opts ...RequestOption) (res *FlexibleLoanRepayResp, err error) {
 	r := &request{
 		method:   http.MethodPost,
-		endpoint: "/sapi/v1/loan/flexible/repay",
+		endpoint: "/sapi/v2/loan/flexible/repay",
 		secType:  secTypeSigned,
 	}
 

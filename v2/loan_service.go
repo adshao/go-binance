@@ -113,7 +113,7 @@ type GetFlexibleLoanAssetsDataService struct {
 func (s *GetFlexibleLoanAssetsDataService) Do(ctx context.Context, opts ...RequestOption) (res *FlexibleLoanableAssets, err error) {
 	r := &request{
 		method:   http.MethodGet,
-		endpoint: "/sapi/v1/loan/flexible/loanable/data",
+		endpoint: "/sapi/v2/loan/flexible/loanable/data",
 		secType:  secTypeSigned,
 	}
 
@@ -182,7 +182,7 @@ func (s *FlexibleLoanBorrowService) CollateralAmount(collAmt float64) *FlexibleL
 func (s *FlexibleLoanBorrowService) Do(ctx context.Context, opts ...RequestOption) (res *FlexibleLoanBorrowResp, err error) {
 	r := &request{
 		method:   http.MethodPost,
-		endpoint: "/sapi/v1/loan/flexible/borrow",
+		endpoint: "/sapi/v2/loan/flexible/borrow",
 		secType:  secTypeSigned,
 	}
 
