@@ -276,7 +276,7 @@ func (s *RecentTradesService) Limit(limit int) *RecentTradesService {
 func (s *RecentTradesService) Do(ctx context.Context, opts ...RequestOption) (res []*Trade, err error) {
 	r := &request{
 		method:   http.MethodGet,
-		endpoint: "/api/v1/trades",
+		endpoint: "/api/v3/trades",
 	}
 	r.setParam("symbol", s.symbol)
 	if s.limit != nil {
