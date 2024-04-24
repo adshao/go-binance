@@ -1,13 +1,8 @@
 package futures
 
 import (
-	"context"
-	"fmt"
-	"github.com/stretchr/testify/require"
-	"testing"
-	"time"
-
 	"github.com/stretchr/testify/suite"
+	"testing"
 )
 
 type fundingRateHistoryServiceTestSuite struct {
@@ -61,18 +56,4 @@ func (s *fundingRateHistoryServiceTestSuite) assertFundingRateHistoryEqual(e, a 
 	r.Equal(e[0].FundingRate, a[0].FundingRate, "FundingRate")
 	r.Equal(e[0].FundingTime, a[0].FundingTime, "FundingTime")
 	r.Equal(e[0].MarkPrice, a[0].MarkPrice, "MarkPrice")
-}
-
-func TestName(t *testing.T) {
-	client := NewClient("", "")
-
-	ctx, cancelFunc := context.WithDeadline(context.Background(), time.Now().Add(time.Second*5))
-	defer cancelFunc()
-
-	rateHistory, err := client.NewFundingRateHistoryService().Do(ctx)
-	require.NoError(t, err)
-
-	for i := 0; i < 5; i++ {
-		fmt.Printf("%+v\n", rateHistory[i])
-	}
 }
