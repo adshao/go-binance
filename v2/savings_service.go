@@ -2,6 +2,7 @@ package binance
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 )
 
@@ -587,4 +588,106 @@ type LockedProductPosition struct {
 	IsRenewable  bool   `json:"isRenewable,omitempty"`
 	IsAutoRenew  bool   `json:"isAutoRenew,omitempty"`
 	RedeemDate   string `json:"redeemDate,omitempty"`
+}
+
+// https://binance-docs.github.io/apidocs/spot/en/#get-flexible-rewards-history-user_data
+type GetFlexibleRewardHistoryService struct {
+	c         *Client
+	productID string
+	asset     string
+	startTime int64
+	endTime   int64
+	typ       string
+	current   int64
+	size      int64
+}
+
+func (s *GetFlexibleRewardHistoryService) ProductID(productID string) *GetFlexibleRewardHistoryService {
+	s.productID = productID
+	return s
+}
+
+func (s *GetFlexibleRewardHistoryService) Asset(asset string) *GetFlexibleRewardHistoryService {
+	s.asset = asset
+	return s
+}
+
+func (s *GetFlexibleRewardHistoryService) StartTime(startTime int64) *GetFlexibleRewardHistoryService {
+	s.startTime = startTime
+	return s
+}
+
+func (s *GetFlexibleRewardHistoryService) EndTime(endTime int64) *GetFlexibleRewardHistoryService {
+	s.endTime = endTime
+	return s
+}
+
+func (s *GetFlexibleRewardHistoryService) Typ(typ string) *GetFlexibleRewardHistoryService {
+	s.typ = typ
+	return s
+}
+
+func (s *GetFlexibleRewardHistoryService) Current(current int64) *GetFlexibleRewardHistoryService {
+	s.current = current
+	return s
+}
+
+func (s *GetFlexibleRewardHistoryService) Size(size int64) *GetFlexibleRewardHistoryService {
+	s.size = size
+	return s
+}
+
+func (s *GetFlexibleRewardHistoryService) Do(ctx context.Context, opts ...RequestOption) (GetFlexibleRewardHistoryResponse, error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/simple-earn/flexible/history/rewardRecord",
+		secType:  secTypeSigned,
+	}
+	m := params{}
+	if s.asset != "" {
+		m["asset"] = s.asset
+	}
+	if s.startTime != 0 {
+		m["startTime"] = s.startTime
+	}
+	if s.endTime != 0 {
+		m["endTime"] = s.startTime
+	}
+	if s.productID != "" {
+		m["productId"] = s.productID
+	}
+	if s.current != 0 {
+		m["current"] = s.current
+	}
+	if s.size != 0 {
+		m["size"] = s.size
+	}
+	if s.typ != "" {
+		m["type"] = s.typ
+	}
+	r.setParams(m)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return GetFlexibleRewardHistoryResponse{}, err
+	}
+	
+	var res GetFlexibleRewardHistoryResponse
+	if err = json.Unmarshal(data, &res); err != nil {
+		return GetFlexibleRewardHistoryResponse{}, err
+	}
+	return res, nil
+
+}
+
+type GetFlexibleRewardHistoryResponse struct {
+	Rows  []GetFlexibleRewardHistory `json:"rows,omitempty"`
+	Total int                        `json:"total,omitempty"`
+}
+
+type GetFlexibleRewardHistory struct {
+	Asset     string `json:"asset,omitempty"`
+	Rewards   string `json:"rewards,omitempty"`
+	ProjectID string `json:"projectId,omitempty"`
+	Typ       string `json:"type,omitempty"`
+	Time      int64  `json:"time,omitempty"`
 }
