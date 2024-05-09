@@ -588,3 +588,105 @@ type LockedProductPosition struct {
 	IsAutoRenew  bool   `json:"isAutoRenew,omitempty"`
 	RedeemDate   string `json:"redeemDate,omitempty"`
 }
+
+// https://binance-docs.github.io/apidocs/spot/en/#get-flexible-rewards-history-user_data
+type FlexibleRewardHistoryService struct {
+	c         *Client
+	productID string
+	asset     string
+	startTime int64
+	endTime   int64
+	typ       string
+	current   int64
+	size      int64
+}
+
+func (s *FlexibleRewardHistoryService) ProductID(productID string) *FlexibleRewardHistoryService {
+	s.productID = productID
+	return s
+}
+
+func (s *FlexibleRewardHistoryService) Asset(asset string) *FlexibleRewardHistoryService {
+	s.asset = asset
+	return s
+}
+
+func (s *FlexibleRewardHistoryService) StartTime(startTime int64) *FlexibleRewardHistoryService {
+	s.startTime = startTime
+	return s
+}
+
+func (s *FlexibleRewardHistoryService) EndTime(endTime int64) *FlexibleRewardHistoryService {
+	s.endTime = endTime
+	return s
+}
+
+func (s *FlexibleRewardHistoryService) Typ(typ string) *FlexibleRewardHistoryService {
+	s.typ = typ
+	return s
+}
+
+func (s *FlexibleRewardHistoryService) Current(current int64) *FlexibleRewardHistoryService {
+	s.current = current
+	return s
+}
+
+func (s *FlexibleRewardHistoryService) Size(size int64) *FlexibleRewardHistoryService {
+	s.size = size
+	return s
+}
+
+func (s *FlexibleRewardHistoryService) Do(ctx context.Context, opts ...RequestOption) (FlexibleRewardHistoryResponse, error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/simple-earn/flexible/history/rewardsRecord",
+		secType:  secTypeSigned,
+	}
+	m := params{}
+	if s.asset != "" {
+		m["asset"] = s.asset
+	}
+	if s.startTime != 0 {
+		m["startTime"] = s.startTime
+	}
+	if s.endTime != 0 {
+		m["endTime"] = s.startTime
+	}
+	if s.productID != "" {
+		m["productId"] = s.productID
+	}
+	if s.current != 0 {
+		m["current"] = s.current
+	}
+	if s.size != 0 {
+		m["size"] = s.size
+	}
+	if s.typ != "" {
+		m["type"] = s.typ
+	}
+	r.setParams(m)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return FlexibleRewardHistoryResponse{}, err
+	}
+
+	var res FlexibleRewardHistoryResponse
+	if err = json.Unmarshal(data, &res); err != nil {
+		return FlexibleRewardHistoryResponse{}, err
+	}
+	return res, nil
+
+}
+
+type FlexibleRewardHistoryResponse struct {
+	Rows  []FlexibleRewardHistory `json:"rows,omitempty"`
+	Total int                     `json:"total,omitempty"`
+}
+
+type FlexibleRewardHistory struct {
+	Asset     string `json:"asset,omitempty"`
+	Rewards   string `json:"rewards,omitempty"`
+	ProjectID string `json:"projectId,omitempty"`
+	Typ       string `json:"type,omitempty"`
+	Time      int64  `json:"time,omitempty"`
+}

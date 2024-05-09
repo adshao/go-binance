@@ -577,6 +577,10 @@ func (c *Client) NewGetLockedProductPosition() *GetLockedProductPositionService 
 	return &GetLockedProductPositionService{c: c}
 }
 
+func (c *Client) NewGetFlexibleRewardHistory() *FlexibleRewardHistoryService {
+	return &FlexibleRewardHistoryService{c: c}
+}
+
 // NewListSavingsFlexibleProductsService get flexible products list (Savings)
 func (c *Client) NewListSavingsFlexibleProductsService() *ListSavingsFlexibleProductsService {
 	return &ListSavingsFlexibleProductsService{c: c}

@@ -543,3 +543,62 @@ func (s *savingsServiceTestSuite) assertLockedProductPosition(e, a *LockedProduc
 	r.Equal(e.IsAutoRenew, a.IsAutoRenew, "IsAutoRenew")
 	r.Equal(e.RedeemDate, a.RedeemDate, "RedeemDate")
 }
+
+func (s *savingsServiceTestSuite) TestGetFlexibleRewardHistoryService() {
+	data := []byte(`{
+		"rows": [
+		  {
+			"asset": "BUSD",
+			"rewards": "0.00006408",
+			"projectId": "USDT001",
+			"type": "BONUS",
+			"time": 1577233578000
+		  },
+		  {
+			"asset": "USDT",
+			"rewards": "0.00687654",
+			"projectId": "USDT001",
+			"type": "REALTIME",
+			"time": 1577233562000
+		  }
+		],
+		"total": 2
+	  }`)
+
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{})
+		s.assertRequestEqual(e, r)
+	})
+
+	rewardHistoryRes, err := s.client.NewGetFlexibleRewardHistory().
+		Do(newContext())
+	r := s.r()
+	r.NoError(err)
+
+	r.Len(rewardHistoryRes.Rows, 2)
+	s.assertFlexibleRewardHistory(&FlexibleRewardHistory{
+		Asset:     "BUSD",
+		Rewards:   "0.00006408",
+		ProjectID: "USDT001",
+		Typ:       "BONUS",
+		Time:      1577233578000,
+	}, &rewardHistoryRes.Rows[0])
+	s.assertFlexibleRewardHistory(&FlexibleRewardHistory{
+		Asset:     "USDT",
+		Rewards:   "0.00687654",
+		ProjectID: "USDT001",
+		Typ:       "REALTIME",
+		Time:      1577233562000,
+	}, &rewardHistoryRes.Rows[1])
+}
+
+func (s *savingsServiceTestSuite) assertFlexibleRewardHistory(e, a *FlexibleRewardHistory) {
+	r := s.r()
+	r.Equal(e.ProjectID, a.ProjectID, "ProjectID")
+	r.Equal(e.Asset, a.Asset, "Asset")
+	r.Equal(e.Rewards, a.Rewards, "Rewards")
+	r.Equal(e.Typ, a.Typ, "Type")
+	r.Equal(e.Time, a.Time, "Time")
+}
