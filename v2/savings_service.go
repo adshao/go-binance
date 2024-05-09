@@ -621,7 +621,7 @@ func (s *FlexibleRewardHistoryService) EndTime(endTime int64) *FlexibleRewardHis
 	return s
 }
 
-func (s *FlexibleRewardHistoryService) Typ(typ string) *FlexibleRewardHistoryService {
+func (s *FlexibleRewardHistoryService) Type(typ string) *FlexibleRewardHistoryService {
 	s.typ = typ
 	return s
 }
@@ -650,7 +650,7 @@ func (s *FlexibleRewardHistoryService) Do(ctx context.Context, opts ...RequestOp
 		m["startTime"] = s.startTime
 	}
 	if s.endTime != 0 {
-		m["endTime"] = s.startTime
+		m["endTime"] = s.endTime
 	}
 	if s.productID != "" {
 		m["productId"] = s.productID
