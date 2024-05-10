@@ -550,14 +550,14 @@ func (s *savingsServiceTestSuite) TestGetFlexibleRewardHistoryService() {
 		  {
 			"asset": "BUSD",
 			"rewards": "0.00006408",
-			"projectId": "USDT001",
+			"productId": "USDT001",
 			"type": "BONUS",
 			"time": 1577233578000
 		  },
 		  {
 			"asset": "USDT",
 			"rewards": "0.00687654",
-			"projectId": "USDT001",
+			"productId": "USDT001",
 			"type": "REALTIME",
 			"time": 1577233562000
 		  }
