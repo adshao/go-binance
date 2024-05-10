@@ -686,7 +686,7 @@ type FlexibleRewardHistoryResponse struct {
 type FlexibleRewardHistory struct {
 	Asset     string `json:"asset,omitempty"`
 	Rewards   string `json:"rewards,omitempty"`
-	ProjectID string `json:"projectId,omitempty"`
+	ProjectID string `json:"productId,omitempty"`
 	Typ       string `json:"type,omitempty"`
 	Time      int64  `json:"time,omitempty"`
 }
