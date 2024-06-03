@@ -1,4 +1,4 @@
-package futures
+package options
 
 import (
 	"bytes"
@@ -15,9 +15,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/bitly/go-simplejson"
-
 	"github.com/adshao/go-binance/v2/common"
+	"github.com/bitly/go-simplejson"
 )
 
 // SideType define side type of order
@@ -25,6 +24,9 @@ type SideType string
 
 // PositionSideType define position side type of order
 type PositionSideType string
+
+// OptionSideType define option side type of order
+type OptionSideType string
 
 // OrderType define order type
 type OrderType string
@@ -73,7 +75,7 @@ type ForceOrderCloseType string
 
 // Endpoints
 const (
-	baseApiMainUrl    = "https://fapi.binance.com"
+	baseApiMainUrl    = "https://eapi.binance.com"
 	baseApiTestnetUrl = "https://testnet.binancefuture.com"
 )
 
@@ -85,6 +87,9 @@ const (
 	PositionSideTypeBoth  PositionSideType = "BOTH"
 	PositionSideTypeLong  PositionSideType = "LONG"
 	PositionSideTypeShort PositionSideType = "SHORT"
+
+	OptionSideTypeCall OptionSideType = "CALL"
+	OptionSideTypePut  OptionSideType = "PUT"
 
 	OrderTypeLimit              OrderType = "LIMIT"
 	OrderTypeMarket             OrderType = "MARKET"
@@ -118,6 +123,7 @@ const (
 	OrderStatusTypeExpired         OrderStatusType = "EXPIRED"
 	OrderStatusTypeNewInsurance    OrderStatusType = "NEW_INSURANCE"
 	OrderStatusTypeNewADL          OrderStatusType = "NEW_ADL"
+	OrderStatusTypeAccepted        OrderStatusType = "ACCEPTED"
 
 	SymbolTypeFuture SymbolType = "FUTURE"
 
@@ -190,11 +196,8 @@ func newJSON(data []byte) (j *simplejson.Json, err error) {
 	return j, nil
 }
 
-// getApiEndpoint return the base endpoint of the WS according the UseTestnet flag
+// getApiEndpoint return the base endpoint of the WS
 func getApiEndpoint() string {
-	if UseTestnet {
-		return baseApiTestnetUrl
-	}
 	return baseApiMainUrl
 }
 
@@ -366,19 +369,9 @@ func (c *Client) SetApiEndpoint(url string) *Client {
 	return c
 }
 
-// NewPingService init ping service
-func (c *Client) NewPingService() *PingService {
-	return &PingService{c: c}
-}
-
-// NewServerTimeService init server time service
-func (c *Client) NewServerTimeService() *ServerTimeService {
-	return &ServerTimeService{c: c}
-}
-
-// NewSetServerTimeService init set server time service
-func (c *Client) NewSetServerTimeService() *SetServerTimeService {
-	return &SetServerTimeService{c: c}
+// NewKlinesService init klines service
+func (c *Client) NewKlinesService() *KlinesService {
+	return &KlinesService{c: c}
 }
 
 // NewDepthService init depth service
@@ -386,49 +379,9 @@ func (c *Client) NewDepthService() *DepthService {
 	return &DepthService{c: c}
 }
 
-// NewAggTradesService init aggregate trades service
-func (c *Client) NewAggTradesService() *AggTradesService {
-	return &AggTradesService{c: c}
-}
-
-// NewRecentTradesService init recent trades service
-func (c *Client) NewRecentTradesService() *RecentTradesService {
-	return &RecentTradesService{c: c}
-}
-
-// NewKlinesService init klines service
-func (c *Client) NewKlinesService() *KlinesService {
-	return &KlinesService{c: c}
-}
-
-// NewContinuousKlinesService init continuous klines service
-func (c *Client) NewContinuousKlinesService() *ContinuousKlinesService {
-	return &ContinuousKlinesService{c: c}
-}
-
-// NewIndexPriceKlinesService init index price klines service
-func (c *Client) NewIndexPriceKlinesService() *IndexPriceKlinesService {
-	return &IndexPriceKlinesService{c: c}
-}
-
-// NewMarkPriceKlinesService init markPriceKlines service
-func (c *Client) NewMarkPriceKlinesService() *MarkPriceKlinesService {
-	return &MarkPriceKlinesService{c: c}
-}
-
-// NewListPriceChangeStatsService init list prices change stats service
-func (c *Client) NewListPriceChangeStatsService() *ListPriceChangeStatsService {
-	return &ListPriceChangeStatsService{c: c}
-}
-
-// NewListPricesService init listing prices service
-func (c *Client) NewListPricesService() *ListPricesService {
-	return &ListPricesService{c: c}
-}
-
-// NewListBookTickersService init listing booking tickers service
-func (c *Client) NewListBookTickersService() *ListBookTickersService {
-	return &ListBookTickersService{c: c}
+// NewExchangeInfoService init exchange info service
+func (c *Client) NewExchangeInfoService() *ExchangeInfoService {
+	return &ExchangeInfoService{c: c}
 }
 
 // NewCreateOrderService init creating order service
@@ -436,9 +389,9 @@ func (c *Client) NewCreateOrderService() *CreateOrderService {
 	return &CreateOrderService{c: c}
 }
 
-// NewCreateBatchOrdersService init creating batch order service
-func (c *Client) NewCreateBatchOrdersService() *CreateBatchOrdersService {
-	return &CreateBatchOrdersService{c: c}
+// NewListOpenOrdersService init list open orders service
+func (c *Client) NewListOpenOrdersService() *ListOpenOrdersService {
+	return &ListOpenOrdersService{c: c}
 }
 
 // NewGetOrderService init get order service
@@ -461,172 +414,7 @@ func (c *Client) NewCancelMultipleOrdersService() *CancelMultiplesOrdersService 
 	return &CancelMultiplesOrdersService{c: c}
 }
 
-// NewGetOpenOrderService init get open order service
-func (c *Client) NewGetOpenOrderService() *GetOpenOrderService {
-	return &GetOpenOrderService{c: c}
-}
-
-// NewListOpenOrdersService init list open orders service
-func (c *Client) NewListOpenOrdersService() *ListOpenOrdersService {
-	return &ListOpenOrdersService{c: c}
-}
-
-// NewListOrdersService init listing orders service
-func (c *Client) NewListOrdersService() *ListOrdersService {
-	return &ListOrdersService{c: c}
-}
-
-// NewGetAccountService init getting account service
-func (c *Client) NewGetAccountService() *GetAccountService {
-	return &GetAccountService{c: c}
-}
-
-// NewGetBalanceService init getting balance service
-func (c *Client) NewGetBalanceService() *GetBalanceService {
-	return &GetBalanceService{c: c}
-}
-
-// NewGetPositionRiskService init getting position risk service
-func (c *Client) NewGetPositionRiskService() *GetPositionRiskService {
-	return &GetPositionRiskService{c: c}
-}
-
-// NewGetPositionMarginHistoryService init getting position margin history service
-func (c *Client) NewGetPositionMarginHistoryService() *GetPositionMarginHistoryService {
-	return &GetPositionMarginHistoryService{c: c}
-}
-
-// NewGetIncomeHistoryService init getting income history service
-func (c *Client) NewGetIncomeHistoryService() *GetIncomeHistoryService {
-	return &GetIncomeHistoryService{c: c}
-}
-
-// NewHistoricalTradesService init listing trades service
-func (c *Client) NewHistoricalTradesService() *HistoricalTradesService {
-	return &HistoricalTradesService{c: c}
-}
-
-// NewListAccountTradeService init account trade list service
-func (c *Client) NewListAccountTradeService() *ListAccountTradeService {
-	return &ListAccountTradeService{c: c}
-}
-
-// NewStartUserStreamService init starting user stream service
-func (c *Client) NewStartUserStreamService() *StartUserStreamService {
-	return &StartUserStreamService{c: c}
-}
-
-// NewKeepaliveUserStreamService init keep alive user stream service
-func (c *Client) NewKeepaliveUserStreamService() *KeepaliveUserStreamService {
-	return &KeepaliveUserStreamService{c: c}
-}
-
-// NewCloseUserStreamService init closing user stream service
-func (c *Client) NewCloseUserStreamService() *CloseUserStreamService {
-	return &CloseUserStreamService{c: c}
-}
-
-// NewExchangeInfoService init exchange info service
-func (c *Client) NewExchangeInfoService() *ExchangeInfoService {
-	return &ExchangeInfoService{c: c}
-}
-
-// NewPremiumIndexService init premium index service
-func (c *Client) NewPremiumIndexService() *PremiumIndexService {
-	return &PremiumIndexService{c: c}
-}
-
-// NewPremiumIndexKlinesService init premium index klines service
-func (c *Client) NewPremiumIndexKlinesService() *PremiumIndexKlinesService {
-	return &PremiumIndexKlinesService{c: c}
-}
-
-// NewFundingRateService init funding rate service
-func (c *Client) NewFundingRateService() *FundingRateService {
-	return &FundingRateService{c: c}
-}
-
-// NewFundingRateHistoryService init funding rate history service
-func (c *Client) NewFundingRateHistoryService() *FundingRateHistoryService {
-	return &FundingRateHistoryService{c: c}
-}
-
-// NewFundingRateInfoService init funding rate info service
-func (c *Client) NewFundingRateInfoService() *FundingRateInfoService {
-	return &FundingRateInfoService{c: c}
-}
-
-// NewListUserLiquidationOrdersService init list user's liquidation orders service
-func (c *Client) NewListUserLiquidationOrdersService() *ListUserLiquidationOrdersService {
-	return &ListUserLiquidationOrdersService{c: c}
-}
-
-// NewListLiquidationOrdersService init funding rate service
-func (c *Client) NewListLiquidationOrdersService() *ListLiquidationOrdersService {
-	return &ListLiquidationOrdersService{c: c}
-}
-
-// NewChangeLeverageService init change leverage service
-func (c *Client) NewChangeLeverageService() *ChangeLeverageService {
-	return &ChangeLeverageService{c: c}
-}
-
-// NewGetLeverageBracketService init change leverage service
-func (c *Client) NewGetLeverageBracketService() *GetLeverageBracketService {
-	return &GetLeverageBracketService{c: c}
-}
-
-// NewChangeMarginTypeService init change margin type service
-func (c *Client) NewChangeMarginTypeService() *ChangeMarginTypeService {
-	return &ChangeMarginTypeService{c: c}
-}
-
-// NewUpdatePositionMarginService init update position margin
-func (c *Client) NewUpdatePositionMarginService() *UpdatePositionMarginService {
-	return &UpdatePositionMarginService{c: c}
-}
-
-// NewChangePositionModeService init change position mode service
-func (c *Client) NewChangePositionModeService() *ChangePositionModeService {
-	return &ChangePositionModeService{c: c}
-}
-
-// NewGetPositionModeService init get position mode service
-func (c *Client) NewGetPositionModeService() *GetPositionModeService {
-	return &GetPositionModeService{c: c}
-}
-
-// NewChangeMultiAssetModeService init change multi-asset mode service
-func (c *Client) NewChangeMultiAssetModeService() *ChangeMultiAssetModeService {
-	return &ChangeMultiAssetModeService{c: c}
-}
-
-// NewGetMultiAssetModeService init get multi-asset mode service
-func (c *Client) NewGetMultiAssetModeService() *GetMultiAssetModeService {
-	return &GetMultiAssetModeService{c: c}
-}
-
-// NewGetRebateNewUserService init get rebate_newuser service
-func (c *Client) NewGetRebateNewUserService() *GetRebateNewUserService {
-	return &GetRebateNewUserService{c: c}
-}
-
-// NewCommissionRateService returns commission rate
-func (c *Client) NewCommissionRateService() *CommissionRateService {
-	return &CommissionRateService{c: c}
-}
-
-// NewGetOpenInterestService init open interest service
-func (c *Client) NewGetOpenInterestService() *GetOpenInterestService {
-	return &GetOpenInterestService{c: c}
-}
-
-// NewOpenInterestStatisticsService init open interest statistics service
-func (c *Client) NewOpenInterestStatisticsService() *OpenInterestStatisticsService {
-	return &OpenInterestStatisticsService{c: c}
-}
-
-// NewLongShortRatioService init open interest statistics service
-func (c *Client) NewLongShortRatioService() *LongShortRatioService {
-	return &LongShortRatioService{c: c}
+// NewCreateBatchOrdersService init creating batch order service
+func (c *Client) NewCreateBatchOrdersService() *CreateBatchOrdersService {
+	return &CreateBatchOrdersService{c: c}
 }

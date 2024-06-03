@@ -71,10 +71,37 @@ type PayTradeItem struct {
 	TransactionTime int64         `json:"transactionTime"`
 	Amount          string        `json:"amount"`
 	Currency        string        `json:"currency"`
+	PayerInfo       *PayerInfo    `json:"payerInfo"`
+	ReceiverInfo    *ReceiverInfo `json:"receiverInfo"`
 	FundsDetail     []FundsDetail `json:"fundsDetail"`
 }
 
 type FundsDetail struct {
 	Currency string `json:"currency"`
 	Amount   string `json:"amount"`
+}
+type PayerInfo struct {
+	Name        string `json:"name"`
+	Type        string `json:"type"`
+	Email       string `json:"email"`
+	BinanceId   int    `json:"binanceId"`
+	AccountId   int    `json:"accountId"`
+	CountryCode int    `json:"countryCode"`
+	PhoneNumber string `json:"phoneNumber"`
+	MobileCode  string `json:"mobileCode"`
+	UnmaskData  bool   `json:"unmaskData"`
+}
+type ReceiverInfo struct {
+	Name        string `json:"name"`
+	Type        string `json:"type"`
+	Email       string `json:"email,omitempty"`
+	BinanceId   int    `json:"binanceId,omitempty"`
+	AccountId   int    `json:"accountId"`
+	CountryCode int    `json:"countryCode,omitempty"`
+	PhoneNumber string `json:"phoneNumber,omitempty"`
+	MobileCode  string `json:"mobileCode,omitempty"`
+	UnmaskData  bool   `json:"unmaskData"`
+	Extend      struct {
+		PhoneOrEmailChanged bool `json:"phoneOrEmailChanged"`
+	} `json:"extend,omitempty"`
 }

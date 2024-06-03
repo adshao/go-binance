@@ -123,11 +123,12 @@ const (
 	SymbolStatusTypeAuctionMatch SymbolStatusType = "AUCTION_MATCH"
 	SymbolStatusTypeBreak        SymbolStatusType = "BREAK"
 
-	SymbolFilterTypeLotSize       SymbolFilterType = "LOT_SIZE"
-	SymbolFilterTypePrice         SymbolFilterType = "PRICE_FILTER"
-	SymbolFilterTypePercentPrice  SymbolFilterType = "PERCENT_PRICE"
-	SymbolFilterTypeMarketLotSize SymbolFilterType = "MARKET_LOT_SIZE"
-	SymbolFilterTypeMaxNumOrders  SymbolFilterType = "MAX_NUM_ORDERS"
+	SymbolFilterTypeLotSize          SymbolFilterType = "LOT_SIZE"
+	SymbolFilterTypePrice            SymbolFilterType = "PRICE_FILTER"
+	SymbolFilterTypePercentPrice     SymbolFilterType = "PERCENT_PRICE"
+	SymbolFilterTypeMarketLotSize    SymbolFilterType = "MARKET_LOT_SIZE"
+	SymbolFilterTypeMaxNumOrders     SymbolFilterType = "MAX_NUM_ORDERS"
+	SymbolFilterTypeMaxNumAlgoOrders SymbolFilterType = "MAX_NUM_ALGO_ORDERS"
 
 	SideEffectTypeNoSideEffect SideEffectType = "NO_SIDE_EFFECT"
 	SideEffectTypeMarginBuy    SideEffectType = "MARGIN_BUY"

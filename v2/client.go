@@ -20,6 +20,7 @@ import (
 	"github.com/adshao/go-binance/v2/common"
 	"github.com/adshao/go-binance/v2/delivery"
 	"github.com/adshao/go-binance/v2/futures"
+	"github.com/adshao/go-binance/v2/options"
 )
 
 // SideType define side type of order
@@ -102,9 +103,9 @@ type RateLimitInterval string
 type AccountType string
 
 // Endpoints
-const (
-	baseAPIMainURL    = "https://api.binance.com"
-	baseAPITestnetURL = "https://testnet.binance.vision"
+var (
+	BaseAPIMainURL    = "https://api.binance.com"
+	BaseAPITestnetURL = "https://testnet.binance.vision"
 )
 
 // UseTestnet switch all the API endpoints from production to the testnet
@@ -141,6 +142,7 @@ const (
 	OrderStatusTypePendingCancel   OrderStatusType = "PENDING_CANCEL"
 	OrderStatusTypeRejected        OrderStatusType = "REJECTED"
 	OrderStatusTypeExpired         OrderStatusType = "EXPIRED"
+	OrderStatusExpiredInMatch      OrderStatusType = "EXPIRED_IN_MATCH" // STP Expired
 
 	SymbolTypeSpot SymbolType = "SPOT"
 
@@ -152,15 +154,16 @@ const (
 	SymbolStatusTypeAuctionMatch SymbolStatusType = "AUCTION_MATCH"
 	SymbolStatusTypeBreak        SymbolStatusType = "BREAK"
 
-	SymbolFilterTypeLotSize      SymbolFilterType = "LOT_SIZE"
-	SymbolFilterTypePriceFilter  SymbolFilterType = "PRICE_FILTER"
-	SymbolFilterTypePercentPrice SymbolFilterType = "PERCENT_PRICE"
-	// Deprecated: use SymbolFilterTypePercentPrice instead
-	SymbolFilterTypeMinNotional      SymbolFilterType = "MIN_NOTIONAL"
-	SymbolFilterTypeNotional         SymbolFilterType = "NOTIONAL"
-	SymbolFilterTypeIcebergParts     SymbolFilterType = "ICEBERG_PARTS"
-	SymbolFilterTypeMarketLotSize    SymbolFilterType = "MARKET_LOT_SIZE"
-	SymbolFilterTypeMaxNumAlgoOrders SymbolFilterType = "MAX_NUM_ALGO_ORDERS"
+	SymbolFilterTypeLotSize            SymbolFilterType = "LOT_SIZE"
+	SymbolFilterTypePriceFilter        SymbolFilterType = "PRICE_FILTER"
+	SymbolFilterTypePercentPriceBySide SymbolFilterType = "PERCENT_PRICE_BY_SIDE"
+	SymbolFilterTypeMinNotional        SymbolFilterType = "MIN_NOTIONAL"
+	SymbolFilterTypeNotional           SymbolFilterType = "NOTIONAL"
+	SymbolFilterTypeIcebergParts       SymbolFilterType = "ICEBERG_PARTS"
+	SymbolFilterTypeMarketLotSize      SymbolFilterType = "MARKET_LOT_SIZE"
+	SymbolFilterTypeMaxNumOrders       SymbolFilterType = "MAX_NUM_ORDERS"
+	SymbolFilterTypeMaxNumAlgoOrders   SymbolFilterType = "MAX_NUM_ALGO_ORDERS"
+	SymbolFilterTypeTrailingDelta      SymbolFilterType = "TRAILING_DELTA"
 
 	UserDataEventTypeOutboundAccountPosition UserDataEventType = "outboundAccountPosition"
 	UserDataEventTypeBalanceUpdate           UserDataEventType = "balanceUpdate"
@@ -258,9 +261,9 @@ func newJSON(data []byte) (j *simplejson.Json, err error) {
 // getAPIEndpoint return the base endpoint of the Rest API according the UseTestnet flag
 func getAPIEndpoint() string {
 	if UseTestnet {
-		return baseAPITestnetURL
+		return BaseAPITestnetURL
 	}
-	return baseAPIMainURL
+	return BaseAPIMainURL
 }
 
 // NewClient initialize an API client instance with API key and secret key.
@@ -307,6 +310,11 @@ func NewFuturesClient(apiKey, secretKey string) *futures.Client {
 // NewDeliveryClient initialize client for coin-M futures API
 func NewDeliveryClient(apiKey, secretKey string) *delivery.Client {
 	return delivery.NewClient(apiKey, secretKey)
+}
+
+// NewOptionsClient initialize client for options API
+func NewOptionsClient(apiKey, secretKey string) *options.Client {
+	return options.NewClient(apiKey, secretKey)
 }
 
 type doFunc func(req *http.Request) (*http.Response, error)
@@ -1008,4 +1016,14 @@ func (c *Client) NewManagedSubAccountAssetsService() *ManagedSubAccountAssetsSer
 // NewSubAccountFuturesAccountService Get Detail on Sub-account's Futures Account (For Master Account)
 func (c *Client) NewSubAccountFuturesAccountService() *SubAccountFuturesAccountService {
 	return &SubAccountFuturesAccountService{c: c}
+}
+
+// NewSubAccountFuturesSummaryV1Service Get Summary of Sub-account's Futures Account (For Master Account)
+func (c *Client) NewSubAccountFuturesSummaryV1Service() *SubAccountFuturesSummaryV1Service {
+	return &SubAccountFuturesSummaryV1Service{c: c}
+}
+
+// NewSubAccountFuturesTransferV1Service Futures Transfer for Sub-account (For Master Account)
+func (c *Client) NewSubAccountFuturesTransferV1Service() *SubAccountFuturesTransferV1Service {
+	return &SubAccountFuturesTransferV1Service{c: c}
 }

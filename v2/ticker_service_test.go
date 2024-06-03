@@ -265,7 +265,7 @@ func (s *tickerServiceTestSuite) TestPriceChangeStats() {
 		Volume:             "8913.30000000",
 		OpenTime:           1499783499040,
 		CloseTime:          1499869899040,
-		FristID:            28385,
+		FirstID:            28385,
 		LastID:             28460,
 		Count:              76,
 		BidQty:             "300.00000000",
@@ -291,7 +291,7 @@ func (s *tickerServiceTestSuite) assertPriceChangeStatsEqual(e, a *PriceChangeSt
 	r.Equal(e.Volume, a.Volume, "Volume")
 	r.Equal(e.OpenTime, a.OpenTime, "OpenTime")
 	r.Equal(e.CloseTime, a.CloseTime, "CloseTime")
-	r.Equal(e.FristID, a.FristID, "FristID")
+	r.Equal(e.FirstID, a.FirstID, "FirstID")
 	r.Equal(e.LastID, a.LastID, "LastID")
 	r.Equal(e.Count, a.Count, "Count")
 }
@@ -365,7 +365,7 @@ func (s *tickerServiceTestSuite) TestMultiplePriceChangeStats() {
 			QuoteVolume:        "15.30000000",
 			OpenTime:           1499783499040,
 			CloseTime:          1499869899040,
-			FristID:            28385,
+			FirstID:            28385,
 			LastID:             28460,
 			Count:              76,
 		},
@@ -385,7 +385,7 @@ func (s *tickerServiceTestSuite) TestMultiplePriceChangeStats() {
 			QuoteVolume:        "115.30000000",
 			OpenTime:           1499783499041,
 			CloseTime:          1499869899041,
-			FristID:            28381,
+			FirstID:            28381,
 			LastID:             28461,
 			Count:              71,
 		},
@@ -442,7 +442,7 @@ func (s *tickerServiceTestSuite) TestListPriceChangeStats() {
 			QuoteVolume:        "15.30000000",
 			OpenTime:           1499783499040,
 			CloseTime:          1499869899040,
-			FristID:            28385,
+			FirstID:            28385,
 			LastID:             28460,
 			Count:              76,
 		},
@@ -467,11 +467,10 @@ func (s *tickerServiceTestSuite) assertListPriceChangeStatsEqual(e, a []*PriceCh
 		r.Equal(e[i].Volume, a[i].Volume, "Volume")
 		r.Equal(e[i].OpenTime, a[i].OpenTime, "OpenTime")
 		r.Equal(e[i].CloseTime, a[i].CloseTime, "CloseTime")
-		r.Equal(e[i].FristID, a[i].FristID, "FristID")
+		r.Equal(e[i].FirstID, a[i].FirstID, "FirstID")
 		r.Equal(e[i].LastID, a[i].LastID, "LastID")
 		r.Equal(e[i].Count, a[i].Count, "Count")
 	}
-
 }
 
 func (s *tickerServiceTestSuite) TestAveragePrice() {

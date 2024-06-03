@@ -4,7 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"strconv"
+
+	"github.com/adshao/go-binance/v2/common"
 )
 
 // ExchangeInfoService exchange info service
@@ -93,7 +94,7 @@ type PriceFilter struct {
 
 // PercentPriceFilter define percent price filter of symbol
 type PercentPriceFilter struct {
-	MultiplierDecimal int    `json:"multiplierDecimal"`
+	MultiplierDecimal string `json:"multiplierDecimal"`
 	MultiplierUp      string `json:"multiplierUp"`
 	MultiplierDown    string `json:"multiplierDown"`
 }
@@ -166,13 +167,7 @@ func (s *Symbol) PercentPriceFilter() *PercentPriceFilter {
 		if filter["filterType"].(string) == string(SymbolFilterTypePercentPrice) {
 			f := &PercentPriceFilter{}
 			if i, ok := filter["multiplierDecimal"]; ok {
-				smd, is := i.(string)
-				if is {
-					md, _ := strconv.Atoi(smd)
-					f.MultiplierDecimal = md
-				} else {
-					f.MultiplierDecimal = int(i.(float64))
-				}
+				f.MultiplierDecimal = i.(string)
 			}
 			if i, ok := filter["multiplierUp"]; ok {
 				f.MultiplierUp = i.(string)
@@ -212,7 +207,9 @@ func (s *Symbol) MaxNumOrdersFilter() *MaxNumOrdersFilter {
 		if filter["filterType"].(string) == string(SymbolFilterTypeMaxNumOrders) {
 			f := &MaxNumOrdersFilter{}
 			if i, ok := filter["limit"]; ok {
-				f.Limit = int64(i.(float64))
+				if limit, okk := common.ToInt64(i); okk == nil {
+					f.Limit = limit
+				}
 			}
 			return f
 		}
@@ -226,7 +223,9 @@ func (s *Symbol) MaxNumAlgoOrdersFilter() *MaxNumAlgoOrdersFilter {
 		if filter["filterType"].(string) == string(SymbolFilterTypeMaxNumAlgoOrders) {
 			f := &MaxNumAlgoOrdersFilter{}
 			if i, ok := filter["limit"]; ok {
-				f.Limit = int64(i.(float64))
+				if limit, okk := common.ToInt64(i); okk == nil {
+					f.Limit = limit
+				}
 			}
 			return f
 		}

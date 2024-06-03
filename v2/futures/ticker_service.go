@@ -67,7 +67,7 @@ func (s *ListPricesService) Symbol(symbol string) *ListPricesService {
 func (s *ListPricesService) Do(ctx context.Context, opts ...RequestOption) (res []*SymbolPrice, err error) {
 	r := &request{
 		method:   http.MethodGet,
-		endpoint: "/fapi/v1/ticker/price",
+		endpoint: "/fapi/v2/ticker/price",
 	}
 	if s.symbol != nil {
 		r.setParam("symbol", *s.symbol)
@@ -141,7 +141,7 @@ type PriceChangeStats struct {
 	QuoteVolume        string `json:"quoteVolume"`
 	OpenTime           int64  `json:"openTime"`
 	CloseTime          int64  `json:"closeTime"`
-	FristID            int64  `json:"firstId"`
+	FirstID            int64  `json:"firstId"`
 	LastID             int64  `json:"lastId"`
 	Count              int64  `json:"count"`
 }

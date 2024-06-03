@@ -165,7 +165,7 @@ type PriceChangeStats struct {
 	QuoteVolume        string `json:"quoteVolume"`
 	OpenTime           int64  `json:"openTime"`
 	CloseTime          int64  `json:"closeTime"`
-	FristID            int64  `json:"firstId"`
+	FirstID            int64  `json:"firstId"`
 	LastID             int64  `json:"lastId"`
 	Count              int64  `json:"count"`
 }
