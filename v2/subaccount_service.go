@@ -3,7 +3,6 @@ package binance
 import (
 	"context"
 	"net/http"
-	"time"
 )
 
 // TransferToSubAccountService transfer to subaccount
@@ -698,15 +697,13 @@ func (s *SubAccountTransferHistoryService) TransferType(v SubAccountTransferType
 	return s
 }
 
-func (s *SubAccountTransferHistoryService) StartTime(t time.Time) *SubAccountTransferHistoryService {
-	startTimestamp := t.UnixMilli()
-	s.startTime = &startTimestamp
+func (s *SubAccountTransferHistoryService) StartTime(v int64) *SubAccountTransferHistoryService {
+	s.startTime = &v
 	return s
 }
 
-func (s *SubAccountTransferHistoryService) EndTime(t time.Time) *SubAccountTransferHistoryService {
-	endTimestamp := t.UnixMilli()
-	s.endTime = &endTimestamp
+func (s *SubAccountTransferHistoryService) EndTime(v int64) *SubAccountTransferHistoryService {
+	s.endTime = &v
 	return s
 }
 

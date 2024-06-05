@@ -368,14 +368,14 @@ func (s *subAccountServiceTestSuite) TestSubAccountTransferHistoryService() {
 	defer s.assertDo()
 
 	transferType := SubAccountTransferTypeTransferIn
-	startTime := time.Date(2018, 9, 15, 0, 0, 0, 0, time.UTC)
-	endTime := time.Date(2018, 9, 16, 0, 0, 0, 0, time.UTC)
+	startTime := time.Date(2018, 9, 15, 0, 0, 0, 0, time.UTC).UnixMilli()
+	endTime := time.Date(2018, 9, 16, 0, 0, 0, 0, time.UTC).UnixMilli()
 
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
 			"type":      int(transferType),
-			"startTime": startTime.UnixMilli(),
-			"endTime":   endTime.UnixMilli(),
+			"startTime": startTime,
+			"endTime":   endTime,
 		})
 		s.assertRequestEqual(e, r)
 	})
