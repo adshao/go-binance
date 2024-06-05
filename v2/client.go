@@ -102,6 +102,9 @@ type RateLimitInterval string
 // AccountType define the account types
 type AccountType string
 
+// SubAccountTransferType define the sub account transfer types
+type SubAccountTransferType int
+
 // Endpoints
 var (
 	BaseAPIMainURL    = "https://api.binance.com"
@@ -239,6 +242,9 @@ const (
 	AccountTypeIsolatedMargin AccountType = "ISOLATED_MARGIN"
 	AccountTypeUSDTFuture     AccountType = "USDT_FUTURE"
 	AccountTypeCoinFuture     AccountType = "COIN_FUTURE"
+
+	SubAccountTransferTypeTransferIn  SubAccountTransferType = 1
+	SubAccountTransferTypeTransferOut SubAccountTransferType = 2
 )
 
 func currentTimestamp() int64 {
@@ -1026,4 +1032,9 @@ func (c *Client) NewSubAccountFuturesSummaryV1Service() *SubAccountFuturesSummar
 // NewSubAccountFuturesTransferV1Service Futures Transfer for Sub-account (For Master Account)
 func (c *Client) NewSubAccountFuturesTransferV1Service() *SubAccountFuturesTransferV1Service {
 	return &SubAccountFuturesTransferV1Service{c: c}
+}
+
+// NewSubAccountTransferHistoryService Transfer History for Sub-account (For Sub-account)
+func (c *Client) NewSubAccountTransferHistoryService() *SubAccountTransferHistoryService {
+	return &SubAccountTransferHistoryService{c: c}
 }
