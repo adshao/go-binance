@@ -70,6 +70,8 @@ Simply call API in chain style. Call Do() in the end to send HTTP request.
 
 Following are some simple examples, please refer to [godoc](https://godoc.org/github.com/adshao/go-binance) for full references.
 
+If you have any questions, please refer to the specific version of the code for specific reference definitions or usage methods
+
 #### Create Order
 
 ```golang
