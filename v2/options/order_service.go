@@ -270,7 +270,7 @@ func (s *ListOpenOrdersService) Do(ctx context.Context, opts ...RequestOption) (
 type GetOrderService struct {
 	c             *Client
 	symbol        string
-	OrderId       *int64
+	orderId       *int64
 	clientOrderId *string
 }
 
@@ -280,9 +280,9 @@ func (s *GetOrderService) Symbol(symbol string) *GetOrderService {
 	return s
 }
 
-// OrderID set OrderId
-func (s *GetOrderService) OrderID(OrderId int64) *GetOrderService {
-	s.OrderId = &OrderId
+// OrderID set orderId
+func (s *GetOrderService) OrderID(orderId int64) *GetOrderService {
+	s.orderId = &orderId
 	return s
 }
 
@@ -300,8 +300,8 @@ func (s *GetOrderService) Do(ctx context.Context, opts ...RequestOption) (res *O
 		secType:  secTypeSigned,
 	}
 	r.setParam("symbol", s.symbol)
-	if s.OrderId != nil {
-		r.setParam("orderId", *s.OrderId)
+	if s.orderId != nil {
+		r.setParam("orderId", *s.orderId)
 	}
 	if s.clientOrderId != nil {
 		r.setParam("clientOrderId", *s.clientOrderId)
@@ -379,8 +379,8 @@ type CancelAllOpenOrdersService struct {
 }
 
 type CancelAllOpenOrdersRsp struct {
-	Code string
-	Msg  string
+	Code string `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 // Symbol set symbol
