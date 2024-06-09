@@ -2,7 +2,6 @@ package options
 
 import (
 	"encoding/json"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -245,9 +244,9 @@ func (s *orderServiceTestSuite) TestCreateBatchOrders() {
 		},
 	}
 	s.assertReq(func(r *request) {
-		packup := [](map[string]string){}
+		packup := [](map[string]interface{}){}
 		for _, cos := range orderLists {
-			t := map[string]string{
+			t := map[string]interface{}{
 				"symbol":           cos.symbol,
 				"side":             string(cos.side),
 				"type":             string(cos.orderType),
@@ -261,16 +260,16 @@ func (s *orderServiceTestSuite) TestCreateBatchOrders() {
 				t["timeInForce"] = string(*cos.timeInForce)
 			}
 			if cos.reduceOnly != nil {
-				t["reduceOnly"] = fmt.Sprintf("%v", *cos.reduceOnly)
+				t["reduceOnly"] = *cos.reduceOnly
 			}
 			if cos.postOnly != nil {
-				t["postOnly"] = fmt.Sprintf("%v", *cos.postOnly)
+				t["postOnly"] = *cos.postOnly
 			}
 			if cos.clientOrderId != nil {
 				t["clientOrderId"] = *cos.clientOrderId
 			}
 			if cos.isMmp != nil {
-				t["isMmp"] = fmt.Sprintf("%v", *cos.isMmp)
+				t["isMmp"] = *cos.isMmp
 			}
 			packup = append(packup, t)
 		}
@@ -337,7 +336,7 @@ func (s *orderServiceTestSuite) TestCreateBatchOrders() {
 			Mmp:           false,
 		},
 	}
-	s.assertOrdersEqual(returnOrders, orders)
+	s.assertOrdersEqual(orders, returnOrders)
 }
 
 func (s *orderServiceTestSuite) TestGetOrder() {
