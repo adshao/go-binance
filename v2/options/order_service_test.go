@@ -21,7 +21,7 @@ func TestOrderService(t *testing.T) {
 
 func (s *baseOrderTestSuite) assertOrderEqual(e, a *Order) {
 	r := s.r()
-	r.Equal(e.OrderID, a.OrderID, "OrderID")
+	r.Equal(e.OrderId, a.OrderId, "OrderId")
 	r.Equal(e.Symbol, a.Symbol, "Symbol")
 	r.Equal(e.Price, a.Price, "Price")
 	r.Equal(e.Quantity, a.Quantity, "Quantity")
@@ -125,7 +125,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 	s.r().NoError(err)
 
 	e := &Order{
-		OrderID:       4729003411963445248,
+		OrderId:       4729003411963445248,
 		Symbol:        "DOGE-240607-0.158-C",
 		Price:         "4.2000",
 		Quantity:      "0.01",
@@ -288,7 +288,7 @@ func (s *orderServiceTestSuite) TestCreateBatchOrders() {
 
 	orders := []*Order{
 		{
-			OrderID:       4710989013445263360,
+			OrderId:       4710989013445263360,
 			Symbol:        "DOGE-240607-0.158-C",
 			Price:         "4.2000",
 			Quantity:      "0.01",
@@ -312,7 +312,7 @@ func (s *orderServiceTestSuite) TestCreateBatchOrders() {
 			Mmp:           false,
 		},
 		{
-			OrderID:       4710989013445263361,
+			OrderId:       4710989013445263361,
 			Symbol:        "DOGE-240607-0.158-C",
 			Price:         "4.2000",
 			Quantity:      "0.01",
@@ -379,11 +379,11 @@ func (s *orderServiceTestSuite) TestGetOrder() {
 		s.assertRequestEqual(e, r)
 	})
 	order, err := s.client.NewGetOrderService().Symbol(symbol).
-		OrderID(orderID).ClientOrderId(clientOrderId).Do(newContext())
+		OrderId(orderID).ClientOrderId(clientOrderId).Do(newContext())
 	r := s.r()
 	r.NoError(err)
 	e := &Order{
-		OrderID:       4710989013445263360,
+		OrderId:       4710989013445263360,
 		Symbol:        "DOGE-240607-0.158-C",
 		Price:         "4.2000",
 		Quantity:      "0.01",
@@ -450,12 +450,12 @@ func (s *orderServiceTestSuite) TestCancelOrder() {
 	})
 
 	res, err := s.client.NewCancelOrderService().Symbol(symbol).
-		OrderID(orderID).ClientOrderId(clientOrderId).
+		OrderId(orderID).ClientOrderId(clientOrderId).
 		Do(newContext())
 	r := s.r()
 	r.NoError(err)
 	e := &Order{
-		OrderID:       4701981814192529408,
+		OrderId:       4701981814192529408,
 		Symbol:        "DOGE-240607-0.158-C",
 		Price:         "4.2000",
 		Quantity:      "0.01",
@@ -558,7 +558,7 @@ func (s *orderServiceTestSuite) TestCancelBatchOrders() {
 
 	e := []*Order{
 		{
-			OrderID:       4710989013445263361,
+			OrderId:       4710989013445263361,
 			Symbol:        "DOGE-240607-0.158-C",
 			Price:         "4.2000",
 			Quantity:      "0.01",
@@ -582,7 +582,7 @@ func (s *orderServiceTestSuite) TestCancelBatchOrders() {
 			Mmp:           false,
 		},
 		{
-			OrderID:       4710989013445263360,
+			OrderId:       4710989013445263360,
 			Symbol:        "DOGE-240607-0.158-C",
 			Price:         "4.2000",
 			Quantity:      "0.01",
@@ -732,7 +732,7 @@ func (s *orderServiceTestSuite) TestListOpenOrders() {
 	r.Len(orders, 2)
 	e := []*Order{
 		{
-			OrderID:       4710989013445263361,
+			OrderId:       4710989013445263361,
 			Symbol:        "DOGE-240607-0.158-C",
 			Price:         "4.2000",
 			Quantity:      "0.01",
@@ -756,7 +756,7 @@ func (s *orderServiceTestSuite) TestListOpenOrders() {
 			Mmp:           false,
 		},
 		{
-			OrderID:       4710989013445263360,
+			OrderId:       4710989013445263360,
 			Symbol:        "DOGE-240607-0.158-C",
 			Price:         "4.2000",
 			Quantity:      "0.01",
@@ -851,7 +851,7 @@ func (s *orderServiceTestSuite) TestHistoryOrders() {
 
 	e := []*Order{
 		{
-			OrderID:       4710989013445263360,
+			OrderId:       4710989013445263360,
 			Symbol:        "DOGE-240607-0.158-C",
 			Price:         "4.20000000",
 			Quantity:      "0.01000000",
@@ -876,7 +876,7 @@ func (s *orderServiceTestSuite) TestHistoryOrders() {
 			Mmp:           false,
 		},
 		{
-			OrderID:       4710989013445263361,
+			OrderId:       4710989013445263361,
 			Symbol:        "DOGE-240607-0.158-C",
 			Price:         "4.20000000",
 			Quantity:      "0.01000000",

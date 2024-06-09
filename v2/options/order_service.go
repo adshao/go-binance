@@ -163,7 +163,7 @@ type LastTrade struct {
 // Unified order structure, it would be used in many ways, for example, create order, cancel order,
 // query open orders, query historical order and so on
 type Order struct {
-	OrderID       int64           `json:"orderId"`
+	OrderId       int64           `json:"orderId"`
 	Symbol        string          `json:"symbol"`
 	Price         string          `json:"price"`
 	Quantity      string          `json:"quantity"`
@@ -280,8 +280,8 @@ func (s *GetOrderService) Symbol(symbol string) *GetOrderService {
 	return s
 }
 
-// OrderID set orderId
-func (s *GetOrderService) OrderID(orderId int64) *GetOrderService {
+// OrderId set orderId
+func (s *GetOrderService) OrderId(orderId int64) *GetOrderService {
 	s.orderId = &orderId
 	return s
 }
@@ -334,8 +334,8 @@ func (s *CancelOrderService) Symbol(symbol string) *CancelOrderService {
 	return s
 }
 
-// OrderID set OrderId
-func (s *CancelOrderService) OrderID(orderId int64) *CancelOrderService {
+// OrderId set OrderId
+func (s *CancelOrderService) OrderId(orderId int64) *CancelOrderService {
 	s.orderId = &orderId
 	return s
 }
@@ -423,7 +423,7 @@ func (s *CancelBatchOrdersService) Symbol(symbol string) *CancelBatchOrdersServi
 	return s
 }
 
-// OrderID set OrderId
+// OrderId set OrderId
 func (s *CancelBatchOrdersService) OrderIds(orderIds []int64) *CancelBatchOrdersService {
 	s.orderIds = orderIds
 	return s
