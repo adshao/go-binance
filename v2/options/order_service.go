@@ -455,14 +455,20 @@ func (s *CancelBatchOrdersService) Do(ctx context.Context, opts ...RequestOption
 		}
 		r.setFormParam("clientOrderIds", strings.Join(strings.Fields(fmt.Sprint(cids)), ","))
 	}
-	data, _, err := s.c.callAPI(ctx, r, opts...)
+	data, header, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}
+	rlos := header.Get("X-Mbx-Order-Count-10s")
+	rlom := header.Get("X-Mbx-Order-Count-1m")
 	res = make([]*Order, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return []*Order{}, err
+	}
+	for idx := range res {
+		res[idx].RateLimitOrder10s = rlos
+		res[idx].RateLimitOrder1m = rlom
 	}
 	return res, nil
 }
