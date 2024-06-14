@@ -2,6 +2,7 @@ package futures
 
 import (
 	"context"
+	"strconv"
 	"testing"
 
 	"github.com/adshao/go-binance/v2/common"
@@ -69,16 +70,16 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 			"timeInForce":      timeInForce,
 			"positionSide":     positionSide,
 			"quantity":         quantity,
-			"reduceOnly":       reduceOnly,
+			"reduceOnly":       strconv.FormatBool(reduceOnly),
 			"price":            price,
 			"newClientOrderId": newClientOrderID,
 			"stopPrice":        stopPrice,
 			"workingType":      workingType,
 			"activationPrice":  activationPrice,
 			"callbackRate":     callbackRate,
-			"priceProtect":     priceProtect,
+			"priceProtect":     strconv.FormatBool(priceProtect),
 			"newOrderRespType": newOrderResponseType,
-			"closePosition":    closePosition,
+			"closePosition":    strconv.FormatBool(closePosition),
 		})
 		s.assertRequestEqual(e, r)
 	})
