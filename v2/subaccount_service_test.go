@@ -2,6 +2,7 @@ package binance
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/suite"
 )
@@ -332,4 +333,85 @@ func (s *subAccountServiceTestSuite) TestSubAccountFuturesTransferService() {
 	r.NoError(err)
 	r.Equal(int64(123456789), response.TranID, "TranID")
 
+}
+
+func (s *subAccountServiceTestSuite) TestSubAccountTransferHistoryService() {
+	data := []byte(`
+		[
+			{
+				"counterParty":"master",
+				"email":"master@test.com",
+				"type":1,
+				"asset":"BTC",
+				"qty":"1",
+				"fromAccountType":"SPOT",
+				"toAccountType":"SPOT",
+				"status":"SUCCESS",
+				"tranId":11798835829,
+				"time":1544433325000
+			},
+			{
+				"counterParty": "subAccount",
+				"email": "sub2@test.com",
+				"type":  2,                                 
+				"asset":"ETH",
+				"qty":"2",
+				"fromAccountType":"SPOT",
+				"toAccountType":"COIN_FUTURE",
+				"status":"SUCCESS",
+				"tranId":11798829519,
+				"time":1544433326000
+			}
+		]
+	`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	transferType := SubAccountTransferTypeTransferIn
+	startTime := time.Date(2018, 9, 15, 0, 0, 0, 0, time.UTC).UnixMilli()
+	endTime := time.Date(2018, 9, 16, 0, 0, 0, 0, time.UTC).UnixMilli()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"type":      int(transferType),
+			"startTime": startTime,
+			"endTime":   endTime,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	response, err := s.client.NewSubAccountTransferHistoryService().
+		TransferType(transferType).
+		StartTime(startTime).
+		EndTime(endTime).
+		Do(newContext())
+
+	r := s.r()
+	r.NoError(err)
+	s.assertSubAccountTransferHistoryEqual(&SubAccountTransferHistory{
+		CounterParty:    "master",
+		Email:           "master@test.com",
+		Type:            1,
+		Asset:           "BTC",
+		Qty:             "1",
+		FromAccountType: "SPOT",
+		ToAccountType:   "SPOT",
+		Status:          "SUCCESS",
+		TranID:          11798835829,
+		Time:            1544433325000,
+	}, response[0])
+}
+
+func (s *subAccountServiceTestSuite) assertSubAccountTransferHistoryEqual(e, a *SubAccountTransferHistory) {
+	r := s.r()
+	r.Equal(e.CounterParty, a.CounterParty, "CounterParty")
+	r.Equal(e.Email, a.Email, "Email")
+	r.Equal(e.Type, a.Type, "Type")
+	r.Equal(e.Asset, a.Asset, "Asset")
+	r.Equal(e.Qty, a.Qty, "Qty")
+	r.Equal(e.FromAccountType, a.FromAccountType, "FromAccountType")
+	r.Equal(e.ToAccountType, a.ToAccountType, "ToAccountType")
+	r.Equal(e.Status, a.Status, "Status")
+	r.Equal(e.TranID, a.TranID, "TranId")
+	r.Equal(e.Time, a.Time, "Time")
 }

@@ -674,3 +674,94 @@ type SubAccountFuturesTransferResponse struct {
 	// seems api doc bug, return `tranId` as int64 actually in production environment
 	TranID int64 `json:"tranId"`
 }
+
+// Sub-account Transfer History (For Sub-account)
+// https://binance-docs.github.io/apidocs/spot/en/#sub-account-transfer-history-for-sub-account
+type SubAccountTransferHistoryService struct {
+	c                 *Client
+	asset             *string
+	transferType      *SubAccountTransferType
+	startTime         *int64
+	endTime           *int64
+	limit             *int
+	returnFailHistory *bool
+}
+
+func (s *SubAccountTransferHistoryService) Asset(v string) *SubAccountTransferHistoryService {
+	s.asset = &v
+	return s
+}
+
+func (s *SubAccountTransferHistoryService) TransferType(v SubAccountTransferType) *SubAccountTransferHistoryService {
+	s.transferType = &v
+	return s
+}
+
+func (s *SubAccountTransferHistoryService) StartTime(v int64) *SubAccountTransferHistoryService {
+	s.startTime = &v
+	return s
+}
+
+func (s *SubAccountTransferHistoryService) EndTime(v int64) *SubAccountTransferHistoryService {
+	s.endTime = &v
+	return s
+}
+
+func (s *SubAccountTransferHistoryService) Limit(v int) *SubAccountTransferHistoryService {
+	s.limit = &v
+	return s
+}
+
+func (s *SubAccountTransferHistoryService) ReturnFailHistory(v bool) *SubAccountTransferHistoryService {
+	s.returnFailHistory = &v
+	return s
+}
+
+func (s *SubAccountTransferHistoryService) Do(ctx context.Context, opts ...RequestOption) (res []*SubAccountTransferHistory, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/sub-account/transfer/subUserHistory",
+		secType:  secTypeSigned,
+	}
+	if s.asset != nil {
+		r.setParam("asset", *s.asset)
+	}
+	if s.transferType != nil {
+		r.setParam("type", *s.transferType)
+	}
+	if s.startTime != nil {
+		r.setParam("startTime", *s.startTime)
+	}
+	if s.endTime != nil {
+		r.setParam("endTime", *s.endTime)
+	}
+	if s.limit != nil {
+		r.setParam("limit", *s.limit)
+	}
+	if s.returnFailHistory != nil {
+		r.setParam("returnFailHistory", *s.returnFailHistory)
+	}
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = make([]*SubAccountTransferHistory, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type SubAccountTransferHistory struct {
+	CounterParty    string                 `json:"counterParty"`
+	Email           string                 `json:"email"`
+	Type            SubAccountTransferType `json:"type"`
+	Asset           string                 `json:"asset"`
+	Qty             string                 `json:"qty"`
+	FromAccountType AccountType            `json:"fromAccountType"`
+	ToAccountType   AccountType            `json:"toAccountType"`
+	Status          string                 `json:"status"`
+	TranID          int64                  `json:"tranId"`
+	Time            int64                  `json:"time"`
+}

@@ -102,6 +102,15 @@ type RateLimitInterval string
 // AccountType define the account types
 type AccountType string
 
+// SubAccountTransferType define the sub account transfer types
+type SubAccountTransferType int
+
+// UserUniversalTransferType define the user universal transfer types
+type UserUniversalTransferType string
+
+// UserUniversalTransferStatus define the user universal transfer status
+type UserUniversalTransferStatusType string
+
 // Endpoints
 var (
 	BaseAPIMainURL    = "https://api.binance.com"
@@ -239,6 +248,47 @@ const (
 	AccountTypeIsolatedMargin AccountType = "ISOLATED_MARGIN"
 	AccountTypeUSDTFuture     AccountType = "USDT_FUTURE"
 	AccountTypeCoinFuture     AccountType = "COIN_FUTURE"
+
+	SubAccountTransferTypeTransferIn  SubAccountTransferType = 1
+	SubAccountTransferTypeTransferOut SubAccountTransferType = 2
+
+	UserUniversalTransferTypeMainToUmFutures                UserUniversalTransferType = "MAIN_UMFUTURE"
+	UserUniversalTransferTypeMainToCmFutures                UserUniversalTransferType = "MAIN_CMFUTURE"
+	UserUniversalTransferTypeMainToMargin                   UserUniversalTransferType = "MAIN_MARGIN"
+	UserUniversalTransferTypeUmFuturesToMain                UserUniversalTransferType = "UMFUTURE_MAIN"
+	UserUniversalTransferTypeUmFuturesToMargin              UserUniversalTransferType = "UMFUTURE_MARGIN"
+	UserUniversalTransferTypeCmFuturesToMain                UserUniversalTransferType = "CMFUTURE_MAIN"
+	UserUniversalTransferTypeMarginToMain                   UserUniversalTransferType = "MARGIN_MAIN"
+	UserUniversalTransferTypeMarginToUmFutures              UserUniversalTransferType = "MARGIN_UMFUTURE"
+	UserUniversalTransferTypeMarginToCmFutures              UserUniversalTransferType = "MARGIN_CMFUTURE"
+	UserUniversalTransferTypeCmFuturesToMargin              UserUniversalTransferType = "CMFUTURE_MARGIN"
+	UserUniversalTransferTypeIsolatedMarginToMargin         UserUniversalTransferType = "ISOLATEDMARGIN_MARGIN"
+	UserUniversalTransferTypeMarginToIsolatedMargin         UserUniversalTransferType = "MARGIN_ISOLATEDMARGIN"
+	UserUniversalTransferTypeIsolatedMarginToIsolatedMargin UserUniversalTransferType = "ISOLATEDMARGIN_ISOLATEDMARGIN"
+	UserUniversalTransferTypeMainToFunding                  UserUniversalTransferType = "MAIN_FUNDING"
+	UserUniversalTransferTypeFundingToMain                  UserUniversalTransferType = "FUNDING_MAIN"
+	UserUniversalTransferTypeFundingToUmFutures             UserUniversalTransferType = "FUNDING_UMFUTURE"
+	UserUniversalTransferTypeUmFuturesToFunding             UserUniversalTransferType = "UMFUTURE_FUNDING"
+	UserUniversalTransferTypeMarginToFunding                UserUniversalTransferType = "MARGIN_FUNDING"
+	UserUniversalTransferTypeFundingToMargin                UserUniversalTransferType = "FUNDING_MARGIN"
+	UserUniversalTransferTypeFundingToCmFutures             UserUniversalTransferType = "FUNDING_CMFUTURE"
+	UserUniversalTransferTypeCmFuturesToFunding             UserUniversalTransferType = "CMFUTURE_FUNDING"
+	UserUniversalTransferTypeMainToOption                   UserUniversalTransferType = "MAIN_OPTION"
+	UserUniversalTransferTypeOptionToMain                   UserUniversalTransferType = "OPTION_MAIN"
+	UserUniversalTransferTypeUmFuturesToOption              UserUniversalTransferType = "UMFUTURE_OPTION"
+	UserUniversalTransferTypeOptionToUmFutures              UserUniversalTransferType = "OPTION_UMFUTURE"
+	UserUniversalTransferTypeMarginToOption                 UserUniversalTransferType = "MARGIN_OPTION"
+	UserUniversalTransferTypeOptionToMargin                 UserUniversalTransferType = "OPTION_MARGIN"
+	UserUniversalTransferTypeFundingToOption                UserUniversalTransferType = "FUNDING_OPTION"
+	UserUniversalTransferTypeOptionToFunding                UserUniversalTransferType = "OPTION_FUNDING"
+	UserUniversalTransferTypeMainToPortfolioMargin          UserUniversalTransferType = "MAIN_PORTFOLIO_MARGIN"
+	UserUniversalTransferTypePortfolioMarginToMain          UserUniversalTransferType = "PORTFOLIO_MARGIN_MAIN"
+	UserUniversalTransferTypeMainToIsolatedMargin           UserUniversalTransferType = "MAIN_ISOLATED_MARGIN"
+	UserUniversalTransferTypeIsolatedMarginToMain           UserUniversalTransferType = "ISOLATED_MARGIN_MAIN"
+
+	UserUniversalTransferStatusTypePending   UserUniversalTransferStatusType = "PENDING"
+	UserUniversalTransferStatusTypeConfirmed UserUniversalTransferStatusType = "CONFIRMED"
+	UserUniversalTransferStatusTypeFailed    UserUniversalTransferStatusType = "FAILED"
 )
 
 func currentTimestamp() int64 {
@@ -1026,4 +1076,14 @@ func (c *Client) NewSubAccountFuturesSummaryV1Service() *SubAccountFuturesSummar
 // NewSubAccountFuturesTransferV1Service Futures Transfer for Sub-account (For Master Account)
 func (c *Client) NewSubAccountFuturesTransferV1Service() *SubAccountFuturesTransferV1Service {
 	return &SubAccountFuturesTransferV1Service{c: c}
+}
+
+// NewSubAccountTransferHistoryService Transfer History for Sub-account (For Sub-account)
+func (c *Client) NewSubAccountTransferHistoryService() *SubAccountTransferHistoryService {
+	return &SubAccountTransferHistoryService{c: c}
+}
+
+// NewListUserUniversalTransferService Query User Universal Transfer History
+func (c *Client) NewListUserUniversalTransferService() *ListUserUniversalTransferService {
+	return &ListUserUniversalTransferService{c: c}
 }
