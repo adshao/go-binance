@@ -44,7 +44,7 @@ go get github.com/adshao/go-binance/v1
 
 ```golang
 import (
-    // for spot and other interface contained in https://binance-docs.github.io/apidocs/spot/en/#change-log
+    // for spot and other interfaces contained in https://binance-docs.github.io/apidocs/spot/en/#change-log
     "github.com/adshao/go-binance/v2"
     
     "github.com/adshao/go-binance/v2/futures" // optional package
