@@ -19,8 +19,8 @@ import (
 
 	"github.com/adshao/go-binance/v2/common"
 	"github.com/adshao/go-binance/v2/delivery"
-	"github.com/adshao/go-binance/v2/futures"
 	"github.com/adshao/go-binance/v2/eoptions"
+	"github.com/adshao/go-binance/v2/futures"
 )
 
 // SideType define side type of order
@@ -389,7 +389,7 @@ func (c *Client) debug(format string, v ...interface{}) {
 }
 
 func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
-	// set request eoptions from user
+	// set request options from user
 	for _, opt := range opts {
 		opt(r)
 	}

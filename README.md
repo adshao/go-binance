@@ -21,9 +21,12 @@ Name | Description | Status
 [web-socket-streams.md](https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md) | Details on available streams and payloads | <input type="checkbox" checked>  Implemented
 [user-data-stream.md](https://github.com/binance/binance-spot-api-docs/blob/master/user-data-stream.md) | Details on the dedicated account stream | <input type="checkbox" checked>  Implemented
 [margin-api.md](https://binance-docs.github.io/apidocs/spot/en) | Details on the Margin API (/sapi) | <input type="checkbox" checked>  Implemented
-[futures-api.md](https://binance-docs.github.io/apidocs/futures/en/#general-info) | Details on the Futures API (/fapi) | <input type="checkbox" checked>  Partially Implemented
-[delivery-api.md](https://binance-docs.github.io/apidocs/delivery/en/#general-info) | Details on the Coin-M Futures API (/dapi) | <input type="checkbox" checked>  Partially Implemented
-[eoptions-api.md](https://binance-docs.github.io/apidocs/voptions/en/#general-info) | Detains on the European Options API(/eapi) | <input type="checkbox" checked>  Implemented
+[futures-api.md](https://binance-docs.github.io/apidocs/futures/en/#general-info) | Details on the Futures API (/fapi) | <input type="checkbox" checked>  Implemented
+[delivery-api.md](https://binance-docs.github.io/apidocs/delivery/en/#general-info) | Details on the Coin-M Futures API (/dapi) | <input type="checkbox" checked>  Implemented
+[eoptions-api.md](https://binance-docs.github.io/apidocs/voptions/en/#general-info) | Detains on the European Options API(/eapi) | <input type="checkbox" checked>  Implemented  
+
+  
+Found an unimplemented interface, please submit a issue.
 
 ### Installation
 
@@ -41,7 +44,12 @@ go get github.com/adshao/go-binance/v1
 
 ```golang
 import (
+    // for spot and other interface contained in https://binance-docs.github.io/apidocs/spot/en/#change-log
     "github.com/adshao/go-binance/v2"
+    
+    "github.com/adshao/go-binance/v2/futures" // optional package
+    "github.com/adshao/go-binance/v2/delivery" // optional package
+    "github.com/adshao/go-binance/v2/eoptions" // optional package
 )
 ```
 
