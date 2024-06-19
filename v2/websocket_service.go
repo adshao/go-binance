@@ -18,7 +18,19 @@ var (
 	WebsocketTimeout = time.Second * 60
 	// WebsocketKeepalive enables sending ping/pong messages to check the connection stability
 	WebsocketKeepalive = false
+	ProxyUrl           = ""
 )
+
+func getWsProxyUrl() *string {
+	if ProxyUrl == "" {
+		return nil
+	}
+	return &ProxyUrl
+}
+
+func SetWsProxyUrl(url string) {
+	ProxyUrl = url
+}
 
 // getWsEndpoint return the base endpoint of the WS according the UseTestnet flag
 func getWsEndpoint() string {

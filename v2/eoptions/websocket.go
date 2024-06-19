@@ -1,4 +1,4 @@
-package futures
+package eoptions
 
 import (
 	"net/http"
@@ -36,6 +36,7 @@ var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (don
 		}
 		proxy = http.ProxyURL(u)
 	}
+
 	Dialer := websocket.Dialer{
 		Proxy:             proxy,
 		HandshakeTimeout:  45 * time.Second,
