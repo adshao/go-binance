@@ -327,7 +327,7 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 	}
 	req = req.WithContext(ctx)
 	req.Header = r.header
-	c.debug("request: %#v", req)
+	c.debug("request: %#v\n", req)
 	f := c.do
 	if f == nil {
 		f = c.HTTPClient.Do
@@ -348,15 +348,17 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 			err = cerr
 		}
 	}()
-	c.debug("response: %#v", res)
-	c.debug("response body: %s", string(data))
-	c.debug("response status code: %d", res.StatusCode)
+	c.debug("response: %#v\n", res)
+	c.debug("response body: %s\n", string(data))
+	c.debug("response status code: %d\n", res.StatusCode)
 
 	if res.StatusCode >= http.StatusBadRequest {
 		apiErr := new(common.APIError)
 		e := json.Unmarshal(data, apiErr)
 		if e != nil {
-			c.debug("failed to unmarshal json: %s", e)
+			c.debug("failed to unmarshal json: %s\n", e)
+			apiErr.Code = int64(res.StatusCode)
+			apiErr.Message = string(data)
 		}
 		return nil, &http.Header{}, apiErr
 	}
@@ -369,14 +371,14 @@ func (c *Client) SetApiEndpoint(url string) *Client {
 	return c
 }
 
-// NewKlinesService init klines service
-func (c *Client) NewKlinesService() *KlinesService {
-	return &KlinesService{c: c}
+// ping server
+func (c *Client) NewPingService() *PingService {
+	return &PingService{c: c}
 }
 
-// NewDepthService init depth service
-func (c *Client) NewDepthService() *DepthService {
-	return &DepthService{c: c}
+// get timestamp(ms) of server
+func (c *Client) NewServerTimeService() *ServerTimeService {
+	return &ServerTimeService{c: c}
 }
 
 // NewExchangeInfoService init exchange info service
@@ -384,37 +386,141 @@ func (c *Client) NewExchangeInfoService() *ExchangeInfoService {
 	return &ExchangeInfoService{c: c}
 }
 
+// NewDepthService init depth service
+func (c *Client) NewDepthService() *DepthService {
+	return &DepthService{c: c}
+}
+
+func (c *Client) NewTradesService() *TradesService {
+	return &TradesService{c: c}
+}
+
+func (c *Client) NewHistoricalTradesService() *HistoricalTradesService {
+	return &HistoricalTradesService{c: c}
+}
+
+// NewKlinesService init klines service
+func (c *Client) NewKlinesService() *KlinesService {
+	return &KlinesService{c: c}
+}
+
+func (c *Client) NewMarkService() *MarkService {
+	return &MarkService{c: c}
+}
+
+func (c *Client) NewTickerService() *TickerService {
+	return &TickerService{c: c}
+}
+
+func (c *Client) NewIndexService() *IndexService {
+	return &IndexService{c: c}
+}
+
+func (c *Client) NewExerciseHistoryService() *ExerciseHistoryService {
+	return &ExerciseHistoryService{c: c}
+}
+
+func (c *Client) NewOpenInterestService() *OpenInterestService {
+	return &OpenInterestService{c: c}
+}
+
+func (c *Client) NewAccountService() *AccountService {
+	return &AccountService{c: c}
+}
+
 // NewCreateOrderService init creating order service
+// POST /eapi/v1/order
 func (c *Client) NewCreateOrderService() *CreateOrderService {
 	return &CreateOrderService{c: c}
 }
 
-// NewListOpenOrdersService init list open orders service
-func (c *Client) NewListOpenOrdersService() *ListOpenOrdersService {
-	return &ListOpenOrdersService{c: c}
+// NewCreateBatchOrdersService init creating batch order service
+// POST /eapi/v1/batchOrders
+func (c *Client) NewCreateBatchOrdersService() *CreateBatchOrdersService {
+	return &CreateBatchOrdersService{c: c}
 }
 
 // NewGetOrderService init get order service
+// GET /eapi/v1/order
 func (c *Client) NewGetOrderService() *GetOrderService {
 	return &GetOrderService{c: c}
 }
 
 // NewCancelOrderService init cancel order service
+// DELETE /eapi/v1/order
 func (c *Client) NewCancelOrderService() *CancelOrderService {
 	return &CancelOrderService{c: c}
 }
 
+// NewCancelBatchOrdersService init cancel multiple orders service
+// DELETE /eapi/v1/batchOrders
+func (c *Client) NewCancelBatchOrdersService() *CancelBatchOrdersService {
+	return &CancelBatchOrdersService{c: c}
+}
+
 // NewCancelAllOpenOrdersService init cancel all open orders service
+// DELETE /eapi/v1/allOpenOrders
 func (c *Client) NewCancelAllOpenOrdersService() *CancelAllOpenOrdersService {
 	return &CancelAllOpenOrdersService{c: c}
 }
 
-// NewCancelMultipleOrdersService init cancel multiple orders service
-func (c *Client) NewCancelMultipleOrdersService() *CancelMultiplesOrdersService {
-	return &CancelMultiplesOrdersService{c: c}
+// DELETE /eapi/v1/allOpenOrdersByUnderlying
+func (c *Client) NewCancelAllOpenOrdersByUnderlyingService() *CancelAllOpenOrdersByUnderlyingService {
+	return &CancelAllOpenOrdersByUnderlyingService{c: c}
 }
 
-// NewCreateBatchOrdersService init creating batch order service
-func (c *Client) NewCreateBatchOrdersService() *CreateBatchOrdersService {
-	return &CreateBatchOrdersService{c: c}
+// NewListOpenOrdersService init list open orders service
+// GET /eapi/v1/openOrders
+func (c *Client) NewListOpenOrdersService() *ListOpenOrdersService {
+	return &ListOpenOrdersService{c: c}
+}
+
+// GET /eapi/v1/historyOrders
+func (c *Client) NewHistoryOrdersService() *HistoryOrdersService {
+	return &HistoryOrdersService{c: c}
+}
+
+// GET /eapi/v1/position
+func (c *Client) NewPositionService() *PositionService {
+	return &PositionService{c: c}
+}
+
+// GET /eapi/v1/userTrades
+func (c *Client) NewUserTradesService() *UserTradesService {
+	return &UserTradesService{c: c}
+}
+
+// GET /eapi/v1/exerciseRecord
+func (c *Client) NewExercistRecordService() *ExerciseRecordService {
+	return &ExerciseRecordService{c: c}
+}
+
+// GET /eapi/v1/bill
+// Obtain account fund flow
+func (c *Client) NewBillService() *BillService {
+	return &BillService{c: c}
+}
+
+// GET /eapi/v1/income/asyn
+// Get option fund flow download ID
+func (c *Client) NewIncomeDownloadIdService() *IncomeDownloadIdService {
+	return &IncomeDownloadIdService{c: c}
+}
+
+// GET /eapi/v1/income/asyn/id
+// Obtain the contract fund flow download link through the download ID
+func (c *Client) NewIncomeDownloadLinkService() *IncomeDownloadLinkService {
+	return &IncomeDownloadLinkService{c: c}
+}
+
+func (c *Client) NewStartUserStreamService() *StartUserStreamService {
+	return &StartUserStreamService{c: c}
+}
+
+func (c *Client) NewKeepaliveUserStreamService() *KeepaliveUserStreamService {
+	return &KeepaliveUserStreamService{c: c}
+}
+
+func (c *Client) NewCloseUserStreamService() *CloseUserStreamService {
+	return &CloseUserStreamService{c: c}
 }
