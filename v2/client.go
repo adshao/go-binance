@@ -20,7 +20,7 @@ import (
 	"github.com/adshao/go-binance/v2/common"
 	"github.com/adshao/go-binance/v2/delivery"
 	"github.com/adshao/go-binance/v2/futures"
-	"github.com/adshao/go-binance/v2/options"
+	"github.com/adshao/go-binance/v2/eoptions"
 )
 
 // SideType define side type of order
@@ -362,9 +362,9 @@ func NewDeliveryClient(apiKey, secretKey string) *delivery.Client {
 	return delivery.NewClient(apiKey, secretKey)
 }
 
-// NewOptionsClient initialize client for options API
-func NewOptionsClient(apiKey, secretKey string) *options.Client {
-	return options.NewClient(apiKey, secretKey)
+// NewOptionsClient initialize client for eoptions API
+func NewOptionsClient(apiKey, secretKey string) *eoptions.Client {
+	return eoptions.NewClient(apiKey, secretKey)
 }
 
 type doFunc func(req *http.Request) (*http.Response, error)
@@ -389,7 +389,7 @@ func (c *Client) debug(format string, v ...interface{}) {
 }
 
 func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
-	// set request options from user
+	// set request eoptions from user
 	for _, opt := range opts {
 		opt(r)
 	}

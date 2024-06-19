@@ -219,7 +219,7 @@ func (c *Client) debug(format string, v ...interface{}) {
 }
 
 func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
-	// set request options from user
+	// set request eoptions from user
 	for _, opt := range opts {
 		opt(r)
 	}
