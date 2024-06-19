@@ -23,6 +23,7 @@ Name | Description | Status
 [margin-api.md](https://binance-docs.github.io/apidocs/spot/en) | Details on the Margin API (/sapi) | <input type="checkbox" checked>  Implemented
 [futures-api.md](https://binance-docs.github.io/apidocs/futures/en/#general-info) | Details on the Futures API (/fapi) | <input type="checkbox" checked>  Partially Implemented
 [delivery-api.md](https://binance-docs.github.io/apidocs/delivery/en/#general-info) | Details on the Coin-M Futures API (/dapi) | <input type="checkbox" checked>  Partially Implemented
+[eoptions-api.md](https://binance-docs.github.io/apidocs/voptions/en/#general-info) | Detains on the European Options API(/eapi) | <input type="checkbox" checked>  Implemented
 
 ### Installation
 
@@ -71,6 +72,14 @@ Simply call API in chain style. Call Do() in the end to send HTTP request.
 Following are some simple examples, please refer to [godoc](https://godoc.org/github.com/adshao/go-binance) for full references.
 
 If you have any questions, please refer to the specific version of the code for specific reference definitions or usage methods
+
+##### Proxy Client
+  
+```
+proxyUrl := "http://127.0.0.1:7890" // for example, please replace as your exact proxy url.
+client := binance.NewProxiedClient(apiKey, apiSecret, proxyUrl)
+```
+  
 
 #### Create Order
 
@@ -219,8 +228,10 @@ fmt.Println(res)
 
 You don't need Client in websocket API. Just call binance.WsXxxServe(args, handler, errHandler).
 
-> For delivery API you can use `delivery.WsXxxServe(args, handler, errHandler)`.
+> For delivery API you can use `delivery.WsXxxServe(args, handler, errHandler)`.  
 
+If you wanna use proxy, you can set `HTTP_PROXY` or `HTTP_PROXY` in environment variable.
+  
 #### Depth
 
 ```golang
