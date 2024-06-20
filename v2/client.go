@@ -19,8 +19,8 @@ import (
 
 	"github.com/adshao/go-binance/v2/common"
 	"github.com/adshao/go-binance/v2/delivery"
-	"github.com/adshao/go-binance/v2/options"
 	"github.com/adshao/go-binance/v2/futures"
+	"github.com/adshao/go-binance/v2/options"
 )
 
 // SideType define side type of order
