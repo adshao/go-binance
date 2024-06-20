@@ -23,10 +23,10 @@ Name | Description | Status
 [margin-api.md](https://binance-docs.github.io/apidocs/spot/en) | Details on the Margin API (/sapi) | <input type="checkbox" checked>  Implemented
 [futures-api.md](https://binance-docs.github.io/apidocs/futures/en/#general-info) | Details on the Futures API (/fapi) | <input type="checkbox" checked>  Implemented
 [delivery-api.md](https://binance-docs.github.io/apidocs/delivery/en/#general-info) | Details on the Coin-M Futures API (/dapi) | <input type="checkbox" checked>  Implemented
-[eoptions-api.md](https://binance-docs.github.io/apidocs/voptions/en/#general-info) | Detains on the European Options API(/eapi) | <input type="checkbox" checked>  Implemented  
+[options-api.md](https://binance-docs.github.io/apidocs/voptions/en/#general-info) | Detains on the Options API(/eapi) | <input type="checkbox" checked>  Implemented  
 
   
-Found an unimplemented interface, please submit a issue.
+If you find an unimplemented interface, please submit an issue.
 
 ### Installation
 
@@ -49,7 +49,7 @@ import (
     
     "github.com/adshao/go-binance/v2/futures" // optional package
     "github.com/adshao/go-binance/v2/delivery" // optional package
-    "github.com/adshao/go-binance/v2/eoptions" // optional package
+    "github.com/adshao/go-binance/v2/options" // optional package
 )
 ```
 
@@ -84,7 +84,7 @@ If you have any questions, please refer to the specific version of the code for 
 ##### Proxy Client
   
 ```
-proxyUrl := "http://127.0.0.1:7890" // for example, please replace as your exact proxy url.
+proxyUrl := "http://127.0.0.1:7890" // Please replace it with your exact proxy URL.
 client := binance.NewProxiedClient(apiKey, apiSecret, proxyUrl)
 ```
   
@@ -236,9 +236,9 @@ fmt.Println(res)
 
 You don't need Client in websocket API. Just call binance.WsXxxServe(args, handler, errHandler).
 
-> For delivery API you can use `delivery.WsXxxServe(args, handler, errHandler)`.  
+> For delivery API you can use `delivery.WsXxxServe(args, handler, errHandler)`.
 
-If you wanna use proxy, you can set `HTTPS_PROXY` or `HTTP_PROXY` in environment variable or you can call `SetWsProxyUrl` of target packages in code. Then you can call other websocket function. For example below:
+If you want to use a proxy, you can set `HTTPS_PROXY` or `HTTP_PROXY` in the environment variable, or you can call `SetWsProxyUrl` in the target packages within your code. Then you can call other websocket functions. For example:
 ```golang
 binance.SetWsProxyUrl("http://127.0.0.1:7890")
 binance.WsDepthServe("LTCBTC", wsDepthHandler, errHandler)
