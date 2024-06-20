@@ -190,16 +190,16 @@ func (s *ConvertQuoteService) Do(ctx context.Context, opts ...RequestOption) (*C
 	r.setParam("toAsset", s.toAsset)
 
 	if s.fromAmount != nil {
-		r.setParam("fromAmount", s.fromAmount)
+		r.setParam("fromAmount", *s.fromAmount)
 	}
 	if s.toAmount != nil {
-		r.setParam("toAmount", s.toAmount)
+		r.setParam("toAmount", *s.toAmount)
 	}
 	if s.walletType != nil {
-		r.setParam("walletType", s.walletType)
+		r.setParam("walletType", *s.walletType)
 	}
 	if s.validTime != nil {
-		r.setParam("validTime", s.validTime)
+		r.setParam("validTime", *s.validTime)
 	}
 
 	data, err := s.c.callAPI(ctx, r, opts...)
