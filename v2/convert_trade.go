@@ -168,7 +168,7 @@ func (s *ConvertAssetInfoService) Do(ctx context.Context, opts ...RequestOption)
 // ConvertAssetInfo define the convert asset info
 type ConvertAssetInfo struct {
 	Asset    string `json:"asset"`
-	Fraction string `json:"fraction"`
+	Fraction int    `json:"fraction"`
 }
 
 // FromAsset set fromAsset
