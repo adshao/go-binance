@@ -76,6 +76,7 @@ type ConvertTradeHistoryItem struct {
 	CreateTime   int64  `json:"createTime"`
 }
 
+// ConvertExchangeInfoService create a new convert exchange info service
 type ConvertExchangeInfoService struct {
 	c         *Client
 	fromAsset *string
@@ -129,8 +130,8 @@ type ConvertExchangeInfo struct {
 	ToAssetMaxAmount   string `json:"toAssetMaxAmount"`
 }
 
-// ConvertQuoteService create a new convert quote service
-type ConvertQuoteService struct {
+// ConvertGetQuoteService create a new convert quote service
+type ConvertGetQuoteService struct {
 	c          *Client
 	fromAsset  string
 	toAsset    string
@@ -140,46 +141,76 @@ type ConvertQuoteService struct {
 	validTime  *string // 10s, 30s, 1m, 2m, default 10s
 }
 
+// ConvertAssetInfoService create a new convert asset info service
+type ConvertAssetInfoService struct {
+	c *Client
+}
+
+// Do send request
+func (s *ConvertAssetInfoService) Do(ctx context.Context, opts ...RequestOption) ([]*ConvertAssetInfo, error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/convert/assetInfo",
+		secType:  secTypeSigned,
+	}
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	var res []*ConvertAssetInfo
+	if err = json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// ConvertAssetInfo define the convert asset info
+type ConvertAssetInfo struct {
+	Asset    string `json:"asset"`
+	Fraction string `json:"fraction"`
+}
+
 // FromAsset set fromAsset
-func (s *ConvertQuoteService) FromAsset(fromAsset string) *ConvertQuoteService {
+func (s *ConvertGetQuoteService) FromAsset(fromAsset string) *ConvertGetQuoteService {
 	s.fromAsset = fromAsset
 	return s
 }
 
 // ToAsset set fromAsset
-func (s *ConvertQuoteService) ToAsset(toAsset string) *ConvertQuoteService {
+func (s *ConvertGetQuoteService) ToAsset(toAsset string) *ConvertGetQuoteService {
 	s.toAsset = toAsset
 	return s
 }
 
 // FromAmount set fromAmount
-func (s *ConvertQuoteService) FromAmount(fromAmount string) *ConvertQuoteService {
+func (s *ConvertGetQuoteService) FromAmount(fromAmount string) *ConvertGetQuoteService {
 	s.fromAmount = &fromAmount
 	return s
 }
 
 // ToAmount set toAmount
-func (s *ConvertQuoteService) ToAmount(toAmount string) *ConvertQuoteService {
+func (s *ConvertGetQuoteService) ToAmount(toAmount string) *ConvertGetQuoteService {
 	s.toAmount = &toAmount
 	return s
 }
 
 // WalletType set walletType
 // SPOT or FUNDING. Default is SPOT
-func (s *ConvertQuoteService) WalletType(walletType string) *ConvertQuoteService {
+func (s *ConvertGetQuoteService) WalletType(walletType string) *ConvertGetQuoteService {
 	s.walletType = &walletType
 	return s
 }
 
 // ValidTime set validTime
 // 10s, 30s, 1m, 2m, default 10s
-func (s *ConvertQuoteService) ValidTime(validTime string) *ConvertQuoteService {
+func (s *ConvertGetQuoteService) ValidTime(validTime string) *ConvertGetQuoteService {
 	s.validTime = &validTime
 	return s
 }
 
 // Do send request
-func (s *ConvertQuoteService) Do(ctx context.Context, opts ...RequestOption) (*ConvertQuote, error) {
+func (s *ConvertGetQuoteService) Do(ctx context.Context, opts ...RequestOption) (*ConvertQuote, error) {
 	r := &request{
 		method:   http.MethodPost,
 		endpoint: "/sapi/v1/convert/getQuote",

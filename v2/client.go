@@ -943,9 +943,14 @@ func (c *Client) NewConvertExchangeInfoService() *ConvertExchangeInfoService {
 	return &ConvertExchangeInfoService{c: c}
 }
 
+// NewConvertAssetInfoService init the convert asset info service
+func (c *Client) NewConvertAssetInfoService() *ConvertAssetInfoService {
+	return &ConvertAssetInfoService{c: c}
+}
+
 // NewConvertQuoteService init the convert quote service
-func (c *Client) NewConvertQuoteService() *ConvertQuoteService {
-	return &ConvertQuoteService{c: c}
+func (c *Client) NewConvertQuoteService() *ConvertGetQuoteService {
+	return &ConvertGetQuoteService{c: c}
 }
 
 // NewConvertAcceptQuoteService init the convert accept quote service
