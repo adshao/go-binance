@@ -91,7 +91,7 @@ func (s *ConvertExchangeInfoService) FromAsset(fromAsset string) *ConvertExchang
 
 // ToAsset set toAsset
 func (s *ConvertExchangeInfoService) ToAsset(toAsset string) *ConvertExchangeInfoService {
-	s.fromAsset = &toAsset
+	s.toAsset = &toAsset
 	return s
 }
 
