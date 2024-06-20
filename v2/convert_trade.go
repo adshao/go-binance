@@ -102,10 +102,10 @@ func (s *ConvertExchangeInfoService) Do(ctx context.Context, opts ...RequestOpti
 		secType:  secTypeSigned,
 	}
 	if s.fromAsset != nil {
-		r.setParam("fromAsset", s.fromAsset)
+		r.setParam("fromAsset", *s.fromAsset)
 	}
 	if s.toAsset != nil {
-		r.setParam("toAsset", s.toAsset)
+		r.setParam("toAsset", *s.toAsset)
 	}
 
 	data, err := s.c.callAPI(ctx, r, opts...)
@@ -238,7 +238,7 @@ func (s *ConvertAcceptQuoteService) QuoteId(quoteId string) *ConvertAcceptQuoteS
 func (s *ConvertAcceptQuoteService) Do(ctx context.Context, opts ...RequestOption) (*ConvertAcceptQuote, error) {
 	r := &request{
 		method:   http.MethodPost,
-		endpoint: "/sapi/v1/convert/confirm",
+		endpoint: "/sapi/v1/convert/acceptQuote",
 		secType:  secTypeSigned,
 	}
 	r.setParam("quoteId", s.quoteId)
