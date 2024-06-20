@@ -2,6 +2,7 @@ package futures
 
 import (
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -16,17 +17,27 @@ type ErrHandler func(err error)
 // WsConfig webservice configuration
 type WsConfig struct {
 	Endpoint string
+	Proxy    *string
 }
 
 func newWsConfig(endpoint string) *WsConfig {
 	return &WsConfig{
 		Endpoint: endpoint,
+		Proxy:    getWsProxyUrl(),
 	}
 }
 
 var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	proxy := http.ProxyFromEnvironment
+	if cfg.Proxy != nil {
+		u, err := url.Parse(*cfg.Proxy)
+		if err != nil {
+			return nil, nil, err
+		}
+		proxy = http.ProxyURL(u)
+	}
 	Dialer := websocket.Dialer{
-		Proxy:             http.ProxyFromEnvironment,
+		Proxy:             proxy,
 		HandshakeTimeout:  45 * time.Second,
 		EnableCompression: false,
 	}

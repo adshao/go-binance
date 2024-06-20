@@ -21,6 +21,7 @@ var (
 	WebsocketKeepalive = false
 	// UseTestnet switch all the WS streams from production to the testnet
 	UseTestnet = false
+	ProxyUrl   = ""
 )
 
 // getWsEndpoint return the base endpoint of the WS according the UseTestnet flag
@@ -29,6 +30,17 @@ func getWsEndpoint() string {
 		return baseWsTestnetUrl
 	}
 	return baseWsMainUrl
+}
+
+func getWsProxyUrl() *string {
+	if ProxyUrl == "" {
+		return nil
+	}
+	return &ProxyUrl
+}
+
+func SetWsProxyUrl(url string) {
+	ProxyUrl = url
 }
 
 // WsAggTradeEvent define websocket aggTrde event.
