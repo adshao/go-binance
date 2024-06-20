@@ -3,6 +3,7 @@ package binance
 import (
 	"context"
 	"net/http"
+	"time"
 )
 
 type ConvertTradeHistoryService struct {
@@ -187,6 +188,7 @@ func (s *ConvertQuoteService) Do(ctx context.Context, opts ...RequestOption) (*C
 	}
 	r.setParam("fromAsset", s.fromAsset)
 	r.setParam("toAsset", s.toAsset)
+	r.setParam("timestamp", time.Now().UnixNano())
 
 	if s.fromAmount != nil {
 		r.setParam("fromAmount", s.fromAmount)
