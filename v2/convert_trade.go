@@ -284,7 +284,7 @@ func (s *ConvertOrderStatusService) QuoteId(quoteId string) *ConvertOrderStatusS
 func (s *ConvertOrderStatusService) Do(ctx context.Context, opts ...RequestOption) (*ConvertOrderStatus, error) {
 	r := &request{
 		method:   http.MethodGet,
-		endpoint: "/sapi/v1/convert/order",
+		endpoint: "/sapi/v1/convert/orderStatus",
 		secType:  secTypeSigned,
 	}
 	if s.orderId != nil {
