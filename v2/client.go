@@ -938,6 +938,26 @@ func (c *Client) NewConvertTradeHistoryService() *ConvertTradeHistoryService {
 	return &ConvertTradeHistoryService{c: c}
 }
 
+// NewConvertExchangeInfoService init the convert exchange info service
+func (c *Client) NewConvertExchangeInfoService() *ConvertExchangeInfoService {
+	return &ConvertExchangeInfoService{c: c}
+}
+
+// NewConvertQuoteService init the convert quote service
+func (c *Client) NewConvertQuoteService() *ConvertQuoteService {
+	return &ConvertQuoteService{c: c}
+}
+
+// NewConvertAcceptQuoteService init the convert accept quote service
+func (c *Client) NewConvertAcceptQuoteService() *ConvertAcceptQuoteService {
+	return &ConvertAcceptQuoteService{c: c}
+}
+
+// NewConvertOrderStatusService init the convert order status service
+func (c *Client) NewConvertOrderStatusService() *ConvertOrderStatusService {
+	return &ConvertOrderStatusService{c: c}
+}
+
 // NewGetIsolatedMarginAllPairsService init get isolated margin all pairs service
 func (c *Client) NewGetIsolatedMarginAllPairsService() *GetIsolatedMarginAllPairsService {
 	return &GetIsolatedMarginAllPairsService{c: c}
