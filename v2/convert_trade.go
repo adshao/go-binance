@@ -185,6 +185,8 @@ func (s *ConvertQuoteService) Do(ctx context.Context, opts ...RequestOption) (*C
 		endpoint: "/sapi/v1/convert/getQuote",
 		secType:  secTypeSigned,
 	}
+	s.c.Debug = true
+
 	r.setParam("fromAsset", s.fromAsset)
 	r.setParam("toAsset", s.toAsset)
 
