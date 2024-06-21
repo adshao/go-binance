@@ -3,8 +3,6 @@ package binance
 import (
 	"bytes"
 	"context"
-	"crypto/hmac"
-	"crypto/sha256"
 	"crypto/tls"
 	"fmt"
 	"io/ioutil"
@@ -323,6 +321,7 @@ func NewClient(apiKey, secretKey string) *Client {
 	return &Client{
 		APIKey:     apiKey,
 		SecretKey:  secretKey,
+		KeyType:    common.KeyTypeHmac,
 		BaseURL:    getAPIEndpoint(),
 		UserAgent:  "Binance/golang",
 		HTTPClient: http.DefaultClient,
@@ -343,6 +342,7 @@ func NewProxiedClient(apiKey, secretKey, proxyUrl string) *Client {
 	return &Client{
 		APIKey:    apiKey,
 		SecretKey: secretKey,
+		KeyType:   common.KeyTypeHmac,
 		BaseURL:   getAPIEndpoint(),
 		UserAgent: "Binance/golang",
 		HTTPClient: &http.Client{
@@ -373,6 +373,7 @@ type doFunc func(req *http.Request) (*http.Response, error)
 type Client struct {
 	APIKey     string
 	SecretKey  string
+	KeyType    string
 	BaseURL    string
 	UserAgent  string
 	HTTPClient *http.Client
@@ -419,16 +420,22 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 	if r.secType == secTypeAPIKey || r.secType == secTypeSigned {
 		header.Set("X-MBX-APIKEY", c.APIKey)
 	}
-
+	kt := c.KeyType
+	if kt == "" {
+		kt = common.KeyTypeHmac
+	}
+	sf, err := common.SignFunc(kt)
+	if err != nil {
+		return err
+	}
 	if r.secType == secTypeSigned {
 		raw := fmt.Sprintf("%s%s", queryString, bodyString)
-		mac := hmac.New(sha256.New, []byte(c.SecretKey))
-		_, err = mac.Write([]byte(raw))
+		sign, err := sf(c.SecretKey, raw)
 		if err != nil {
 			return err
 		}
 		v := url.Values{}
-		v.Set(signatureKey, fmt.Sprintf("%x", (mac.Sum(nil))))
+		v.Set(signatureKey, *sign)
 		if queryString == "" {
 			queryString = v.Encode()
 		} else {
