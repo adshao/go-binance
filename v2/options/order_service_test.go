@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/adshao/go-binance/v2/common"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -58,6 +59,22 @@ func (s *baseOrderTestSuite) assertOrderEqual(e, a *Order) {
 func (s *baseOrderTestSuite) assertOrdersEqual(e, a []*Order) {
 	for i := range e {
 		s.assertOrderEqual(e[i], a[i])
+	}
+}
+
+func (s *baseOrderTestSuite) assertOrderAndAPIErrorListEqual(e, a []interface{}) {
+	for i := range e {
+		switch ee := e[i].(type) {
+		case Order:
+			aa, ok := a[i].(Order)
+			s.r().Equal(true, ok, "convert Order failed")
+			s.assertOrderEqual(&ee, &aa)
+		case common.APIError:
+			aa, ok := a[i].(common.APIError)
+			s.r().Equal(true, ok, "convert APIError failed")
+			s.r().Equal(ee.Code, aa.Code, "Code")
+			s.r().Equal(ee.Message, aa.Message, "Message")
+		}
 	}
 }
 
@@ -200,6 +217,10 @@ func (s *orderServiceTestSuite) TestCreateBatchOrders() {
 		 "optionSide": "CALL",
 		 "quoteAsset": "USDT",
 		 "mmp": false
+		},
+		{
+		 "code": 1002,
+		 "msg": "test 1002"
 		}
 	   ]`)
 	s.mockDo(data, nil)
@@ -284,10 +305,10 @@ func (s *orderServiceTestSuite) TestCreateBatchOrders() {
 	returnOrders, err := s.client.NewCreateBatchOrdersService().OrderList(orderLists).Do(newContext())
 	r := s.r()
 	r.NoError(err)
-	r.Len(returnOrders, 2)
+	r.Len(returnOrders, 3)
 
-	orders := []*Order{
-		{
+	orders := []interface{}{
+		Order{
 			OrderId:       4710989013445263360,
 			Symbol:        "DOGE-240607-0.158-C",
 			Price:         "4.2000",
@@ -311,7 +332,7 @@ func (s *orderServiceTestSuite) TestCreateBatchOrders() {
 			QuoteAsset:    "USDT",
 			Mmp:           false,
 		},
-		{
+		Order{
 			OrderId:       4710989013445263361,
 			Symbol:        "DOGE-240607-0.158-C",
 			Price:         "4.2000",
@@ -335,8 +356,12 @@ func (s *orderServiceTestSuite) TestCreateBatchOrders() {
 			QuoteAsset:    "USDT",
 			Mmp:           false,
 		},
+		common.APIError{
+			Code:    1002,
+			Message: "test 1002",
+		},
 	}
-	s.assertOrdersEqual(orders, returnOrders)
+	s.assertOrderAndAPIErrorListEqual(orders, returnOrders)
 }
 
 func (s *orderServiceTestSuite) TestGetOrder() {
@@ -530,6 +555,10 @@ func (s *orderServiceTestSuite) TestCancelBatchOrders() {
 		 "optionSide": "CALL",
 		 "quoteAsset": "USDT",
 		 "mmp": false
+		},
+		{
+		 "code": 1002,
+		 "msg": "test 1002"
 		}
 	   ]`)
 	s.mockDo(data, nil)
@@ -556,8 +585,8 @@ func (s *orderServiceTestSuite) TestCancelBatchOrders() {
 	r := s.r()
 	r.NoError(err)
 
-	e := []*Order{
-		{
+	e := []interface{}{
+		Order{
 			OrderId:       4710989013445263361,
 			Symbol:        "DOGE-240607-0.158-C",
 			Price:         "4.2000",
@@ -581,7 +610,7 @@ func (s *orderServiceTestSuite) TestCancelBatchOrders() {
 			QuoteAsset:    "USDT",
 			Mmp:           false,
 		},
-		{
+		Order{
 			OrderId:       4710989013445263360,
 			Symbol:        "DOGE-240607-0.158-C",
 			Price:         "4.2000",
@@ -605,8 +634,12 @@ func (s *orderServiceTestSuite) TestCancelBatchOrders() {
 			QuoteAsset:    "USDT",
 			Mmp:           false,
 		},
+		common.APIError{
+			Code:    1002,
+			Message: "test 1002",
+		},
 	}
-	s.assertOrdersEqual(e, res)
+	s.assertOrderAndAPIErrorListEqual(e, res)
 }
 
 func (s *orderServiceTestSuite) TestCancelAllOpenOrders() {
