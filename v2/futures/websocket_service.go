@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -978,6 +979,43 @@ type WsUserDataEvent struct {
 	AccountUpdate       WsAccountUpdate       `json:"a"`
 	OrderTradeUpdate    WsOrderTradeUpdate    `json:"o"`
 	AccountConfigUpdate WsAccountConfigUpdate `json:"ac"`
+}
+
+func (e *WsUserDataEvent) UnmarshalJSON(data []byte) error {
+	var tmp struct {
+		Event               UserDataEventType     `json:"e"`
+		Time                interface{}           `json:"E"`
+		CrossWalletBalance  string                `json:"cw"`
+		MarginCallPositions []WsPosition          `json:"p"`
+		TransactionTime     int64                 `json:"T"`
+		AccountUpdate       WsAccountUpdate       `json:"a"`
+		OrderTradeUpdate    WsOrderTradeUpdate    `json:"o"`
+		AccountConfigUpdate WsAccountConfigUpdate `json:"ac"`
+	}
+	if err := json.Unmarshal(data, &tmp); err != nil {
+		return err
+	}
+
+	e.Event = tmp.Event
+	switch v := tmp.Time.(type) {
+	case float64:
+		e.Time = int64(v)
+	case string:
+		parsedTime, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return err
+		}
+		e.Time = parsedTime
+	default:
+		return fmt.Errorf("unexpected type for E: %T", tmp.Time)
+	}
+	e.CrossWalletBalance = tmp.CrossWalletBalance
+	e.MarginCallPositions = tmp.MarginCallPositions
+	e.TransactionTime = tmp.TransactionTime
+	e.AccountUpdate = tmp.AccountUpdate
+	e.OrderTradeUpdate = tmp.OrderTradeUpdate
+	e.AccountConfigUpdate = tmp.AccountConfigUpdate
+	return nil
 }
 
 // WsAccountUpdate define account update
