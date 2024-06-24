@@ -3,8 +3,6 @@ package futures
 import (
 	"bytes"
 	"context"
-	"crypto/hmac"
-	"crypto/sha256"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -205,6 +203,7 @@ func NewClient(apiKey, secretKey string) *Client {
 	return &Client{
 		APIKey:     apiKey,
 		SecretKey:  secretKey,
+		KeyType:    common.KeyTypeHmac,
 		BaseURL:    getApiEndpoint(),
 		UserAgent:  "Binance/golang",
 		HTTPClient: http.DefaultClient,
@@ -225,6 +224,7 @@ func NewProxiedClient(apiKey, secretKey, proxyUrl string) *Client {
 	return &Client{
 		APIKey:    apiKey,
 		SecretKey: secretKey,
+		KeyType:   common.KeyTypeHmac,
 		BaseURL:   getApiEndpoint(),
 		UserAgent: "Binance/golang",
 		HTTPClient: &http.Client{
@@ -240,6 +240,7 @@ type doFunc func(req *http.Request) (*http.Response, error)
 type Client struct {
 	APIKey     string
 	SecretKey  string
+	KeyType    string
 	BaseURL    string
 	UserAgent  string
 	HTTPClient *http.Client
@@ -286,16 +287,22 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 	if r.secType == secTypeAPIKey || r.secType == secTypeSigned {
 		header.Set("X-MBX-APIKEY", c.APIKey)
 	}
-
+	kt := c.KeyType
+	if kt == "" {
+		kt = common.KeyTypeHmac
+	}
+	sf, err := common.SignFunc(kt)
+	if err != nil {
+		return err
+	}
 	if r.secType == secTypeSigned {
 		raw := fmt.Sprintf("%s%s", queryString, bodyString)
-		mac := hmac.New(sha256.New, []byte(c.SecretKey))
-		_, err = mac.Write([]byte(raw))
+		sign, err := sf(c.SecretKey, raw)
 		if err != nil {
 			return err
 		}
 		v := url.Values{}
-		v.Set(signatureKey, fmt.Sprintf("%x", (mac.Sum(nil))))
+		v.Set(signatureKey, *sign)
 		if queryString == "" {
 			queryString = v.Encode()
 		} else {
@@ -305,7 +312,7 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 	if queryString != "" {
 		fullURL = fmt.Sprintf("%s?%s", fullURL, queryString)
 	}
-	c.debug("full url: %s, body: %s", fullURL, bodyString)
+	c.debug("full url: %s, body: %s\n", fullURL, bodyString)
 
 	r.fullURL = fullURL
 	r.header = header
@@ -324,7 +331,7 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 	}
 	req = req.WithContext(ctx)
 	req.Header = r.header
-	c.debug("request: %#v", req)
+	c.debug("request: %#v\n", req)
 	f := c.do
 	if f == nil {
 		f = c.HTTPClient.Do
@@ -345,17 +352,20 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 			err = cerr
 		}
 	}()
-	c.debug("response: %#v", res)
-	c.debug("response body: %s", string(data))
-	c.debug("response status code: %d", res.StatusCode)
+	c.debug("response: %#v\n", res)
+	c.debug("response body: %s\n", string(data))
+	c.debug("response status code: %d\n", res.StatusCode)
 
 	if res.StatusCode >= http.StatusBadRequest {
 		apiErr := new(common.APIError)
 		e := json.Unmarshal(data, apiErr)
 		if e != nil {
-			c.debug("failed to unmarshal json: %s", e)
+			c.debug("failed to unmarshal json: %s\n", e)
 		}
-		return nil, &http.Header{}, apiErr
+		if !apiErr.IsValid() {
+			apiErr.Response = data
+		}
+		return nil, &res.Header, apiErr
 	}
 	return data, &res.Header, nil
 }
