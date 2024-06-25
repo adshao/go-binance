@@ -180,6 +180,7 @@ func wsDepthServe(endpoint string, handler WsDepthHandler, errHandler ErrHandler
 		event.Symbol = j.Get("s").MustString()
 		event.LastUpdateID = j.Get("u").MustInt64()
 		event.FirstUpdateID = j.Get("U").MustInt64()
+		event.LastUpdateIDInLastStream = j.Get("pu").MustInt64()
 		bidsLen := len(j.Get("b").MustArray())
 		event.Bids = make([]Bid, bidsLen)
 		for i := 0; i < bidsLen; i++ {
@@ -205,13 +206,14 @@ func wsDepthServe(endpoint string, handler WsDepthHandler, errHandler ErrHandler
 
 // WsDepthEvent define websocket depth event
 type WsDepthEvent struct {
-	Event         string `json:"e"`
-	Time          int64  `json:"E"`
-	Symbol        string `json:"s"`
-	LastUpdateID  int64  `json:"u"`
-	FirstUpdateID int64  `json:"U"`
-	Bids          []Bid  `json:"b"`
-	Asks          []Ask  `json:"a"`
+	Event                    string `json:"e"`
+	Time                     int64  `json:"E"`
+	Symbol                   string `json:"s"`
+	LastUpdateID             int64  `json:"u"`
+	FirstUpdateID            int64  `json:"U"`
+	LastUpdateIDInLastStream int64  `json:"pu"`
+	Bids                     []Bid  `json:"b"`
+	Asks                     []Ask  `json:"a"`
 }
 
 // WsCombinedDepthServe is similar to WsDepthServe, but it for multiple symbols
@@ -237,18 +239,23 @@ func wsCombinedDepthServe(endpoint string, handler WsDepthHandler, errHandler Er
 	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		j, err := newJSON(message)
+
 		if err != nil {
 			errHandler(err)
 			return
 		}
+
 		event := new(WsDepthEvent)
 		stream := j.Get("stream").MustString()
 		symbol := strings.Split(stream, "@")[0]
+
 		event.Symbol = strings.ToUpper(symbol)
 		data := j.Get("data").MustMap()
+		event.Event = data["e"].(string)
 		event.Time, _ = data["E"].(stdjson.Number).Int64()
 		event.LastUpdateID, _ = data["u"].(stdjson.Number).Int64()
 		event.FirstUpdateID, _ = data["U"].(stdjson.Number).Int64()
+		event.LastUpdateIDInLastStream, _ = data["pu"].(stdjson.Number).Int64()
 		bidsLen := len(data["b"].([]interface{}))
 		event.Bids = make([]Bid, bidsLen)
 		for i := 0; i < bidsLen; i++ {
