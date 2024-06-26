@@ -479,7 +479,7 @@ func (c *Client) callAPI(ctx context.Context, r *request, opts ...RequestOption)
 	}
 	defer func() {
 		cerr := res.Body.Close()
-		// Only overwrite the retured error if the original error was nil and an
+		// Only overwrite the returned error if the original error was nil and an
 		// error occurred while closing the body.
 		if err == nil && cerr != nil {
 			err = cerr
@@ -1008,7 +1008,7 @@ func (c *Client) NewGetAllLiquidityPoolService() *GetAllLiquidityPoolService {
 	return &GetAllLiquidityPoolService{c: c}
 }
 
-// NewGetLiquidityPoolDetailService init the get liquidity pool detial service
+// NewGetLiquidityPoolDetailService init the get liquidity pool detail service
 func (c *Client) NewGetLiquidityPoolDetailService() *GetLiquidityPoolDetailService {
 	return &GetLiquidityPoolDetailService{c: c}
 }
@@ -1043,7 +1043,7 @@ func (c *Client) NewClaimRewardService() *ClaimRewardService {
 	return &ClaimRewardService{c: c}
 }
 
-// NewRemoveLiquidityService init the service to remvoe liquidity
+// NewRemoveLiquidityService init the service to remove liquidity
 func (c *Client) NewRemoveLiquidityService() *RemoveLiquidityService {
 	return &RemoveLiquidityService{c: c, assets: []string{}}
 }

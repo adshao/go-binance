@@ -575,7 +575,7 @@ func (s *websocketServiceTestSuite) TestContinuousKlineServe() {
 	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
 
-	doneC, stopC, err := WsContinuousKlineServe(&WsContinuousKlineSubcribeArgs{
+	doneC, stopC, err := WsContinuousKlineServe(&WsContinuousKlineSubscribeArgs{
 		Pair:         "BTCUSDT",
 		ContractType: "PERPETUAL",
 		Interval:     "1m",
@@ -668,7 +668,7 @@ func (s *websocketServiceTestSuite) TestWsCombinedContinuousKlineServe() {
 	s.mockWsServe(data, errors.New(fakeErrMsg))
 	defer s.assertWsServe()
 
-	input := []*WsContinuousKlineSubcribeArgs{
+	input := []*WsContinuousKlineSubscribeArgs{
 		{
 			Pair:         "ETHBTC",
 			ContractType: "PERPETUAL",
