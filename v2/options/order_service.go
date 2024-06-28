@@ -179,7 +179,7 @@ type Order struct {
 	CreateTime    int64           `json:"createTime"`
 	UpdateTime    int64           `json:"updateTime"`
 	Status        OrderStatusType `json:"status"`
-	Reason        *string         `json:"reason"` // setted while query histroy orders.
+	Reason        *string         `json:"reason"` // set while query history orders.
 	AvgPrice      string          `json:"avgPrice"`
 	Source        string          `json:"source"`
 	ClientOrderId string          `json:"clientOrderId"`
@@ -188,7 +188,7 @@ type Order struct {
 	OptionSide    OptionSideType  `json:"optionSide"`
 	QuoteAsset    string          `json:"quoteAsset"`
 	Mmp           bool            `json:"mmp"`
-	LastTrade     *LastTrade      `json:"lastTrade"` // order is immediately filled while calling create order, it will be setted.
+	LastTrade     *LastTrade      `json:"lastTrade"` // order is immediately filled while calling create order, it will be set.
 
 	RateLimitOrder10s string `json:"rateLimitOrder10s,omitempty"`
 	RateLimitOrder1m  string `json:"rateLimitOrder1m,omitempty"`
