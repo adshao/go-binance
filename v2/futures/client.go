@@ -640,3 +640,39 @@ func (c *Client) NewOpenInterestStatisticsService() *OpenInterestStatisticsServi
 func (c *Client) NewLongShortRatioService() *LongShortRatioService {
 	return &LongShortRatioService{c: c}
 }
+
+func (c *Client) NewDeliveryPriceService() *DeliveryPriceService {
+	return &DeliveryPriceService{c: c}
+}
+
+func (c *Client) NewTopLongShortAccountRatioService() *TopLongShortAccountRatioService {
+	return &TopLongShortAccountRatioService{c: c}
+}
+
+func (c *Client) NewTopLongShortPositionRatioService() *TopLongShortPositionRatioService {
+	return &TopLongShortPositionRatioService{c: c}
+}
+
+func (c *Client) NewTakerLongShortRatioService() *TakerLongShortRatioService {
+	return &TakerLongShortRatioService{c: c}
+}
+
+func (c *Client) NewBasisService() *BasisService {
+	return &BasisService{c: c}
+}
+
+func (c *Client) NewIndexInfoService() *IndexInfoService {
+	return &IndexInfoService{c: c}
+}
+
+func (c *Client) NewAssetIndexService() *AssetIndexService {
+	return &AssetIndexService{c: c}
+}
+
+func (c *Client) NewConstituentsService() *ConstituentsService {
+	return &ConstituentsService{c: c}
+}
+
+func (c *Client) NewLvtKlinesService() *LvtKlinesService {
+	return &LvtKlinesService{c: c}
+}
