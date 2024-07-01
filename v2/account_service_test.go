@@ -86,7 +86,7 @@ func (s *accountServiceTestSuite) TestGetAccount() {
 			},
 		},
 		Permissions: []string{"SPOT"},
-		UID: 354937868
+		UID: 354937868,
 	}
 	s.assertAccountEqual(e, res)
 }
