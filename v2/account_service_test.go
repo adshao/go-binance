@@ -45,7 +45,8 @@ func (s *accountServiceTestSuite) TestGetAccount() {
 			],
 			"permissions": [
 				"SPOT"
-			]
+			],
+            "uid": 354937868
   }`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
@@ -85,6 +86,7 @@ func (s *accountServiceTestSuite) TestGetAccount() {
 			},
 		},
 		Permissions: []string{"SPOT"},
+		UID:         354937868,
 	}
 	s.assertAccountEqual(e, res)
 }
@@ -108,6 +110,7 @@ func (s *accountServiceTestSuite) assertAccountEqual(e, a *Account) {
 		r.Equal(e.Balances[i].Free, a.Balances[i].Free, "Free")
 		r.Equal(e.Balances[i].Locked, a.Balances[i].Locked, "Locked")
 	}
+	r.Equal(e.UID, a.UID, "UID")
 }
 
 func (s *accountServiceTestSuite) TestGetAccountSnapshot() {
