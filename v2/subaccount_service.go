@@ -1565,11 +1565,11 @@ type SubAccFuturesAccSummService struct {
 }
 
 type SubAccFuturesAccSummSvcRsp struct {
-	FutureAccountSummaryResp   *SubAccFuturesAccSum  `json:"futureAccountSummaryResp"`   // set while futuresType=1
-	DeliveryAccountSummaryResp *SubAccDeliveryAccSum `json:"deliveryAccountSummaryResp"` // set while futuresType=2
+	FutureAccountSummaryResp   *SubAccFuturesAccSumm  `json:"futureAccountSummaryResp"`   // set while futuresType=1
+	DeliveryAccountSummaryResp *SubAccDeliveryAccSumm `json:"deliveryAccountSummaryResp"` // set while futuresType=2
 }
 
-type SubAccFuturesAccSum struct {
+type SubAccFuturesAccSumm struct {
 	TotalInitialMargin          string         `json:"totalInitialMargin"`
 	TotalMaintenanceMargin      string         `json:"totalMaintenanceMargin"`
 	TotalMarginBalance          string         `json:"totalMarginBalance"`
@@ -1593,7 +1593,7 @@ type FSubAccount struct {
 	Asset                       string `json:"asset"`
 }
 
-type SubAccDeliveryAccSum struct {
+type SubAccDeliveryAccSumm struct {
 	TotalMarginBalanceOfBTC    string         `json:"totalMarginBalanceOfBTC"`
 	TotalUnrealizedProfitOfBTC string         `json:"totalUnrealizedProfitOfBTC"`
 	TotalWalletBalanceOfBTC    string         `json:"totalWalletBalanceOfBTC"`
@@ -1737,7 +1737,7 @@ func (s *SubAccFuturesPositionsService) Do(ctx context.Context, opts ...RequestO
 	return res, nil
 }
 
-// sub-account margin transfer
+// execute sub-account margin account transfer
 type SubAccMarginTrfService struct {
 	c            *Client
 	email        string
@@ -2126,6 +2126,7 @@ func (s *SubAccBlvtEnableService) Do(ctx context.Context, opts ...RequestOption)
 	return res, nil
 }
 
+// query sub-account api ip restriction
 type SubAccApiIpRestrictionService struct {
 	c                *Client
 	email            string // sub-account email
@@ -2180,6 +2181,7 @@ func (s *SubAccApiIpRestrictionService) Do(ctx context.Context, opts ...RequestO
 	return res, nil
 }
 
+// delete sub-account ip restriction
 type SubAccApiDelIpRestrictionService struct {
 	c                *Client
 	email            string // sub-account email
@@ -2243,6 +2245,7 @@ func (s *SubAccApiDelIpRestrictionService) Do(ctx context.Context, opts ...Reque
 	return res, nil
 }
 
+// add sub-account ip restriction
 type SubAccApiAddIpRestrictionService struct {
 	c                *Client
 	email            string // sub-account email
@@ -2507,6 +2510,7 @@ func (s *MngSubAccSnapshotService) Do(ctx context.Context, opts ...RequestOption
 	return res, nil
 }
 
+// managed-sub account query transfer log, this interface is for investor
 type MngSubAccQryTrfLogForInvestorService struct {
 	c                           *Client
 	email                       string

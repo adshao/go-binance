@@ -1323,7 +1323,7 @@ func (s *subAccFuturesAccSummServiceTestSuite) TestSubAccFuturesAccSumm() {
 	s.r().NoError(err)
 
 	e := &SubAccFuturesAccSummSvcRsp{
-		FutureAccountSummaryResp: &SubAccFuturesAccSum{
+		FutureAccountSummaryResp: &SubAccFuturesAccSumm{
 			TotalInitialMargin:          "9.83137400",
 			TotalMaintenanceMargin:      "0.41568700",
 			TotalMarginBalance:          "23.03235621",
@@ -1352,7 +1352,7 @@ func (s *subAccFuturesAccSummServiceTestSuite) TestSubAccFuturesAccSumm() {
 					TotalUnrealizedProfit:       "0.03219710",
 					TotalWalletBalance:          "0.87356177",
 					Asset:                       "USD"}}},
-		DeliveryAccountSummaryResp: &SubAccDeliveryAccSum{
+		DeliveryAccountSummaryResp: &SubAccDeliveryAccSumm{
 			TotalMarginBalanceOfBTC:    "25.03221121",
 			TotalUnrealizedProfitOfBTC: "0.12233410",
 			TotalWalletBalanceOfBTC:    "22.15879444",
