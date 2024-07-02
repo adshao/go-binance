@@ -544,6 +544,10 @@ func (c *Client) NewKlinesService() *KlinesService {
 	return &KlinesService{c: c}
 }
 
+func (c *Client) NewUiKlinesService() *UiKlinesService {
+	return &UiKlinesService{c: c}
+}
+
 // NewListPriceChangeStatsService init list prices change stats service
 func (c *Client) NewListPriceChangeStatsService() *ListPriceChangeStatsService {
 	return &ListPriceChangeStatsService{c: c}
@@ -552,6 +556,10 @@ func (c *Client) NewListPriceChangeStatsService() *ListPriceChangeStatsService {
 // NewListPricesService init listing prices service
 func (c *Client) NewListPricesService() *ListPricesService {
 	return &ListPricesService{c: c}
+}
+
+func (c *Client) NewTradingDayTickerService() *TradingDayTickerService {
+	return &TradingDayTickerService{c: c}
 }
 
 // NewListBookTickersService init listing booking tickers service
@@ -1121,4 +1129,136 @@ func (c *Client) NewSubAccountTransferHistoryService() *SubAccountTransferHistor
 // NewListUserUniversalTransferService Query User Universal Transfer History
 func (c *Client) NewListUserUniversalTransferService() *ListUserUniversalTransferService {
 	return &ListUserUniversalTransferService{c: c}
+}
+
+func (c *Client) NewCrtVirtSubAccService() *CrtVirtSubAccService {
+	return &CrtVirtSubAccService{c: c}
+}
+
+func (c *Client) NewSubAccSpotTrfHisService() *SubAccSpotTrfHisService {
+	return &SubAccSpotTrfHisService{c: c}
+}
+
+func (c *Client) NewSubAccFutTrfHisService() *SubAccFutTrfHisService {
+	return &SubAccFutTrfHisService{c: c}
+}
+
+func (c *Client) NewSubAccFutTrfService() *SubAccFutTrfService {
+	return &SubAccFutTrfService{c: c}
+}
+
+func (c *Client) NewSubAccDepRecService() *SubAccDepRecService {
+	return &SubAccDepRecService{c: c}
+}
+
+func (c *Client) NewSubAccMFStatusService() *SubAccMFStatusService {
+	return &SubAccMFStatusService{c: c}
+}
+
+func (c *Client) NewSubAccMarginEnableService() *SubAccMarginEnableService {
+	return &SubAccMarginEnableService{c: c}
+}
+
+func (c *Client) NewSubAccMarginAccService() *SubAccMarginAccService {
+	return &SubAccMarginAccService{c: c}
+}
+
+func (c *Client) NewSubAccMarginAccSummService() *SubAccMarginAccSummService {
+	return &SubAccMarginAccSummService{c: c}
+}
+
+func (c *Client) NewSubAccFuturesEnableService() *SubAccFuturesEnableService {
+	return &SubAccFuturesEnableService{c: c}
+}
+
+func (c *Client) NewSubAccFuturesAccService() *SubAccFuturesAccService {
+	return &SubAccFuturesAccService{c: c}
+}
+
+func (c *Client) NewSubAccFuturesAccSummService() *SubAccFuturesAccSummService {
+	return &SubAccFuturesAccSummService{c: c}
+}
+
+func (c *Client) NewSubAccFuturesPositionsService() *SubAccFuturesPositionsService {
+	return &SubAccFuturesPositionsService{c: c}
+}
+
+func (c *Client) NewSubAccMarginTrfService() *SubAccMarginTrfService {
+	return &SubAccMarginTrfService{c: c}
+}
+
+func (c *Client) NewSubAccTrfSubToMasterService() *SubAccTrfSubToMasterService {
+	return &SubAccTrfSubToMasterService{c: c}
+}
+
+func (c *Client) NewSubAccUnivTrfService() *SubAccUnivTrfService {
+	return &SubAccUnivTrfService{c: c}
+}
+
+func (c *Client) NewSubAccUnivTrfHisService() *SubAccUnivTrfHisService {
+	return &SubAccUnivTrfHisService{c: c}
+}
+
+func (c *Client) NewSubAccBlvtEnableService() *SubAccBlvtEnableService {
+	return &SubAccBlvtEnableService{c: c}
+}
+
+func (c *Client) NewSubAccApiIpRestrictionService() *SubAccApiIpRestrictionService {
+	return &SubAccApiIpRestrictionService{c: c}
+}
+
+func (c *Client) NewSubAccApiDelIpRestrictionService() *SubAccApiDelIpRestrictionService {
+	return &SubAccApiDelIpRestrictionService{c: c}
+}
+
+func (c *Client) NewSubAccApiAddIpRestrictionService() *SubAccApiAddIpRestrictionService {
+	return &SubAccApiAddIpRestrictionService{c: c}
+}
+
+func (c *Client) NewMngSubAccWithdrawService() *MngSubAccWithdrawService {
+	return &MngSubAccWithdrawService{c: c}
+}
+
+func (c *Client) NewMngSubAccSnapshotService() *MngSubAccSnapshotService {
+	return &MngSubAccSnapshotService{c: c}
+}
+
+func (c *Client) NewMngSubAccQryTrfLogForInvestorService() *MngSubAccQryTrfLogForInvestorService {
+	return &MngSubAccQryTrfLogForInvestorService{c: c}
+}
+
+func (c *Client) NewMngSubAccQryTrfLogForTradeParentService() *MngSubAccQryTrfLogForTradeParentService {
+	return &MngSubAccQryTrfLogForTradeParentService{c: c}
+}
+
+func (c *Client) NewMngSubAccQryFuturesAssetService() *MngSubAccQryFuturesAssetService {
+	return &MngSubAccQryFuturesAssetService{c: c}
+}
+
+func (c *Client) NewMngSubAccQryMarginAssetService() *MngSubAccQryMarginAssetService {
+	return &MngSubAccQryMarginAssetService{c: c}
+}
+
+func (c *Client) NewSubAccAssetService() *SubAccAssetService {
+	return &SubAccAssetService{c: c}
+}
+
+func (c *Client) NewMgnSubAccInfoService() *MgnSubAccInfoService {
+	return &MgnSubAccInfoService{c: c}
+}
+
+func (c *Client) NewSubAccTxnStatsService() *SubAccTxnStatsService {
+	return &SubAccTxnStatsService{c: c}
+}
+
+func (c *Client) NewMgnSubAccDepositAddrService() *MgnSubAccDepositAddrService {
+	return &MgnSubAccDepositAddrService{c: c}
+}
+
+func (c *Client) NewSubAccOptionsEnableService() *SubAccOptionsEnableService {
+	return &SubAccOptionsEnableService{c: c}
+}
+
+func (c *Client) NewMgnSubAccQryTrfLogService() *MgnSubAccQryTrfLogService {
+	return &MgnSubAccQryTrfLogService{c: c}
 }
