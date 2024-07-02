@@ -790,7 +790,7 @@ func (s *subAccMFStatusServiceTestSuite) TestSubAccMFStatus() {
 			IsFutureEnabled:  true,
 			Mobile:           1570791523523}}
 
-	s.assertSubAccMFStatussEqual(e, res)
+	s.assertSubAccMFStatusesEqual(e, res)
 }
 
 func (s *subAccMFStatusServiceTestSuite) assertSubAccMFStatusEqual(e, a *SubAccMFStatus) {
@@ -804,7 +804,7 @@ func (s *subAccMFStatusServiceTestSuite) assertSubAccMFStatusEqual(e, a *SubAccM
 	r.Equal(e.Mobile, a.Mobile, "Mobile")
 }
 
-func (s *subAccMFStatusServiceTestSuite) assertSubAccMFStatussEqual(e, a []*SubAccMFStatus) {
+func (s *subAccMFStatusServiceTestSuite) assertSubAccMFStatusesEqual(e, a []*SubAccMFStatus) {
 	s.r().Len(e, len(a))
 	for i := range e {
 		s.assertSubAccMFStatusEqual(e[i], a[i])
