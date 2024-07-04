@@ -544,6 +544,10 @@ func (c *Client) NewKlinesService() *KlinesService {
 	return &KlinesService{c: c}
 }
 
+func (c *Client) NewUiKlinesService() *UiKlinesService {
+	return &UiKlinesService{c: c}
+}
+
 // NewListPriceChangeStatsService init list prices change stats service
 func (c *Client) NewListPriceChangeStatsService() *ListPriceChangeStatsService {
 	return &ListPriceChangeStatsService{c: c}
@@ -552,6 +556,10 @@ func (c *Client) NewListPriceChangeStatsService() *ListPriceChangeStatsService {
 // NewListPricesService init listing prices service
 func (c *Client) NewListPricesService() *ListPricesService {
 	return &ListPricesService{c: c}
+}
+
+func (c *Client) NewTradingDayTickerService() *TradingDayTickerService {
+	return &TradingDayTickerService{c: c}
 }
 
 // NewListBookTickersService init listing booking tickers service
@@ -1121,4 +1129,165 @@ func (c *Client) NewSubAccountTransferHistoryService() *SubAccountTransferHistor
 // NewListUserUniversalTransferService Query User Universal Transfer History
 func (c *Client) NewListUserUniversalTransferService() *ListUserUniversalTransferService {
 	return &ListUserUniversalTransferService{c: c}
+}
+
+// Create virtual sub-account
+func (c *Client) NewCreateVirtualSubAccountService() *CreateVirtualSubAccountService {
+	return &CreateVirtualSubAccountService{c: c}
+}
+
+// Sub-Account spot transfer history
+func (c *Client) NewSubAccountSpotTransferHistoryService() *SubAccountSpotTransferHistoryService {
+	return &SubAccountSpotTransferHistoryService{c: c}
+}
+
+// Sub-Account futures transfer history
+func (c *Client) NewSubAccountFuturesTransferHistoryService() *SubAccountFuturesTransferHistoryService {
+	return &SubAccountFuturesTransferHistoryService{c: c}
+}
+
+// Get sub account deposit record
+func (c *Client) NewSubAccountDepositRecordService() *SubAccountDepositRecordService {
+	return &SubAccountDepositRecordService{c: c}
+}
+
+// Get sub account margin futures status
+func (c *Client) NewSubAccountMarginFuturesStatusService() *SubAccountMarginFuturesStatusService {
+	return &SubAccountMarginFuturesStatusService{c: c}
+}
+
+// sub account margin enable
+func (c *Client) NewSubAccountMarginEnableService() *SubAccountMarginEnableService {
+	return &SubAccountMarginEnableService{c: c}
+}
+
+// get sub-account margin account detail
+func (c *Client) NewSubAccountMarginAccountInfoService() *SubAccountMarginAccountInfoService {
+	return &SubAccountMarginAccountInfoService{c: c}
+}
+
+// get sub-account margin account summary
+func (c *Client) NewSubAccountMarginAccountSummaryService() *SubAccountMarginAccountSummaryService {
+	return &SubAccountMarginAccountSummaryService{c: c}
+}
+
+func (c *Client) NewSubAccountFuturesEnableService() *SubAccountFuturesEnableService {
+	return &SubAccountFuturesEnableService{c: c}
+}
+
+// get sub-account futures account summary, include U-M and C-M, v2 interface
+func (c *Client) NewSubAccountFuturesAccountSummaryService() *SubAccountFuturesAccountSummaryService {
+	return &SubAccountFuturesAccountSummaryService{c: c}
+}
+
+// get target sub-account futures position information, include U-M and C-M, v2 interface.
+func (c *Client) NewSubAccountFuturesPositionsService() *SubAccountFuturesPositionsService {
+	return &SubAccountFuturesPositionsService{c: c}
+}
+
+// execute sub-account margin account transfer
+func (c *Client) NewSubAccountMarginTransferService() *SubAccountMarginTransferService {
+	return &SubAccountMarginTransferService{c: c}
+}
+
+// sub-account transfer balance to master-account
+func (c *Client) NewSubAccountTransferSubToMasterService() *SubAccountTransferSubToMasterService {
+	return &SubAccountTransferSubToMasterService{c: c}
+}
+
+// Universal transfer of master and sub accounts
+func (c *Client) NewSubAccountUniversalTransferService() *SubAccountUniversalTransferService {
+	return &SubAccountUniversalTransferService{c: c}
+}
+
+// Query the universal transfer history of sub and master accounts
+func (c *Client) NewSubAccUniversalTransferHistoryService() *SubAccUniversalTransferHistoryService {
+	return &SubAccUniversalTransferHistoryService{c: c}
+}
+
+// Binance Leveraged Tokens enable
+func (c *Client) NewSubAccountBlvtEnableService() *SubAccountBlvtEnableService {
+	return &SubAccountBlvtEnableService{c: c}
+}
+
+// query sub-account api ip restriction
+func (c *Client) NewSubAccountApiIpRestrictionService() *SubAccountApiIpRestrictionService {
+	return &SubAccountApiIpRestrictionService{c: c}
+}
+
+// delete sub-account ip restriction
+func (c *Client) NewSubAccountApiDeleteIpRestrictionService() *SubAccountApiDeleteIpRestrictionService {
+	return &SubAccountApiDeleteIpRestrictionService{c: c}
+}
+
+// add sub-account ip restriction
+func (c *Client) NewSubAccountApiAddIpRestrictionService() *SubAccountApiAddIpRestrictionService {
+	return &SubAccountApiAddIpRestrictionService{c: c}
+}
+
+func (c *Client) NewManagedSubAccountWithdrawService() *ManagedSubAccountWithdrawService {
+	return &ManagedSubAccountWithdrawService{c: c}
+}
+
+// Query asset snapshot of managed-sub account
+func (c *Client) NewManagedSubAccountSnapshotService() *ManagedSubAccountSnapshotService {
+	return &ManagedSubAccountSnapshotService{c: c}
+}
+
+// managed-sub account query transfer log, this interface is for investor
+func (c *Client) NewManagedSubAccountQueryTransferLogForInvestorService() *ManagedSubAccountQueryTransferLogForInvestorService {
+	return &ManagedSubAccountQueryTransferLogForInvestorService{c: c}
+}
+
+func (c *Client) NewManagedSubAccountQueryTransferLogForTradeParentService() *ManagedSubAccountQueryTransferLogForTradeParentService {
+	return &ManagedSubAccountQueryTransferLogForTradeParentService{c: c}
+}
+
+// Investor account inquiry custody account futures assets
+func (c *Client) NewManagedSubAccountQueryFuturesAssetService() *ManagedSubAccountQueryFuturesAssetService {
+	return &ManagedSubAccountQueryFuturesAssetService{c: c}
+}
+
+// Investor account inquiry for leveraged assets in custodial accounts
+func (c *Client) NewManagedSubAccountQueryMarginAssetService() *ManagedSubAccountQueryMarginAssetService {
+	return &ManagedSubAccountQueryMarginAssetService{c: c}
+}
+
+// Query sub account assets, v4 interface.
+func (c *Client) NewSubAccountAssetService() *SubAccountAssetService {
+	return &SubAccountAssetService{c: c}
+}
+
+// Query the list of managed-accounts
+func (c *Client) NewManagedSubAccountInfoService() *ManagedSubAccountInfoService {
+	return &ManagedSubAccountInfoService{c: c}
+}
+
+// Obtain the recharge address for the custody account
+func (c *Client) NewManagedSubAccountDepositAddressService() *ManagedSubAccountDepositAddressService {
+	return &ManagedSubAccountDepositAddressService{c: c}
+}
+
+func (c *Client) NewSubAccountOptionsEnableService() *SubAccountOptionsEnableService {
+	return &SubAccountOptionsEnableService{c: c}
+}
+
+// Query transfer records of managed-sub accounts
+func (c *Client) NewManagedSubAccountQueryTransferLogService() *ManagedSubAccountQueryTransferLogService {
+	return &ManagedSubAccountQueryTransferLogService{c: c}
+}
+
+// Execute sub account futures balance transfer
+func (c *Client) NewSubAccountFuturesInternalTransferService() *SubAccountFuturesInternalTransferService {
+	return &SubAccountFuturesInternalTransferService{c: c}
+}
+
+// Query sub account transaction volume statistics list
+func (c *Client) NewSubAccountTransactionStatisticsService() *SubAccountTransactionStatisticsService {
+	return &SubAccountTransactionStatisticsService{c: c}
+}
+
+// get the target sub-account futures account detail, v2 interface.
+func (c *Client) NewSubAccountFuturesAccountV2Service() *SubAccountFuturesAccountV2Service {
+	return &SubAccountFuturesAccountV2Service{c: c}
 }
