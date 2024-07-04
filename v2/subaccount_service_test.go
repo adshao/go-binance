@@ -416,15 +416,15 @@ func (s *subAccountServiceTestSuite) assertSubAccountTransferHistoryEqual(e, a *
 	r.Equal(e.Time, a.Time, "Time")
 }
 
-type crtVirtSubAccServiceTestSuite struct {
+type createVirtualSubAccountServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestCrtVirtSubAccService(t *testing.T) {
-	suite.Run(t, new(crtVirtSubAccServiceTestSuite))
+func TestCreateVirtualSubAccountService(t *testing.T) {
+	suite.Run(t, new(createVirtualSubAccountServiceTestSuite))
 }
 
-func (s *crtVirtSubAccServiceTestSuite) TestCrtVirtSubAcc() {
+func (s *createVirtualSubAccountServiceTestSuite) TestCreateVirtualSubAccount() {
 	data := []byte(`{"email": "addsdd_virtual@aasaixwqnoemail.com"}`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
@@ -433,28 +433,28 @@ func (s *crtVirtSubAccServiceTestSuite) TestCrtVirtSubAcc() {
 		e := newSignedRequest().setFormParam("subAccountString", subAccountString)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewCrtVirtSubAccService().SubAccountString(subAccountString).Do(newContext())
+	res, err := s.client.NewCreateVirtualSubAccountService().SubAccountString(subAccountString).Do(newContext())
 	s.r().NoError(err)
 
-	e := &CrtVirtSubAccRsp{
+	e := &CreateVirtualSubAccountResponse{
 		Email: "addsdd_virtual@aasaixwqnoemail.com"}
-	s.assertCrtVirtSubAccRspEqual(e, res)
+	s.assertCreateVirtualSubAccountResponseEqual(e, res)
 }
 
-func (s *crtVirtSubAccServiceTestSuite) assertCrtVirtSubAccRspEqual(e, a *CrtVirtSubAccRsp) {
+func (s *createVirtualSubAccountServiceTestSuite) assertCreateVirtualSubAccountResponseEqual(e, a *CreateVirtualSubAccountResponse) {
 	r := s.r()
 	r.Equal(e.Email, a.Email, "Email")
 }
 
-type subAccSpotTrfHisServiceTestSuite struct {
+type subAccountSpotTransferHistoryServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccSpotTrfHisService(t *testing.T) {
-	suite.Run(t, new(subAccSpotTrfHisServiceTestSuite))
+func TestSubAccountSpotTransferHistoryService(t *testing.T) {
+	suite.Run(t, new(subAccountSpotTransferHistoryServiceTestSuite))
 }
 
-func (s *subAccSpotTrfHisServiceTestSuite) TestSubAccSpotTrfHis() {
+func (s *subAccountSpotTransferHistoryServiceTestSuite) TestSubAccountSpotTransferHistory() {
 	data := []byte(`[{
         "from": "aaa@test.com",
         "to": "bbb@test.com",
@@ -483,10 +483,10 @@ func (s *subAccSpotTrfHisServiceTestSuite) TestSubAccSpotTrfHis() {
 		e := newSignedRequest().setParam("fromEmail", fromEmail).setParam("toEmail", toEmail).setParam("limit", limit)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccSpotTrfHisService().FromEmail(fromEmail).ToEmail(toEmail).Limit(limit).Do(newContext())
+	res, err := s.client.NewSubAccountSpotTransferHistoryService().FromEmail(fromEmail).ToEmail(toEmail).Limit(limit).Do(newContext())
 	s.r().NoError(err)
 
-	e := []*SubAccSpotTrf{
+	e := []*SubAccountSpotTransfer{
 		{
 			From:   "aaa@test.com",
 			To:     "bbb@test.com",
@@ -504,10 +504,10 @@ func (s *subAccSpotTrfHisServiceTestSuite) TestSubAccSpotTrfHis() {
 			TranId: 6489938713,
 			Time:   1544433328000}}
 
-	s.assertSubAccSpotTrfsEqual(e, res)
+	s.assertSubAccountSpotTransfersEqual(e, res)
 }
 
-func (s *subAccSpotTrfHisServiceTestSuite) assertSubAccSpotTrfEqual(e, a *SubAccSpotTrf) {
+func (s *subAccountSpotTransferHistoryServiceTestSuite) assertSubAccountSpotTransferEqual(e, a *SubAccountSpotTransfer) {
 	r := s.r()
 	r.Equal(e.From, a.From, "From")
 	r.Equal(e.To, a.To, "To")
@@ -518,22 +518,22 @@ func (s *subAccSpotTrfHisServiceTestSuite) assertSubAccSpotTrfEqual(e, a *SubAcc
 	r.Equal(e.Time, a.Time, "Time")
 }
 
-func (s *subAccSpotTrfHisServiceTestSuite) assertSubAccSpotTrfsEqual(e, a []*SubAccSpotTrf) {
+func (s *subAccountSpotTransferHistoryServiceTestSuite) assertSubAccountSpotTransfersEqual(e, a []*SubAccountSpotTransfer) {
 	s.r().Len(e, len(a))
 	for i := range e {
-		s.assertSubAccSpotTrfEqual(e[i], a[i])
+		s.assertSubAccountSpotTransferEqual(e[i], a[i])
 	}
 }
 
-type subAccFutTrfHisServiceTestSuite struct {
+type subAccountFuturesTransferHistoryServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccFutTrfHisService(t *testing.T) {
-	suite.Run(t, new(subAccFutTrfHisServiceTestSuite))
+func TestSubAccountFuturesTransferHistoryService(t *testing.T) {
+	suite.Run(t, new(subAccountFuturesTransferHistoryServiceTestSuite))
 }
 
-func (s *subAccFutTrfHisServiceTestSuite) TestSubAccFutTrfHis() {
+func (s *subAccountFuturesTransferHistoryServiceTestSuite) TestSubAccountFuturesTransferHistory() {
 	data := []byte(`{
     "success": true,
     "futuresType": 2,
@@ -564,13 +564,13 @@ func (s *subAccFutTrfHisServiceTestSuite) TestSubAccFutTrfHis() {
 		e := newSignedRequest().setParam("email", email).setParam("futuresType", futuresType).setParam("limit", limit)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccFutTrfHisService().Email(email).FuturesType(futuresType).Limit(limit).Do(newContext())
+	res, err := s.client.NewSubAccountFuturesTransferHistoryService().Email(email).FuturesType(futuresType).Limit(limit).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccFutTrfHisRsp{
+	e := &SubAccountFuturesTransferHistoryResponse{
 		Success:     true,
 		FuturesType: 2,
-		Transfers: []*SubAccFutTrf{{
+		Transfers: []*SubAccountFuturesTransfer{{
 			From:   "aaa@test.com",
 			To:     "bbb@test.com",
 			Asset:  "BTC",
@@ -584,10 +584,10 @@ func (s *subAccFutTrfHisServiceTestSuite) TestSubAccFutTrfHis() {
 				Qty:    "2",
 				TranId: 11631474902,
 				Time:   1544433328000}}}
-	s.assertSubAccFutTrfHisRspEqual(e, res)
+	s.assertSubAccountFuturesTransferHistoryResponseEqual(e, res)
 }
 
-func (s *subAccFutTrfHisServiceTestSuite) assertSubAccFutTrfHisRspEqual(e, a *SubAccFutTrfHisRsp) {
+func (s *subAccountFuturesTransferHistoryServiceTestSuite) assertSubAccountFuturesTransferHistoryResponseEqual(e, a *SubAccountFuturesTransferHistoryResponse) {
 	r := s.r()
 	r.Equal(e.Success, a.Success, "Success")
 	r.Equal(e.FuturesType, a.FuturesType, "FuturesType")
@@ -604,15 +604,15 @@ func (s *subAccFutTrfHisServiceTestSuite) assertSubAccFutTrfHisRspEqual(e, a *Su
 
 }
 
-type subAccFutTrfServiceTestSuite struct {
+type subAccountFuturesInternalTransferServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccFutTrfService(t *testing.T) {
-	suite.Run(t, new(subAccFutTrfServiceTestSuite))
+func TestSubAccountFuturesInternalTransferService(t *testing.T) {
+	suite.Run(t, new(subAccountFuturesInternalTransferServiceTestSuite))
 }
 
-func (s *subAccFutTrfServiceTestSuite) TestSubAccFutTrf() {
+func (s *subAccountFuturesInternalTransferServiceTestSuite) TestSubAccountFuturesInternalTransfer() {
 	data := []byte(`{
     "success": true,
     "txnId": "2934662589"
@@ -628,30 +628,30 @@ func (s *subAccFutTrfServiceTestSuite) TestSubAccFutTrf() {
 		e := newSignedRequest().setFormParam("fromEmail", fromEmail).setFormParam("toEmail", toEmail).setFormParam("futuresType", futuresType).setFormParam("asset", asset).setFormParam("amount", amount)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccFutTrfService().FromEmail(fromEmail).ToEmail(toEmail).FuturesType(futuresType).Asset(asset).Amount(amount).Do(newContext())
+	res, err := s.client.NewSubAccountFuturesInternalTransferService().FromEmail(fromEmail).ToEmail(toEmail).FuturesType(futuresType).Asset(asset).Amount(amount).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccFutTrfRsp{
+	e := &SubAccountFuturesInternalTransferResponse{
 		Success: true,
 		TxnId:   "2934662589"}
-	s.assertSubAccFutTrfRspEqual(e, res)
+	s.assertSubAccountFuturesInternalTransferResponseEqual(e, res)
 }
 
-func (s *subAccFutTrfServiceTestSuite) assertSubAccFutTrfRspEqual(e, a *SubAccFutTrfRsp) {
+func (s *subAccountFuturesInternalTransferServiceTestSuite) assertSubAccountFuturesInternalTransferResponseEqual(e, a *SubAccountFuturesInternalTransferResponse) {
 	r := s.r()
 	r.Equal(e.Success, a.Success, "Success")
 	r.Equal(e.TxnId, a.TxnId, "TxnId")
 }
 
-type subAccDepRecServiceTestSuite struct {
+type subAccountDepositRecordServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccDepRecService(t *testing.T) {
-	suite.Run(t, new(subAccDepRecServiceTestSuite))
+func TestSubAccountDepositRecordService(t *testing.T) {
+	suite.Run(t, new(subAccountDepositRecordServiceTestSuite))
 }
 
-func (s *subAccDepRecServiceTestSuite) TestSubAccDepRec() {
+func (s *subAccountDepositRecordServiceTestSuite) TestSubAccountDepositRecord() {
 	data := []byte(`[{
         "id": "769800519366885376",
         "amount": "0.001",
@@ -692,10 +692,10 @@ func (s *subAccDepRecServiceTestSuite) TestSubAccDepRec() {
 		e := newSignedRequest().setParam("email", email).setParam("coin", coin).setParam("status", status)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccDepRecService().Email(email).Coin(coin).Status(status).Do(newContext())
+	res, err := s.client.NewSubAccountDepositRecordService().Email(email).Coin(coin).Status(status).Do(newContext())
 	s.r().NoError(err)
 
-	e := []*SubAccDepRec{
+	e := []*SubAccountDepositRecord{
 		{
 			Id:            "769800519366885376",
 			Amount:        "0.001",
@@ -725,10 +725,10 @@ func (s *subAccDepRecServiceTestSuite) TestSubAccDepRec() {
 			UnlockConfirm: 0,
 			WalletType:    0}}
 
-	s.assertSubAccDepRecsEqual(e, res)
+	s.assertSubAccountDepositRecordsEqual(e, res)
 }
 
-func (s *subAccDepRecServiceTestSuite) assertSubAccDepRecEqual(e, a *SubAccDepRec) {
+func (s *subAccountDepositRecordServiceTestSuite) assertSubAccountDepositRecordEqual(e, a *SubAccountDepositRecord) {
 	r := s.r()
 	r.Equal(e.Id, a.Id, "Id")
 	r.Equal(e.Amount, a.Amount, "Amount")
@@ -745,22 +745,22 @@ func (s *subAccDepRecServiceTestSuite) assertSubAccDepRecEqual(e, a *SubAccDepRe
 	r.Equal(e.WalletType, a.WalletType, "WalletType")
 }
 
-func (s *subAccDepRecServiceTestSuite) assertSubAccDepRecsEqual(e, a []*SubAccDepRec) {
+func (s *subAccountDepositRecordServiceTestSuite) assertSubAccountDepositRecordsEqual(e, a []*SubAccountDepositRecord) {
 	s.r().Len(e, len(a))
 	for i := range e {
-		s.assertSubAccDepRecEqual(e[i], a[i])
+		s.assertSubAccountDepositRecordEqual(e[i], a[i])
 	}
 }
 
-type subAccMFStatusServiceTestSuite struct {
+type subAccountMarginFuturesStatusServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccMFStatusService(t *testing.T) {
-	suite.Run(t, new(subAccMFStatusServiceTestSuite))
+func TestSubAccountMarginFuturesStatusService(t *testing.T) {
+	suite.Run(t, new(subAccountMarginFuturesStatusServiceTestSuite))
 }
 
-func (s *subAccMFStatusServiceTestSuite) TestSubAccMFStatus() {
+func (s *subAccountMarginFuturesStatusServiceTestSuite) TestSubAccountMarginFuturesStatus() {
 	data := []byte(`[{
     "email": "123@test.com",
     "isSubUserEnabled": true,
@@ -777,10 +777,10 @@ func (s *subAccMFStatusServiceTestSuite) TestSubAccMFStatus() {
 		e := newSignedRequest().setParam("email", email)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccMFStatusService().Email(email).Do(newContext())
+	res, err := s.client.NewSubAccountMarginFuturesStatusService().Email(email).Do(newContext())
 	s.r().NoError(err)
 
-	e := []*SubAccMFStatus{
+	e := []*SubAccountMarginFuturesStatus{
 		{
 			Email:            "123@test.com",
 			IsSubUserEnabled: true,
@@ -790,10 +790,10 @@ func (s *subAccMFStatusServiceTestSuite) TestSubAccMFStatus() {
 			IsFutureEnabled:  true,
 			Mobile:           1570791523523}}
 
-	s.assertSubAccMFStatusesEqual(e, res)
+	s.assertSubAccountMarginFuturesStatusesEqual(e, res)
 }
 
-func (s *subAccMFStatusServiceTestSuite) assertSubAccMFStatusEqual(e, a *SubAccMFStatus) {
+func (s *subAccountMarginFuturesStatusServiceTestSuite) assertSubAccountMarginFuturesStatusEqual(e, a *SubAccountMarginFuturesStatus) {
 	r := s.r()
 	r.Equal(e.Email, a.Email, "Email")
 	r.Equal(e.IsSubUserEnabled, a.IsSubUserEnabled, "IsSubUserEnabled")
@@ -804,22 +804,22 @@ func (s *subAccMFStatusServiceTestSuite) assertSubAccMFStatusEqual(e, a *SubAccM
 	r.Equal(e.Mobile, a.Mobile, "Mobile")
 }
 
-func (s *subAccMFStatusServiceTestSuite) assertSubAccMFStatusesEqual(e, a []*SubAccMFStatus) {
+func (s *subAccountMarginFuturesStatusServiceTestSuite) assertSubAccountMarginFuturesStatusesEqual(e, a []*SubAccountMarginFuturesStatus) {
 	s.r().Len(e, len(a))
 	for i := range e {
-		s.assertSubAccMFStatusEqual(e[i], a[i])
+		s.assertSubAccountMarginFuturesStatusEqual(e[i], a[i])
 	}
 }
 
-type subAccMarginEnableServiceTestSuite struct {
+type subAccountMarginEnableServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccMarginEnableService(t *testing.T) {
-	suite.Run(t, new(subAccMarginEnableServiceTestSuite))
+func TestSubAccountMarginEnableService(t *testing.T) {
+	suite.Run(t, new(subAccountMarginEnableServiceTestSuite))
 }
 
-func (s *subAccMarginEnableServiceTestSuite) TestSubAccMarginEnable() {
+func (s *subAccountMarginEnableServiceTestSuite) TestSubAccountMarginEnable() {
 	data := []byte(`{
 
     "email": "123@test.com",
@@ -833,30 +833,30 @@ func (s *subAccMarginEnableServiceTestSuite) TestSubAccMarginEnable() {
 		e := newSignedRequest().setFormParam("email", email)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccMarginEnableService().Email(email).Do(newContext())
+	res, err := s.client.NewSubAccountMarginEnableService().Email(email).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccMarginEnableRsp{
+	e := &SubAccountMarginEnableResponse{
 		Email:           "123@test.com",
 		IsMarginEnabled: true}
-	s.assertSubAccMarginEnableRspEqual(e, res)
+	s.assertSubAccountMarginEnableResponseEqual(e, res)
 }
 
-func (s *subAccMarginEnableServiceTestSuite) assertSubAccMarginEnableRspEqual(e, a *SubAccMarginEnableRsp) {
+func (s *subAccountMarginEnableServiceTestSuite) assertSubAccountMarginEnableResponseEqual(e, a *SubAccountMarginEnableResponse) {
 	r := s.r()
 	r.Equal(e.Email, a.Email, "Email")
 	r.Equal(e.IsMarginEnabled, a.IsMarginEnabled, "IsMarginEnabled")
 }
 
-type subAccMarginAccServiceTestSuite struct {
+type subAccountMarginAccountInfoServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccMarginAccService(t *testing.T) {
-	suite.Run(t, new(subAccMarginAccServiceTestSuite))
+func TestSubAccountMarginAccountInfoService(t *testing.T) {
+	suite.Run(t, new(subAccountMarginAccountInfoServiceTestSuite))
 }
 
-func (s *subAccMarginAccServiceTestSuite) TestSubAccMarginAcc() {
+func (s *subAccountMarginAccountInfoServiceTestSuite) TestSubAccountMarginAccountInfo() {
 	data := []byte(`{
     "email": "123@test.com",
     "marginLevel": "11.64405625",
@@ -909,10 +909,10 @@ func (s *subAccMarginAccServiceTestSuite) TestSubAccMarginAcc() {
 		e := newSignedRequest().setParam("email", email)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccMarginAccService().Email(email).Do(newContext())
+	res, err := s.client.NewSubAccountMarginAccountInfoService().Email(email).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccMarginAcc{
+	e := &SubAccountMarginAccountInfo{
 		Email:               "123@test.com",
 		MarginLevel:         "11.64405625",
 		TotalAssetOfBtc:     "6.82728457",
@@ -950,10 +950,10 @@ func (s *subAccMarginAccServiceTestSuite) TestSubAccMarginAcc() {
 				Interest: "0.00000000",
 				Locked:   "0.00000000",
 				NetAsset: "0.00000000"}}}
-	s.assertSubAccMarginAccEqual(e, res)
+	s.assertSubAccountMarginAccountInfoEqual(e, res)
 }
 
-func (s *subAccMarginAccServiceTestSuite) assertSubAccMarginAccEqual(e, a *SubAccMarginAcc) {
+func (s *subAccountMarginAccountInfoServiceTestSuite) assertSubAccountMarginAccountInfoEqual(e, a *SubAccountMarginAccountInfo) {
 	r := s.r()
 	r.Equal(e.Email, a.Email, "Email")
 	r.Equal(e.MarginLevel, a.MarginLevel, "MarginLevel")
@@ -975,15 +975,15 @@ func (s *subAccMarginAccServiceTestSuite) assertSubAccMarginAccEqual(e, a *SubAc
 
 }
 
-type subAccMarginAccSummServiceTestSuite struct {
+type subAccountMarginAccountSummaryServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccMarginAccSummService(t *testing.T) {
-	suite.Run(t, new(subAccMarginAccSummServiceTestSuite))
+func TestSubAccountMarginAccountSummaryService(t *testing.T) {
+	suite.Run(t, new(subAccountMarginAccountSummaryServiceTestSuite))
 }
 
-func (s *subAccMarginAccSummServiceTestSuite) TestSubAccMarginAccSumm() {
+func (s *subAccountMarginAccountSummaryServiceTestSuite) TestSubAccountMarginAccountSummary() {
 	data := []byte(`{
     "totalAssetOfBtc": "4.33333333",
     "totalLiabilityOfBtc": "2.11111112",
@@ -1009,14 +1009,14 @@ func (s *subAccMarginAccSummServiceTestSuite) TestSubAccMarginAccSumm() {
 		e := newSignedRequest()
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccMarginAccSummService().Do(newContext())
+	res, err := s.client.NewSubAccountMarginAccountSummaryService().Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccMarginAccSumm{
+	e := &SubAccountMarginAccountSummary{
 		TotalAssetOfBtc:     "4.33333333",
 		TotalLiabilityOfBtc: "2.11111112",
 		TotalNetAssetOfBtc:  "2.22222221",
-		SubAccountList: []*MSubAccount{{
+		SubAccountList: []*MarginSubAccount{{
 			Email:               "123@test.com",
 			TotalAssetOfBtc:     "2.11111111",
 			TotalLiabilityOfBtc: "1.11111111",
@@ -1026,10 +1026,10 @@ func (s *subAccMarginAccSummServiceTestSuite) TestSubAccMarginAccSumm() {
 				TotalAssetOfBtc:     "2.22222222",
 				TotalLiabilityOfBtc: "1.00000001",
 				TotalNetAssetOfBtc:  "1.22222221"}}}
-	s.assertSubAccMarginAccSummEqual(e, res)
+	s.assertSubAccountMarginAccountSummaryEqual(e, res)
 }
 
-func (s *subAccMarginAccSummServiceTestSuite) assertSubAccMarginAccSummEqual(e, a *SubAccMarginAccSumm) {
+func (s *subAccountMarginAccountSummaryServiceTestSuite) assertSubAccountMarginAccountSummaryEqual(e, a *SubAccountMarginAccountSummary) {
 	r := s.r()
 	r.Equal(e.TotalAssetOfBtc, a.TotalAssetOfBtc, "TotalAssetOfBtc")
 	r.Equal(e.TotalLiabilityOfBtc, a.TotalLiabilityOfBtc, "TotalLiabilityOfBtc")
@@ -1044,15 +1044,15 @@ func (s *subAccMarginAccSummServiceTestSuite) assertSubAccMarginAccSummEqual(e, 
 
 }
 
-type subAccFuturesEnableServiceTestSuite struct {
+type subAccountFuturesEnableServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccFuturesEnableService(t *testing.T) {
-	suite.Run(t, new(subAccFuturesEnableServiceTestSuite))
+func TestSubAccountFuturesEnableService(t *testing.T) {
+	suite.Run(t, new(subAccountFuturesEnableServiceTestSuite))
 }
 
-func (s *subAccFuturesEnableServiceTestSuite) TestSubAccFuturesEnable() {
+func (s *subAccountFuturesEnableServiceTestSuite) TestSubAccountFuturesEnable() {
 	data := []byte(`{
 
     "email": "123@test.com",
@@ -1066,30 +1066,30 @@ func (s *subAccFuturesEnableServiceTestSuite) TestSubAccFuturesEnable() {
 		e := newSignedRequest().setFormParam("email", email)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccFuturesEnableService().Email(email).Do(newContext())
+	res, err := s.client.NewSubAccountFuturesEnableService().Email(email).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccFuturesEnableRsp{
+	e := &SubAccountFuturesEnableResponse{
 		Email:            "123@test.com",
 		IsFuturesEnabled: true}
-	s.assertSubAccFuturesEnableRspEqual(e, res)
+	s.assertSubAccountFuturesEnableResponseEqual(e, res)
 }
 
-func (s *subAccFuturesEnableServiceTestSuite) assertSubAccFuturesEnableRspEqual(e, a *SubAccFuturesEnableRsp) {
+func (s *subAccountFuturesEnableServiceTestSuite) assertSubAccountFuturesEnableResponseEqual(e, a *SubAccountFuturesEnableResponse) {
 	r := s.r()
 	r.Equal(e.Email, a.Email, "Email")
 	r.Equal(e.IsFuturesEnabled, a.IsFuturesEnabled, "IsFuturesEnabled")
 }
 
-type subAccFuturesAccServiceTestSuite struct {
+type subAccountFuturesAccountV2ServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccFuturesAccService(t *testing.T) {
-	suite.Run(t, new(subAccFuturesAccServiceTestSuite))
+func TestSubAccountFuturesAccountV2Service(t *testing.T) {
+	suite.Run(t, new(subAccountFuturesAccountV2ServiceTestSuite))
 }
 
-func (s *subAccFuturesAccServiceTestSuite) TestSubAccFuturesAcc() {
+func (s *subAccountFuturesAccountV2ServiceTestSuite) TestSubAccountFuturesAccountV2() {
 	data := []byte(`{
     "futureAccountResp": {
         "email": "abc@test.com",
@@ -1146,13 +1146,13 @@ func (s *subAccFuturesAccServiceTestSuite) TestSubAccFuturesAcc() {
 		e := newSignedRequest().setParam("email", email).setParam("futuresType", futuresType)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccFuturesAccService().Email(email).FuturesType(futuresType).Do(newContext())
+	res, err := s.client.NewSubAccountFuturesAccountV2Service().Email(email).FuturesType(futuresType).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccFuturesAccSvcRsp{
-		FutureAccountResp: &SubAccFuturesAcc{
+	e := &SubAccountFuturesAccountV2ServiceResponse{
+		FutureAccountResp: &SubAccountFuturesAccountV2{
 			Email: "abc@test.com",
-			Assets: []*FAsset{{
+			Assets: []*FuturesAsset{{
 				Asset:                  "USDT",
 				InitialMargin:          "0.00000000",
 				MaintenanceMargin:      "0.00000000",
@@ -1175,9 +1175,9 @@ func (s *subAccFuturesAccServiceTestSuite) TestSubAccFuturesAcc() {
 			TotalUnrealizedProfit:       "0.00000000",
 			TotalWalletBalance:          "0.88308000",
 			UpdateTime:                  1576756674610},
-		DeliveryAccountResp: &SubAccDeliveryAcc{
+		DeliveryAccountResp: &SubAccountDeliveryAccountV2{
 			Email: "abc@test.com",
-			Assets: []*FAsset{{
+			Assets: []*FuturesAsset{{
 				Asset:                  "BTC",
 				InitialMargin:          "0.00000000",
 				MaintenanceMargin:      "0.00000000",
@@ -1192,10 +1192,10 @@ func (s *subAccFuturesAccServiceTestSuite) TestSubAccFuturesAcc() {
 			CanWithdraw: true,
 			FeeTier:     2,
 			UpdateTime:  1598959682001}}
-	s.assertSubAccFuturesAccSvcRspEqual(e, res)
+	s.assertSubAccountFuturesAccountV2ServiceResponseEqual(e, res)
 }
 
-func (s *subAccFuturesAccServiceTestSuite) assertSubAccFuturesAccSvcRspEqual(e, a *SubAccFuturesAccSvcRsp) {
+func (s *subAccountFuturesAccountV2ServiceTestSuite) assertSubAccountFuturesAccountV2ServiceResponseEqual(e, a *SubAccountFuturesAccountV2ServiceResponse) {
 	r := s.r()
 	r.Equal(e.FutureAccountResp.Email, a.FutureAccountResp.Email, "FutureAccountResp.Email")
 	r.Equal(e.FutureAccountResp.Asset, a.FutureAccountResp.Asset, "FutureAccountResp.Asset")
@@ -1246,15 +1246,15 @@ func (s *subAccFuturesAccServiceTestSuite) assertSubAccFuturesAccSvcRspEqual(e, 
 	r.Equal(e.DeliveryAccountResp.UpdateTime, a.DeliveryAccountResp.UpdateTime, "DeliveryAccountResp.UpdateTime")
 }
 
-type subAccFuturesAccSummServiceTestSuite struct {
+type subAccountFuturesAccountSummaryServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccFuturesAccSummService(t *testing.T) {
-	suite.Run(t, new(subAccFuturesAccSummServiceTestSuite))
+func TestSubAccountFuturesAccountSummaryService(t *testing.T) {
+	suite.Run(t, new(subAccountFuturesAccountSummaryServiceTestSuite))
 }
 
-func (s *subAccFuturesAccSummServiceTestSuite) TestSubAccFuturesAccSumm() {
+func (s *subAccountFuturesAccountSummaryServiceTestSuite) TestSubAccountFuturesAccountSummary() {
 	data := []byte(`{
     "futureAccountSummaryResp": {
         "totalInitialMargin": "9.83137400",
@@ -1319,11 +1319,11 @@ func (s *subAccFuturesAccSummServiceTestSuite) TestSubAccFuturesAccSumm() {
 		e := newSignedRequest().setParam("futuresType", futuresType)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccFuturesAccSummService().FuturesType(futuresType).Do(newContext())
+	res, err := s.client.NewSubAccountFuturesAccountSummaryService().FuturesType(futuresType).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccFuturesAccSummSvcRsp{
-		FutureAccountSummaryResp: &SubAccFuturesAccSumm{
+	e := &SubAccountFuturesAccountSummaryServiceResponse{
+		FutureAccountSummaryResp: &SubAccountFuturesAccountSummary{
 			TotalInitialMargin:          "9.83137400",
 			TotalMaintenanceMargin:      "0.41568700",
 			TotalMarginBalance:          "23.03235621",
@@ -1332,7 +1332,7 @@ func (s *subAccFuturesAccSummServiceTestSuite) TestSubAccFuturesAccSumm() {
 			TotalUnrealizedProfit:       "0.03219710",
 			TotalWalletBalance:          "22.15879444",
 			Asset:                       "USD",
-			SubAccountList: []*FSubAccount{{
+			SubAccountList: []*FuturesSubAccount{{
 				Email:                       "123@test.com",
 				TotalInitialMargin:          "9.00000000",
 				TotalMaintenanceMargin:      "0.00000000",
@@ -1352,12 +1352,12 @@ func (s *subAccFuturesAccSummServiceTestSuite) TestSubAccFuturesAccSumm() {
 					TotalUnrealizedProfit:       "0.03219710",
 					TotalWalletBalance:          "0.87356177",
 					Asset:                       "USD"}}},
-		DeliveryAccountSummaryResp: &SubAccDeliveryAccSumm{
+		DeliveryAccountSummaryResp: &SubAccountDeliveryAccountSummary{
 			TotalMarginBalanceOfBTC:    "25.03221121",
 			TotalUnrealizedProfitOfBTC: "0.12233410",
 			TotalWalletBalanceOfBTC:    "22.15879444",
 			Asset:                      "BTC",
-			SubAccountList: []*DSubAccount{{
+			SubAccountList: []*DeliverySubAccount{{
 				Email:                 "123@test.com",
 				TotalMarginBalance:    "22.12659734",
 				TotalUnrealizedProfit: "0.00000000",
@@ -1369,10 +1369,10 @@ func (s *subAccFuturesAccSummServiceTestSuite) TestSubAccFuturesAccSumm() {
 					TotalUnrealizedProfit: "0.03219710",
 					TotalWalletBalance:    "0.87356177",
 					Asset:                 "BTC"}}}}
-	s.assertSubAccFuturesAccSummSvcRspEqual(e, res)
+	s.assertSubAccountFuturesAccountSummaryServiceResponseEqual(e, res)
 }
 
-func (s *subAccFuturesAccSummServiceTestSuite) assertSubAccFuturesAccSummSvcRspEqual(e, a *SubAccFuturesAccSummSvcRsp) {
+func (s *subAccountFuturesAccountSummaryServiceTestSuite) assertSubAccountFuturesAccountSummaryServiceResponseEqual(e, a *SubAccountFuturesAccountSummaryServiceResponse) {
 	r := s.r()
 	r.Equal(e.FutureAccountSummaryResp.TotalInitialMargin, a.FutureAccountSummaryResp.TotalInitialMargin, "FutureAccountSummaryResp.TotalInitialMargin")
 	r.Equal(e.FutureAccountSummaryResp.TotalMaintenanceMargin, a.FutureAccountSummaryResp.TotalMaintenanceMargin, "FutureAccountSummaryResp.TotalMaintenanceMargin")
@@ -1410,15 +1410,15 @@ func (s *subAccFuturesAccSummServiceTestSuite) assertSubAccFuturesAccSummSvcRspE
 
 }
 
-type subAccFuturesPositionsServiceTestSuite struct {
+type subAccountFuturesPositionsServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccFuturesPositionsService(t *testing.T) {
-	suite.Run(t, new(subAccFuturesPositionsServiceTestSuite))
+func TestSubAccountFuturesPositionsService(t *testing.T) {
+	suite.Run(t, new(subAccountFuturesPositionsServiceTestSuite))
 }
 
-func (s *subAccFuturesPositionsServiceTestSuite) TestSubAccFuturesPositions() {
+func (s *subAccountFuturesPositionsServiceTestSuite) TestSubAccountFuturesPositions() {
 	data := []byte(`{
     "futurePositionRiskVos": [{
         "entryPrice": "9975.12000",
@@ -1452,11 +1452,11 @@ func (s *subAccFuturesPositionsServiceTestSuite) TestSubAccFuturesPositions() {
 		e := newSignedRequest().setParam("email", email).setParam("futuresType", futuresType)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccFuturesPositionsService().Email(email).FuturesType(futuresType).Do(newContext())
+	res, err := s.client.NewSubAccountFuturesPositionsService().Email(email).FuturesType(futuresType).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccFuturesPosSvcRsp{
-		FuturePositionRiskVos: []*SubAccFuturesPosition{{
+	e := &SubAccountFuturesPositionsServiceResponse{
+		FuturePositionRiskVos: []*SubAccountFuturesPosition{{
 			EntryPrice:       "9975.12000",
 			Leverage:         "50",
 			MaxNotional:      "1000000",
@@ -1465,7 +1465,7 @@ func (s *subAccFuturesPositionsServiceTestSuite) TestSubAccFuturesPositions() {
 			PositionAmount:   "0.010",
 			Symbol:           "BTCUSDT",
 			UnrealizedProfit: "-0.01612295"}},
-		DeliveryPositionRiskVos: []*SubAccDeliveryPosition{{
+		DeliveryPositionRiskVos: []*SubAccountDeliveryPosition{{
 			EntryPrice:       "9975.12000",
 			MarkPrice:        "9973.50770517",
 			Leverage:         "20",
@@ -1477,10 +1477,10 @@ func (s *subAccFuturesPositionsServiceTestSuite) TestSubAccFuturesPositions() {
 			PositionAmount:   "1.230",
 			Symbol:           "BTCUSD_201225",
 			UnrealizedProfit: "-0.01612295"}}}
-	s.assertSubAccFuturesPosSvcRspEqual(e, res)
+	s.assertSubAccountFuturesPositionsServiceResponseEqual(e, res)
 }
 
-func (s *subAccFuturesPositionsServiceTestSuite) assertSubAccFuturesPosSvcRspEqual(e, a *SubAccFuturesPosSvcRsp) {
+func (s *subAccountFuturesPositionsServiceTestSuite) assertSubAccountFuturesPositionsServiceResponseEqual(e, a *SubAccountFuturesPositionsServiceResponse) {
 	r := s.r()
 	r.Len(e.FuturePositionRiskVos, len(a.FuturePositionRiskVos))
 	for i := range e.FuturePositionRiskVos {
@@ -1511,15 +1511,15 @@ func (s *subAccFuturesPositionsServiceTestSuite) assertSubAccFuturesPosSvcRspEqu
 
 }
 
-type subAccMarginTrfServiceTestSuite struct {
+type subAccountMarginTransferServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccMarginTrfService(t *testing.T) {
-	suite.Run(t, new(subAccMarginTrfServiceTestSuite))
+func TestSubAccountMarginTransferService(t *testing.T) {
+	suite.Run(t, new(subAccountMarginTransferServiceTestSuite))
 }
 
-func (s *subAccMarginTrfServiceTestSuite) TestSubAccMarginTrf() {
+func (s *subAccountMarginTransferServiceTestSuite) TestSubAccountMarginTransfer() {
 	data := []byte(`{
     "txnId":"2966662589"
 }`)
@@ -1533,28 +1533,28 @@ func (s *subAccMarginTrfServiceTestSuite) TestSubAccMarginTrf() {
 		e := newSignedRequest().setFormParam("email", email).setFormParam("asset", asset).setFormParam("amount", amount).setFormParam("type", transferType)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccMarginTrfService().Email(email).Asset(asset).Amount(amount).TransferType(transferType).Do(newContext())
+	res, err := s.client.NewSubAccountMarginTransferService().Email(email).Asset(asset).Amount(amount).TransferType(transferType).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccMarginTrfRsp{
+	e := &SubAccountMarginTransferResponse{
 		TxnId: "2966662589"}
-	s.assertSubAccMarginTrfRspEqual(e, res)
+	s.assertSubAccountMarginTransferResponseEqual(e, res)
 }
 
-func (s *subAccMarginTrfServiceTestSuite) assertSubAccMarginTrfRspEqual(e, a *SubAccMarginTrfRsp) {
+func (s *subAccountMarginTransferServiceTestSuite) assertSubAccountMarginTransferResponseEqual(e, a *SubAccountMarginTransferResponse) {
 	r := s.r()
 	r.Equal(e.TxnId, a.TxnId, "TxnId")
 }
 
-type subAccTrfSubToMasterServiceTestSuite struct {
+type subAccountTransferSubToMasterServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccTrfSubToMasterService(t *testing.T) {
-	suite.Run(t, new(subAccTrfSubToMasterServiceTestSuite))
+func TestSubAccountTransferSubToMasterService(t *testing.T) {
+	suite.Run(t, new(subAccountTransferSubToMasterServiceTestSuite))
 }
 
-func (s *subAccTrfSubToMasterServiceTestSuite) TestSubAccTrfSubToMaster() {
+func (s *subAccountTransferSubToMasterServiceTestSuite) TestSubAccountTransferSubToMaster() {
 	data := []byte(`{
     "txnId":"2966662589"
 }`)
@@ -1566,28 +1566,28 @@ func (s *subAccTrfSubToMasterServiceTestSuite) TestSubAccTrfSubToMaster() {
 		e := newSignedRequest().setFormParam("asset", asset).setFormParam("amount", amount)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccTrfSubToMasterService().Asset(asset).Amount(amount).Do(newContext())
+	res, err := s.client.NewSubAccountTransferSubToMasterService().Asset(asset).Amount(amount).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccTrfSubToMasterRsp{
+	e := &SubAccountTransferSubToMasterResponse{
 		TxnId: "2966662589"}
-	s.assertSubAccTrfSubToMasterRspEqual(e, res)
+	s.assertSubAccountTransferSubToMasterResponseEqual(e, res)
 }
 
-func (s *subAccTrfSubToMasterServiceTestSuite) assertSubAccTrfSubToMasterRspEqual(e, a *SubAccTrfSubToMasterRsp) {
+func (s *subAccountTransferSubToMasterServiceTestSuite) assertSubAccountTransferSubToMasterResponseEqual(e, a *SubAccountTransferSubToMasterResponse) {
 	r := s.r()
 	r.Equal(e.TxnId, a.TxnId, "TxnId")
 }
 
-type subAccUnivTrfServiceTestSuite struct {
+type subAccountUniversalTransferServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccUnivTrfService(t *testing.T) {
-	suite.Run(t, new(subAccUnivTrfServiceTestSuite))
+func TestSubAccountUniversalTransferService(t *testing.T) {
+	suite.Run(t, new(subAccountUniversalTransferServiceTestSuite))
 }
 
-func (s *subAccUnivTrfServiceTestSuite) TestSubAccUnivTrf() {
+func (s *subAccountUniversalTransferServiceTestSuite) TestSubAccountUniversalTransfer() {
 	data := []byte(`{
     "tranId":11945860693,
     "clientTranId":"test"
@@ -1602,30 +1602,30 @@ func (s *subAccUnivTrfServiceTestSuite) TestSubAccUnivTrf() {
 		e := newSignedRequest().setFormParam("fromAccountType", fromAccountType).setFormParam("toAccountType", toAccountType).setFormParam("asset", asset).setFormParam("amount", amount)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccUnivTrfService().FromAccountType(fromAccountType).ToAccountType(toAccountType).Asset(asset).Amount(amount).Do(newContext())
+	res, err := s.client.NewSubAccountUniversalTransferService().FromAccountType(fromAccountType).ToAccountType(toAccountType).Asset(asset).Amount(amount).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccUnivTrfRsp{
+	e := &SubAccountUniversalTransferResponse{
 		TranId:       11945860693,
 		ClientTranId: "test"}
-	s.assertSubAccUnivTrfRspEqual(e, res)
+	s.assertSubAccountUniversalTransferResponseEqual(e, res)
 }
 
-func (s *subAccUnivTrfServiceTestSuite) assertSubAccUnivTrfRspEqual(e, a *SubAccUnivTrfRsp) {
+func (s *subAccountUniversalTransferServiceTestSuite) assertSubAccountUniversalTransferResponseEqual(e, a *SubAccountUniversalTransferResponse) {
 	r := s.r()
 	r.Equal(e.TranId, a.TranId, "TranId")
 	r.Equal(e.ClientTranId, a.ClientTranId, "ClientTranId")
 }
 
-type subAccUnivTrfHisServiceTestSuite struct {
+type subAccUniversalTransferHistoryServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccUnivTrfHisService(t *testing.T) {
-	suite.Run(t, new(subAccUnivTrfHisServiceTestSuite))
+func TestSubAccUniversalTransferHistoryService(t *testing.T) {
+	suite.Run(t, new(subAccUniversalTransferHistoryServiceTestSuite))
 }
 
-func (s *subAccUnivTrfHisServiceTestSuite) TestSubAccUnivTrfHis() {
+func (s *subAccUniversalTransferHistoryServiceTestSuite) TestSubAccUniversalTransferHistory() {
 	data := []byte(`{
     "result": [{
         "tranId": 92275823339,
@@ -1648,11 +1648,11 @@ func (s *subAccUnivTrfHisServiceTestSuite) TestSubAccUnivTrfHis() {
 		e := newSignedRequest().setParam("fromEmail", fromEmail)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccUnivTrfHisService().FromEmail(fromEmail).Do(newContext())
+	res, err := s.client.NewSubAccUniversalTransferHistoryService().FromEmail(fromEmail).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccUnivTrfHisServiceRsp{
-		Result: []*SubAccUnivTrfRec{{
+	e := &SubAccountUniversalTransferHistoryServiceResponse{
+		Result: []*SubAccountUniversalTransferRecord{{
 			TranId:          92275823339,
 			FromEmail:       "abctest@gmail.com",
 			ToEmail:         "deftest@gmail.com",
@@ -1664,10 +1664,10 @@ func (s *subAccUnivTrfHisServiceTestSuite) TestSubAccUnivTrfHis() {
 			Status:          "SUCCESS",
 			ClientTranId:    "test"}},
 		TotalCount: 1}
-	s.assertSubAccUnivTrfHisServiceRspEqual(e, res)
+	s.assertSubAccountUniversalTransferHistoryServiceResponseEqual(e, res)
 }
 
-func (s *subAccUnivTrfHisServiceTestSuite) assertSubAccUnivTrfHisServiceRspEqual(e, a *SubAccUnivTrfHisServiceRsp) {
+func (s *subAccUniversalTransferHistoryServiceTestSuite) assertSubAccountUniversalTransferHistoryServiceResponseEqual(e, a *SubAccountUniversalTransferHistoryServiceResponse) {
 	r := s.r()
 	r.Len(e.Result, len(a.Result))
 	for i := range e.Result {
@@ -1686,15 +1686,15 @@ func (s *subAccUnivTrfHisServiceTestSuite) assertSubAccUnivTrfHisServiceRspEqual
 	r.Equal(e.TotalCount, a.TotalCount, "TotalCount")
 }
 
-type subAccBlvtEnableServiceTestSuite struct {
+type subAccountBlvtEnableServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccBlvtEnableService(t *testing.T) {
-	suite.Run(t, new(subAccBlvtEnableServiceTestSuite))
+func TestSubAccountBlvtEnableService(t *testing.T) {
+	suite.Run(t, new(subAccountBlvtEnableServiceTestSuite))
 }
 
-func (s *subAccBlvtEnableServiceTestSuite) TestSubAccBlvtEnable() {
+func (s *subAccountBlvtEnableServiceTestSuite) TestSubAccountBlvtEnable() {
 	data := []byte(`{
     "email":"123@test.com",
     "enableBlvt":true
@@ -1707,30 +1707,30 @@ func (s *subAccBlvtEnableServiceTestSuite) TestSubAccBlvtEnable() {
 		e := newSignedRequest().setFormParam("email", email).setFormParam("enableBlvt", enableBlvt)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccBlvtEnableService().Email(email).EnableBlvt(enableBlvt).Do(newContext())
+	res, err := s.client.NewSubAccountBlvtEnableService().Email(email).EnableBlvt(enableBlvt).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccBlvtEnableSvcRsp{
+	e := &SubAccountBlvtEnableServiceResponse{
 		Email:      "123@test.com",
 		EnableBlvt: true}
-	s.assertSubAccBlvtEnableSvcRspEqual(e, res)
+	s.assertSubAccountBlvtEnableServiceResponseEqual(e, res)
 }
 
-func (s *subAccBlvtEnableServiceTestSuite) assertSubAccBlvtEnableSvcRspEqual(e, a *SubAccBlvtEnableSvcRsp) {
+func (s *subAccountBlvtEnableServiceTestSuite) assertSubAccountBlvtEnableServiceResponseEqual(e, a *SubAccountBlvtEnableServiceResponse) {
 	r := s.r()
 	r.Equal(e.Email, a.Email, "Email")
 	r.Equal(e.EnableBlvt, a.EnableBlvt, "EnableBlvt")
 }
 
-type subAccApiIpRestrictionServiceTestSuite struct {
+type subAccountApiIpRestrictionServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccApiIpRestrictionService(t *testing.T) {
-	suite.Run(t, new(subAccApiIpRestrictionServiceTestSuite))
+func TestSubAccountApiIpRestrictionService(t *testing.T) {
+	suite.Run(t, new(subAccountApiIpRestrictionServiceTestSuite))
 }
 
-func (s *subAccApiIpRestrictionServiceTestSuite) TestSubAccApiIpRestriction() {
+func (s *subAccountApiIpRestrictionServiceTestSuite) TestSubAccountApiIpRestriction() {
 	data := []byte(`{
     "ipRestrict": "true",
     "ipList": [
@@ -1748,19 +1748,19 @@ func (s *subAccApiIpRestrictionServiceTestSuite) TestSubAccApiIpRestriction() {
 		e := newSignedRequest().setParam("email", email).setParam("subAccountApiKey", subAccountApiKey)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccApiIpRestrictionService().Email(email).SubAccountApiKey(subAccountApiKey).Do(newContext())
+	res, err := s.client.NewSubAccountApiIpRestrictionService().Email(email).SubAccountApiKey(subAccountApiKey).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccApiIpRestrictSvcRsp{
+	e := &SubAccountApiIpRestrictServiceResponse{
 		IpRestrict: "true",
 		IpList: []string{"69.210.67.14",
 			"8.34.21.10"},
 		UpdateTime: 1636371437000,
 		ApiKey:     "k5V49ldtn4tszj6W3hystegdfvmGbqDzjmkCtpTvC0G74WhK7yd4rfCTo4lShf"}
-	s.assertSubAccApiIpRestrictSvcRspEqual(e, res)
+	s.assertSubAccountApiIpRestrictServiceResponseEqual(e, res)
 }
 
-func (s *subAccApiIpRestrictionServiceTestSuite) assertSubAccApiIpRestrictSvcRspEqual(e, a *SubAccApiIpRestrictSvcRsp) {
+func (s *subAccountApiIpRestrictionServiceTestSuite) assertSubAccountApiIpRestrictServiceResponseEqual(e, a *SubAccountApiIpRestrictServiceResponse) {
 	r := s.r()
 	r.Equal(e.IpRestrict, a.IpRestrict, "IpRestrict")
 	for i := range e.IpList {
@@ -1771,15 +1771,15 @@ func (s *subAccApiIpRestrictionServiceTestSuite) assertSubAccApiIpRestrictSvcRsp
 	r.Equal(e.ApiKey, a.ApiKey, "ApiKey")
 }
 
-type subAccApiDelIpRestrictionServiceTestSuite struct {
+type subAccountApiDeleteIpRestrictionServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccApiDelIpRestrictionService(t *testing.T) {
-	suite.Run(t, new(subAccApiDelIpRestrictionServiceTestSuite))
+func TestSubAccountApiDeleteIpRestrictionService(t *testing.T) {
+	suite.Run(t, new(subAccountApiDeleteIpRestrictionServiceTestSuite))
 }
 
-func (s *subAccApiDelIpRestrictionServiceTestSuite) TestSubAccApiDelIpRestriction() {
+func (s *subAccountApiDeleteIpRestrictionServiceTestSuite) TestSubAccountApiDeleteIpRestriction() {
 	data := []byte(`{
   "ipRestrict": "true",
   "ipList": [
@@ -1798,19 +1798,19 @@ func (s *subAccApiDelIpRestrictionServiceTestSuite) TestSubAccApiDelIpRestrictio
 		e := newSignedRequest().setFormParam("email", email).setFormParam("subAccountApiKey", subAccountApiKey).setFormParam("ipAddress", ipAddress)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccApiDelIpRestrictionService().Email(email).SubAccountApiKey(subAccountApiKey).IpAddress(ipAddress).Do(newContext())
+	res, err := s.client.NewSubAccountApiDeleteIpRestrictionService().Email(email).SubAccountApiKey(subAccountApiKey).IpAddress(ipAddress).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccApiDelIpRestrictSvcRsp{
+	e := &SubAccountApiDeleteIpRestrictServiceResponse{
 		IpRestrict: "true",
 		IpList: []string{"69.210.67.14",
 			"8.34.21.10"},
 		UpdateTime: 1636371437000,
 		ApiKey:     "k5V49ldtn4tszj6W3hystegdfvmGbqDzjmkCtpTvC0G74WhK7yd4rfCTo4lShf"}
-	s.assertSubAccApiDelIpRestrictSvcRspEqual(e, res)
+	s.assertSubAccountApiDeleteIpRestrictServiceResponseEqual(e, res)
 }
 
-func (s *subAccApiDelIpRestrictionServiceTestSuite) assertSubAccApiDelIpRestrictSvcRspEqual(e, a *SubAccApiDelIpRestrictSvcRsp) {
+func (s *subAccountApiDeleteIpRestrictionServiceTestSuite) assertSubAccountApiDeleteIpRestrictServiceResponseEqual(e, a *SubAccountApiDeleteIpRestrictServiceResponse) {
 	r := s.r()
 	r.Equal(e.IpRestrict, a.IpRestrict, "IpRestrict")
 	for i := range e.IpList {
@@ -1821,15 +1821,15 @@ func (s *subAccApiDelIpRestrictionServiceTestSuite) assertSubAccApiDelIpRestrict
 	r.Equal(e.ApiKey, a.ApiKey, "ApiKey")
 }
 
-type subAccApiAddIpRestrictionServiceTestSuite struct {
+type subAccountApiAddIpRestrictionServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccApiAddIpRestrictionService(t *testing.T) {
-	suite.Run(t, new(subAccApiAddIpRestrictionServiceTestSuite))
+func TestSubAccountApiAddIpRestrictionService(t *testing.T) {
+	suite.Run(t, new(subAccountApiAddIpRestrictionServiceTestSuite))
 }
 
-func (s *subAccApiAddIpRestrictionServiceTestSuite) TestSubAccApiAddIpRestriction() {
+func (s *subAccountApiAddIpRestrictionServiceTestSuite) TestSubAccountApiAddIpRestriction() {
 	data := []byte(`{
   "ipRestrict": "true",
   "ipList": [
@@ -1849,19 +1849,19 @@ func (s *subAccApiAddIpRestrictionServiceTestSuite) TestSubAccApiAddIpRestrictio
 		e := newSignedRequest().setFormParam("email", email).setFormParam("subAccountApiKey", subAccountApiKey).setFormParam("status", status).setFormParam("ipAddress", ipAddress)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccApiAddIpRestrictionService().Email(email).SubAccountApiKey(subAccountApiKey).Status(status).IpAddress(ipAddress).Do(newContext())
+	res, err := s.client.NewSubAccountApiAddIpRestrictionService().Email(email).SubAccountApiKey(subAccountApiKey).Status(status).IpAddress(ipAddress).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccApiAddIpRestrictSvcRsp{
+	e := &SubAccountApiAddIpRestrictServiceResponse{
 		IpRestrict: "true",
 		IpList: []string{"69.210.67.14",
 			"8.34.21.10"},
 		UpdateTime: 1636371437000,
 		ApiKey:     "k5V49ldtn4tszj6W3hystegdfvmGbqDzjmkCtpTvC0G74WhK7yd4rfCTo4lShf"}
-	s.assertSubAccApiAddIpRestrictSvcRspEqual(e, res)
+	s.assertSubAccountApiAddIpRestrictServiceResponseEqual(e, res)
 }
 
-func (s *subAccApiAddIpRestrictionServiceTestSuite) assertSubAccApiAddIpRestrictSvcRspEqual(e, a *SubAccApiAddIpRestrictSvcRsp) {
+func (s *subAccountApiAddIpRestrictionServiceTestSuite) assertSubAccountApiAddIpRestrictServiceResponseEqual(e, a *SubAccountApiAddIpRestrictServiceResponse) {
 	r := s.r()
 	r.Equal(e.IpRestrict, a.IpRestrict, "IpRestrict")
 	for i := range e.IpList {
@@ -1872,15 +1872,15 @@ func (s *subAccApiAddIpRestrictionServiceTestSuite) assertSubAccApiAddIpRestrict
 	r.Equal(e.ApiKey, a.ApiKey, "ApiKey")
 }
 
-type mngSubAccWithdrawServiceTestSuite struct {
+type managedSubAccountWithdrawServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestMngSubAccWithdrawService(t *testing.T) {
-	suite.Run(t, new(mngSubAccWithdrawServiceTestSuite))
+func TestManagedSubAccountWithdrawService(t *testing.T) {
+	suite.Run(t, new(managedSubAccountWithdrawServiceTestSuite))
 }
 
-func (s *mngSubAccWithdrawServiceTestSuite) TestMngSubAccWithdraw() {
+func (s *managedSubAccountWithdrawServiceTestSuite) TestManagedSubAccountWithdraw() {
 	data := []byte(`{
     "tranId":66157362489
 }`)
@@ -1893,28 +1893,28 @@ func (s *mngSubAccWithdrawServiceTestSuite) TestMngSubAccWithdraw() {
 		e := newSignedRequest().setFormParam("fromEmail", fromEmail).setFormParam("asset", asset).setFormParam("amount", amount)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewMngSubAccWithdrawService().FromEmail(fromEmail).Asset(asset).Amount(amount).Do(newContext())
+	res, err := s.client.NewManagedSubAccountWithdrawService().FromEmail(fromEmail).Asset(asset).Amount(amount).Do(newContext())
 	s.r().NoError(err)
 
-	e := &MngSubAccWithdrawSvcRsp{
+	e := &ManagedSubAccountWithdrawServiceResponse{
 		TranId: 66157362489}
-	s.assertMngSubAccWithdrawSvcRspEqual(e, res)
+	s.assertManagedSubAccountWithdrawServiceResponseEqual(e, res)
 }
 
-func (s *mngSubAccWithdrawServiceTestSuite) assertMngSubAccWithdrawSvcRspEqual(e, a *MngSubAccWithdrawSvcRsp) {
+func (s *managedSubAccountWithdrawServiceTestSuite) assertManagedSubAccountWithdrawServiceResponseEqual(e, a *ManagedSubAccountWithdrawServiceResponse) {
 	r := s.r()
 	r.Equal(e.TranId, a.TranId, "TranId")
 }
 
-type mngSubAccSnapshotServiceTestSuite struct {
+type managedSubAccountSnapshotServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestMngSubAccSnapshotService(t *testing.T) {
-	suite.Run(t, new(mngSubAccSnapshotServiceTestSuite))
+func TestManagedSubAccountSnapshotService(t *testing.T) {
+	suite.Run(t, new(managedSubAccountSnapshotServiceTestSuite))
 }
 
-func (s *mngSubAccSnapshotServiceTestSuite) TestMngSubAccSnapshot() {
+func (s *managedSubAccountSnapshotServiceTestSuite) TestManagedSubAccountSnapshot() {
 	data := []byte(`{
     "code": 200,
     "msg": "",
@@ -1971,10 +1971,10 @@ func (s *mngSubAccSnapshotServiceTestSuite) TestMngSubAccSnapshot() {
 		e := newSignedRequest().setParam("email", email).setParam("type", accType).setParam("limit", limit)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewMngSubAccSnapshotService().Email(email).AccType(accType).Limit(limit).Do(newContext())
+	res, err := s.client.NewManagedSubAccountSnapshotService().Email(email).AccType(accType).Limit(limit).Do(newContext())
 	s.r().NoError(err)
 
-	e := &MngSubAccSnapshotSvcRsp{
+	e := &ManagedSubAccountSnapshotServiceResponse{
 		Code: 200,
 		Msg:  "",
 		SnapshotVos: []*SnapshotVo{{
@@ -1998,11 +1998,11 @@ func (s *mngSubAccSnapshotServiceTestSuite) TestMngSubAccSnapshot() {
 					Interest: "0.00000000",
 					Locked:   "0.00000000",
 					NetAsset: "1.00000000"}},
-				Assets: []*FuturesAsset{{
+				Assets: []*FuturesUserAsset{{
 					Asset:         "USDT",
 					MarginBalance: "118.99782335",
 					WalletBalance: "120.23811389"}},
-				Position: []*FuturesPosition{{
+				Position: []*FuturesUserPosition{{
 					EntryPrice:       "7130.41000000",
 					MarkPrice:        "7257.66239673",
 					PositionAmt:      "0.01000000",
@@ -2010,10 +2010,10 @@ func (s *mngSubAccSnapshotServiceTestSuite) TestMngSubAccSnapshot() {
 					UnRealizedProfit: "1.24029054"}}},
 			Type:       "spot",
 			UpdateTime: 1576281599000}}}
-	s.assertMngSubAccSnapshotSvcRspEqual(e, res)
+	s.assertManagedSubAccountSnapshotServiceResponseEqual(e, res)
 }
 
-func (s *mngSubAccSnapshotServiceTestSuite) assertMngSubAccSnapshotSvcRspEqual(e, a *MngSubAccSnapshotSvcRsp) {
+func (s *managedSubAccountSnapshotServiceTestSuite) assertManagedSubAccountSnapshotServiceResponseEqual(e, a *ManagedSubAccountSnapshotServiceResponse) {
 	r := s.r()
 	r.Equal(e.Code, a.Code, "Code")
 	r.Equal(e.Msg, a.Msg, "Msg")
@@ -2062,15 +2062,15 @@ func (s *mngSubAccSnapshotServiceTestSuite) assertMngSubAccSnapshotSvcRspEqual(e
 
 }
 
-type mngSubAccQryTrfLogForInvestorServiceTestSuite struct {
+type managedSubAccountQueryTransferLogForInvestorServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestMngSubAccQryTrfLogForInvestorService(t *testing.T) {
-	suite.Run(t, new(mngSubAccQryTrfLogForInvestorServiceTestSuite))
+func TestManagedSubAccountQueryTransferLogForInvestorService(t *testing.T) {
+	suite.Run(t, new(managedSubAccountQueryTransferLogForInvestorServiceTestSuite))
 }
 
-func (s *mngSubAccQryTrfLogForInvestorServiceTestSuite) TestMngSubAccQryTrfLogForInvestor() {
+func (s *managedSubAccountQueryTransferLogForInvestorServiceTestSuite) TestManagedSubAccountQueryTransferLogForInvestor() {
 	data := []byte(`{
     "managerSubTransferHistoryVos": [{
             "fromEmail": "test_0_virtual@kq3kno9imanagedsub.com",
@@ -2110,11 +2110,11 @@ func (s *mngSubAccQryTrfLogForInvestorServiceTestSuite) TestMngSubAccQryTrfLogFo
 		e := newSignedRequest().setParam("email", email).setParam("startTime", startTime).setParam("endTime", endTime).setParam("page", page).setParam("limit", limit)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewMngSubAccQryTrfLogForInvestorService().Email(email).StartTime(startTime).EndTime(endTime).Page(page).Limit(limit).Do(newContext())
+	res, err := s.client.NewManagedSubAccountQueryTransferLogForInvestorService().Email(email).StartTime(startTime).EndTime(endTime).Page(page).Limit(limit).Do(newContext())
 	s.r().NoError(err)
 
-	e := &MngSubAccQryTrfLogForInvestorSvcRsp{
-		ManagerSubTransferHistoryVos: []*MgnSubTrfHisVo{{
+	e := &ManagedSubAccountQueryTransferLogForInvestorServiceResponse{
+		ManagerSubTransferHistoryVos: []*ManagedSubTransferHistoryVo{{
 			FromEmail:       "test_0_virtual@kq3kno9imanagedsub.com",
 			FromAccountType: "SPOT",
 			ToEmail:         "wdywl0lddakh@test.com",
@@ -2137,10 +2137,10 @@ func (s *mngSubAccQryTrfLogForInvestorServiceTestSuite) TestMngSubAccQryTrfLogFo
 				Status:          "SUCCESS",
 				TranId:          91077676}},
 		Count: 2}
-	s.assertMngSubAccQryTrfLogForInvestorSvcRspEqual(e, res)
+	s.assertManagedSubAccountQueryTransferLogForInvestorServiceResponseEqual(e, res)
 }
 
-func (s *mngSubAccQryTrfLogForInvestorServiceTestSuite) assertMngSubAccQryTrfLogForInvestorSvcRspEqual(e, a *MngSubAccQryTrfLogForInvestorSvcRsp) {
+func (s *managedSubAccountQueryTransferLogForInvestorServiceTestSuite) assertManagedSubAccountQueryTransferLogForInvestorServiceResponseEqual(e, a *ManagedSubAccountQueryTransferLogForInvestorServiceResponse) {
 	r := s.r()
 	r.Len(e.ManagerSubTransferHistoryVos, len(a.ManagerSubTransferHistoryVos))
 	for i := range e.ManagerSubTransferHistoryVos {
@@ -2159,15 +2159,15 @@ func (s *mngSubAccQryTrfLogForInvestorServiceTestSuite) assertMngSubAccQryTrfLog
 	r.Equal(e.Count, a.Count, "Count")
 }
 
-type mngSubAccQryTrfLogForTradeParentServiceTestSuite struct {
+type managedSubAccountQueryTransferLogForTradeParentServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestMngSubAccQryTrfLogForTradeParentService(t *testing.T) {
-	suite.Run(t, new(mngSubAccQryTrfLogForTradeParentServiceTestSuite))
+func TestManagedSubAccountQueryTransferLogForTradeParentService(t *testing.T) {
+	suite.Run(t, new(managedSubAccountQueryTransferLogForTradeParentServiceTestSuite))
 }
 
-func (s *mngSubAccQryTrfLogForTradeParentServiceTestSuite) TestMngSubAccQryTrfLogForTradeParent() {
+func (s *managedSubAccountQueryTransferLogForTradeParentServiceTestSuite) TestManagedSubAccountQueryTransferLogForTradeParent() {
 	data := []byte(`{
     "managerSubTransferHistoryVos": [{
             "fromEmail": "test_0_virtual@kq3kno9imanagedsub.com",
@@ -2207,11 +2207,11 @@ func (s *mngSubAccQryTrfLogForTradeParentServiceTestSuite) TestMngSubAccQryTrfLo
 		e := newSignedRequest().setParam("email", email).setParam("startTime", startTime).setParam("endTime", endTime).setParam("page", page).setParam("limit", limit)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewMngSubAccQryTrfLogForTradeParentService().Email(email).StartTime(startTime).EndTime(endTime).Page(page).Limit(limit).Do(newContext())
+	res, err := s.client.NewManagedSubAccountQueryTransferLogForTradeParentService().Email(email).StartTime(startTime).EndTime(endTime).Page(page).Limit(limit).Do(newContext())
 	s.r().NoError(err)
 
-	e := &MngSubAccQryTrfLogForTradeParentSvcRsp{
-		ManagerSubTransferHistoryVos: []*MgnSubTrfHisVo{{
+	e := &ManagedSubAccountQueryTransferLogForTradeParentServiceResponse{
+		ManagerSubTransferHistoryVos: []*ManagedSubTransferHistoryVo{{
 			FromEmail:       "test_0_virtual@kq3kno9imanagedsub.com",
 			FromAccountType: "SPOT",
 			ToEmail:         "wdywl0lddakh@test.com",
@@ -2234,10 +2234,10 @@ func (s *mngSubAccQryTrfLogForTradeParentServiceTestSuite) TestMngSubAccQryTrfLo
 				Status:          "SUCCESS",
 				TranId:          91077676}},
 		Count: 2}
-	s.assertMngSubAccQryTrfLogForTradeParentSvcRspEqual(e, res)
+	s.assertManagedSubAccountQueryTransferLogForTradeParentServiceResponseEqual(e, res)
 }
 
-func (s *mngSubAccQryTrfLogForTradeParentServiceTestSuite) assertMngSubAccQryTrfLogForTradeParentSvcRspEqual(e, a *MngSubAccQryTrfLogForTradeParentSvcRsp) {
+func (s *managedSubAccountQueryTransferLogForTradeParentServiceTestSuite) assertManagedSubAccountQueryTransferLogForTradeParentServiceResponseEqual(e, a *ManagedSubAccountQueryTransferLogForTradeParentServiceResponse) {
 	r := s.r()
 	r.Len(e.ManagerSubTransferHistoryVos, len(a.ManagerSubTransferHistoryVos))
 	for i := range e.ManagerSubTransferHistoryVos {
@@ -2256,15 +2256,15 @@ func (s *mngSubAccQryTrfLogForTradeParentServiceTestSuite) assertMngSubAccQryTrf
 	r.Equal(e.Count, a.Count, "Count")
 }
 
-type mngSubAccQryFuturesAssetServiceTestSuite struct {
+type managedSubAccountQueryFuturesAssetServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestMngSubAccQryFuturesAssetService(t *testing.T) {
-	suite.Run(t, new(mngSubAccQryFuturesAssetServiceTestSuite))
+func TestManagedSubAccountQueryFuturesAssetService(t *testing.T) {
+	suite.Run(t, new(managedSubAccountQueryFuturesAssetServiceTestSuite))
 }
 
-func (s *mngSubAccQryFuturesAssetServiceTestSuite) TestMngSubAccQryFuturesAsset() {
+func (s *managedSubAccountQueryFuturesAssetServiceTestSuite) TestManagedSubAccountQueryFuturesAsset() {
 	data := []byte(`{
   "code": 200,
   "message": "OK",
@@ -2299,29 +2299,29 @@ func (s *mngSubAccQryFuturesAssetServiceTestSuite) TestMngSubAccQryFuturesAsset(
 		e := newSignedRequest().setParam("email", email)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewMngSubAccQryFuturesAssetService().Email(email).Do(newContext())
+	res, err := s.client.NewManagedSubAccountQueryFuturesAssetService().Email(email).Do(newContext())
 	s.r().NoError(err)
 
-	e := &MngSubAccQryFuturesAssetSvcRsp{
+	e := &ManagedSubAccountQueryFuturesAssetServiceResponse{
 		Code:    200,
 		Message: "OK",
-		SnapshotVos: []*MgnSubFutAccSnapVo{{
+		SnapshotVos: []*ManagedSubFuturesAccountSnapVo{{
 			Type:       "FUTURES",
 			UpdateTime: 1672893855394,
-			Data: &MgnSubFutAccSnapVoData{
-				Assets: []*MgnSubFutAccSnapVoDataAsset{{
+			Data: &ManagedSubFuturesAccountSnapVoData{
+				Assets: []*ManagedSubFuturesAccountSnapVoDataAsset{{
 					Asset:         "USDT",
 					MarginBalance: "100",
 					WalletBalance: "120"}},
-				Position: []*MgnSubFutAccSnapVoDataPos{{
+				Position: []*ManagedSubFuturesAccountSnapVoDataPosition{{
 					Symbol:      "BTCUSDT",
 					EntryPrice:  "17000",
 					MarkPrice:   "17000",
 					PositionAmt: "0.0001"}}}}}}
-	s.assertMngSubAccQryFuturesAssetSvcRspEqual(e, res)
+	s.assertManagedSubAccountQueryFuturesAssetServiceResponseEqual(e, res)
 }
 
-func (s *mngSubAccQryFuturesAssetServiceTestSuite) assertMngSubAccQryFuturesAssetSvcRspEqual(e, a *MngSubAccQryFuturesAssetSvcRsp) {
+func (s *managedSubAccountQueryFuturesAssetServiceTestSuite) assertManagedSubAccountQueryFuturesAssetServiceResponseEqual(e, a *ManagedSubAccountQueryFuturesAssetServiceResponse) {
 	r := s.r()
 	r.Equal(e.Code, a.Code, "Code")
 	r.Equal(e.Message, a.Message, "Message")
@@ -2348,15 +2348,15 @@ func (s *mngSubAccQryFuturesAssetServiceTestSuite) assertMngSubAccQryFuturesAsse
 
 }
 
-type mngSubAccQryMarginAssetServiceTestSuite struct {
+type managedSubAccountQueryMarginAssetServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestMngSubAccQryMarginAssetService(t *testing.T) {
-	suite.Run(t, new(mngSubAccQryMarginAssetServiceTestSuite))
+func TestManagedSubAccountQueryMarginAssetService(t *testing.T) {
+	suite.Run(t, new(managedSubAccountQueryMarginAssetServiceTestSuite))
 }
 
-func (s *mngSubAccQryMarginAssetServiceTestSuite) TestMngSubAccQryMarginAsset() {
+func (s *managedSubAccountQueryMarginAssetServiceTestSuite) TestManagedSubAccountQueryMarginAsset() {
 	data := []byte(`{
     "marginLevel": "999",
     "totalAssetOfBtc": "0",
@@ -2378,25 +2378,25 @@ func (s *mngSubAccQryMarginAssetServiceTestSuite) TestMngSubAccQryMarginAsset() 
 		e := newSignedRequest().setParam("email", email)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewMngSubAccQryMarginAssetService().Email(email).Do(newContext())
+	res, err := s.client.NewManagedSubAccountQueryMarginAssetService().Email(email).Do(newContext())
 	s.r().NoError(err)
 
-	e := &MngSubAccQryMgnAssetSvcRsp{
+	e := &ManagedSubAccountQueryMarginAssetServiceResponse{
 		MarginLevel:         "999",
 		TotalAssetOfBtc:     "0",
 		TotalLiabilityOfBtc: "0",
 		TotalNetAssetOfBtc:  "0",
-		UserAssets: []*MngSubAccMgnAsset{{
+		UserAssets: []*ManagedSubAccountMarginAsset{{
 			Asset:    "MATIC",
 			Borrowed: "0",
 			Free:     "0",
 			Interest: "0",
 			Locked:   "0",
 			NetAsset: "0"}}}
-	s.assertMngSubAccQryMgnAssetSvcRspEqual(e, res)
+	s.assertManagedSubAccountQueryMarginAssetServiceResponseEqual(e, res)
 }
 
-func (s *mngSubAccQryMarginAssetServiceTestSuite) assertMngSubAccQryMgnAssetSvcRspEqual(e, a *MngSubAccQryMgnAssetSvcRsp) {
+func (s *managedSubAccountQueryMarginAssetServiceTestSuite) assertManagedSubAccountQueryMarginAssetServiceResponseEqual(e, a *ManagedSubAccountQueryMarginAssetServiceResponse) {
 	r := s.r()
 	r.Equal(e.MarginLevel, a.MarginLevel, "MarginLevel")
 	r.Equal(e.TotalAssetOfBtc, a.TotalAssetOfBtc, "TotalAssetOfBtc")
@@ -2414,15 +2414,15 @@ func (s *mngSubAccQryMarginAssetServiceTestSuite) assertMngSubAccQryMgnAssetSvcR
 
 }
 
-type subAccAssetServiceTestSuite struct {
+type subAccountAssetServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccAssetService(t *testing.T) {
-	suite.Run(t, new(subAccAssetServiceTestSuite))
+func TestSubAccountAssetService(t *testing.T) {
+	suite.Run(t, new(subAccountAssetServiceTestSuite))
 }
 
-func (s *subAccAssetServiceTestSuite) TestSubAccAsset() {
+func (s *subAccountAssetServiceTestSuite) TestSubAccountAsset() {
 	data := []byte(`{
     "balances":[
         {
@@ -2449,11 +2449,11 @@ func (s *subAccAssetServiceTestSuite) TestSubAccAsset() {
 		e := newSignedRequest().setParam("email", email)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccAssetService().Email(email).Do(newContext())
+	res, err := s.client.NewSubAccountAssetService().Email(email).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccAssetSvcRsp{
-		Balances: []*SubAccAssetBalance{{
+	e := &SubAccountAssetServiceResponse{
+		Balances: []*SubAccountAssetBalance{{
 			Asset:  "ADA",
 			Free:   "10000",
 			Locked: "0"},
@@ -2465,10 +2465,10 @@ func (s *subAccAssetServiceTestSuite) TestSubAccAsset() {
 				Asset:  "BTC",
 				Free:   "11467.6399",
 				Locked: "0"}}}
-	s.assertSubAccAssetSvcRspEqual(e, res)
+	s.assertSubAccountAssetServiceResponseEqual(e, res)
 }
 
-func (s *subAccAssetServiceTestSuite) assertSubAccAssetSvcRspEqual(e, a *SubAccAssetSvcRsp) {
+func (s *subAccountAssetServiceTestSuite) assertSubAccountAssetServiceResponseEqual(e, a *SubAccountAssetServiceResponse) {
 	r := s.r()
 	r.Len(e.Balances, len(a.Balances))
 	for i := range e.Balances {
@@ -2479,15 +2479,15 @@ func (s *subAccAssetServiceTestSuite) assertSubAccAssetSvcRspEqual(e, a *SubAccA
 
 }
 
-type mgnSubAccInfoServiceTestSuite struct {
+type managedSubAccountInfoServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestMgnSubAccInfoService(t *testing.T) {
-	suite.Run(t, new(mgnSubAccInfoServiceTestSuite))
+func TestManagedSubAccountInfoService(t *testing.T) {
+	suite.Run(t, new(managedSubAccountInfoServiceTestSuite))
 }
 
-func (s *mgnSubAccInfoServiceTestSuite) TestMgnSubAccInfo() {
+func (s *managedSubAccountInfoServiceTestSuite) TestManagedSubAccountInfo() {
 	data := []byte(`{
     "total": 3,
     "managerSubUserInfoVoList": [
@@ -2539,12 +2539,12 @@ func (s *mgnSubAccInfoServiceTestSuite) TestMgnSubAccInfo() {
 		e := newSignedRequest().setParam("email", email)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewMgnSubAccInfoService().Email(email).Do(newContext())
+	res, err := s.client.NewManagedSubAccountInfoService().Email(email).Do(newContext())
 	s.r().NoError(err)
 
-	e := &MgnSubAccInfoSvcRsp{
+	e := &ManagedSubAccountInfoServiceResponse{
 		Total: 3,
-		ManagerSubUserInfoVoList: []*MgnSubAccUserInfoVo{{
+		ManagerSubUserInfoVoList: []*ManagedSubAccountUserInfoVo{{
 			RootUserId:               1000138475670,
 			ManagersubUserId:         1000137842513,
 			BindParentUserId:         1000138475669,
@@ -2580,10 +2580,10 @@ func (s *mgnSubAccInfoServiceTestSuite) TestMgnSubAccInfo() {
 				IsMarginEnabled:          false,
 				IsFutureEnabled:          false,
 				IsSignedLVTRiskAgreement: false}}}
-	s.assertMgnSubAccInfoSvcRspEqual(e, res)
+	s.assertManagedSubAccountInfoServiceResponseEqual(e, res)
 }
 
-func (s *mgnSubAccInfoServiceTestSuite) assertMgnSubAccInfoSvcRspEqual(e, a *MgnSubAccInfoSvcRsp) {
+func (s *managedSubAccountInfoServiceTestSuite) assertManagedSubAccountInfoServiceResponseEqual(e, a *ManagedSubAccountInfoServiceResponse) {
 	r := s.r()
 	r.Equal(e.Total, a.Total, "Total")
 	r.Len(e.ManagerSubUserInfoVoList, len(a.ManagerSubUserInfoVoList))
@@ -2603,15 +2603,15 @@ func (s *mgnSubAccInfoServiceTestSuite) assertMgnSubAccInfoSvcRspEqual(e, a *Mgn
 
 }
 
-type subAccTxnStatsServiceTestSuite struct {
+type subAccountTransactionStatisticsServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccTxnStatsService(t *testing.T) {
-	suite.Run(t, new(subAccTxnStatsServiceTestSuite))
+func TestSubAccountTransactionStatisticsService(t *testing.T) {
+	suite.Run(t, new(subAccountTransactionStatisticsServiceTestSuite))
 }
 
-func (s *subAccTxnStatsServiceTestSuite) TestSubAccTxnStats() {
+func (s *subAccountTransactionStatisticsServiceTestSuite) TestSubAccountTransactionStatistics() {
 	data := []byte(`{
     "recent30BtcTotal": "0",
     "recent30BtcFuturesTotal": "0",
@@ -2648,10 +2648,10 @@ func (s *subAccTxnStatsServiceTestSuite) TestSubAccTxnStats() {
 		e := newSignedRequest().setParam("email", email)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccTxnStatsService().Email(email).Do(newContext())
+	res, err := s.client.NewSubAccountTransactionStatisticsService().Email(email).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccTxnStatsSvcRsp{
+	e := &SubAccountTransactionStatisticServiceResponse{
 		Recent30BtcTotal:         "0",
 		Recent30BtcFuturesTotal:  "0",
 		Recent30BtcMarginTotal:   "0",
@@ -2676,10 +2676,10 @@ func (s *subAccTxnStatsServiceTestSuite) TestSubAccTxnStats() {
 				BusdFutures: 0,
 				BusdMargin:  0,
 				Date:        1676937600000}}}
-	s.assertSubAccTxnStatsSvcRspEqual(e, res)
+	s.assertSubAccountTransactionStatisticServiceResponseEqual(e, res)
 }
 
-func (s *subAccTxnStatsServiceTestSuite) assertSubAccTxnStatsSvcRspEqual(e, a *SubAccTxnStatsSvcRsp) {
+func (s *subAccountTransactionStatisticsServiceTestSuite) assertSubAccountTransactionStatisticServiceResponseEqual(e, a *SubAccountTransactionStatisticServiceResponse) {
 	r := s.r()
 	r.Equal(e.Recent30BtcTotal, a.Recent30BtcTotal, "Recent30BtcTotal")
 	r.Equal(e.Recent30BtcFuturesTotal, a.Recent30BtcFuturesTotal, "Recent30BtcFuturesTotal")
@@ -2701,15 +2701,15 @@ func (s *subAccTxnStatsServiceTestSuite) assertSubAccTxnStatsSvcRspEqual(e, a *S
 
 }
 
-type mgnSubAccDepositAddrServiceTestSuite struct {
+type managedSubAccountDepositAddressServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestMgnSubAccDepositAddrService(t *testing.T) {
-	suite.Run(t, new(mgnSubAccDepositAddrServiceTestSuite))
+func TestManagedSubAccountDepositAddressService(t *testing.T) {
+	suite.Run(t, new(managedSubAccountDepositAddressServiceTestSuite))
 }
 
-func (s *mgnSubAccDepositAddrServiceTestSuite) TestMgnSubAccDepositAddr() {
+func (s *managedSubAccountDepositAddressServiceTestSuite) TestManagedSubAccountDepositAddress() {
 	data := []byte(`{
     "coin": "USDT",
     "address": "0x206c22d833bb0bb2102da6b7c7d4c3eb14bcf73d",
@@ -2724,18 +2724,18 @@ func (s *mgnSubAccDepositAddrServiceTestSuite) TestMgnSubAccDepositAddr() {
 		e := newSignedRequest().setParam("email", email).setParam("coin", coin)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewMgnSubAccDepositAddrService().Email(email).Coin(coin).Do(newContext())
+	res, err := s.client.NewManagedSubAccountDepositAddressService().Email(email).Coin(coin).Do(newContext())
 	s.r().NoError(err)
 
-	e := &MgnSubAccDepositAddrSvcRsp{
+	e := &ManagedSubAccountDepositAddressServiceResponse{
 		Coin:    "USDT",
 		Address: "0x206c22d833bb0bb2102da6b7c7d4c3eb14bcf73d",
 		Tag:     "",
 		Url:     "https://etherscan.io/address/0x206c22d833bb0bb2102da6b7c7d4c3eb14bcf73d"}
-	s.assertMgnSubAccDepositAddrSvcRspEqual(e, res)
+	s.assertManagedSubAccountDepositAddressServiceResponseEqual(e, res)
 }
 
-func (s *mgnSubAccDepositAddrServiceTestSuite) assertMgnSubAccDepositAddrSvcRspEqual(e, a *MgnSubAccDepositAddrSvcRsp) {
+func (s *managedSubAccountDepositAddressServiceTestSuite) assertManagedSubAccountDepositAddressServiceResponseEqual(e, a *ManagedSubAccountDepositAddressServiceResponse) {
 	r := s.r()
 	r.Equal(e.Coin, a.Coin, "Coin")
 	r.Equal(e.Address, a.Address, "Address")
@@ -2743,15 +2743,15 @@ func (s *mgnSubAccDepositAddrServiceTestSuite) assertMgnSubAccDepositAddrSvcRspE
 	r.Equal(e.Url, a.Url, "Url")
 }
 
-type subAccOptionsEnableServiceTestSuite struct {
+type subAccountOptionsEnableServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestSubAccOptionsEnableService(t *testing.T) {
-	suite.Run(t, new(subAccOptionsEnableServiceTestSuite))
+func TestSubAccountOptionsEnableService(t *testing.T) {
+	suite.Run(t, new(subAccountOptionsEnableServiceTestSuite))
 }
 
-func (s *subAccOptionsEnableServiceTestSuite) TestSubAccOptionsEnable() {
+func (s *subAccountOptionsEnableServiceTestSuite) TestSubAccountOptionsEnable() {
 	data := []byte(`{
     "email": "123@test.com",
     "isEOptionsEnabled": true
@@ -2763,30 +2763,30 @@ func (s *subAccOptionsEnableServiceTestSuite) TestSubAccOptionsEnable() {
 		e := newSignedRequest().setFormParam("email", email)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewSubAccOptionsEnableService().Email(email).Do(newContext())
+	res, err := s.client.NewSubAccountOptionsEnableService().Email(email).Do(newContext())
 	s.r().NoError(err)
 
-	e := &SubAccOptionsEnableSvcRsp{
+	e := &SubAccountOptionsEnableServiceResponse{
 		Email:             "123@test.com",
 		IsEOptionsEnabled: true}
-	s.assertSubAccOptionsEnableSvcRspEqual(e, res)
+	s.assertSubAccountOptionsEnableServiceResponseEqual(e, res)
 }
 
-func (s *subAccOptionsEnableServiceTestSuite) assertSubAccOptionsEnableSvcRspEqual(e, a *SubAccOptionsEnableSvcRsp) {
+func (s *subAccountOptionsEnableServiceTestSuite) assertSubAccountOptionsEnableServiceResponseEqual(e, a *SubAccountOptionsEnableServiceResponse) {
 	r := s.r()
 	r.Equal(e.Email, a.Email, "Email")
 	r.Equal(e.IsEOptionsEnabled, a.IsEOptionsEnabled, "IsEOptionsEnabled")
 }
 
-type mgnSubAccQryTrfLogServiceTestSuite struct {
+type managedSubAccountQueryTransferLogServiceTestSuite struct {
 	baseTestSuite
 }
 
-func TestMgnSubAccQryTrfLogService(t *testing.T) {
-	suite.Run(t, new(mgnSubAccQryTrfLogServiceTestSuite))
+func TestManagedSubAccountQueryTransferLogService(t *testing.T) {
+	suite.Run(t, new(managedSubAccountQueryTransferLogServiceTestSuite))
 }
 
-func (s *mgnSubAccQryTrfLogServiceTestSuite) TestMgnSubAccQryTrfLog() {
+func (s *managedSubAccountQueryTransferLogServiceTestSuite) TestManagedSubAccountQueryTransferLog() {
 	data := []byte(`{
     "managerSubTransferHistoryVos": [
         {
@@ -2826,11 +2826,11 @@ func (s *mgnSubAccQryTrfLogServiceTestSuite) TestMgnSubAccQryTrfLog() {
 		e := newSignedRequest().setParam("startTime", startTime).setParam("endTime", endTime).setParam("page", page).setParam("limit", limit)
 		s.assertRequestEqual(e, r)
 	})
-	res, err := s.client.NewMgnSubAccQryTrfLogService().StartTime(startTime).EndTime(endTime).Page(page).Limit(limit).Do(newContext())
+	res, err := s.client.NewManagedSubAccountQueryTransferLogService().StartTime(startTime).EndTime(endTime).Page(page).Limit(limit).Do(newContext())
 	s.r().NoError(err)
 
-	e := &MgnSubAccQryTrfLogSvcRsp{
-		ManagerSubTransferHistoryVos: []*MgnSubTrfHisVo{{
+	e := &ManagedSubAccountQueryTransferLogServiceResponse{
+		ManagerSubTransferHistoryVos: []*ManagedSubTransferHistoryVo{{
 			FromEmail:       "test_0_virtual@kq3kno9imanagedsub.com",
 			FromAccountType: "SPOT",
 			ToEmail:         "wdywl0lddakh@test.com",
@@ -2853,10 +2853,10 @@ func (s *mgnSubAccQryTrfLogServiceTestSuite) TestMgnSubAccQryTrfLog() {
 				Status:          "SUCCESS",
 				TranId:          91077676}},
 		Count: 2}
-	s.assertMgnSubAccQryTrfLogSvcRspEqual(e, res)
+	s.assertManagedSubAccountQueryTransferLogServiceResponseEqual(e, res)
 }
 
-func (s *mgnSubAccQryTrfLogServiceTestSuite) assertMgnSubAccQryTrfLogSvcRspEqual(e, a *MgnSubAccQryTrfLogSvcRsp) {
+func (s *managedSubAccountQueryTransferLogServiceTestSuite) assertManagedSubAccountQueryTransferLogServiceResponseEqual(e, a *ManagedSubAccountQueryTransferLogServiceResponse) {
 	r := s.r()
 	r.Len(e.ManagerSubTransferHistoryVos, len(a.ManagerSubTransferHistoryVos))
 	for i := range e.ManagerSubTransferHistoryVos {

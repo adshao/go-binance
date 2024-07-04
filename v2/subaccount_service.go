@@ -767,27 +767,27 @@ type SubAccountTransferHistory struct {
 }
 
 // Create virtual sub-account
-type CrtVirtSubAccService struct {
+type CreateVirtualSubAccountService struct {
 	c                *Client
 	subAccountString string
 	recvWindow       *int64
 }
 
-type CrtVirtSubAccRsp struct {
+type CreateVirtualSubAccountResponse struct {
 	Email string `json:"email"`
 }
 
-func (s *CrtVirtSubAccService) SubAccountString(subAccountString string) *CrtVirtSubAccService {
+func (s *CreateVirtualSubAccountService) SubAccountString(subAccountString string) *CreateVirtualSubAccountService {
 	s.subAccountString = subAccountString
 	return s
 }
 
-func (s *CrtVirtSubAccService) RecvWindow(recvWindow int64) *CrtVirtSubAccService {
+func (s *CreateVirtualSubAccountService) RecvWindow(recvWindow int64) *CreateVirtualSubAccountService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *CrtVirtSubAccService) Do(ctx context.Context, opts ...RequestOption) (res *CrtVirtSubAccRsp, err error) {
+func (s *CreateVirtualSubAccountService) Do(ctx context.Context, opts ...RequestOption) (res *CreateVirtualSubAccountResponse, err error) {
 	r := &request{
 		method:   http.MethodPost,
 		endpoint: "/sapi/v1/sub-account/virtualSubAccount",
@@ -802,7 +802,7 @@ func (s *CrtVirtSubAccService) Do(ctx context.Context, opts ...RequestOption) (r
 	if err != nil {
 		return nil, err
 	}
-	res = new(CrtVirtSubAccRsp)
+	res = new(CreateVirtualSubAccountResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -812,7 +812,7 @@ func (s *CrtVirtSubAccService) Do(ctx context.Context, opts ...RequestOption) (r
 }
 
 // Sub-Account spot transfer history
-type SubAccSpotTrfHisService struct {
+type SubAccountSpotTransferHistoryService struct {
 	c          *Client
 	fromEmail  *string // Sub-account email
 	toEmail    *string // true or false
@@ -823,7 +823,7 @@ type SubAccSpotTrfHisService struct {
 	recvWindow *int64
 }
 
-type SubAccSpotTrf struct {
+type SubAccountSpotTransfer struct {
 	From   string `json:"from"`
 	To     string `json:"to"`
 	Asset  string `json:"asset"`
@@ -833,42 +833,42 @@ type SubAccSpotTrf struct {
 	Time   uint64 `json:"time"`
 }
 
-func (s *SubAccSpotTrfHisService) FromEmail(fromEmail string) *SubAccSpotTrfHisService {
+func (s *SubAccountSpotTransferHistoryService) FromEmail(fromEmail string) *SubAccountSpotTransferHistoryService {
 	s.fromEmail = &fromEmail
 	return s
 }
 
-func (s *SubAccSpotTrfHisService) ToEmail(toEmail string) *SubAccSpotTrfHisService {
+func (s *SubAccountSpotTransferHistoryService) ToEmail(toEmail string) *SubAccountSpotTransferHistoryService {
 	s.toEmail = &toEmail
 	return s
 }
 
-func (s *SubAccSpotTrfHisService) StartTime(startTime uint64) *SubAccSpotTrfHisService {
+func (s *SubAccountSpotTransferHistoryService) StartTime(startTime uint64) *SubAccountSpotTransferHistoryService {
 	s.startTime = &startTime
 	return s
 }
 
-func (s *SubAccSpotTrfHisService) EndTime(endTime uint64) *SubAccSpotTrfHisService {
+func (s *SubAccountSpotTransferHistoryService) EndTime(endTime uint64) *SubAccountSpotTransferHistoryService {
 	s.endTime = &endTime
 	return s
 }
 
-func (s *SubAccSpotTrfHisService) Page(page int32) *SubAccSpotTrfHisService {
+func (s *SubAccountSpotTransferHistoryService) Page(page int32) *SubAccountSpotTransferHistoryService {
 	s.page = &page
 	return s
 }
 
-func (s *SubAccSpotTrfHisService) Limit(limit int32) *SubAccSpotTrfHisService {
+func (s *SubAccountSpotTransferHistoryService) Limit(limit int32) *SubAccountSpotTransferHistoryService {
 	s.limit = &limit
 	return s
 }
 
-func (s *SubAccSpotTrfHisService) RecvWindow(recvWindow int64) *SubAccSpotTrfHisService {
+func (s *SubAccountSpotTransferHistoryService) RecvWindow(recvWindow int64) *SubAccountSpotTransferHistoryService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccSpotTrfHisService) Do(ctx context.Context, opts ...RequestOption) (res []*SubAccSpotTrf, err error) {
+func (s *SubAccountSpotTransferHistoryService) Do(ctx context.Context, opts ...RequestOption) (res []*SubAccountSpotTransfer, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/sub-account/sub/transfer/history",
@@ -900,7 +900,7 @@ func (s *SubAccSpotTrfHisService) Do(ctx context.Context, opts ...RequestOption)
 	if err != nil {
 		return nil, err
 	}
-	res = make([]*SubAccSpotTrf, 0)
+	res = make([]*SubAccountSpotTransfer, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return nil, err
@@ -910,7 +910,7 @@ func (s *SubAccSpotTrfHisService) Do(ctx context.Context, opts ...RequestOption)
 }
 
 // Sub-Account futures transfer history
-type SubAccFutTrfHisService struct {
+type SubAccountFuturesTransferHistoryService struct {
 	c           *Client
 	email       string // Sub-account email
 	futuresType int64  // 1: usdt 2: coin
@@ -921,13 +921,13 @@ type SubAccFutTrfHisService struct {
 	recvWindow  *int64
 }
 
-type SubAccFutTrfHisRsp struct {
-	Success     bool            `json:"success"`
-	FuturesType int32           `json:"futuresType"`
-	Transfers   []*SubAccFutTrf `json:"transfers"`
+type SubAccountFuturesTransferHistoryResponse struct {
+	Success     bool                         `json:"success"`
+	FuturesType int32                        `json:"futuresType"`
+	Transfers   []*SubAccountFuturesTransfer `json:"transfers"`
 }
 
-type SubAccFutTrf struct {
+type SubAccountFuturesTransfer struct {
 	From   string `json:"from"`
 	To     string `json:"to"`
 	Asset  string `json:"asset"`
@@ -937,42 +937,42 @@ type SubAccFutTrf struct {
 	Time   uint64 `json:"time"`
 }
 
-func (s *SubAccFutTrfHisService) Email(email string) *SubAccFutTrfHisService {
+func (s *SubAccountFuturesTransferHistoryService) Email(email string) *SubAccountFuturesTransferHistoryService {
 	s.email = email
 	return s
 }
 
-func (s *SubAccFutTrfHisService) FuturesType(futuresType int64) *SubAccFutTrfHisService {
+func (s *SubAccountFuturesTransferHistoryService) FuturesType(futuresType int64) *SubAccountFuturesTransferHistoryService {
 	s.futuresType = futuresType
 	return s
 }
 
-func (s *SubAccFutTrfHisService) StartTime(startTime int64) *SubAccFutTrfHisService {
+func (s *SubAccountFuturesTransferHistoryService) StartTime(startTime int64) *SubAccountFuturesTransferHistoryService {
 	s.startTime = &startTime
 	return s
 }
 
-func (s *SubAccFutTrfHisService) EndTime(endTime int64) *SubAccFutTrfHisService {
+func (s *SubAccountFuturesTransferHistoryService) EndTime(endTime int64) *SubAccountFuturesTransferHistoryService {
 	s.endTime = &endTime
 	return s
 }
 
-func (s *SubAccFutTrfHisService) Page(page int32) *SubAccFutTrfHisService {
+func (s *SubAccountFuturesTransferHistoryService) Page(page int32) *SubAccountFuturesTransferHistoryService {
 	s.page = &page
 	return s
 }
 
-func (s *SubAccFutTrfHisService) Limit(limit int32) *SubAccFutTrfHisService {
+func (s *SubAccountFuturesTransferHistoryService) Limit(limit int32) *SubAccountFuturesTransferHistoryService {
 	s.limit = &limit
 	return s
 }
 
-func (s *SubAccFutTrfHisService) RecvWindow(recvWindow int64) *SubAccFutTrfHisService {
+func (s *SubAccountFuturesTransferHistoryService) RecvWindow(recvWindow int64) *SubAccountFuturesTransferHistoryService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccFutTrfHisService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccFutTrfHisRsp, err error) {
+func (s *SubAccountFuturesTransferHistoryService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountFuturesTransferHistoryResponse, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/sub-account/futures/internalTransfer",
@@ -1000,7 +1000,7 @@ func (s *SubAccFutTrfHisService) Do(ctx context.Context, opts ...RequestOption) 
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccFutTrfHisRsp)
+	res = new(SubAccountFuturesTransferHistoryResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -1010,7 +1010,7 @@ func (s *SubAccFutTrfHisService) Do(ctx context.Context, opts ...RequestOption) 
 }
 
 // Execute sub account futures balance transfer
-type SubAccFutTrfService struct {
+type SubAccountFuturesInternalTransferService struct {
 	c           *Client
 	fromEmail   string // sender email
 	toEmail     string // receiver email
@@ -1020,42 +1020,42 @@ type SubAccFutTrfService struct {
 	recvWindow  *int64
 }
 
-type SubAccFutTrfRsp struct {
+type SubAccountFuturesInternalTransferResponse struct {
 	Success bool   `json:"success"`
 	TxnId   string `json:"txnId"`
 }
 
-func (s *SubAccFutTrfService) FromEmail(fromEmail string) *SubAccFutTrfService {
+func (s *SubAccountFuturesInternalTransferService) FromEmail(fromEmail string) *SubAccountFuturesInternalTransferService {
 	s.fromEmail = fromEmail
 	return s
 }
 
-func (s *SubAccFutTrfService) ToEmail(toEmail string) *SubAccFutTrfService {
+func (s *SubAccountFuturesInternalTransferService) ToEmail(toEmail string) *SubAccountFuturesInternalTransferService {
 	s.toEmail = toEmail
 	return s
 }
 
-func (s *SubAccFutTrfService) FuturesType(futuresType int64) *SubAccFutTrfService {
+func (s *SubAccountFuturesInternalTransferService) FuturesType(futuresType int64) *SubAccountFuturesInternalTransferService {
 	s.futuresType = futuresType
 	return s
 }
 
-func (s *SubAccFutTrfService) Asset(asset string) *SubAccFutTrfService {
+func (s *SubAccountFuturesInternalTransferService) Asset(asset string) *SubAccountFuturesInternalTransferService {
 	s.asset = asset
 	return s
 }
 
-func (s *SubAccFutTrfService) Amount(amount string) *SubAccFutTrfService {
+func (s *SubAccountFuturesInternalTransferService) Amount(amount string) *SubAccountFuturesInternalTransferService {
 	s.amount = amount
 	return s
 }
 
-func (s *SubAccFutTrfService) RecvWindow(recvWindow int64) *SubAccFutTrfService {
+func (s *SubAccountFuturesInternalTransferService) RecvWindow(recvWindow int64) *SubAccountFuturesInternalTransferService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccFutTrfService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccFutTrfRsp, err error) {
+func (s *SubAccountFuturesInternalTransferService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountFuturesInternalTransferResponse, err error) {
 	r := &request{
 		method:   http.MethodPost,
 		endpoint: "/sapi/v1/sub-account/futures/internalTransfer",
@@ -1074,7 +1074,7 @@ func (s *SubAccFutTrfService) Do(ctx context.Context, opts ...RequestOption) (re
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccFutTrfRsp)
+	res = new(SubAccountFuturesInternalTransferResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -1084,7 +1084,7 @@ func (s *SubAccFutTrfService) Do(ctx context.Context, opts ...RequestOption) (re
 }
 
 // Get sub account deposit record
-type SubAccDepRecService struct {
+type SubAccountDepositRecordService struct {
 	c          *Client
 	email      string // sub-account email
 	coin       *string
@@ -1097,7 +1097,7 @@ type SubAccDepRecService struct {
 	recvWindow *int64
 }
 
-type SubAccDepRec struct {
+type SubAccountDepositRecord struct {
 	Id            string `json:"id"`
 	Amount        string `json:"amount"`
 	Coin          string `json:"coin"`
@@ -1113,52 +1113,52 @@ type SubAccDepRec struct {
 	WalletType    int32  `json:"walletType"`
 }
 
-func (s *SubAccDepRecService) Email(email string) *SubAccDepRecService {
+func (s *SubAccountDepositRecordService) Email(email string) *SubAccountDepositRecordService {
 	s.email = email
 	return s
 }
 
-func (s *SubAccDepRecService) Coin(coin string) *SubAccDepRecService {
+func (s *SubAccountDepositRecordService) Coin(coin string) *SubAccountDepositRecordService {
 	s.coin = &coin
 	return s
 }
 
-func (s *SubAccDepRecService) Status(status int32) *SubAccDepRecService {
+func (s *SubAccountDepositRecordService) Status(status int32) *SubAccountDepositRecordService {
 	s.status = &status
 	return s
 }
 
-func (s *SubAccDepRecService) StartTime(startTime int64) *SubAccDepRecService {
+func (s *SubAccountDepositRecordService) StartTime(startTime int64) *SubAccountDepositRecordService {
 	s.startTime = &startTime
 	return s
 }
 
-func (s *SubAccDepRecService) EndTime(endTime int64) *SubAccDepRecService {
+func (s *SubAccountDepositRecordService) EndTime(endTime int64) *SubAccountDepositRecordService {
 	s.endTime = &endTime
 	return s
 }
 
-func (s *SubAccDepRecService) Limit(limit int) *SubAccDepRecService {
+func (s *SubAccountDepositRecordService) Limit(limit int) *SubAccountDepositRecordService {
 	s.limit = &limit
 	return s
 }
 
-func (s *SubAccDepRecService) Offset(offset int) *SubAccDepRecService {
+func (s *SubAccountDepositRecordService) Offset(offset int) *SubAccountDepositRecordService {
 	s.offset = &offset
 	return s
 }
 
-func (s *SubAccDepRecService) TxId(txId string) *SubAccDepRecService {
+func (s *SubAccountDepositRecordService) TxId(txId string) *SubAccountDepositRecordService {
 	s.txId = &txId
 	return s
 }
 
-func (s *SubAccDepRecService) RecvWindow(recvWindow int64) *SubAccDepRecService {
+func (s *SubAccountDepositRecordService) RecvWindow(recvWindow int64) *SubAccountDepositRecordService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccDepRecService) Do(ctx context.Context, opts ...RequestOption) (res []*SubAccDepRec, err error) {
+func (s *SubAccountDepositRecordService) Do(ctx context.Context, opts ...RequestOption) (res []*SubAccountDepositRecord, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/capital/deposit/subHisrec",
@@ -1194,7 +1194,7 @@ func (s *SubAccDepRecService) Do(ctx context.Context, opts ...RequestOption) (re
 	if err != nil {
 		return nil, err
 	}
-	res = make([]*SubAccDepRec, 0)
+	res = make([]*SubAccountDepositRecord, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return nil, err
@@ -1204,13 +1204,13 @@ func (s *SubAccDepRecService) Do(ctx context.Context, opts ...RequestOption) (re
 }
 
 // Get sub account margin futures status
-type SubAccMFStatusService struct {
+type SubAccountMarginFuturesStatusService struct {
 	c          *Client
 	email      *string // sub-account email
 	recvWindow *int64
 }
 
-type SubAccMFStatus struct {
+type SubAccountMarginFuturesStatus struct {
 	Email            string `json:"email"`
 	IsSubUserEnabled bool   `json:"isSubUserEnabled"`
 	IsUserActive     bool   `json:"isUserActive"`
@@ -1220,17 +1220,17 @@ type SubAccMFStatus struct {
 	Mobile           int64  `json:"mobile"`
 }
 
-func (s *SubAccMFStatusService) Email(email string) *SubAccMFStatusService {
+func (s *SubAccountMarginFuturesStatusService) Email(email string) *SubAccountMarginFuturesStatusService {
 	s.email = &email
 	return s
 }
 
-func (s *SubAccMFStatusService) RecvWindow(recvWindow int64) *SubAccMFStatusService {
+func (s *SubAccountMarginFuturesStatusService) RecvWindow(recvWindow int64) *SubAccountMarginFuturesStatusService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccMFStatusService) Do(ctx context.Context, opts ...RequestOption) (res []*SubAccMFStatus, err error) {
+func (s *SubAccountMarginFuturesStatusService) Do(ctx context.Context, opts ...RequestOption) (res []*SubAccountMarginFuturesStatus, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/sub-account/status",
@@ -1247,7 +1247,7 @@ func (s *SubAccMFStatusService) Do(ctx context.Context, opts ...RequestOption) (
 	if err != nil {
 		return nil, err
 	}
-	res = make([]*SubAccMFStatus, 0)
+	res = make([]*SubAccountMarginFuturesStatus, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return nil, err
@@ -1257,28 +1257,28 @@ func (s *SubAccMFStatusService) Do(ctx context.Context, opts ...RequestOption) (
 }
 
 // sub account margin enable
-type SubAccMarginEnableService struct {
+type SubAccountMarginEnableService struct {
 	c          *Client
 	email      string // sub-account email
 	recvWindow *int64
 }
 
-type SubAccMarginEnableRsp struct {
+type SubAccountMarginEnableResponse struct {
 	Email           string `json:"email"`
 	IsMarginEnabled bool   `json:"isMarginEnabled"`
 }
 
-func (s *SubAccMarginEnableService) Email(email string) *SubAccMarginEnableService {
+func (s *SubAccountMarginEnableService) Email(email string) *SubAccountMarginEnableService {
 	s.email = email
 	return s
 }
 
-func (s *SubAccMarginEnableService) RecvWindow(recvWindow int64) *SubAccMarginEnableService {
+func (s *SubAccountMarginEnableService) RecvWindow(recvWindow int64) *SubAccountMarginEnableService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccMarginEnableService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccMarginEnableRsp, err error) {
+func (s *SubAccountMarginEnableService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountMarginEnableResponse, err error) {
 	r := &request{
 		method:   http.MethodPost,
 		endpoint: "/sapi/v1/sub-account/margin/enable",
@@ -1293,7 +1293,7 @@ func (s *SubAccMarginEnableService) Do(ctx context.Context, opts ...RequestOptio
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccMarginEnableRsp)
+	res = new(SubAccountMarginEnableResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -1303,13 +1303,13 @@ func (s *SubAccMarginEnableService) Do(ctx context.Context, opts ...RequestOptio
 }
 
 // get sub-account margin account detail
-type SubAccMarginAccService struct {
+type SubAccountMarginAccountInfoService struct {
 	c          *Client
 	email      string // sub-account email
 	recvWindow *int64
 }
 
-type SubAccMarginAcc struct {
+type SubAccountMarginAccountInfo struct {
 	Email                 string               `json:"email"`
 	MarginLevel           string               `json:"marginLevel"`
 	TotalAssetOfBtc       string               `json:"totalAssetOfBtc"`
@@ -1334,17 +1334,17 @@ type MarginUserAssetVo struct {
 	NetAsset string `json:"netAsset"`
 }
 
-func (s *SubAccMarginAccService) Email(email string) *SubAccMarginAccService {
+func (s *SubAccountMarginAccountInfoService) Email(email string) *SubAccountMarginAccountInfoService {
 	s.email = email
 	return s
 }
 
-func (s *SubAccMarginAccService) RecvWindow(recvWindow int64) *SubAccMarginAccService {
+func (s *SubAccountMarginAccountInfoService) RecvWindow(recvWindow int64) *SubAccountMarginAccountInfoService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccMarginAccService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccMarginAcc, err error) {
+func (s *SubAccountMarginAccountInfoService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountMarginAccountInfo, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/sub-account/margin/account",
@@ -1359,7 +1359,7 @@ func (s *SubAccMarginAccService) Do(ctx context.Context, opts ...RequestOption) 
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccMarginAcc)
+	res = new(SubAccountMarginAccountInfo)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -1369,31 +1369,31 @@ func (s *SubAccMarginAccService) Do(ctx context.Context, opts ...RequestOption) 
 }
 
 // get sub-account margin account summary
-type SubAccMarginAccSummService struct {
+type SubAccountMarginAccountSummaryService struct {
 	c          *Client
 	recvWindow *int64
 }
 
-type SubAccMarginAccSumm struct {
-	TotalAssetOfBtc     string         `json:"totalAssetOfBtc"`
-	TotalLiabilityOfBtc string         `json:"totalLiabilityOfBtc"`
-	TotalNetAssetOfBtc  string         `json:"totalNetAssetOfBtc"`
-	SubAccountList      []*MSubAccount `json:"subAccountList"`
+type SubAccountMarginAccountSummary struct {
+	TotalAssetOfBtc     string              `json:"totalAssetOfBtc"`
+	TotalLiabilityOfBtc string              `json:"totalLiabilityOfBtc"`
+	TotalNetAssetOfBtc  string              `json:"totalNetAssetOfBtc"`
+	SubAccountList      []*MarginSubAccount `json:"subAccountList"`
 }
 
-type MSubAccount struct {
+type MarginSubAccount struct {
 	Email               string `json:"email"`
 	TotalAssetOfBtc     string `json:"totalAssetOfBtc"`
 	TotalLiabilityOfBtc string `json:"totalLiabilityOfBtc"`
 	TotalNetAssetOfBtc  string `json:"totalNetAssetOfBtc"`
 }
 
-func (s *SubAccMarginAccSummService) RecvWindow(recvWindow int64) *SubAccMarginAccSummService {
+func (s *SubAccountMarginAccountSummaryService) RecvWindow(recvWindow int64) *SubAccountMarginAccountSummaryService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccMarginAccSummService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccMarginAccSumm, err error) {
+func (s *SubAccountMarginAccountSummaryService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountMarginAccountSummary, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/sub-account/margin/accountSummary",
@@ -1407,7 +1407,7 @@ func (s *SubAccMarginAccSummService) Do(ctx context.Context, opts ...RequestOpti
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccMarginAccSumm)
+	res = new(SubAccountMarginAccountSummary)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -1416,28 +1416,28 @@ func (s *SubAccMarginAccSummService) Do(ctx context.Context, opts ...RequestOpti
 	return res, nil
 }
 
-type SubAccFuturesEnableService struct {
+type SubAccountFuturesEnableService struct {
 	c          *Client
 	email      string // sub-account email
 	recvWindow *int64
 }
 
-type SubAccFuturesEnableRsp struct {
+type SubAccountFuturesEnableResponse struct {
 	Email            string `json:"email"`
 	IsFuturesEnabled bool   `json:"isFuturesEnabled"`
 }
 
-func (s *SubAccFuturesEnableService) Email(email string) *SubAccFuturesEnableService {
+func (s *SubAccountFuturesEnableService) Email(email string) *SubAccountFuturesEnableService {
 	s.email = email
 	return s
 }
 
-func (s *SubAccFuturesEnableService) RecvWindow(recvWindow int64) *SubAccFuturesEnableService {
+func (s *SubAccountFuturesEnableService) RecvWindow(recvWindow int64) *SubAccountFuturesEnableService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccFuturesEnableService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccFuturesEnableRsp, err error) {
+func (s *SubAccountFuturesEnableService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountFuturesEnableResponse, err error) {
 	r := &request{
 		method:   http.MethodPost,
 		endpoint: "/sapi/v1/sub-account/futures/enable",
@@ -1452,7 +1452,7 @@ func (s *SubAccFuturesEnableService) Do(ctx context.Context, opts ...RequestOpti
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccFuturesEnableRsp)
+	res = new(SubAccountFuturesEnableResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -1462,48 +1462,48 @@ func (s *SubAccFuturesEnableService) Do(ctx context.Context, opts ...RequestOpti
 }
 
 // get the target sub-account futures account detail, v2 interface.
-type SubAccFuturesAccService struct {
+type SubAccountFuturesAccountV2Service struct {
 	c           *Client
 	email       string // sub-account email
 	futuresType int32  // 1:USDT Margined Futures, 2:COIN Margined Futures
 	recvWindow  *int64
 }
 
-type SubAccFuturesAccSvcRsp struct {
-	FutureAccountResp   *SubAccFuturesAcc  `json:"futureAccountResp"`   // set while futuresType=1(USDT margined)
-	DeliveryAccountResp *SubAccDeliveryAcc `json:"deliveryAccountResp"` // set while futuresType=2(COIN margined)
+type SubAccountFuturesAccountV2ServiceResponse struct {
+	FutureAccountResp   *SubAccountFuturesAccountV2  `json:"futureAccountResp"`   // set while futuresType=1(USDT margined)
+	DeliveryAccountResp *SubAccountDeliveryAccountV2 `json:"deliveryAccountResp"` // set while futuresType=2(COIN margined)
 }
 
-type SubAccFuturesAcc struct {
-	Email                       string    `json:"email"`
-	Asset                       string    `json:"asset"`
-	Assets                      []*FAsset `json:"assets"`
-	CanDeposit                  bool      `json:"canDeposit"`
-	CanTrade                    bool      `json:"canTrade"`
-	CanWithdraw                 bool      `json:"canWithdraw"`
-	FeeTier                     int32     `json:"feeTier"`
-	MaxWithdrawAmount           string    `json:"maxWithdrawAmount"`
-	TotalInitialMargin          string    `json:"totalInitialMargin"`
-	TotalMaintenanceMargin      string    `json:"totalMaintenanceMargin"`
-	TotalMarginBalance          string    `json:"totalMarginBalance"`
-	TotalOpenOrderInitialMargin string    `json:"totalOpenOrderInitialMargin"`
-	TotalPositionInitialMargin  string    `json:"totalPositionInitialMargin"`
-	TotalUnrealizedProfit       string    `json:"totalUnrealizedProfit"`
-	TotalWalletBalance          string    `json:"totalWalletBalance"`
-	UpdateTime                  int64     `json:"updateTime"`
+type SubAccountFuturesAccountV2 struct {
+	Email                       string          `json:"email"`
+	Asset                       string          `json:"asset"`
+	Assets                      []*FuturesAsset `json:"assets"`
+	CanDeposit                  bool            `json:"canDeposit"`
+	CanTrade                    bool            `json:"canTrade"`
+	CanWithdraw                 bool            `json:"canWithdraw"`
+	FeeTier                     int32           `json:"feeTier"`
+	MaxWithdrawAmount           string          `json:"maxWithdrawAmount"`
+	TotalInitialMargin          string          `json:"totalInitialMargin"`
+	TotalMaintenanceMargin      string          `json:"totalMaintenanceMargin"`
+	TotalMarginBalance          string          `json:"totalMarginBalance"`
+	TotalOpenOrderInitialMargin string          `json:"totalOpenOrderInitialMargin"`
+	TotalPositionInitialMargin  string          `json:"totalPositionInitialMargin"`
+	TotalUnrealizedProfit       string          `json:"totalUnrealizedProfit"`
+	TotalWalletBalance          string          `json:"totalWalletBalance"`
+	UpdateTime                  int64           `json:"updateTime"`
 }
 
-type SubAccDeliveryAcc struct {
-	Email       string    `json:"email"`
-	Assets      []*FAsset `json:"assets"`
-	CanDeposit  bool      `json:"canDeposit"`
-	CanTrade    bool      `json:"canTrade"`
-	CanWithdraw bool      `json:"canWithdraw"`
-	FeeTier     int32     `json:"feeTier"`
-	UpdateTime  int64     `json:"updateTime"`
+type SubAccountDeliveryAccountV2 struct {
+	Email       string          `json:"email"`
+	Assets      []*FuturesAsset `json:"assets"`
+	CanDeposit  bool            `json:"canDeposit"`
+	CanTrade    bool            `json:"canTrade"`
+	CanWithdraw bool            `json:"canWithdraw"`
+	FeeTier     int32           `json:"feeTier"`
+	UpdateTime  int64           `json:"updateTime"`
 }
 
-type FAsset struct {
+type FuturesAsset struct {
 	Asset                  string `json:"asset"`
 	InitialMargin          string `json:"initialMargin"`
 	MaintenanceMargin      string `json:"maintenanceMargin"`
@@ -1515,22 +1515,22 @@ type FAsset struct {
 	WalletBalance          string `json:"walletBalance"`
 }
 
-func (s *SubAccFuturesAccService) Email(email string) *SubAccFuturesAccService {
+func (s *SubAccountFuturesAccountV2Service) Email(email string) *SubAccountFuturesAccountV2Service {
 	s.email = email
 	return s
 }
 
-func (s *SubAccFuturesAccService) FuturesType(futuresType int32) *SubAccFuturesAccService {
+func (s *SubAccountFuturesAccountV2Service) FuturesType(futuresType int32) *SubAccountFuturesAccountV2Service {
 	s.futuresType = futuresType
 	return s
 }
 
-func (s *SubAccFuturesAccService) RecvWindow(recvWindow int64) *SubAccFuturesAccService {
+func (s *SubAccountFuturesAccountV2Service) RecvWindow(recvWindow int64) *SubAccountFuturesAccountV2Service {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccFuturesAccService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccFuturesAccSvcRsp, err error) {
+func (s *SubAccountFuturesAccountV2Service) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountFuturesAccountV2ServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v2/sub-account/futures/account",
@@ -1546,7 +1546,7 @@ func (s *SubAccFuturesAccService) Do(ctx context.Context, opts ...RequestOption)
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccFuturesAccSvcRsp)
+	res = new(SubAccountFuturesAccountV2ServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -1556,7 +1556,7 @@ func (s *SubAccFuturesAccService) Do(ctx context.Context, opts ...RequestOption)
 }
 
 // get sub-account futures account summary, include U-M and C-M, v2 interface
-type SubAccFuturesAccSummService struct {
+type SubAccountFuturesAccountSummaryService struct {
 	c           *Client
 	futuresType int32  // 1:USDT Margined Futures, 2:COIN Margined Futures
 	page        *int32 // default 1
@@ -1564,24 +1564,24 @@ type SubAccFuturesAccSummService struct {
 	recvWindow  *int64
 }
 
-type SubAccFuturesAccSummSvcRsp struct {
-	FutureAccountSummaryResp   *SubAccFuturesAccSumm  `json:"futureAccountSummaryResp"`   // set while futuresType=1
-	DeliveryAccountSummaryResp *SubAccDeliveryAccSumm `json:"deliveryAccountSummaryResp"` // set while futuresType=2
+type SubAccountFuturesAccountSummaryServiceResponse struct {
+	FutureAccountSummaryResp   *SubAccountFuturesAccountSummary  `json:"futureAccountSummaryResp"`   // set while futuresType=1
+	DeliveryAccountSummaryResp *SubAccountDeliveryAccountSummary `json:"deliveryAccountSummaryResp"` // set while futuresType=2
 }
 
-type SubAccFuturesAccSumm struct {
-	TotalInitialMargin          string         `json:"totalInitialMargin"`
-	TotalMaintenanceMargin      string         `json:"totalMaintenanceMargin"`
-	TotalMarginBalance          string         `json:"totalMarginBalance"`
-	TotalOpenOrderInitialMargin string         `json:"totalOpenOrderInitialMargin"`
-	TotalPositionInitialMargin  string         `json:"totalPositionInitialMargin"`
-	TotalUnrealizedProfit       string         `json:"totalUnrealizedProfit"`
-	TotalWalletBalance          string         `json:"totalWalletBalance"`
-	Asset                       string         `json:"asset"`
-	SubAccountList              []*FSubAccount `json:"subAccountList"`
+type SubAccountFuturesAccountSummary struct {
+	TotalInitialMargin          string               `json:"totalInitialMargin"`
+	TotalMaintenanceMargin      string               `json:"totalMaintenanceMargin"`
+	TotalMarginBalance          string               `json:"totalMarginBalance"`
+	TotalOpenOrderInitialMargin string               `json:"totalOpenOrderInitialMargin"`
+	TotalPositionInitialMargin  string               `json:"totalPositionInitialMargin"`
+	TotalUnrealizedProfit       string               `json:"totalUnrealizedProfit"`
+	TotalWalletBalance          string               `json:"totalWalletBalance"`
+	Asset                       string               `json:"asset"`
+	SubAccountList              []*FuturesSubAccount `json:"subAccountList"`
 }
 
-type FSubAccount struct {
+type FuturesSubAccount struct {
 	Email                       string `json:"email"`
 	TotalInitialMargin          string `json:"totalInitialMargin"`
 	TotalMaintenanceMargin      string `json:"totalMaintenanceMargin"`
@@ -1593,15 +1593,15 @@ type FSubAccount struct {
 	Asset                       string `json:"asset"`
 }
 
-type SubAccDeliveryAccSumm struct {
-	TotalMarginBalanceOfBTC    string         `json:"totalMarginBalanceOfBTC"`
-	TotalUnrealizedProfitOfBTC string         `json:"totalUnrealizedProfitOfBTC"`
-	TotalWalletBalanceOfBTC    string         `json:"totalWalletBalanceOfBTC"`
-	Asset                      string         `json:"asset"`
-	SubAccountList             []*DSubAccount `json:"subAccountList"`
+type SubAccountDeliveryAccountSummary struct {
+	TotalMarginBalanceOfBTC    string                `json:"totalMarginBalanceOfBTC"`
+	TotalUnrealizedProfitOfBTC string                `json:"totalUnrealizedProfitOfBTC"`
+	TotalWalletBalanceOfBTC    string                `json:"totalWalletBalanceOfBTC"`
+	Asset                      string                `json:"asset"`
+	SubAccountList             []*DeliverySubAccount `json:"subAccountList"`
 }
 
-type DSubAccount struct {
+type DeliverySubAccount struct {
 	Email                 string `json:"email"`
 	TotalMarginBalance    string `json:"totalMarginBalance"`
 	TotalUnrealizedProfit string `json:"totalUnrealizedProfit"`
@@ -1609,27 +1609,27 @@ type DSubAccount struct {
 	Asset                 string `json:"asset"`
 }
 
-func (s *SubAccFuturesAccSummService) FuturesType(futuresType int32) *SubAccFuturesAccSummService {
+func (s *SubAccountFuturesAccountSummaryService) FuturesType(futuresType int32) *SubAccountFuturesAccountSummaryService {
 	s.futuresType = futuresType
 	return s
 }
 
-func (s *SubAccFuturesAccSummService) Page(page int32) *SubAccFuturesAccSummService {
+func (s *SubAccountFuturesAccountSummaryService) Page(page int32) *SubAccountFuturesAccountSummaryService {
 	s.page = &page
 	return s
 }
 
-func (s *SubAccFuturesAccSummService) Limit(limit int32) *SubAccFuturesAccSummService {
+func (s *SubAccountFuturesAccountSummaryService) Limit(limit int32) *SubAccountFuturesAccountSummaryService {
 	s.limit = &limit
 	return s
 }
 
-func (s *SubAccFuturesAccSummService) RecvWindow(recvWindow int64) *SubAccFuturesAccSummService {
+func (s *SubAccountFuturesAccountSummaryService) RecvWindow(recvWindow int64) *SubAccountFuturesAccountSummaryService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccFuturesAccSummService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccFuturesAccSummSvcRsp, err error) {
+func (s *SubAccountFuturesAccountSummaryService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountFuturesAccountSummaryServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v2/sub-account/futures/accountSummary",
@@ -1650,7 +1650,7 @@ func (s *SubAccFuturesAccSummService) Do(ctx context.Context, opts ...RequestOpt
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccFuturesAccSummSvcRsp)
+	res = new(SubAccountFuturesAccountSummaryServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -1660,19 +1660,19 @@ func (s *SubAccFuturesAccSummService) Do(ctx context.Context, opts ...RequestOpt
 }
 
 // get target sub-account futures position information, include U-M and C-M, v2 interface.
-type SubAccFuturesPositionsService struct {
+type SubAccountFuturesPositionsService struct {
 	c           *Client
 	email       string
 	futuresType int32 // 1:USDT Margined Futures, 2:COIN Margined Futures
 	recvWindow  *int64
 }
 
-type SubAccFuturesPosSvcRsp struct {
-	FuturePositionRiskVos   []*SubAccFuturesPosition  `json:"futurePositionRiskVos"`   // set while futuresType=1
-	DeliveryPositionRiskVos []*SubAccDeliveryPosition `json:"deliveryPositionRiskVos"` // set while futuresType=2
+type SubAccountFuturesPositionsServiceResponse struct {
+	FuturePositionRiskVos   []*SubAccountFuturesPosition  `json:"futurePositionRiskVos"`   // set while futuresType=1
+	DeliveryPositionRiskVos []*SubAccountDeliveryPosition `json:"deliveryPositionRiskVos"` // set while futuresType=2
 }
 
-type SubAccFuturesPosition struct {
+type SubAccountFuturesPosition struct {
 	EntryPrice       string `json:"entryPrice"`
 	Leverage         string `json:"leverage"`
 	MaxNotional      string `json:"maxNotional"`
@@ -1683,7 +1683,7 @@ type SubAccFuturesPosition struct {
 	UnrealizedProfit string `json:"unrealizedProfit"`
 }
 
-type SubAccDeliveryPosition struct {
+type SubAccountDeliveryPosition struct {
 	EntryPrice       string `json:"entryPrice"`
 	MarkPrice        string `json:"markPrice"`
 	Leverage         string `json:"leverage"`
@@ -1697,22 +1697,22 @@ type SubAccDeliveryPosition struct {
 	UnrealizedProfit string `json:"unrealizedProfit"`
 }
 
-func (s *SubAccFuturesPositionsService) Email(email string) *SubAccFuturesPositionsService {
+func (s *SubAccountFuturesPositionsService) Email(email string) *SubAccountFuturesPositionsService {
 	s.email = email
 	return s
 }
 
-func (s *SubAccFuturesPositionsService) FuturesType(futuresType int32) *SubAccFuturesPositionsService {
+func (s *SubAccountFuturesPositionsService) FuturesType(futuresType int32) *SubAccountFuturesPositionsService {
 	s.futuresType = futuresType
 	return s
 }
 
-func (s *SubAccFuturesPositionsService) RecvWindow(recvWindow int64) *SubAccFuturesPositionsService {
+func (s *SubAccountFuturesPositionsService) RecvWindow(recvWindow int64) *SubAccountFuturesPositionsService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccFuturesPositionsService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccFuturesPosSvcRsp, err error) {
+func (s *SubAccountFuturesPositionsService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountFuturesPositionsServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v2/sub-account/futures/positionRisk",
@@ -1728,7 +1728,7 @@ func (s *SubAccFuturesPositionsService) Do(ctx context.Context, opts ...RequestO
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccFuturesPosSvcRsp)
+	res = new(SubAccountFuturesPositionsServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -1738,7 +1738,7 @@ func (s *SubAccFuturesPositionsService) Do(ctx context.Context, opts ...RequestO
 }
 
 // execute sub-account margin account transfer
-type SubAccMarginTrfService struct {
+type SubAccountMarginTransferService struct {
 	c            *Client
 	email        string
 	asset        string
@@ -1747,36 +1747,36 @@ type SubAccMarginTrfService struct {
 	recvWindow   *int64
 }
 
-type SubAccMarginTrfRsp struct {
+type SubAccountMarginTransferResponse struct {
 	TxnId string `json:"txnId"`
 }
 
-func (s *SubAccMarginTrfService) Email(email string) *SubAccMarginTrfService {
+func (s *SubAccountMarginTransferService) Email(email string) *SubAccountMarginTransferService {
 	s.email = email
 	return s
 }
 
-func (s *SubAccMarginTrfService) Asset(asset string) *SubAccMarginTrfService {
+func (s *SubAccountMarginTransferService) Asset(asset string) *SubAccountMarginTransferService {
 	s.asset = asset
 	return s
 }
 
-func (s *SubAccMarginTrfService) Amount(amount string) *SubAccMarginTrfService {
+func (s *SubAccountMarginTransferService) Amount(amount string) *SubAccountMarginTransferService {
 	s.amount = amount
 	return s
 }
 
-func (s *SubAccMarginTrfService) TransferType(transferType int32) *SubAccMarginTrfService {
+func (s *SubAccountMarginTransferService) TransferType(transferType int32) *SubAccountMarginTransferService {
 	s.transferType = transferType
 	return s
 }
 
-func (s *SubAccMarginTrfService) RecvWindow(recvWindow int64) *SubAccMarginTrfService {
+func (s *SubAccountMarginTransferService) RecvWindow(recvWindow int64) *SubAccountMarginTransferService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccMarginTrfService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccMarginTrfRsp, err error) {
+func (s *SubAccountMarginTransferService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountMarginTransferResponse, err error) {
 	r := &request{
 		method:   http.MethodPost,
 		endpoint: "/sapi/v1/sub-account/margin/transfer",
@@ -1794,7 +1794,7 @@ func (s *SubAccMarginTrfService) Do(ctx context.Context, opts ...RequestOption) 
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccMarginTrfRsp)
+	res = new(SubAccountMarginTransferResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -1804,33 +1804,33 @@ func (s *SubAccMarginTrfService) Do(ctx context.Context, opts ...RequestOption) 
 }
 
 // sub-account transfer balance to master-account
-type SubAccTrfSubToMasterService struct {
+type SubAccountTransferSubToMasterService struct {
 	c          *Client
 	asset      string
 	amount     string // decimal format
 	recvWindow *int64
 }
 
-type SubAccTrfSubToMasterRsp struct {
+type SubAccountTransferSubToMasterResponse struct {
 	TxnId string `json:"txnId"`
 }
 
-func (s *SubAccTrfSubToMasterService) Asset(asset string) *SubAccTrfSubToMasterService {
+func (s *SubAccountTransferSubToMasterService) Asset(asset string) *SubAccountTransferSubToMasterService {
 	s.asset = asset
 	return s
 }
 
-func (s *SubAccTrfSubToMasterService) Amount(amount string) *SubAccTrfSubToMasterService {
+func (s *SubAccountTransferSubToMasterService) Amount(amount string) *SubAccountTransferSubToMasterService {
 	s.amount = amount
 	return s
 }
 
-func (s *SubAccTrfSubToMasterService) RecvWindow(recvWindow int64) *SubAccTrfSubToMasterService {
+func (s *SubAccountTransferSubToMasterService) RecvWindow(recvWindow int64) *SubAccountTransferSubToMasterService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccTrfSubToMasterService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccTrfSubToMasterRsp, err error) {
+func (s *SubAccountTransferSubToMasterService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountTransferSubToMasterResponse, err error) {
 	r := &request{
 		method:   http.MethodPost,
 		endpoint: "/sapi/v1/sub-account/transfer/subToMaster",
@@ -1846,7 +1846,7 @@ func (s *SubAccTrfSubToMasterService) Do(ctx context.Context, opts ...RequestOpt
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccTrfSubToMasterRsp)
+	res = new(SubAccountTransferSubToMasterResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -1856,7 +1856,7 @@ func (s *SubAccTrfSubToMasterService) Do(ctx context.Context, opts ...RequestOpt
 }
 
 // Universal transfer of master and sub accounts
-type SubAccUnivTrfService struct {
+type SubAccountUniversalTransferService struct {
 	c               *Client
 	fromEmail       *string
 	toEmail         *string
@@ -1869,57 +1869,57 @@ type SubAccUnivTrfService struct {
 	recvWindow      *int64
 }
 
-type SubAccUnivTrfRsp struct {
+type SubAccountUniversalTransferResponse struct {
 	TranId       int64  `json:"tranId"`
 	ClientTranId string `json:"clientTranId"`
 }
 
-func (s *SubAccUnivTrfService) FromEmail(fromEmail string) *SubAccUnivTrfService {
+func (s *SubAccountUniversalTransferService) FromEmail(fromEmail string) *SubAccountUniversalTransferService {
 	s.fromEmail = &fromEmail
 	return s
 }
 
-func (s *SubAccUnivTrfService) ToEmail(toEmail string) *SubAccUnivTrfService {
+func (s *SubAccountUniversalTransferService) ToEmail(toEmail string) *SubAccountUniversalTransferService {
 	s.toEmail = &toEmail
 	return s
 }
 
-func (s *SubAccUnivTrfService) FromAccountType(fromAccountType string) *SubAccUnivTrfService {
+func (s *SubAccountUniversalTransferService) FromAccountType(fromAccountType string) *SubAccountUniversalTransferService {
 	s.fromAccountType = fromAccountType
 	return s
 }
 
-func (s *SubAccUnivTrfService) ToAccountType(toAccountType string) *SubAccUnivTrfService {
+func (s *SubAccountUniversalTransferService) ToAccountType(toAccountType string) *SubAccountUniversalTransferService {
 	s.toAccountType = toAccountType
 	return s
 }
 
-func (s *SubAccUnivTrfService) ClientTranId(clientTranId string) *SubAccUnivTrfService {
+func (s *SubAccountUniversalTransferService) ClientTranId(clientTranId string) *SubAccountUniversalTransferService {
 	s.clientTranId = &clientTranId
 	return s
 }
 
-func (s *SubAccUnivTrfService) Symbol(symbol string) *SubAccUnivTrfService {
+func (s *SubAccountUniversalTransferService) Symbol(symbol string) *SubAccountUniversalTransferService {
 	s.symbol = &symbol
 	return s
 }
 
-func (s *SubAccUnivTrfService) Asset(asset string) *SubAccUnivTrfService {
+func (s *SubAccountUniversalTransferService) Asset(asset string) *SubAccountUniversalTransferService {
 	s.asset = asset
 	return s
 }
 
-func (s *SubAccUnivTrfService) Amount(amount string) *SubAccUnivTrfService {
+func (s *SubAccountUniversalTransferService) Amount(amount string) *SubAccountUniversalTransferService {
 	s.amount = amount
 	return s
 }
 
-func (s *SubAccUnivTrfService) RecvWindow(recvWindow int64) *SubAccUnivTrfService {
+func (s *SubAccountUniversalTransferService) RecvWindow(recvWindow int64) *SubAccountUniversalTransferService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccUnivTrfService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccUnivTrfRsp, err error) {
+func (s *SubAccountUniversalTransferService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountUniversalTransferResponse, err error) {
 	r := &request{
 		method:   http.MethodPost,
 		endpoint: "/sapi/v1/sub-account/universalTransfer",
@@ -1949,7 +1949,7 @@ func (s *SubAccUnivTrfService) Do(ctx context.Context, opts ...RequestOption) (r
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccUnivTrfRsp)
+	res = new(SubAccountUniversalTransferResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -1959,7 +1959,7 @@ func (s *SubAccUnivTrfService) Do(ctx context.Context, opts ...RequestOption) (r
 }
 
 // Query the universal transfer history of sub and master accounts
-type SubAccUnivTrfHisService struct {
+type SubAccUniversalTransferHistoryService struct {
 	c            *Client
 	fromEmail    *string
 	toEmail      *string
@@ -1971,12 +1971,12 @@ type SubAccUnivTrfHisService struct {
 	recvWindow   *int64
 }
 
-type SubAccUnivTrfHisServiceRsp struct {
-	Result     []*SubAccUnivTrfRec `json:"result"`
-	TotalCount int64               `json:"totalCount"`
+type SubAccountUniversalTransferHistoryServiceResponse struct {
+	Result     []*SubAccountUniversalTransferRecord `json:"result"`
+	TotalCount int64                                `json:"totalCount"`
 }
 
-type SubAccUnivTrfRec struct {
+type SubAccountUniversalTransferRecord struct {
 	TranId          int64  `json:"tranId"`
 	FromEmail       string `json:"fromEmail"`
 	ToEmail         string `json:"toEmail"`
@@ -1989,47 +1989,47 @@ type SubAccUnivTrfRec struct {
 	ClientTranId    string `json:"clientTranId"`
 }
 
-func (s *SubAccUnivTrfHisService) FromEmail(fromEmail string) *SubAccUnivTrfHisService {
+func (s *SubAccUniversalTransferHistoryService) FromEmail(fromEmail string) *SubAccUniversalTransferHistoryService {
 	s.fromEmail = &fromEmail
 	return s
 }
 
-func (s *SubAccUnivTrfHisService) ToEmail(toEmail string) *SubAccUnivTrfHisService {
+func (s *SubAccUniversalTransferHistoryService) ToEmail(toEmail string) *SubAccUniversalTransferHistoryService {
 	s.toEmail = &toEmail
 	return s
 }
 
-func (s *SubAccUnivTrfHisService) ClientTranId(clientTranId string) *SubAccUnivTrfHisService {
+func (s *SubAccUniversalTransferHistoryService) ClientTranId(clientTranId string) *SubAccUniversalTransferHistoryService {
 	s.clientTranId = &clientTranId
 	return s
 }
 
-func (s *SubAccUnivTrfHisService) StartTime(startTime int64) *SubAccUnivTrfHisService {
+func (s *SubAccUniversalTransferHistoryService) StartTime(startTime int64) *SubAccUniversalTransferHistoryService {
 	s.startTime = &startTime
 	return s
 }
 
-func (s *SubAccUnivTrfHisService) EndTime(endTime int64) *SubAccUnivTrfHisService {
+func (s *SubAccUniversalTransferHistoryService) EndTime(endTime int64) *SubAccUniversalTransferHistoryService {
 	s.endTime = &endTime
 	return s
 }
 
-func (s *SubAccUnivTrfHisService) Page(page int32) *SubAccUnivTrfHisService {
+func (s *SubAccUniversalTransferHistoryService) Page(page int32) *SubAccUniversalTransferHistoryService {
 	s.page = &page
 	return s
 }
 
-func (s *SubAccUnivTrfHisService) Limit(limit int32) *SubAccUnivTrfHisService {
+func (s *SubAccUniversalTransferHistoryService) Limit(limit int32) *SubAccUniversalTransferHistoryService {
 	s.limit = &limit
 	return s
 }
 
-func (s *SubAccUnivTrfHisService) RecvWindow(recvWindow int64) *SubAccUnivTrfHisService {
+func (s *SubAccUniversalTransferHistoryService) RecvWindow(recvWindow int64) *SubAccUniversalTransferHistoryService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccUnivTrfHisService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccUnivTrfHisServiceRsp, err error) {
+func (s *SubAccUniversalTransferHistoryService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountUniversalTransferHistoryServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/sub-account/universalTransfer",
@@ -2064,7 +2064,7 @@ func (s *SubAccUnivTrfHisService) Do(ctx context.Context, opts ...RequestOption)
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccUnivTrfHisServiceRsp)
+	res = new(SubAccountUniversalTransferHistoryServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -2074,34 +2074,34 @@ func (s *SubAccUnivTrfHisService) Do(ctx context.Context, opts ...RequestOption)
 }
 
 // Binance Leveraged Tokens enable
-type SubAccBlvtEnableService struct {
+type SubAccountBlvtEnableService struct {
 	c          *Client
 	email      string // sub-account email
 	enableBlvt bool   // Only true for now
 	recvWindow *int64
 }
 
-type SubAccBlvtEnableSvcRsp struct {
+type SubAccountBlvtEnableServiceResponse struct {
 	Email      string `json:"email"`
 	EnableBlvt bool   `json:"enableBlvt"`
 }
 
-func (s *SubAccBlvtEnableService) Email(email string) *SubAccBlvtEnableService {
+func (s *SubAccountBlvtEnableService) Email(email string) *SubAccountBlvtEnableService {
 	s.email = email
 	return s
 }
 
-func (s *SubAccBlvtEnableService) EnableBlvt(enableBlvt bool) *SubAccBlvtEnableService {
+func (s *SubAccountBlvtEnableService) EnableBlvt(enableBlvt bool) *SubAccountBlvtEnableService {
 	s.enableBlvt = enableBlvt
 	return s
 }
 
-func (s *SubAccBlvtEnableService) RecvWindow(recvWindow int64) *SubAccBlvtEnableService {
+func (s *SubAccountBlvtEnableService) RecvWindow(recvWindow int64) *SubAccountBlvtEnableService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccBlvtEnableService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccBlvtEnableSvcRsp, err error) {
+func (s *SubAccountBlvtEnableService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountBlvtEnableServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodPost,
 		endpoint: "/sapi/v1/sub-account/blvt/enable",
@@ -2117,7 +2117,7 @@ func (s *SubAccBlvtEnableService) Do(ctx context.Context, opts ...RequestOption)
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccBlvtEnableSvcRsp)
+	res = new(SubAccountBlvtEnableServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -2127,36 +2127,36 @@ func (s *SubAccBlvtEnableService) Do(ctx context.Context, opts ...RequestOption)
 }
 
 // query sub-account api ip restriction
-type SubAccApiIpRestrictionService struct {
+type SubAccountApiIpRestrictionService struct {
 	c                *Client
 	email            string // sub-account email
 	subAccountApiKey string
 	recvWindow       *int64
 }
 
-type SubAccApiIpRestrictSvcRsp struct {
+type SubAccountApiIpRestrictServiceResponse struct {
 	IpRestrict string   `json:"ipRestrict"`
 	IpList     []string `json:"ipList"`
 	UpdateTime int64    `json:"updateTime"`
 	ApiKey     string   `json:"apiKey"`
 }
 
-func (s *SubAccApiIpRestrictionService) Email(email string) *SubAccApiIpRestrictionService {
+func (s *SubAccountApiIpRestrictionService) Email(email string) *SubAccountApiIpRestrictionService {
 	s.email = email
 	return s
 }
 
-func (s *SubAccApiIpRestrictionService) SubAccountApiKey(subAccountApiKey string) *SubAccApiIpRestrictionService {
+func (s *SubAccountApiIpRestrictionService) SubAccountApiKey(subAccountApiKey string) *SubAccountApiIpRestrictionService {
 	s.subAccountApiKey = subAccountApiKey
 	return s
 }
 
-func (s *SubAccApiIpRestrictionService) RecvWindow(recvWindow int64) *SubAccApiIpRestrictionService {
+func (s *SubAccountApiIpRestrictionService) RecvWindow(recvWindow int64) *SubAccountApiIpRestrictionService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccApiIpRestrictionService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccApiIpRestrictSvcRsp, err error) {
+func (s *SubAccountApiIpRestrictionService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountApiIpRestrictServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/sub-account/subAccountApi/ipRestriction",
@@ -2172,7 +2172,7 @@ func (s *SubAccApiIpRestrictionService) Do(ctx context.Context, opts ...RequestO
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccApiIpRestrictSvcRsp)
+	res = new(SubAccountApiIpRestrictServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -2182,7 +2182,7 @@ func (s *SubAccApiIpRestrictionService) Do(ctx context.Context, opts ...RequestO
 }
 
 // delete sub-account ip restriction
-type SubAccApiDelIpRestrictionService struct {
+type SubAccountApiDeleteIpRestrictionService struct {
 	c                *Client
 	email            string // sub-account email
 	subAccountApiKey string
@@ -2190,34 +2190,34 @@ type SubAccApiDelIpRestrictionService struct {
 	recvWindow       *int64
 }
 
-type SubAccApiDelIpRestrictSvcRsp struct {
+type SubAccountApiDeleteIpRestrictServiceResponse struct {
 	IpRestrict string   `json:"ipRestrict"`
 	IpList     []string `json:"ipList"`
 	UpdateTime int64    `json:"updateTime"`
 	ApiKey     string   `json:"apiKey"`
 }
 
-func (s *SubAccApiDelIpRestrictionService) Email(email string) *SubAccApiDelIpRestrictionService {
+func (s *SubAccountApiDeleteIpRestrictionService) Email(email string) *SubAccountApiDeleteIpRestrictionService {
 	s.email = email
 	return s
 }
 
-func (s *SubAccApiDelIpRestrictionService) SubAccountApiKey(subAccountApiKey string) *SubAccApiDelIpRestrictionService {
+func (s *SubAccountApiDeleteIpRestrictionService) SubAccountApiKey(subAccountApiKey string) *SubAccountApiDeleteIpRestrictionService {
 	s.subAccountApiKey = subAccountApiKey
 	return s
 }
 
-func (s *SubAccApiDelIpRestrictionService) IpAddress(ipAddress string) *SubAccApiDelIpRestrictionService {
+func (s *SubAccountApiDeleteIpRestrictionService) IpAddress(ipAddress string) *SubAccountApiDeleteIpRestrictionService {
 	s.ipAddress = &ipAddress
 	return s
 }
 
-func (s *SubAccApiDelIpRestrictionService) RecvWindow(recvWindow int64) *SubAccApiDelIpRestrictionService {
+func (s *SubAccountApiDeleteIpRestrictionService) RecvWindow(recvWindow int64) *SubAccountApiDeleteIpRestrictionService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccApiDelIpRestrictionService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccApiDelIpRestrictSvcRsp, err error) {
+func (s *SubAccountApiDeleteIpRestrictionService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountApiDeleteIpRestrictServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodDelete,
 		endpoint: "/sapi/v1/sub-account/subAccountApi/ipRestriction/ipList",
@@ -2236,7 +2236,7 @@ func (s *SubAccApiDelIpRestrictionService) Do(ctx context.Context, opts ...Reque
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccApiDelIpRestrictSvcRsp)
+	res = new(SubAccountApiDeleteIpRestrictServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -2246,7 +2246,7 @@ func (s *SubAccApiDelIpRestrictionService) Do(ctx context.Context, opts ...Reque
 }
 
 // add sub-account ip restriction
-type SubAccApiAddIpRestrictionService struct {
+type SubAccountApiAddIpRestrictionService struct {
 	c                *Client
 	email            string // sub-account email
 	subAccountApiKey string
@@ -2255,39 +2255,39 @@ type SubAccApiAddIpRestrictionService struct {
 	recvWindow       *int64
 }
 
-type SubAccApiAddIpRestrictSvcRsp struct {
+type SubAccountApiAddIpRestrictServiceResponse struct {
 	IpRestrict string   `json:"ipRestrict"`
 	IpList     []string `json:"ipList"`
 	UpdateTime int64    `json:"updateTime"`
 	ApiKey     string   `json:"apiKey"`
 }
 
-func (s *SubAccApiAddIpRestrictionService) Email(email string) *SubAccApiAddIpRestrictionService {
+func (s *SubAccountApiAddIpRestrictionService) Email(email string) *SubAccountApiAddIpRestrictionService {
 	s.email = email
 	return s
 }
 
-func (s *SubAccApiAddIpRestrictionService) SubAccountApiKey(subAccountApiKey string) *SubAccApiAddIpRestrictionService {
+func (s *SubAccountApiAddIpRestrictionService) SubAccountApiKey(subAccountApiKey string) *SubAccountApiAddIpRestrictionService {
 	s.subAccountApiKey = subAccountApiKey
 	return s
 }
 
-func (s *SubAccApiAddIpRestrictionService) Status(status string) *SubAccApiAddIpRestrictionService {
+func (s *SubAccountApiAddIpRestrictionService) Status(status string) *SubAccountApiAddIpRestrictionService {
 	s.status = status
 	return s
 }
 
-func (s *SubAccApiAddIpRestrictionService) IpAddress(ipAddress string) *SubAccApiAddIpRestrictionService {
+func (s *SubAccountApiAddIpRestrictionService) IpAddress(ipAddress string) *SubAccountApiAddIpRestrictionService {
 	s.ipAddress = &ipAddress
 	return s
 }
 
-func (s *SubAccApiAddIpRestrictionService) RecvWindow(recvWindow int64) *SubAccApiAddIpRestrictionService {
+func (s *SubAccountApiAddIpRestrictionService) RecvWindow(recvWindow int64) *SubAccountApiAddIpRestrictionService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccApiAddIpRestrictionService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccApiAddIpRestrictSvcRsp, err error) {
+func (s *SubAccountApiAddIpRestrictionService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountApiAddIpRestrictServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodPost,
 		endpoint: "/sapi/v1/sub-account/subAccountApi/ipRestriction",
@@ -2307,7 +2307,7 @@ func (s *SubAccApiAddIpRestrictionService) Do(ctx context.Context, opts ...Reque
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccApiAddIpRestrictSvcRsp)
+	res = new(SubAccountApiAddIpRestrictServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -2316,7 +2316,7 @@ func (s *SubAccApiAddIpRestrictionService) Do(ctx context.Context, opts ...Reque
 	return res, nil
 }
 
-type MngSubAccWithdrawService struct {
+type ManagedSubAccountWithdrawService struct {
 	c            *Client
 	fromEmail    string
 	asset        string
@@ -2325,36 +2325,36 @@ type MngSubAccWithdrawService struct {
 	recvWindow   *int64
 }
 
-type MngSubAccWithdrawSvcRsp struct {
+type ManagedSubAccountWithdrawServiceResponse struct {
 	TranId int64 `json:"tranId"`
 }
 
-func (s *MngSubAccWithdrawService) FromEmail(fromEmail string) *MngSubAccWithdrawService {
+func (s *ManagedSubAccountWithdrawService) FromEmail(fromEmail string) *ManagedSubAccountWithdrawService {
 	s.fromEmail = fromEmail
 	return s
 }
 
-func (s *MngSubAccWithdrawService) Asset(asset string) *MngSubAccWithdrawService {
+func (s *ManagedSubAccountWithdrawService) Asset(asset string) *ManagedSubAccountWithdrawService {
 	s.asset = asset
 	return s
 }
 
-func (s *MngSubAccWithdrawService) Amount(amount string) *MngSubAccWithdrawService {
+func (s *ManagedSubAccountWithdrawService) Amount(amount string) *ManagedSubAccountWithdrawService {
 	s.amount = amount
 	return s
 }
 
-func (s *MngSubAccWithdrawService) TransferDate(transferDate int64) *MngSubAccWithdrawService {
+func (s *ManagedSubAccountWithdrawService) TransferDate(transferDate int64) *ManagedSubAccountWithdrawService {
 	s.transferDate = &transferDate
 	return s
 }
 
-func (s *MngSubAccWithdrawService) RecvWindow(recvWindow int64) *MngSubAccWithdrawService {
+func (s *ManagedSubAccountWithdrawService) RecvWindow(recvWindow int64) *ManagedSubAccountWithdrawService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *MngSubAccWithdrawService) Do(ctx context.Context, opts ...RequestOption) (res *MngSubAccWithdrawSvcRsp, err error) {
+func (s *ManagedSubAccountWithdrawService) Do(ctx context.Context, opts ...RequestOption) (res *ManagedSubAccountWithdrawServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodPost,
 		endpoint: "/sapi/v1/managed-subaccount/withdraw",
@@ -2374,7 +2374,7 @@ func (s *MngSubAccWithdrawService) Do(ctx context.Context, opts ...RequestOption
 	if err != nil {
 		return nil, err
 	}
-	res = new(MngSubAccWithdrawSvcRsp)
+	res = new(ManagedSubAccountWithdrawServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -2384,7 +2384,7 @@ func (s *MngSubAccWithdrawService) Do(ctx context.Context, opts ...RequestOption
 }
 
 // Query asset snapshot of managed-sub account
-type MngSubAccSnapshotService struct {
+type ManagedSubAccountSnapshotService struct {
 	c          *Client
 	email      string
 	accType    string // SPOT (spot), MARGIN (full position), FUTURES (U-based contract)
@@ -2394,7 +2394,7 @@ type MngSubAccSnapshotService struct {
 	recvWindow *int64
 }
 
-type MngSubAccSnapshotSvcRsp struct {
+type ManagedSubAccountSnapshotServiceResponse struct {
 	Code        int64         `json:"code"`
 	Msg         string        `json:"msg"`
 	SnapshotVos []*SnapshotVo `json:"snapshotVos"`
@@ -2413,8 +2413,8 @@ type SnapshotVoData struct {
 	TotalLiabilityOfBtc string                 `json:"totalLiabilityOfBtc"` // set while SnapshotVo.type=margin
 	TotalNetAssetOfBtc  string                 `json:"totalNetAssetOfBtc"`  // set while SnapshotVo.type=margin
 	UserAssets          []*MarginUserAsset     `json:"userAssets"`          // set while SnapshotVo.type=margin
-	Assets              []*FuturesAsset        `json:"assets"`              // set while SnapshotVo.type=futures
-	Position            []*FuturesPosition     `json:"position"`            // set while SnapshotVo.type=futures
+	Assets              []*FuturesUserAsset    `json:"assets"`              // set while SnapshotVo.type=futures
+	Position            []*FuturesUserPosition `json:"position"`            // set while SnapshotVo.type=futures
 }
 
 type SnapShotSpotBalance struct {
@@ -2432,13 +2432,13 @@ type MarginUserAsset struct {
 	NetAsset string `json:"netAsset"`
 }
 
-type FuturesAsset struct {
+type FuturesUserAsset struct {
 	Asset         string `json:"asset"`
 	MarginBalance string `json:"marginBalance"`
 	WalletBalance string `json:"walletBalance"`
 }
 
-type FuturesPosition struct {
+type FuturesUserPosition struct {
 	EntryPrice       string `json:"entryPrice"`
 	MarkPrice        string `json:"markPrice"`
 	PositionAmt      string `json:"positionAmt"`
@@ -2446,37 +2446,37 @@ type FuturesPosition struct {
 	UnRealizedProfit string `json:"unRealizedProfit"`
 }
 
-func (s *MngSubAccSnapshotService) Email(email string) *MngSubAccSnapshotService {
+func (s *ManagedSubAccountSnapshotService) Email(email string) *ManagedSubAccountSnapshotService {
 	s.email = email
 	return s
 }
 
-func (s *MngSubAccSnapshotService) AccType(accType string) *MngSubAccSnapshotService {
+func (s *ManagedSubAccountSnapshotService) AccType(accType string) *ManagedSubAccountSnapshotService {
 	s.accType = accType
 	return s
 }
 
-func (s *MngSubAccSnapshotService) StartTime(startTime int64) *MngSubAccSnapshotService {
+func (s *ManagedSubAccountSnapshotService) StartTime(startTime int64) *ManagedSubAccountSnapshotService {
 	s.startTime = &startTime
 	return s
 }
 
-func (s *MngSubAccSnapshotService) EndTime(endTime int64) *MngSubAccSnapshotService {
+func (s *ManagedSubAccountSnapshotService) EndTime(endTime int64) *ManagedSubAccountSnapshotService {
 	s.endTime = &endTime
 	return s
 }
 
-func (s *MngSubAccSnapshotService) Limit(limit int32) *MngSubAccSnapshotService {
+func (s *ManagedSubAccountSnapshotService) Limit(limit int32) *ManagedSubAccountSnapshotService {
 	s.limit = &limit
 	return s
 }
 
-func (s *MngSubAccSnapshotService) RecvWindow(recvWindow int64) *MngSubAccSnapshotService {
+func (s *ManagedSubAccountSnapshotService) RecvWindow(recvWindow int64) *ManagedSubAccountSnapshotService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *MngSubAccSnapshotService) Do(ctx context.Context, opts ...RequestOption) (res *MngSubAccSnapshotSvcRsp, err error) {
+func (s *ManagedSubAccountSnapshotService) Do(ctx context.Context, opts ...RequestOption) (res *ManagedSubAccountSnapshotServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/managed-subaccount/accountSnapshot",
@@ -2501,7 +2501,7 @@ func (s *MngSubAccSnapshotService) Do(ctx context.Context, opts ...RequestOption
 	if err != nil {
 		return nil, err
 	}
-	res = new(MngSubAccSnapshotSvcRsp)
+	res = new(ManagedSubAccountSnapshotServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -2511,7 +2511,7 @@ func (s *MngSubAccSnapshotService) Do(ctx context.Context, opts ...RequestOption
 }
 
 // managed-sub account query transfer log, this interface is for investor
-type MngSubAccQryTrfLogForInvestorService struct {
+type ManagedSubAccountQueryTransferLogForInvestorService struct {
 	c                           *Client
 	email                       string
 	startTime                   int64
@@ -2522,12 +2522,12 @@ type MngSubAccQryTrfLogForInvestorService struct {
 	transferFunctionAccountType *string // SPOT/MARGIN/ISOLATED_MARGIN/USDT_FUTURE/COIN_FUTURE
 }
 
-type MngSubAccQryTrfLogForInvestorSvcRsp struct {
-	ManagerSubTransferHistoryVos []*MgnSubTrfHisVo `json:"managerSubTransferHistoryVos"`
-	Count                        int32             `json:"count"`
+type ManagedSubAccountQueryTransferLogForInvestorServiceResponse struct {
+	ManagerSubTransferHistoryVos []*ManagedSubTransferHistoryVo `json:"managerSubTransferHistoryVos"`
+	Count                        int32                          `json:"count"`
 }
 
-type MgnSubTrfHisVo struct {
+type ManagedSubTransferHistoryVo struct {
 	FromEmail       string `json:"fromEmail"`
 	FromAccountType string `json:"fromAccountType"`
 	ToEmail         string `json:"toEmail"`
@@ -2540,42 +2540,42 @@ type MgnSubTrfHisVo struct {
 	TranId          int64  `json:"tranId"`
 }
 
-func (s *MngSubAccQryTrfLogForInvestorService) Email(email string) *MngSubAccQryTrfLogForInvestorService {
+func (s *ManagedSubAccountQueryTransferLogForInvestorService) Email(email string) *ManagedSubAccountQueryTransferLogForInvestorService {
 	s.email = email
 	return s
 }
 
-func (s *MngSubAccQryTrfLogForInvestorService) StartTime(startTime int64) *MngSubAccQryTrfLogForInvestorService {
+func (s *ManagedSubAccountQueryTransferLogForInvestorService) StartTime(startTime int64) *ManagedSubAccountQueryTransferLogForInvestorService {
 	s.startTime = startTime
 	return s
 }
 
-func (s *MngSubAccQryTrfLogForInvestorService) EndTime(endTime int64) *MngSubAccQryTrfLogForInvestorService {
+func (s *ManagedSubAccountQueryTransferLogForInvestorService) EndTime(endTime int64) *ManagedSubAccountQueryTransferLogForInvestorService {
 	s.endTime = endTime
 	return s
 }
 
-func (s *MngSubAccQryTrfLogForInvestorService) Page(page int32) *MngSubAccQryTrfLogForInvestorService {
+func (s *ManagedSubAccountQueryTransferLogForInvestorService) Page(page int32) *ManagedSubAccountQueryTransferLogForInvestorService {
 	s.page = page
 	return s
 }
 
-func (s *MngSubAccQryTrfLogForInvestorService) Limit(limit int32) *MngSubAccQryTrfLogForInvestorService {
+func (s *ManagedSubAccountQueryTransferLogForInvestorService) Limit(limit int32) *ManagedSubAccountQueryTransferLogForInvestorService {
 	s.limit = limit
 	return s
 }
 
-func (s *MngSubAccQryTrfLogForInvestorService) Transfers(transfers string) *MngSubAccQryTrfLogForInvestorService {
+func (s *ManagedSubAccountQueryTransferLogForInvestorService) Transfers(transfers string) *ManagedSubAccountQueryTransferLogForInvestorService {
 	s.transfers = &transfers
 	return s
 }
 
-func (s *MngSubAccQryTrfLogForInvestorService) TransferFunctionAccountType(transferFunctionAccountType string) *MngSubAccQryTrfLogForInvestorService {
+func (s *ManagedSubAccountQueryTransferLogForInvestorService) TransferFunctionAccountType(transferFunctionAccountType string) *ManagedSubAccountQueryTransferLogForInvestorService {
 	s.transferFunctionAccountType = &transferFunctionAccountType
 	return s
 }
 
-func (s *MngSubAccQryTrfLogForInvestorService) Do(ctx context.Context, opts ...RequestOption) (res *MngSubAccQryTrfLogForInvestorSvcRsp, err error) {
+func (s *ManagedSubAccountQueryTransferLogForInvestorService) Do(ctx context.Context, opts ...RequestOption) (res *ManagedSubAccountQueryTransferLogForInvestorServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/managed-subaccount/queryTransLogForInvestor",
@@ -2597,7 +2597,7 @@ func (s *MngSubAccQryTrfLogForInvestorService) Do(ctx context.Context, opts ...R
 	if err != nil {
 		return nil, err
 	}
-	res = new(MngSubAccQryTrfLogForInvestorSvcRsp)
+	res = new(ManagedSubAccountQueryTransferLogForInvestorServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -2606,7 +2606,7 @@ func (s *MngSubAccQryTrfLogForInvestorService) Do(ctx context.Context, opts ...R
 	return res, nil
 }
 
-type MngSubAccQryTrfLogForTradeParentService struct {
+type ManagedSubAccountQueryTransferLogForTradeParentService struct {
 	c                           *Client
 	email                       string
 	startTime                   int64
@@ -2617,47 +2617,47 @@ type MngSubAccQryTrfLogForTradeParentService struct {
 	transferFunctionAccountType *string // SPOT/MARGIN/ISOLATED_MARGIN/USDT_FUTURE/COIN_FUTURE
 }
 
-type MngSubAccQryTrfLogForTradeParentSvcRsp struct {
-	ManagerSubTransferHistoryVos []*MgnSubTrfHisVo `json:"managerSubTransferHistoryVos"`
-	Count                        int32             `json:"count"`
+type ManagedSubAccountQueryTransferLogForTradeParentServiceResponse struct {
+	ManagerSubTransferHistoryVos []*ManagedSubTransferHistoryVo `json:"managerSubTransferHistoryVos"`
+	Count                        int32                          `json:"count"`
 }
 
-func (s *MngSubAccQryTrfLogForTradeParentService) Email(email string) *MngSubAccQryTrfLogForTradeParentService {
+func (s *ManagedSubAccountQueryTransferLogForTradeParentService) Email(email string) *ManagedSubAccountQueryTransferLogForTradeParentService {
 	s.email = email
 	return s
 }
 
-func (s *MngSubAccQryTrfLogForTradeParentService) StartTime(startTime int64) *MngSubAccQryTrfLogForTradeParentService {
+func (s *ManagedSubAccountQueryTransferLogForTradeParentService) StartTime(startTime int64) *ManagedSubAccountQueryTransferLogForTradeParentService {
 	s.startTime = startTime
 	return s
 }
 
-func (s *MngSubAccQryTrfLogForTradeParentService) EndTime(endTime int64) *MngSubAccQryTrfLogForTradeParentService {
+func (s *ManagedSubAccountQueryTransferLogForTradeParentService) EndTime(endTime int64) *ManagedSubAccountQueryTransferLogForTradeParentService {
 	s.endTime = endTime
 	return s
 }
 
-func (s *MngSubAccQryTrfLogForTradeParentService) Page(page int32) *MngSubAccQryTrfLogForTradeParentService {
+func (s *ManagedSubAccountQueryTransferLogForTradeParentService) Page(page int32) *ManagedSubAccountQueryTransferLogForTradeParentService {
 	s.page = page
 	return s
 }
 
-func (s *MngSubAccQryTrfLogForTradeParentService) Limit(limit int32) *MngSubAccQryTrfLogForTradeParentService {
+func (s *ManagedSubAccountQueryTransferLogForTradeParentService) Limit(limit int32) *ManagedSubAccountQueryTransferLogForTradeParentService {
 	s.limit = limit
 	return s
 }
 
-func (s *MngSubAccQryTrfLogForTradeParentService) Transfers(transfers string) *MngSubAccQryTrfLogForTradeParentService {
+func (s *ManagedSubAccountQueryTransferLogForTradeParentService) Transfers(transfers string) *ManagedSubAccountQueryTransferLogForTradeParentService {
 	s.transfers = &transfers
 	return s
 }
 
-func (s *MngSubAccQryTrfLogForTradeParentService) TransferFunctionAccountType(transferFunctionAccountType string) *MngSubAccQryTrfLogForTradeParentService {
+func (s *ManagedSubAccountQueryTransferLogForTradeParentService) TransferFunctionAccountType(transferFunctionAccountType string) *ManagedSubAccountQueryTransferLogForTradeParentService {
 	s.transferFunctionAccountType = &transferFunctionAccountType
 	return s
 }
 
-func (s *MngSubAccQryTrfLogForTradeParentService) Do(ctx context.Context, opts ...RequestOption) (res *MngSubAccQryTrfLogForTradeParentSvcRsp, err error) {
+func (s *ManagedSubAccountQueryTransferLogForTradeParentService) Do(ctx context.Context, opts ...RequestOption) (res *ManagedSubAccountQueryTransferLogForTradeParentServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/managed-subaccount/queryTransLogForTradeParent",
@@ -2679,7 +2679,7 @@ func (s *MngSubAccQryTrfLogForTradeParentService) Do(ctx context.Context, opts .
 	if err != nil {
 		return nil, err
 	}
-	res = new(MngSubAccQryTrfLogForTradeParentSvcRsp)
+	res = new(ManagedSubAccountQueryTransferLogForTradeParentServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -2689,47 +2689,47 @@ func (s *MngSubAccQryTrfLogForTradeParentService) Do(ctx context.Context, opts .
 }
 
 // Investor account inquiry custody account futures assets
-type MngSubAccQryFuturesAssetService struct {
+type ManagedSubAccountQueryFuturesAssetService struct {
 	c     *Client
 	email string
 }
 
-type MngSubAccQryFuturesAssetSvcRsp struct {
-	Code        int32                 `json:"code"`
-	Message     string                `json:"message"`
-	SnapshotVos []*MgnSubFutAccSnapVo `json:"snapshotVos"`
+type ManagedSubAccountQueryFuturesAssetServiceResponse struct {
+	Code        int32                             `json:"code"`
+	Message     string                            `json:"message"`
+	SnapshotVos []*ManagedSubFuturesAccountSnapVo `json:"snapshotVos"`
 }
 
-type MgnSubFutAccSnapVo struct {
-	Type       string                  `json:"type"`
-	UpdateTime int64                   `json:"updateTime"`
-	Data       *MgnSubFutAccSnapVoData `json:"data"`
+type ManagedSubFuturesAccountSnapVo struct {
+	Type       string                              `json:"type"`
+	UpdateTime int64                               `json:"updateTime"`
+	Data       *ManagedSubFuturesAccountSnapVoData `json:"data"`
 }
 
-type MgnSubFutAccSnapVoData struct {
-	Assets   []*MgnSubFutAccSnapVoDataAsset `json:"assets"`
-	Position []*MgnSubFutAccSnapVoDataPos   `json:"position"`
+type ManagedSubFuturesAccountSnapVoData struct {
+	Assets   []*ManagedSubFuturesAccountSnapVoDataAsset    `json:"assets"`
+	Position []*ManagedSubFuturesAccountSnapVoDataPosition `json:"position"`
 }
 
-type MgnSubFutAccSnapVoDataAsset struct {
+type ManagedSubFuturesAccountSnapVoDataAsset struct {
 	Asset         string `json:"asset"`
 	MarginBalance string `json:"marginBalance"`
 	WalletBalance string `json:"walletBalance"`
 }
 
-type MgnSubFutAccSnapVoDataPos struct {
+type ManagedSubFuturesAccountSnapVoDataPosition struct {
 	Symbol      string `json:"symbol"`
 	EntryPrice  string `json:"entryPrice"`
 	MarkPrice   string `json:"markPrice"`
 	PositionAmt string `json:"positionAmt"`
 }
 
-func (s *MngSubAccQryFuturesAssetService) Email(email string) *MngSubAccQryFuturesAssetService {
+func (s *ManagedSubAccountQueryFuturesAssetService) Email(email string) *ManagedSubAccountQueryFuturesAssetService {
 	s.email = email
 	return s
 }
 
-func (s *MngSubAccQryFuturesAssetService) Do(ctx context.Context, opts ...RequestOption) (res *MngSubAccQryFuturesAssetSvcRsp, err error) {
+func (s *ManagedSubAccountQueryFuturesAssetService) Do(ctx context.Context, opts ...RequestOption) (res *ManagedSubAccountQueryFuturesAssetServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/managed-subaccount/fetch-future-asset",
@@ -2741,7 +2741,7 @@ func (s *MngSubAccQryFuturesAssetService) Do(ctx context.Context, opts ...Reques
 	if err != nil {
 		return nil, err
 	}
-	res = new(MngSubAccQryFuturesAssetSvcRsp)
+	res = new(ManagedSubAccountQueryFuturesAssetServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -2751,20 +2751,20 @@ func (s *MngSubAccQryFuturesAssetService) Do(ctx context.Context, opts ...Reques
 }
 
 // Investor account inquiry for leveraged assets in custodial accounts
-type MngSubAccQryMarginAssetService struct {
+type ManagedSubAccountQueryMarginAssetService struct {
 	c     *Client
 	email string
 }
 
-type MngSubAccQryMgnAssetSvcRsp struct {
-	MarginLevel         string               `json:"marginLevel"`
-	TotalAssetOfBtc     string               `json:"totalAssetOfBtc"`
-	TotalLiabilityOfBtc string               `json:"totalLiabilityOfBtc"`
-	TotalNetAssetOfBtc  string               `json:"totalNetAssetOfBtc"`
-	UserAssets          []*MngSubAccMgnAsset `json:"userAssets"`
+type ManagedSubAccountQueryMarginAssetServiceResponse struct {
+	MarginLevel         string                          `json:"marginLevel"`
+	TotalAssetOfBtc     string                          `json:"totalAssetOfBtc"`
+	TotalLiabilityOfBtc string                          `json:"totalLiabilityOfBtc"`
+	TotalNetAssetOfBtc  string                          `json:"totalNetAssetOfBtc"`
+	UserAssets          []*ManagedSubAccountMarginAsset `json:"userAssets"`
 }
 
-type MngSubAccMgnAsset struct {
+type ManagedSubAccountMarginAsset struct {
 	Asset    string `json:"asset"`
 	Borrowed string `json:"borrowed"`
 	Free     string `json:"free"`
@@ -2773,12 +2773,12 @@ type MngSubAccMgnAsset struct {
 	NetAsset string `json:"netAsset"`
 }
 
-func (s *MngSubAccQryMarginAssetService) Email(email string) *MngSubAccQryMarginAssetService {
+func (s *ManagedSubAccountQueryMarginAssetService) Email(email string) *ManagedSubAccountQueryMarginAssetService {
 	s.email = email
 	return s
 }
 
-func (s *MngSubAccQryMarginAssetService) Do(ctx context.Context, opts ...RequestOption) (res *MngSubAccQryMgnAssetSvcRsp, err error) {
+func (s *ManagedSubAccountQueryMarginAssetService) Do(ctx context.Context, opts ...RequestOption) (res *ManagedSubAccountQueryMarginAssetServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/managed-subaccount/marginAsset",
@@ -2790,7 +2790,7 @@ func (s *MngSubAccQryMarginAssetService) Do(ctx context.Context, opts ...Request
 	if err != nil {
 		return nil, err
 	}
-	res = new(MngSubAccQryMgnAssetSvcRsp)
+	res = new(ManagedSubAccountQueryMarginAssetServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -2800,33 +2800,33 @@ func (s *MngSubAccQryMarginAssetService) Do(ctx context.Context, opts ...Request
 }
 
 // Query sub account assets, v4 interface.
-type SubAccAssetService struct {
+type SubAccountAssetService struct {
 	c          *Client
 	email      string
 	recvWindow *int64
 }
 
-type SubAccAssetSvcRsp struct {
-	Balances []*SubAccAssetBalance `json:"balances"`
+type SubAccountAssetServiceResponse struct {
+	Balances []*SubAccountAssetBalance `json:"balances"`
 }
 
-type SubAccAssetBalance struct {
+type SubAccountAssetBalance struct {
 	Asset  string `json:"asset"`
 	Free   string `json:"free"`
 	Locked string `json:"locked"`
 }
 
-func (s *SubAccAssetService) Email(email string) *SubAccAssetService {
+func (s *SubAccountAssetService) Email(email string) *SubAccountAssetService {
 	s.email = email
 	return s
 }
 
-func (s *SubAccAssetService) RecvWindow(recvWindow int64) *SubAccAssetService {
+func (s *SubAccountAssetService) RecvWindow(recvWindow int64) *SubAccountAssetService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccAssetService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccAssetSvcRsp, err error) {
+func (s *SubAccountAssetService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountAssetServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v4/sub-account/assets",
@@ -2841,7 +2841,7 @@ func (s *SubAccAssetService) Do(ctx context.Context, opts ...RequestOption) (res
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccAssetSvcRsp)
+	res = new(SubAccountAssetServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -2851,7 +2851,7 @@ func (s *SubAccAssetService) Do(ctx context.Context, opts ...RequestOption) (res
 }
 
 // Query the list of managed-accounts
-type MgnSubAccInfoService struct {
+type ManagedSubAccountInfoService struct {
 	c          *Client
 	email      string
 	page       *int32 // default 1
@@ -2859,12 +2859,12 @@ type MgnSubAccInfoService struct {
 	recvWindow *int64
 }
 
-type MgnSubAccInfoSvcRsp struct {
-	Total                    int32                  `json:"total"`
-	ManagerSubUserInfoVoList []*MgnSubAccUserInfoVo `json:"managerSubUserInfoVoList"`
+type ManagedSubAccountInfoServiceResponse struct {
+	Total                    int32                          `json:"total"`
+	ManagerSubUserInfoVoList []*ManagedSubAccountUserInfoVo `json:"managerSubUserInfoVoList"`
 }
 
-type MgnSubAccUserInfoVo struct {
+type ManagedSubAccountUserInfoVo struct {
 	RootUserId               int64  `json:"rootUserId"`
 	ManagersubUserId         int64  `json:"managersubUserId"`
 	BindParentUserId         int64  `json:"bindParentUserId"`
@@ -2878,27 +2878,27 @@ type MgnSubAccUserInfoVo struct {
 	IsSignedLVTRiskAgreement bool   `json:"isSignedLVTRiskAgreement"`
 }
 
-func (s *MgnSubAccInfoService) Email(email string) *MgnSubAccInfoService {
+func (s *ManagedSubAccountInfoService) Email(email string) *ManagedSubAccountInfoService {
 	s.email = email
 	return s
 }
 
-func (s *MgnSubAccInfoService) Page(page int32) *MgnSubAccInfoService {
+func (s *ManagedSubAccountInfoService) Page(page int32) *ManagedSubAccountInfoService {
 	s.page = &page
 	return s
 }
 
-func (s *MgnSubAccInfoService) Limit(limit int32) *MgnSubAccInfoService {
+func (s *ManagedSubAccountInfoService) Limit(limit int32) *ManagedSubAccountInfoService {
 	s.limit = &limit
 	return s
 }
 
-func (s *MgnSubAccInfoService) RecvWindow(recvWindow int64) *MgnSubAccInfoService {
+func (s *ManagedSubAccountInfoService) RecvWindow(recvWindow int64) *ManagedSubAccountInfoService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *MgnSubAccInfoService) Do(ctx context.Context, opts ...RequestOption) (res *MgnSubAccInfoSvcRsp, err error) {
+func (s *ManagedSubAccountInfoService) Do(ctx context.Context, opts ...RequestOption) (res *ManagedSubAccountInfoServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/managed-subaccount/info",
@@ -2919,7 +2919,7 @@ func (s *MgnSubAccInfoService) Do(ctx context.Context, opts ...RequestOption) (r
 	if err != nil {
 		return nil, err
 	}
-	res = new(MgnSubAccInfoSvcRsp)
+	res = new(ManagedSubAccountInfoServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -2929,13 +2929,13 @@ func (s *MgnSubAccInfoService) Do(ctx context.Context, opts ...RequestOption) (r
 }
 
 // Query sub account transaction volume statistics list
-type SubAccTxnStatsService struct {
+type SubAccountTransactionStatisticsService struct {
 	c          *Client
 	email      string
 	recvWindow *int64
 }
 
-type SubAccTxnStatsSvcRsp struct {
+type SubAccountTransactionStatisticServiceResponse struct {
 	Recent30BtcTotal         string         `json:"recent30BtcTotal"`
 	Recent30BtcFuturesTotal  string         `json:"recent30BtcFuturesTotal"`
 	Recent30BtcMarginTotal   string         `json:"recent30BtcMarginTotal"`
@@ -2956,17 +2956,17 @@ type TradeInfoVo struct {
 	Date        int64   `json:"date"`
 }
 
-func (s *SubAccTxnStatsService) Email(email string) *SubAccTxnStatsService {
+func (s *SubAccountTransactionStatisticsService) Email(email string) *SubAccountTransactionStatisticsService {
 	s.email = email
 	return s
 }
 
-func (s *SubAccTxnStatsService) RecvWindow(recvWindow int64) *SubAccTxnStatsService {
+func (s *SubAccountTransactionStatisticsService) RecvWindow(recvWindow int64) *SubAccountTransactionStatisticsService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccTxnStatsService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccTxnStatsSvcRsp, err error) {
+func (s *SubAccountTransactionStatisticsService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountTransactionStatisticServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/sub-account/transaction-statistics",
@@ -2981,7 +2981,7 @@ func (s *SubAccTxnStatsService) Do(ctx context.Context, opts ...RequestOption) (
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccTxnStatsSvcRsp)
+	res = new(SubAccountTransactionStatisticServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -2991,7 +2991,7 @@ func (s *SubAccTxnStatsService) Do(ctx context.Context, opts ...RequestOption) (
 }
 
 // Obtain the recharge address for the custody account
-type MgnSubAccDepositAddrService struct {
+type ManagedSubAccountDepositAddressService struct {
 	c          *Client
 	email      string
 	coin       string
@@ -2999,34 +2999,34 @@ type MgnSubAccDepositAddrService struct {
 	recvWindow *int64
 }
 
-type MgnSubAccDepositAddrSvcRsp struct {
+type ManagedSubAccountDepositAddressServiceResponse struct {
 	Coin    string `json:"coin"`
 	Address string `json:"address"`
 	Tag     string `json:"tag"`
 	Url     string `json:"url"`
 }
 
-func (s *MgnSubAccDepositAddrService) Email(email string) *MgnSubAccDepositAddrService {
+func (s *ManagedSubAccountDepositAddressService) Email(email string) *ManagedSubAccountDepositAddressService {
 	s.email = email
 	return s
 }
 
-func (s *MgnSubAccDepositAddrService) Coin(coin string) *MgnSubAccDepositAddrService {
+func (s *ManagedSubAccountDepositAddressService) Coin(coin string) *ManagedSubAccountDepositAddressService {
 	s.coin = coin
 	return s
 }
 
-func (s *MgnSubAccDepositAddrService) Network(network string) *MgnSubAccDepositAddrService {
+func (s *ManagedSubAccountDepositAddressService) Network(network string) *ManagedSubAccountDepositAddressService {
 	s.network = &network
 	return s
 }
 
-func (s *MgnSubAccDepositAddrService) RecvWindow(recvWindow int64) *MgnSubAccDepositAddrService {
+func (s *ManagedSubAccountDepositAddressService) RecvWindow(recvWindow int64) *ManagedSubAccountDepositAddressService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *MgnSubAccDepositAddrService) Do(ctx context.Context, opts ...RequestOption) (res *MgnSubAccDepositAddrSvcRsp, err error) {
+func (s *ManagedSubAccountDepositAddressService) Do(ctx context.Context, opts ...RequestOption) (res *ManagedSubAccountDepositAddressServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/managed-subaccount/deposit/address",
@@ -3045,7 +3045,7 @@ func (s *MgnSubAccDepositAddrService) Do(ctx context.Context, opts ...RequestOpt
 	if err != nil {
 		return nil, err
 	}
-	res = new(MgnSubAccDepositAddrSvcRsp)
+	res = new(ManagedSubAccountDepositAddressServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -3054,28 +3054,28 @@ func (s *MgnSubAccDepositAddrService) Do(ctx context.Context, opts ...RequestOpt
 	return res, nil
 }
 
-type SubAccOptionsEnableService struct {
+type SubAccountOptionsEnableService struct {
 	c          *Client
 	email      string
 	recvWindow *int64
 }
 
-type SubAccOptionsEnableSvcRsp struct {
+type SubAccountOptionsEnableServiceResponse struct {
 	Email             string `json:"email"`
 	IsEOptionsEnabled bool   `json:"isEOptionsEnabled"`
 }
 
-func (s *SubAccOptionsEnableService) Email(email string) *SubAccOptionsEnableService {
+func (s *SubAccountOptionsEnableService) Email(email string) *SubAccountOptionsEnableService {
 	s.email = email
 	return s
 }
 
-func (s *SubAccOptionsEnableService) RecvWindow(recvWindow int64) *SubAccOptionsEnableService {
+func (s *SubAccountOptionsEnableService) RecvWindow(recvWindow int64) *SubAccountOptionsEnableService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *SubAccOptionsEnableService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccOptionsEnableSvcRsp, err error) {
+func (s *SubAccountOptionsEnableService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountOptionsEnableServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodPost,
 		endpoint: "/sapi/v1/sub-account/eoptions/enable",
@@ -3090,7 +3090,7 @@ func (s *SubAccOptionsEnableService) Do(ctx context.Context, opts ...RequestOpti
 	if err != nil {
 		return nil, err
 	}
-	res = new(SubAccOptionsEnableSvcRsp)
+	res = new(SubAccountOptionsEnableServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -3100,7 +3100,7 @@ func (s *SubAccOptionsEnableService) Do(ctx context.Context, opts ...RequestOpti
 }
 
 // Query transfer records of managed-sub accounts
-type MgnSubAccQryTrfLogService struct {
+type ManagedSubAccountQueryTransferLogService struct {
 	c                           *Client
 	startTime                   int64
 	endTime                     int64 // End time (start time end time interval cannot exceed six months)
@@ -3111,47 +3111,47 @@ type MgnSubAccQryTrfLogService struct {
 	recvWindow                  *int64
 }
 
-type MgnSubAccQryTrfLogSvcRsp struct {
-	ManagerSubTransferHistoryVos []*MgnSubTrfHisVo `json:"managerSubTransferHistoryVos"`
-	Count                        int32             `json:"count"`
+type ManagedSubAccountQueryTransferLogServiceResponse struct {
+	ManagerSubTransferHistoryVos []*ManagedSubTransferHistoryVo `json:"managerSubTransferHistoryVos"`
+	Count                        int32                          `json:"count"`
 }
 
-func (s *MgnSubAccQryTrfLogService) StartTime(startTime int64) *MgnSubAccQryTrfLogService {
+func (s *ManagedSubAccountQueryTransferLogService) StartTime(startTime int64) *ManagedSubAccountQueryTransferLogService {
 	s.startTime = startTime
 	return s
 }
 
-func (s *MgnSubAccQryTrfLogService) EndTime(endTime int64) *MgnSubAccQryTrfLogService {
+func (s *ManagedSubAccountQueryTransferLogService) EndTime(endTime int64) *ManagedSubAccountQueryTransferLogService {
 	s.endTime = endTime
 	return s
 }
 
-func (s *MgnSubAccQryTrfLogService) Page(page int32) *MgnSubAccQryTrfLogService {
+func (s *ManagedSubAccountQueryTransferLogService) Page(page int32) *ManagedSubAccountQueryTransferLogService {
 	s.page = page
 	return s
 }
 
-func (s *MgnSubAccQryTrfLogService) Limit(limit int32) *MgnSubAccQryTrfLogService {
+func (s *ManagedSubAccountQueryTransferLogService) Limit(limit int32) *ManagedSubAccountQueryTransferLogService {
 	s.limit = limit
 	return s
 }
 
-func (s *MgnSubAccQryTrfLogService) Transfers(transfers string) *MgnSubAccQryTrfLogService {
+func (s *ManagedSubAccountQueryTransferLogService) Transfers(transfers string) *ManagedSubAccountQueryTransferLogService {
 	s.transfers = &transfers
 	return s
 }
 
-func (s *MgnSubAccQryTrfLogService) TransferFunctionAccountType(transferFunctionAccountType string) *MgnSubAccQryTrfLogService {
+func (s *ManagedSubAccountQueryTransferLogService) TransferFunctionAccountType(transferFunctionAccountType string) *ManagedSubAccountQueryTransferLogService {
 	s.transferFunctionAccountType = &transferFunctionAccountType
 	return s
 }
 
-func (s *MgnSubAccQryTrfLogService) RecvWindow(recvWindow int64) *MgnSubAccQryTrfLogService {
+func (s *ManagedSubAccountQueryTransferLogService) RecvWindow(recvWindow int64) *ManagedSubAccountQueryTransferLogService {
 	s.recvWindow = &recvWindow
 	return s
 }
 
-func (s *MgnSubAccQryTrfLogService) Do(ctx context.Context, opts ...RequestOption) (res *MgnSubAccQryTrfLogSvcRsp, err error) {
+func (s *ManagedSubAccountQueryTransferLogService) Do(ctx context.Context, opts ...RequestOption) (res *ManagedSubAccountQueryTransferLogServiceResponse, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/managed-subaccount/query-trans-log",
@@ -3175,7 +3175,7 @@ func (s *MgnSubAccQryTrfLogService) Do(ctx context.Context, opts ...RequestOptio
 	if err != nil {
 		return nil, err
 	}
-	res = new(MgnSubAccQryTrfLogSvcRsp)
+	res = new(ManagedSubAccountQueryTransferLogServiceResponse)
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
