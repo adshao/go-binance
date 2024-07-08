@@ -30,7 +30,7 @@ func (s *ConstituentsService) Symbol(symbol string) *ConstituentsService {
 func (s *ConstituentsService) Do(ctx context.Context, opts ...RequestOption) (res *ConstituentsServiceRsp, err error) {
 	r := &request{
 		method:   http.MethodGet,
-		endpoint: "/futures/v1/assetIndex",
+		endpoint: "/fapi/v1/constituents",
 	}
 	r.setParam("symbol", s.symbol)
 

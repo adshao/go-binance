@@ -33,7 +33,7 @@ func (s *AssetIndexService) Symbol(symbol string) *AssetIndexService {
 func (s *AssetIndexService) Do(ctx context.Context, opts ...RequestOption) (res []*AssetIndex, err error) {
 	r := &request{
 		method:   http.MethodGet,
-		endpoint: "/futures/v1/assetIndex",
+		endpoint: "/fapi/v1/assetIndex",
 	}
 	if s.symbol != nil {
 		r.setParam("symbol", *s.symbol)
