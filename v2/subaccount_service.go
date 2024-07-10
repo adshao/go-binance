@@ -2,6 +2,7 @@ package binance
 
 import (
 	"context"
+	"net/http"
 )
 
 // TransferToSubAccountService transfer to subaccount
@@ -270,4 +271,53 @@ type SubAccount struct {
 	CreateTime                  uint64 `json:"createTime"`
 	IsManagedSubAccount         bool   `json:"isManagedSubAccount"`
 	IsAssetManagementSubAccount bool   `json:"isAssetManagementSubAccount"`
+}
+
+// CreateSubAccountService Create a Virtual Sub-account(For Master Account)
+// https://developers.binance.com/docs/sub_account/account-management/Create-a-Virtual-Sub-account
+type CreateSubAccountService struct {
+	c                *Client
+	subAccountString string
+}
+
+// SubAccountString set random string
+func (s *CreateSubAccountService) SubAccountString(subAccountString string) *CreateSubAccountService {
+	s.subAccountString = subAccountString
+	return s
+}
+
+func (s *CreateSubAccountService) createSubAccount(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: endpoint,
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"subAccountString": s.subAccountString,
+	}
+	r.setParams(m)
+	data, err = s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []byte{}, err
+	}
+	return data, nil
+}
+
+// Do send request
+func (s *CreateSubAccountService) Do(ctx context.Context, opts ...RequestOption) (res *CreateSubAccountResponse, err error) {
+	data, err := s.createSubAccount(ctx, "/sapi/v1/sub-account/virtualSubAccount", opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = &CreateSubAccountResponse{}
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// CreateSubAccountResponse Create a Virtual Sub-account response
+type CreateSubAccountResponse struct {
+	Email string `json:"email"`
 }
