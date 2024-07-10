@@ -987,6 +987,11 @@ func (c *Client) NewSubAccountListService() *SubAccountListService {
 	return &SubAccountListService{c: c}
 }
 
+// NewCreateSubAccountService Create a Virtual Sub-account(For Master Account)
+func (c *Client) NewCreateSubAccountService() *CreateSubAccountService {
+	return &CreateSubAccountService{c: c}
+}
+
 // NewGetUserAsset Get user assets, just for positive data
 func (c *Client) NewGetUserAsset() *GetUserAssetService {
 	return &GetUserAssetService{c: c}
