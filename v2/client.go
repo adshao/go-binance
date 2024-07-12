@@ -996,3 +996,38 @@ func (c *Client) NewCreateSubAccountService() *CreateSubAccountService {
 func (c *Client) NewGetUserAsset() *GetUserAssetService {
 	return &GetUserAssetService{c: c}
 }
+
+// NewCreateBrokerSubAccountService Create a Sub Account
+func (c *Client) NewCreateBrokerSubAccountService() *CreateBrokerSubAccountService {
+	return &CreateBrokerSubAccountService{c: c}
+}
+
+// NewEnableFuturesSubAccountService Create a Sub Account
+func (c *Client) NewEnableFuturesSubAccountService() *EnableFuturesBrokerSubAccountService {
+	return &EnableFuturesBrokerSubAccountService{c: c}
+}
+
+// NewCreateBrokerApiKeySubAccountService Create Api Key for Sub Account
+func (c *Client) NewCreateBrokerApiKeySubAccountService() *CreateBrokerApiKeySubAccountService {
+	return &CreateBrokerApiKeySubAccountService{c: c}
+}
+
+// NewDeleteBrokerSubAccountApiKeyService Delete Sub Account Api Key
+func (c *Client) NewDeleteBrokerSubAccountApiKeyService() *DeleteBrokerSubAccountApiKeyService {
+	return &DeleteBrokerSubAccountApiKeyService{c: c}
+}
+
+// NewBrokerSubAccountApiKeysService Query Sub Account Api Key
+func (c *Client) NewBrokerSubAccountApiKeysService() *BrokerSubAccountApiKeysService {
+	return &BrokerSubAccountApiKeysService{c: c}
+}
+
+// NewChangeBrokerSubAccountApiPermissionService Change Sub Account Api Permission
+func (c *Client) NewChangeBrokerSubAccountApiPermissionService() *ChangeBrokerSubAccountApiPermissionService {
+	return &ChangeBrokerSubAccountApiPermissionService{c: c}
+}
+
+// NewBrokerSubAccountService Query Sub Account
+func (c *Client) NewBrokerSubAccountService() *BrokerSubAccountService {
+	return &BrokerSubAccountService{c: c}
+}
