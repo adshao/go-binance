@@ -159,7 +159,12 @@ func WsDepthServe100Ms(symbol string, handler WsDepthHandler, errHandler ErrHand
 // WsDepthServe serve websocket depth handler with an arbitrary endpoint address
 func wsDepthServe(endpoint string, handler WsDepthHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	cfg := newWsConfig(endpoint)
-	wsHandler := func(message []byte) {
+	wsHandler := wsDepthHandlerWrapper(handler, errHandler)
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+func wsDepthHandlerWrapper(handler WsDepthHandler, errHandler ErrHandler) WsHandler {
+	return func(message []byte) {
 		j, err := newJSON(message)
 		if err != nil {
 			errHandler(err)
@@ -191,7 +196,6 @@ func wsDepthServe(endpoint string, handler WsDepthHandler, errHandler ErrHandler
 		}
 		handler(event)
 	}
-	return wsServe(cfg, wsHandler, errHandler)
 }
 
 // WsDepthEvent define websocket depth event
@@ -780,6 +784,33 @@ func WsAllBookTickerServe(handler WsBookTickerHandler, errHandler ErrHandler) (d
 	cfg := newWsConfig(endpoint)
 	wsHandler := func(message []byte) {
 		event := new(WsBookTickerEvent)
+		err := json.Unmarshal(message, &event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+type WsAvgPriceEvent struct {
+	Event         string `json:"e"`
+	EventTime     int64  `json:"E"`
+	Symbol        string `json:"s"`
+	Interval      string `json:"i"`
+	Price         string `json:"w"`
+	LastTradeTime int64  `json:"T"`
+}
+
+type WsAvgPriceHandler func(event *WsAvgPriceEvent)
+
+// WsAvgPriceServe serve websocket that pushes 1m average price for a specified symbol.
+func WsAvgPriceServe(symbol string, handler WsAvgPriceHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := fmt.Sprintf("%s/%s@avgPrice", getWsEndpoint(), strings.ToLower(symbol))
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		event := new(WsAvgPriceEvent)
 		err := json.Unmarshal(message, &event)
 		if err != nil {
 			errHandler(err)

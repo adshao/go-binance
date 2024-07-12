@@ -608,8 +608,12 @@ func wsDepthServe(symbol string, levels string, rate *time.Duration, handler WsD
 
 	endpoint := fmt.Sprintf("%s/%s@depth%s%s", getWsEndpoint(), strings.ToLower(symbol), levels, rateStr)
 	cfg := newWsConfig(endpoint)
+	wsHandler := wsDepthHandlerWrapper(handler, errHandler)
+	return wsServe(cfg, wsHandler, errHandler)
+}
 
-	wsHandler := func(message []byte) {
+func wsDepthHandlerWrapper(handler WsDepthHandler, errHandler ErrHandler) WsHandler {
+	return func(message []byte) {
 		j, err := newJSON(message)
 		if err != nil {
 			errHandler(err)
@@ -644,7 +648,6 @@ func wsDepthServe(symbol string, levels string, rate *time.Duration, handler WsD
 		}
 		handler(event)
 	}
-	return wsServe(cfg, wsHandler, errHandler)
 }
 
 // WsUserDataEvent define user data event
