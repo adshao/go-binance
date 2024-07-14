@@ -518,7 +518,7 @@ func (s *BrokerSubAccountService) Do(ctx context.Context, opts ...RequestOption)
 
 // BrokerSubAccountsResponse Query Sub Account response
 type BrokerSubAccountsResponse struct {
-	SubAccountsApiKeys []BrokerSubAccount
+	BrokerSubAccounts []BrokerSubAccount
 }
 
 type BrokerSubAccount struct {
