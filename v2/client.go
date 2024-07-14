@@ -1031,3 +1031,8 @@ func (c *Client) NewChangeBrokerSubAccountApiPermissionService() *ChangeBrokerSu
 func (c *Client) NewBrokerSubAccountService() *BrokerSubAccountService {
 	return &BrokerSubAccountService{c: c}
 }
+
+// NewSubAccountDepositAddressService Get Sub-account Deposit Address(For Master Account)
+func (c *Client) NewSubAccountDepositAddressService() *SubAccountDepositAddressService {
+	return &SubAccountDepositAddressService{c: c}
+}
