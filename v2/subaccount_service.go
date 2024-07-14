@@ -321,3 +321,88 @@ func (s *CreateSubAccountService) Do(ctx context.Context, opts ...RequestOption)
 type CreateSubAccountResponse struct {
 	Email string `json:"email"`
 }
+
+// SubAccountDepositAddressService Get Sub-account Deposit Address(For Master Account)
+// https://developers.binance.com/docs/sub_account/asset-management/Get-Sub-account-Deposit-Address
+type SubAccountDepositAddressService struct {
+	c       *Client
+	email   string
+	coin    string
+	network *string
+	amount  *float64
+}
+
+// Email set email required
+func (s *SubAccountDepositAddressService) Email(email string) *SubAccountDepositAddressService {
+	s.email = email
+	return s
+}
+
+// Coin set coin required
+func (s *SubAccountDepositAddressService) Coin(coin string) *SubAccountDepositAddressService {
+	s.coin = coin
+	return s
+}
+
+// Network set network
+func (s *SubAccountDepositAddressService) Network(network string) *SubAccountDepositAddressService {
+	s.network = &network
+	return s
+}
+
+// Amount set amount, needs to be sent if using LIGHTNING network
+func (s *SubAccountDepositAddressService) Amount(amount float64) *SubAccountDepositAddressService {
+	s.amount = &amount
+	return s
+}
+
+func (s *SubAccountDepositAddressService) subAccountDepositAddress(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: endpoint,
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"email": s.email,
+		"coin":  s.coin,
+	}
+	r.setParams(m)
+
+	if s.network != nil {
+		r.setParam("network", *s.network)
+	}
+	if s.amount != nil {
+		r.setParam("amount", *s.amount)
+	}
+	data, err = s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []byte{}, err
+	}
+	return data, nil
+}
+
+// Do send request
+func (s *SubAccountDepositAddressService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountDepositAddressResponse, err error) {
+	data, err := s.subAccountDepositAddress(ctx, "/sapi/v1/capital/deposit/subAddress", opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = &SubAccountDepositAddressResponse{}
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// SubAccountDepositAddressResponse Get Sub-account Deposit Address(For Master Account) response
+type SubAccountDepositAddressResponse struct {
+	Data []SubAccountDepositAddress
+}
+
+type SubAccountDepositAddress struct {
+	Address string `json:"address"`
+	Coin    string `json:"coin"`
+	Tag     string `json:"tag"`
+	Url     string `json:"url"`
+}
