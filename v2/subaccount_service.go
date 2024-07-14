@@ -397,10 +397,6 @@ func (s *SubAccountDepositAddressService) Do(ctx context.Context, opts ...Reques
 
 // SubAccountDepositAddressResponse Get Sub-account Deposit Address(For Master Account) response
 type SubAccountDepositAddressResponse struct {
-	Data []SubAccountDepositAddress
-}
-
-type SubAccountDepositAddress struct {
 	Address string `json:"address"`
 	Coin    string `json:"coin"`
 	Tag     string `json:"tag"`
