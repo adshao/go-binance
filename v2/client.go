@@ -1036,3 +1036,8 @@ func (c *Client) NewBrokerSubAccountService() *BrokerSubAccountService {
 func (c *Client) NewSubAccountDepositAddressService() *SubAccountDepositAddressService {
 	return &SubAccountDepositAddressService{c: c}
 }
+
+// NewUpdateIPBrokerSubAccountService Update IP Restriction for Sub-Account API key (For Master Account)
+func (c *Client) NewUpdateIPBrokerSubAccountService() *UpdateIPBrokerSubAccountService {
+	return &UpdateIPBrokerSubAccountService{c: c}
+}
