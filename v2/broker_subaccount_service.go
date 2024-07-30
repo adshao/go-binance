@@ -503,14 +503,12 @@ func (s *BrokerSubAccountService) brokerSubAccount(ctx context.Context, endpoint
 }
 
 // Do send request
-func (s *BrokerSubAccountService) Do(ctx context.Context, opts ...RequestOption) (res *BrokerSubAccountsResponse, err error) {
+func (s *BrokerSubAccountService) Do(ctx context.Context, opts ...RequestOption) (res []BrokerSubAccountsResponse, err error) {
 	data, err := s.brokerSubAccount(ctx, "/sapi/v1/broker/subAccount", opts...)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("data: ", string(data))
-	res = &BrokerSubAccountsResponse{}
-	err = json.Unmarshal(data, res)
+	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -519,10 +517,6 @@ func (s *BrokerSubAccountService) Do(ctx context.Context, opts ...RequestOption)
 
 // BrokerSubAccountsResponse Query Sub Account response
 type BrokerSubAccountsResponse struct {
-	BrokerSubAccounts []BrokerSubAccount
-}
-
-type BrokerSubAccount struct {
 	SubAccountID          string  `json:"subaccountId"`
 	Email                 string  `json:"email"`
 	Tag                   string  `json:"tag"`
