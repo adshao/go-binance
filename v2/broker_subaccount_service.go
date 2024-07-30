@@ -517,14 +517,14 @@ func (s *BrokerSubAccountService) Do(ctx context.Context, opts ...RequestOption)
 
 // BrokerSubAccountsResponse Query Sub Account response
 type BrokerSubAccountsResponse struct {
-	SubAccountID          string  `json:"subaccountId"`
-	Email                 string  `json:"email"`
-	Tag                   string  `json:"tag"`
-	MakerCommission       float64 `json:"makerCommission"`
-	TakerCommission       float64 `json:"takerCommission"`
-	MarginMakerCommission int64   `json:"marginMakerCommission"`
-	MarginTakerCommission int64   `json:"marginTakerCommission"`
-	CreateTime            int64   `json:"createTime"`
+	SubAccountID          string `json:"subaccountId"`
+	Email                 string `json:"email"`
+	Tag                   string `json:"tag"`
+	MakerCommission       string `json:"makerCommission"`
+	TakerCommission       string `json:"takerCommission"`
+	MarginMakerCommission string `json:"marginMakerCommission"`
+	MarginTakerCommission string `json:"marginTakerCommission"`
+	CreateTime            int64  `json:"createTime"`
 }
 
 // UpdateIPBrokerSubAccountService Update IP Restriction for Sub-Account API key (For Master Account)
