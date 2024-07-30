@@ -152,6 +152,7 @@ const (
 	SymbolFilterTypeLotSize          SymbolFilterType = "LOT_SIZE"
 	SymbolFilterTypePriceFilter      SymbolFilterType = "PRICE_FILTER"
 	SymbolFilterTypePercentPrice     SymbolFilterType = "PERCENT_PRICE"
+	SymbolFilterTypeNotional         SymbolFilterType = "NOTIONAL"
 	SymbolFilterTypeMinNotional      SymbolFilterType = "MIN_NOTIONAL"
 	SymbolFilterTypeIcebergParts     SymbolFilterType = "ICEBERG_PARTS"
 	SymbolFilterTypeMarketLotSize    SymbolFilterType = "MARKET_LOT_SIZE"
