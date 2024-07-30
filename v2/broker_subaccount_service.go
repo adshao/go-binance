@@ -508,7 +508,7 @@ func (s *BrokerSubAccountService) Do(ctx context.Context, opts ...RequestOption)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("data: ", data)
+	fmt.Println("data: ", string(data))
 	res = &BrokerSubAccountsResponse{}
 	err = json.Unmarshal(data, res)
 	if err != nil {
