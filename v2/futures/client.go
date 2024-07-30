@@ -139,6 +139,7 @@ const (
 	SymbolFilterTypeMaxNumOrders     SymbolFilterType = "MAX_NUM_ORDERS"
 	SymbolFilterTypeMaxNumAlgoOrders SymbolFilterType = "MAX_NUM_ALGO_ORDERS"
 	SymbolFilterTypeMinNotional      SymbolFilterType = "MIN_NOTIONAL"
+	SymbolFilterTypeNotional         SymbolFilterType = "NOTIONAL"
 
 	SideEffectTypeNoSideEffect SideEffectType = "NO_SIDE_EFFECT"
 	SideEffectTypeMarginBuy    SideEffectType = "MARGIN_BUY"
@@ -612,4 +613,9 @@ func (c *Client) NewOpenInterestStatisticsService() *OpenInterestStatisticsServi
 // NewLongShortRatioService init open interest statistics service
 func (c *Client) NewLongShortRatioService() *LongShortRatioService {
 	return &LongShortRatioService{c: c}
+}
+
+// NewSymbolConfService init symbol config service
+func (c *Client) NewSymbolConfService() *SymbolConfService {
+	return &SymbolConfService{c: c}
 }
