@@ -143,3 +143,64 @@ type FuturesTransfer struct {
 	Timestamp int64                     `json:"timestamp"`
 	Status    FuturesTransferStatusType `json:"status"`
 }
+
+type FuturesOrderBookHistoryService struct {
+	c         *Client
+	symbol    string
+	dataType  string
+	startTime int64
+	endTime   int64
+}
+
+func (s *FuturesOrderBookHistoryService) Symbol(symbol string) *FuturesOrderBookHistoryService {
+	s.symbol = symbol
+	return s
+}
+
+func (s *FuturesOrderBookHistoryService) DataType(dataType FuturesOrderBookHistoryDataType) *FuturesOrderBookHistoryService {
+	s.dataType = string(dataType)
+	return s
+}
+
+func (s *FuturesOrderBookHistoryService) StartTime(startTime int64) *FuturesOrderBookHistoryService {
+	s.startTime = startTime
+	return s
+}
+
+func (s *FuturesOrderBookHistoryService) EndTime(endTime int64) *FuturesOrderBookHistoryService {
+	s.endTime = endTime
+	return s
+}
+
+func (s *FuturesOrderBookHistoryService) Do(ctx context.Context, opts ...RequestOption) (res *FuturesOrderBookHistory, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/futures/histDataLink",
+		secType:  secTypeSigned,
+	}
+	r.setParams(params{
+		"symbol":    s.symbol,
+		"dataType":  s.dataType,
+		"startTime": s.startTime,
+		"endTime":   s.endTime,
+	})
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = new(FuturesOrderBookHistory)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type FuturesOrderBookHistoryItem struct {
+	Day string `json:"day"`
+	Url string `json:"url"`
+}
+
+type FuturesOrderBookHistory struct {
+	Data []*FuturesOrderBookHistoryItem `json:"data"`
+}

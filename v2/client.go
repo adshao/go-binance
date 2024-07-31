@@ -109,6 +109,9 @@ type UserUniversalTransferType string
 // UserUniversalTransferStatus define the user universal transfer status
 type UserUniversalTransferStatusType string
 
+// FuturesOrderBookHistoryDataType define the futures order book history data types
+type FuturesOrderBookHistoryDataType string
+
 // Endpoints
 var (
 	BaseAPIMainURL    = "https://api.binance.com"
@@ -287,6 +290,9 @@ const (
 	UserUniversalTransferStatusTypePending   UserUniversalTransferStatusType = "PENDING"
 	UserUniversalTransferStatusTypeConfirmed UserUniversalTransferStatusType = "CONFIRMED"
 	UserUniversalTransferStatusTypeFailed    UserUniversalTransferStatusType = "FAILED"
+
+	FuturesOrderBookHistoryDataTypeTDepth FuturesOrderBookHistoryDataType = "T_DEPTH"
+	FuturesOrderBookHistoryDataTypeSDepth FuturesOrderBookHistoryDataType = "S_DEPTH"
 )
 
 func currentTimestamp() int64 {
@@ -1290,4 +1296,9 @@ func (c *Client) NewSubAccountTransactionStatisticsService() *SubAccountTransact
 // get the target sub-account futures account detail, v2 interface.
 func (c *Client) NewSubAccountFuturesAccountV2Service() *SubAccountFuturesAccountV2Service {
 	return &SubAccountFuturesAccountV2Service{c: c}
+}
+
+// Futures order book history service
+func (c *Client) NewFuturesOrderBookHistoryService() *FuturesOrderBookHistoryService {
+	return &FuturesOrderBookHistoryService{c: c}
 }
