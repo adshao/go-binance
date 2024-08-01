@@ -96,6 +96,7 @@ type Network struct {
 	Coin                    string `json:"coin"`
 	DepositDesc             string `json:"depositDesc,omitempty"` // 仅在充值关闭时返回
 	DepositEnable           bool   `json:"depositEnable"`
+	DepositDust             string `json:"depositDust"`
 	IsDefault               bool   `json:"isDefault"`
 	MemoRegex               string `json:"memoRegex"`
 	MinConfirm              int    `json:"minConfirm"` // 上账所需的最小确认数
