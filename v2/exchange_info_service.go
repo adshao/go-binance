@@ -116,6 +116,15 @@ type PercentPriceFilter struct {
 	MultiplierDown   string `json:"multiplierDown"`
 }
 
+// PercentPriceBySideFilter define percent price filter by side of symbol
+type PercentPriceBySideFilter struct {
+	BidMultiplierUp   string `json:"bidMultiplierUp"`
+	BidMultiplierDown string `json:"bidMultiplierDown"`
+	AskMultiplierUp   string `json:"askMultiplierUp"`
+	AskMultiplierDown string `json:"askMultiplierDown"`
+	AveragePriceMins  int    `json:"avgPriceMins"`
+}
+
 // NotionalFilter define notional filter of symbol
 type NotionalFilter struct {
 	MinNotional      string `json:"minNotional"`
@@ -147,6 +156,13 @@ type MarketLotSizeFilter struct {
 // MaxNumAlgoOrdersFilter define max num algo orders filter of symbol
 type MaxNumAlgoOrdersFilter struct {
 	MaxNumAlgoOrders int `json:"maxNumAlgoOrders"`
+}
+
+type TrailingDeltaFilter struct {
+	MinTrailingAboveDelta int `json:"minTrailingAboveDelta"`
+	MaxTrailingAboveDelta int `json:"maxTrailingAboveDelta"`
+	MinTrailingBelowDelta int `json:"minTrailingBelowDelta"`
+	MaxTrailingBelowDelta int `json:"maxTrailingBelowDelta"`
 }
 
 // LotSizeFilter return lot size filter of symbol
@@ -209,6 +225,32 @@ func (s *Symbol) PercentPriceFilter() *PercentPriceFilter {
 	return nil
 }
 
+// PercentPriceBySideFilter return percent price filter by side of symbol
+func (s *Symbol) PercentPriceBySideFilter() *PercentPriceBySideFilter {
+	for _, filter := range s.Filters {
+		if filter["filterType"].(string) == string(SymbolFilterBySideTypePercentPrice) {
+			f := &PercentPriceBySideFilter{}
+			if i, ok := filter["bidMultiplierUp"]; ok {
+				f.BidMultiplierUp = i.(string)
+			}
+			if i, ok := filter["bidMultiplierDown"]; ok {
+				f.BidMultiplierDown = i.(string)
+			}
+			if i, ok := filter["askMultiplierUp"]; ok {
+				f.AskMultiplierUp = i.(string)
+			}
+			if i, ok := filter["askMultiplierDown"]; ok {
+				f.AskMultiplierDown = i.(string)
+			}
+			if i, ok := filter["avgPriceMins"]; ok {
+				f.AveragePriceMins = int(i.(float64))
+			}
+			return f
+		}
+	}
+	return nil
+}
+
 func (s *Symbol) NotionalFilter() *NotionalFilter {
 	for _, filter := range s.Filters {
 		if filter["filterType"].(string) == string(SymbolFilterTypeNotional) {
@@ -261,6 +303,28 @@ func (s *Symbol) IcebergPartsFilter() *IcebergPartsFilter {
 			f := &IcebergPartsFilter{}
 			if i, ok := filter["limit"]; ok {
 				f.Limit = int(i.(float64))
+			}
+			return f
+		}
+	}
+	return nil
+}
+
+func (s *Symbol) TrailingDeltaFilter() *TrailingDeltaFilter {
+	for _, filter := range s.Filters {
+		if filter["filterType"].(string) == string(SymbolFilterTypeTrailingDelta) {
+			f := &TrailingDeltaFilter{}
+			if i, ok := filter["minTrailingAboveDelta"]; ok {
+				f.MinTrailingAboveDelta = int(i.(float64))
+			}
+			if i, ok := filter["maxTrailingAboveDelta"]; ok {
+				f.MaxTrailingAboveDelta = int(i.(float64))
+			}
+			if i, ok := filter["minTrailingBelowDelta"]; ok {
+				f.MinTrailingBelowDelta = int(i.(float64))
+			}
+			if i, ok := filter["maxTrailingBelowDelta"]; ok {
+				f.MaxTrailingBelowDelta = int(i.(float64))
 			}
 			return f
 		}
