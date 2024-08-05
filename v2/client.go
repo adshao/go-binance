@@ -1044,3 +1044,13 @@ func (c *Client) NewSubAccountDepositAddressService() *SubAccountDepositAddressS
 func (c *Client) NewUpdateIPBrokerSubAccountService() *UpdateIPBrokerSubAccountService {
 	return &UpdateIPBrokerSubAccountService{c: c}
 }
+
+// NewDeleteIPBrokerSubAccountService Delete IP Restriction for Sub Account Api Key
+func (c *Client) NewDeleteIPBrokerSubAccountService() *DeleteIPBrokerSubAccountService {
+	return &DeleteIPBrokerSubAccountService{c: c}
+}
+
+// NewIPBrokerSubAccountService Get IP Restriction for Sub Account Api Key
+func (c *Client) NewIPBrokerSubAccountService() *IPBrokerSubAccountService {
+	return &IPBrokerSubAccountService{c: c}
+}
