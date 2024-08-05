@@ -556,9 +556,7 @@ func (s *UpdateIPBrokerSubAccountService) Status(status string) *UpdateIPBrokerS
 	return s
 }
 
-// IPAddress set ipAddress
-//
-//	Insert static IP in batch, separated by commas.
+// IPAddress set ipAddress Insert static IP in batch, separated by commas.
 func (s *UpdateIPBrokerSubAccountService) IPAddress(ipAddress string) *UpdateIPBrokerSubAccountService {
 	s.ipAddress = &ipAddress
 	return s
@@ -608,4 +606,138 @@ type UpdateIPBrokerSubAccountsResponse struct {
 	Status     string   `json:"status"`
 	IPList     []string `json:"ipList"`
 	UpdateTime int64    `json:"updateTime"`
+}
+
+// IPBrokerSubAccountService Update IP Restriction for Sub-Account API key (For Master Account)
+// https://binance-docs.github.io/Brokerage-API/Brokerage_Operation_Endpoints/#get-ip-restriction-for-sub-account-api-key
+type IPBrokerSubAccountService struct {
+	c                *Client
+	subAccountId     string
+	subAccountApiKey string
+}
+
+// SubAccountID set subAccountID required
+func (s *IPBrokerSubAccountService) SubAccountID(subAccountID string) *IPBrokerSubAccountService {
+	s.subAccountId = subAccountID
+	return s
+}
+
+// SubAccountApiKey set api key required
+func (s *IPBrokerSubAccountService) SubAccountApiKey(subAccountApiKey string) *IPBrokerSubAccountService {
+	s.subAccountApiKey = subAccountApiKey
+	return s
+}
+
+func (s *IPBrokerSubAccountService) ipBrokerSubAccount(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: endpoint,
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"subAccountId":     s.subAccountId,
+		"subAccountApiKey": s.subAccountApiKey,
+	}
+	r.setParams(m)
+
+	data, err = s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []byte{}, err
+	}
+	return data, nil
+}
+
+// Do send request
+func (s *IPBrokerSubAccountService) Do(ctx context.Context, opts ...RequestOption) (res *IPBrokerSubAccountResponse, err error) {
+	data, err := s.ipBrokerSubAccount(ctx, "/sapi/v1/broker/subAccountApi/ipRestriction", opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = &IPBrokerSubAccountResponse{}
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// IPBrokerSubAccountResponse Get IP Restriction for Sub Account Api Key response
+type IPBrokerSubAccountResponse struct {
+	SubAccountID string   `json:"subaccountId"`
+	IPRestrict   bool     `json:"ipRestrict"`
+	ApiKey       string   `json:"apikey"`
+	IPList       []string `json:"ipList"`
+	UpdateTime   int64    `json:"updateTime"`
+}
+
+// DeleteIPBrokerSubAccountService Update IP Restriction for Sub-Account API key (For Master Account)
+// https://binance-docs.github.io/Brokerage-API/Brokerage_Operation_Endpoints/#get-ip-restriction-for-sub-account-api-key
+type DeleteIPBrokerSubAccountService struct {
+	c                *Client
+	subAccountId     string
+	subAccountApiKey string
+	ipAddress        *string
+}
+
+// SubAccountID set subAccountID required
+func (s *DeleteIPBrokerSubAccountService) SubAccountID(subAccountID string) *DeleteIPBrokerSubAccountService {
+	s.subAccountId = subAccountID
+	return s
+}
+
+// SubAccountApiKey set api key required
+func (s *DeleteIPBrokerSubAccountService) SubAccountApiKey(subAccountApiKey string) *DeleteIPBrokerSubAccountService {
+	s.subAccountApiKey = subAccountApiKey
+	return s
+}
+
+// IPAddress set ipAddress Insert static IP in batch, separated by commas.
+func (s *DeleteIPBrokerSubAccountService) IPAddress(ipAddress string) *DeleteIPBrokerSubAccountService {
+	s.ipAddress = &ipAddress
+	return s
+}
+
+func (s *DeleteIPBrokerSubAccountService) deleteIPBrokerSubAccount(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, err error) {
+	r := &request{
+		method:   http.MethodDelete,
+		endpoint: endpoint,
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"subAccountId":     s.subAccountId,
+		"subAccountApiKey": s.subAccountApiKey,
+	}
+	r.setParams(m)
+
+	if s.ipAddress != nil {
+		r.setParam("ipAddress", *s.ipAddress)
+	}
+
+	data, err = s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []byte{}, err
+	}
+	return data, nil
+}
+
+// Do send request
+func (s *DeleteIPBrokerSubAccountService) Do(ctx context.Context, opts ...RequestOption) (res *DeleteIPBrokerSubAccountResponse, err error) {
+	data, err := s.deleteIPBrokerSubAccount(ctx, "/sapi/v1/broker/subAccountApi/ipRestriction/ipList", opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = &DeleteIPBrokerSubAccountResponse{}
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// DeleteIPBrokerSubAccountResponse Get IP Restriction for Sub Account Api Key response
+type DeleteIPBrokerSubAccountResponse struct {
+	SubAccountID string   `json:"subaccountId"`
+	ApiKey       string   `json:"apikey"`
+	IPList       []string `json:"ipList"`
+	UpdateTime   int64    `json:"updateTime"`
 }
