@@ -1032,7 +1032,7 @@ type UniversalTransferHistoryResponse struct {
 	Qty             string `json:"qty"`
 	Time            int64  `json:"time"`
 	Status          string `json:"status"`
-	TxID            string `json:"txnId"`
+	TxID            int64  `json:"txnId"`
 	ClientTranID    string `json:"clientTranId"`
 	FromAccountType string `json:"fromAccountType"`
 	ToAccountType   string `json:"toAccountType"`
