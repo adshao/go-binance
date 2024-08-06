@@ -1054,3 +1054,18 @@ func (c *Client) NewDeleteIPBrokerSubAccountService() *DeleteIPBrokerSubAccountS
 func (c *Client) NewIPBrokerSubAccountService() *IPBrokerSubAccountService {
 	return &IPBrokerSubAccountService{c: c}
 }
+
+// NewEnableUniversalTransferPermissionService Enable Universal Transfer Permission For Sub Account Api Key
+func (c *Client) NewEnableUniversalTransferPermissionService() *EnableUniversalTransferPermissionService {
+	return &EnableUniversalTransferPermissionService{c: c}
+}
+
+// NewUniversalTransferService Universal Transfer
+func (c *Client) NewUniversalTransferService() *UniversalTransferService {
+	return &UniversalTransferService{c: c}
+}
+
+// NewUniversalTransferHistoryService Query Universal Transfer History
+func (c *Client) NewUniversalTransferHistoryService() *UniversalTransferHistoryService {
+	return &UniversalTransferHistoryService{c: c}
+}
