@@ -2,7 +2,6 @@ package binance
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 )
 
@@ -334,7 +333,6 @@ func (s *BrokerSubAccountApiKeysService) Do(ctx context.Context, opts ...Request
 		return nil, err
 	}
 	res = &BrokerSubAccountApiKeysResponse{}
-	fmt.Println("res: ", string(data))
 	err = json.Unmarshal(data, res)
 	if err != nil {
 		return nil, err
@@ -740,4 +738,296 @@ type DeleteIPBrokerSubAccountResponse struct {
 	ApiKey       string   `json:"apikey"`
 	IPList       []string `json:"ipList"`
 	UpdateTime   int64    `json:"updateTime"`
+}
+
+// EnableUniversalTransferPermissionService Enable Universal Transfer Permission For Sub Account Api Key
+// https://binance-docs.github.io/Brokerage-API/Brokerage_Operation_Endpoints/#enable-universal-transfer-permission-for-sub-account-api-key
+type EnableUniversalTransferPermissionService struct {
+	c                    *Client
+	subAccountId         string
+	subAccountApiKey     string
+	canUniversalTransfer bool
+}
+
+// SubAccountID set subAccountID required
+func (s *EnableUniversalTransferPermissionService) SubAccountID(subAccountID string) *EnableUniversalTransferPermissionService {
+	s.subAccountId = subAccountID
+	return s
+}
+
+// SubAccountApiKey set api key required
+func (s *EnableUniversalTransferPermissionService) SubAccountApiKey(subAccountApiKey string) *EnableUniversalTransferPermissionService {
+	s.subAccountApiKey = subAccountApiKey
+	return s
+}
+
+// CanUniversalTransfer set canUniversalTransfer required
+func (s *EnableUniversalTransferPermissionService) CanUniversalTransfer(canUniversalTransfer bool) *EnableUniversalTransferPermissionService {
+	s.canUniversalTransfer = canUniversalTransfer
+	return s
+}
+
+func (s *EnableUniversalTransferPermissionService) enableUniversalTransferPermission(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: endpoint,
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"subAccountId":         s.subAccountId,
+		"subAccountApiKey":     s.subAccountApiKey,
+		"canUniversalTransfer": s.canUniversalTransfer,
+	}
+	r.setParams(m)
+
+	data, err = s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []byte{}, err
+	}
+	return data, nil
+}
+
+// Do send request
+func (s *EnableUniversalTransferPermissionService) Do(ctx context.Context, opts ...RequestOption) (res *EnableUniversalTransferPermissionResponse, err error) {
+	data, err := s.enableUniversalTransferPermission(ctx, "/sapi/v1/broker/subAccountApi/permission/universalTransfer", opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = &EnableUniversalTransferPermissionResponse{}
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// EnableUniversalTransferPermissionResponse Enable Universal Transfer Permission For Sub Account Api Key response
+type EnableUniversalTransferPermissionResponse struct {
+	SubAccountID         string `json:"subaccountId"`
+	ApiKey               string `json:"apikey"`
+	CanUniversalTransfer bool   `json:"canUniversalTransfer"`
+}
+
+// UniversalTransferService Universal Transfer
+// https://binance-docs.github.io/Brokerage-API/Brokerage_Operation_Endpoints/#enable-universal-transfer-permission-for-sub-account-api-key
+type UniversalTransferService struct {
+	c      *Client
+	fromId string
+	toId   string
+	// SPOT, USDT_FUTURE, COIN_FUTURE
+	fromAccountType string
+	// SPOT,USDT_FUTURE,COIN_FUTURE
+	toAccountType string
+	// Client transfer id, must be unique. The max length is 32 characters
+	clientTranId string
+	asset        string
+	amount       float64
+}
+
+// FromID set fromID
+func (s *UniversalTransferService) FromID(fromID string) *UniversalTransferService {
+	s.fromId = fromID
+	return s
+}
+
+// ToID set toID
+func (s *UniversalTransferService) ToID(toID string) *UniversalTransferService {
+	s.toId = toID
+	return s
+}
+
+// FromAccountType set fromAccountType required
+func (s *UniversalTransferService) FromAccountType(fromAccountType string) *UniversalTransferService {
+	s.fromAccountType = fromAccountType
+	return s
+}
+
+// ToAccountType set toAccountType required
+func (s *UniversalTransferService) ToAccountType(toAccountType string) *UniversalTransferService {
+	s.toAccountType = toAccountType
+	return s
+}
+
+// ClientTranID set clientTranID
+func (s *UniversalTransferService) ClientTranID(clientTranID string) *UniversalTransferService {
+	s.clientTranId = clientTranID
+	return s
+}
+
+// Asset set asset required
+func (s *UniversalTransferService) Asset(asset string) *UniversalTransferService {
+	s.asset = asset
+	return s
+}
+
+// Amount set amount required
+func (s *UniversalTransferService) Amount(amount float64) *UniversalTransferService {
+	s.amount = amount
+	return s
+}
+
+func (s *UniversalTransferService) universalTransfer(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: endpoint,
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"fromId":          s.fromId,
+		"toId":            s.toId,
+		"fromAccountType": s.fromAccountType,
+		"toAccountType":   s.toAccountType,
+		"clientTranId":    s.clientTranId,
+		"asset":           s.asset,
+		"amount":          s.amount,
+	}
+	r.setParams(m)
+
+	data, err = s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []byte{}, err
+	}
+	return data, nil
+}
+
+// Do send request
+func (s *UniversalTransferService) Do(ctx context.Context, opts ...RequestOption) (res *UniversalTransferResponse, err error) {
+	data, err := s.universalTransfer(ctx, "/sapi/v1/broker/universalTransfer", opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = &UniversalTransferResponse{}
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// UniversalTransferResponse Enable Universal Transfer Permission For Sub Account Api Key response
+type UniversalTransferResponse struct {
+	TxID         int64  `json:"txnId"`
+	ClientTranID string `json:"clientTranId"`
+}
+
+// UniversalTransferHistoryService Query Universal Transfer History
+// https://binance-docs.github.io/Brokerage-API/Brokerage_Operation_Endpoints/#query-universal-transfer-history
+type UniversalTransferHistoryService struct {
+	c      *Client
+	fromId string
+	toId   string
+	// Client transfer id, must be unique. The max length is 32 characters
+	clientTranId string
+	startTime    *int64
+	endTime      *int64
+	page         int64
+	//default 500, max 500
+	limit         int64
+	showAllStatus bool
+}
+
+// FromID set fromID
+func (s *UniversalTransferHistoryService) FromID(fromID string) *UniversalTransferHistoryService {
+	s.fromId = fromID
+	return s
+}
+
+// ToID set toID
+func (s *UniversalTransferHistoryService) ToID(toID string) *UniversalTransferHistoryService {
+	s.toId = toID
+	return s
+}
+
+// ClientTranID set clientTranID
+func (s *UniversalTransferHistoryService) ClientTranID(clientTranID string) *UniversalTransferHistoryService {
+	s.clientTranId = clientTranID
+	return s
+}
+
+// StartTime set startTime
+func (s *UniversalTransferHistoryService) StartTime(startTime int64) *UniversalTransferHistoryService {
+	s.startTime = &startTime
+	return s
+}
+
+// EndTime set endTime
+func (s *UniversalTransferHistoryService) EndTime(endTime int64) *UniversalTransferHistoryService {
+	s.endTime = &endTime
+	return s
+}
+
+// Page set page required
+func (s *UniversalTransferHistoryService) Page(page int64) *UniversalTransferHistoryService {
+	s.page = page
+	return s
+}
+
+// Limit set limit required
+func (s *UniversalTransferHistoryService) Limit(limit int64) *UniversalTransferHistoryService {
+	s.limit = limit
+	return s
+}
+
+// ShowAllStatus set showAllStatus required
+func (s *UniversalTransferHistoryService) ShowAllStatus(showAllStatus bool) *UniversalTransferHistoryService {
+	s.showAllStatus = showAllStatus
+	return s
+}
+
+func (s *UniversalTransferHistoryService) universalTransferHistory(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: endpoint,
+		secType:  secTypeSigned,
+	}
+
+	m := params{
+		"fromId":        s.fromId,
+		"toId":          s.toId,
+		"clientTranId":  s.clientTranId,
+		"page":          s.page,
+		"limit":         s.limit,
+		"showAllStatus": s.showAllStatus,
+	}
+	r.setParams(m)
+
+	if s.startTime != nil {
+		r.setParam("startTime", *s.startTime)
+	}
+	if s.startTime != nil {
+		r.setParam("endTime", *s.endTime)
+	}
+
+	data, err = s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []byte{}, err
+	}
+	return data, nil
+}
+
+// Do send request
+func (s *UniversalTransferHistoryService) Do(ctx context.Context, opts ...RequestOption) (res []*UniversalTransferHistoryResponse, err error) {
+	data, err := s.universalTransferHistory(ctx, "/sapi/v1/broker/universalTransfer", opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = make([]*UniversalTransferHistoryResponse, 0)
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// UniversalTransferHistoryResponse Query Universal Transfer History response
+type UniversalTransferHistoryResponse struct {
+	ToID            string `json:"toId"`
+	Asset           string `json:"asset"`
+	Qty             string `json:"qty"`
+	Time            int64  `json:"time"`
+	Status          string `json:"status"`
+	TxID            int64  `json:"txnId"`
+	ClientTranID    string `json:"clientTranId"`
+	FromAccountType string `json:"fromAccountType"`
+	ToAccountType   string `json:"toAccountType"`
 }
