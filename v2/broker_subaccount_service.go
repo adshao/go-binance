@@ -1018,7 +1018,7 @@ func (s *UniversalTransferHistoryService) Do(ctx context.Context, opts ...Reques
 		return nil, err
 	}
 	res = make([]*UniversalTransferHistoryResponse, 0)
-	err = json.Unmarshal(data, res)
+	err = json.Unmarshal(data, &res)
 	if err != nil {
 		return nil, err
 	}
