@@ -913,9 +913,11 @@ type UniversalTransferResponse struct {
 // UniversalTransferHistoryService Query Universal Transfer History
 // https://binance-docs.github.io/Brokerage-API/Brokerage_Operation_Endpoints/#query-universal-transfer-history
 type UniversalTransferHistoryService struct {
-	c      *Client
-	fromId string
-	toId   string
+	c *Client
+	// Either fromId or toId must be sent.
+	fromId *string
+	// Either fromId or toId must be sent.
+	toId *string
 	// Client transfer id, must be unique. The max length is 32 characters
 	clientTranId string
 	startTime    *int64
@@ -928,13 +930,13 @@ type UniversalTransferHistoryService struct {
 
 // FromID set fromID
 func (s *UniversalTransferHistoryService) FromID(fromID string) *UniversalTransferHistoryService {
-	s.fromId = fromID
+	s.fromId = &fromID
 	return s
 }
 
 // ToID set toID
 func (s *UniversalTransferHistoryService) ToID(toID string) *UniversalTransferHistoryService {
-	s.toId = toID
+	s.toId = &toID
 	return s
 }
 
@@ -982,8 +984,6 @@ func (s *UniversalTransferHistoryService) universalTransferHistory(ctx context.C
 	}
 
 	m := params{
-		"fromId":        s.fromId,
-		"toId":          s.toId,
 		"clientTranId":  s.clientTranId,
 		"page":          s.page,
 		"limit":         s.limit,
@@ -991,6 +991,12 @@ func (s *UniversalTransferHistoryService) universalTransferHistory(ctx context.C
 	}
 	r.setParams(m)
 
+	if s.fromId != nil {
+		r.setParam("fromId", *s.fromId)
+	}
+	if s.toId != nil {
+		r.setParam("toId", *s.toId)
+	}
 	if s.startTime != nil {
 		r.setParam("startTime", *s.startTime)
 	}
