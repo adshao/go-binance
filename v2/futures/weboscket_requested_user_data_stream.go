@@ -34,7 +34,7 @@ type WsRequestedUserDataStreamService struct {
 	respHandlersMutex sync.Mutex
 }
 
-func NewWsRequestedUserDataStreamService(listenKey, apiKey string, keepAlive bool, errHandler ErrHandler) (service *WsRequestedUserDataStreamService, doneC, stopC chan<- struct{}) {
+func NewWsRequestedUserDataStreamService(listenKey, apiKey string, keepAlive bool, errHandler ErrHandler) (service *WsRequestedUserDataStreamService, doneC, stopC chan struct{}) {
 	service = &WsRequestedUserDataStreamService{
 		doneC:        make(chan struct{}),
 		stopC:        make(chan struct{}),
@@ -196,9 +196,6 @@ func (s *WsRequestedUserDataStreamService) keepAliveWSConnection() {
 }
 
 func (s *WsRequestedUserDataStreamService) readMessages() {
-	defer close(s.doneC)
-	defer close(s.stopC)
-
 	silent := false
 	go func() {
 		select {
