@@ -671,3 +671,11 @@ func (c *Client) NewConstituentsService() *ConstituentsService {
 func (c *Client) NewLvtKlinesService() *LvtKlinesService {
 	return &LvtKlinesService{c: c}
 }
+
+func (c *Client) NewGetFeeBurnService() *GetFeeBurnService {
+	return &GetFeeBurnService{c: c}
+}
+
+func (c *Client) NewFeeBurnService() *FeeBurnService {
+	return &FeeBurnService{c: c}
+}
