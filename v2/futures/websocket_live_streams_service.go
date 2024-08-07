@@ -238,10 +238,7 @@ func (s *WsLiveStreamsService) connectIfNotConnected() error {
 	s.connMutex.Lock()
 	defer s.connMutex.Unlock()
 	if s.conn == nil {
-		err := s.connect()
-		if err != nil {
-			return err
-		}
+		return s.connect()
 	}
 
 	return nil
