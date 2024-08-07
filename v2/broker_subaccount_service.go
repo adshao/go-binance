@@ -724,7 +724,6 @@ func (s *DeleteIPBrokerSubAccountService) Do(ctx context.Context, opts ...Reques
 	if err != nil {
 		return nil, err
 	}
-
 	if len(data) == 0 || string(data) == "{}" {
 		return &DeleteIPBrokerSubAccountResponse{}, nil
 	}
