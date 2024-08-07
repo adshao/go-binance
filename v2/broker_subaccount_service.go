@@ -248,6 +248,10 @@ func (s *DeleteBrokerSubAccountApiKeyService) Do(ctx context.Context, opts ...Re
 	if err != nil {
 		return nil, err
 	}
+
+	if len(data) == 0 || string(data) == "{}" {
+		return &DeleteBrokerSubAccountApiKeyResponse{}, nil
+	}
 	res = &DeleteBrokerSubAccountApiKeyResponse{}
 	err = json.Unmarshal(data, res)
 	if err != nil {
@@ -723,9 +727,6 @@ func (s *DeleteIPBrokerSubAccountService) Do(ctx context.Context, opts ...Reques
 	data, err := s.deleteIPBrokerSubAccount(ctx, "/sapi/v1/broker/subAccountApi/ipRestriction/ipList", opts...)
 	if err != nil {
 		return nil, err
-	}
-	if len(data) == 0 || string(data) == "{}" {
-		return &DeleteIPBrokerSubAccountResponse{}, nil
 	}
 
 	res = &DeleteIPBrokerSubAccountResponse{}
