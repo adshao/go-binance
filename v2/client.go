@@ -183,8 +183,10 @@ const (
 	MarginTransferTypeToMargin MarginTransferType = 1
 	MarginTransferTypeToMain   MarginTransferType = 2
 
-	FuturesTransferTypeToFutures FuturesTransferType = 1
-	FuturesTransferTypeToMain    FuturesTransferType = 2
+	FuturesTransferTypeToFutures       FuturesTransferType = 1
+	FuturesTransferTypeToMain          FuturesTransferType = 2
+	FuturesTransferTypeToFuturesCM     FuturesTransferType = 3
+	FuturesTransferTypeFuturesCMToMain FuturesTransferType = 4
 
 	MarginLoanStatusTypePending   MarginLoanStatusType = "PENDING"
 	MarginLoanStatusTypeConfirmed MarginLoanStatusType = "CONFIRMED"
