@@ -125,6 +125,7 @@ func (s *assetDetailServiceTestSuite) TestGetAllCoinsInfo() {
 	res, err := s.client.NewGetAllCoinsInfoService().Do(newContext())
 	s.r().NoError(err)
 	s.r().Equal(res[0].DepositAllEnable, true, "depositAllEnable")
+	s.r().Equal(res[0].NetworkList[0].WithdrawEnable, false, "withdrawEnable")
 	s.r().Equal(res[0].NetworkList[0].EstimatedArrivalTime, 25, "estimatedArrivalTime")
 	s.r().Equal(res[0].NetworkList[0].Busy, false, "busy")
 	s.r().Equal(res[0].NetworkList[0].ContractAddressUrl, "https://bscscan.com/token/", "contractAddressUrl")
