@@ -436,6 +436,78 @@ func (s *orderServiceTestSuite) TestListOrders() {
 	s.assertOrderEqual(e, orders[0])
 }
 
+func (s *orderServiceTestSuite) TestModifyOrder() {
+	data := []byte(`{
+		"clientOrderId": "myOrder1",
+		"cumQty": "0",
+		"cumQuote": "0",
+		"executedQty": "0",
+		"orderId": 283194212,
+		"origQty": "11",
+		"price": "8301",
+		"reduceOnly": false,
+		"side": "BUY",
+		"status": "CANCELED",
+		"stopPrice": "8300",
+		"symbol": "BTCUSDT",
+		"timeInForce": "GTC",
+		"type": "TAKE_PROFIT",
+		"updateTime": 1571110484038,
+		"workingType": "CONTRACT_PRICE",
+		"activatePrice": "10000",
+		"priceRate":"0.1",
+		"positionSide":"BOTH",
+		"priceProtect": false
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	symbol := "BTCUSDT"
+	orderID := int64(28)
+	origClientOrderID := "myOrder1"
+	price := "8301"
+	side := SideTypeSell
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setFormParams(params{
+			"symbol":            symbol,
+			"orderId":           orderID,
+			"origClientOrderId": origClientOrderID,
+			"price":             price,
+			"side":              side,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	res, err := s.client.NewModifyOrderService().Symbol(symbol).Side(side).
+		OrderID(orderID).OrigClientOrderID(origClientOrderID).Price(price).
+		Do(newContext())
+	r := s.r()
+	r.NoError(err)
+	e := &Order{
+		ClientOrderID:    origClientOrderID,
+		CumQuantity:      "0",
+		CumQuote:         "0",
+		ExecutedQuantity: "0",
+		OrderID:          283194212,
+		OrigQuantity:     "11",
+		Price:            "8301",
+		ReduceOnly:       false,
+		Side:             SideTypeBuy,
+		Status:           OrderStatusTypeCanceled,
+		StopPrice:        "8300",
+		Symbol:           symbol,
+		TimeInForce:      TimeInForceTypeGTC,
+		Type:             OrderTypeTakeProfit,
+		UpdateTime:       1571110484038,
+		WorkingType:      WorkingTypeContractPrice,
+		ActivatePrice:    "10000",
+		PriceRate:        "0.1",
+		PositionSide:     "BOTH",
+		PriceProtect:     false,
+	}
+	s.assertOrderEqual(e, res)
+}
+
 func (s *orderServiceTestSuite) TestCancelOrder() {
 	data := []byte(`{
 		"clientOrderId": "myOrder1",
