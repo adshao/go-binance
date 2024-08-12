@@ -133,7 +133,6 @@ func (s *CreateOrderService) ClosePosition(closePosition bool) *CreateOrderServi
 }
 
 func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, header *http.Header, err error) {
-
 	r := &request{
 		method:   http.MethodPost,
 		endpoint: endpoint,
@@ -241,24 +240,13 @@ type CreateOrderResponse struct {
 // ModifyOrderService create order
 type ModifyOrderService struct {
 	c                 *Client
-	symbol            string
 	orderID           *int64
 	origClientOrderID *string
+	symbol            string
 	side              SideType
-	positionSide      *PositionSideType
-	orderType         OrderType
-	timeInForce       *TimeInForceType
 	quantity          string
-	reduceOnly        *string
 	price             *string
-	newClientOrderID  *string
-	stopPrice         *string
-	workingType       *WorkingType
-	activationPrice   *string
-	callbackRate      *string
-	priceProtect      *string
-	newOrderRespType  NewOrderRespType
-	closePosition     *string
+	priceMatch        *PriceMatchType
 }
 
 // Symbol set symbol
@@ -283,34 +271,9 @@ func (s *ModifyOrderService) Side(side SideType) *ModifyOrderService {
 	return s
 }
 
-// PositionSide set side
-func (s *ModifyOrderService) PositionSide(positionSide PositionSideType) *ModifyOrderService {
-	s.positionSide = &positionSide
-	return s
-}
-
-// Type set type
-func (s *ModifyOrderService) Type(orderType OrderType) *ModifyOrderService {
-	s.orderType = orderType
-	return s
-}
-
-// TimeInForce set timeInForce
-func (s *ModifyOrderService) TimeInForce(timeInForce TimeInForceType) *ModifyOrderService {
-	s.timeInForce = &timeInForce
-	return s
-}
-
 // Quantity set quantity
 func (s *ModifyOrderService) Quantity(quantity string) *ModifyOrderService {
 	s.quantity = quantity
-	return s
-}
-
-// ReduceOnly set reduceOnly
-func (s *ModifyOrderService) ReduceOnly(reduceOnly bool) *ModifyOrderService {
-	reduceOnlyStr := strconv.FormatBool(reduceOnly)
-	s.reduceOnly = &reduceOnlyStr
 	return s
 }
 
@@ -320,104 +283,34 @@ func (s *ModifyOrderService) Price(price string) *ModifyOrderService {
 	return s
 }
 
-// NewClientOrderID set newClientOrderID
-func (s *ModifyOrderService) NewClientOrderID(newClientOrderID string) *ModifyOrderService {
-	s.newClientOrderID = &newClientOrderID
-	return s
-}
-
-// StopPrice set stopPrice
-func (s *ModifyOrderService) StopPrice(stopPrice string) *ModifyOrderService {
-	s.stopPrice = &stopPrice
-	return s
-}
-
-// WorkingType set workingType
-func (s *ModifyOrderService) WorkingType(workingType WorkingType) *ModifyOrderService {
-	s.workingType = &workingType
-	return s
-}
-
-// ActivationPrice set activationPrice
-func (s *ModifyOrderService) ActivationPrice(activationPrice string) *ModifyOrderService {
-	s.activationPrice = &activationPrice
-	return s
-}
-
-// CallbackRate set callbackRate
-func (s *ModifyOrderService) CallbackRate(callbackRate string) *ModifyOrderService {
-	s.callbackRate = &callbackRate
-	return s
-}
-
-// PriceProtect set priceProtect
-func (s *ModifyOrderService) PriceProtect(priceProtect bool) *ModifyOrderService {
-	priceProtectStr := strconv.FormatBool(priceProtect)
-	s.priceProtect = &priceProtectStr
-	return s
-}
-
-// NewOrderResponseType set newOrderResponseType
-func (s *ModifyOrderService) NewOrderResponseType(newOrderResponseType NewOrderRespType) *ModifyOrderService {
-	s.newOrderRespType = newOrderResponseType
-	return s
-}
-
-// ClosePosition set closePosition
-func (s *ModifyOrderService) ClosePosition(closePosition bool) *ModifyOrderService {
-	closePositionStr := strconv.FormatBool(closePosition)
-	s.closePosition = &closePositionStr
+// PriceMatch set priceMatch
+func (s *ModifyOrderService) PriceMatch(priceMatch PriceMatchType) *ModifyOrderService {
+	s.priceMatch = &priceMatch
 	return s
 }
 
 func (s *ModifyOrderService) modifyOrder(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, header *http.Header, err error) {
-
 	r := &request{
 		method:   http.MethodPut,
 		endpoint: endpoint,
 		secType:  secTypeSigned,
 	}
 	m := params{
-		"symbol":           s.symbol,
-		"side":             s.side,
-		"type":             s.orderType,
-		"newOrderRespType": s.newOrderRespType,
+		"symbol":   s.symbol,
+		"side":     s.side,
+		"quantity": s.quantity,
 	}
-	if s.quantity != "" {
-		m["quantity"] = s.quantity
+	if s.orderID != nil {
+		m["orderId"] = *s.orderID
 	}
-	if s.positionSide != nil {
-		m["positionSide"] = *s.positionSide
-	}
-	if s.timeInForce != nil {
-		m["timeInForce"] = *s.timeInForce
-	}
-	if s.reduceOnly != nil {
-		m["reduceOnly"] = *s.reduceOnly
+	if s.origClientOrderID != nil {
+		m["origClientOrderId"] = *s.origClientOrderID
 	}
 	if s.price != nil {
 		m["price"] = *s.price
 	}
-	if s.newClientOrderID != nil {
-		m["newClientOrderId"] = *s.newClientOrderID
-	}
-	if s.stopPrice != nil {
-		m["stopPrice"] = *s.stopPrice
-	}
-	if s.workingType != nil {
-		m["workingType"] = *s.workingType
-	}
-	if s.priceProtect != nil {
-		m["priceProtect"] = *s.priceProtect
-	}
-	if s.activationPrice != nil {
-		m["activationPrice"] = *s.activationPrice
-	}
-	if s.callbackRate != nil {
-		m["callbackRate"] = *s.callbackRate
-	}
-	if s.closePosition != nil {
-		m["closePosition"] = *s.closePosition
+	if s.priceMatch != nil {
+		m["priceMatch"] = *s.priceMatch
 	}
 	r.setFormParams(m)
 	data, header, err = s.c.callAPI(ctx, r, opts...)
@@ -428,18 +321,46 @@ func (s *ModifyOrderService) modifyOrder(ctx context.Context, endpoint string, o
 }
 
 // Do send request
-func (s *ModifyOrderService) Do(ctx context.Context, opts ...RequestOption) (res *Order, err error) {
+func (s *ModifyOrderService) Do(ctx context.Context, opts ...RequestOption) (res *ModifyOrderResponse, err error) {
 	data, _, err := s.modifyOrder(ctx, "/fapi/v1/order", opts...)
 	if err != nil {
 		return nil, err
 	}
-	res = new(Order)
+	res = new(ModifyOrderResponse)
 	err = json.Unmarshal(data, res)
 
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
+}
+
+type ModifyOrderResponse struct {
+	OrderID                 int64            `json:"orderId"`
+	Symbol                  string           `json:"symbol"`
+	Pair                    string           `json:"pair"`
+	Status                  OrderStatusType  `json:"status"`
+	ClientOrderID           string           `json:"clientOrderId"`
+	Price                   string           `json:"price"`
+	AveragePrice            string           `json:"avgPrice"`
+	OriginalQuantity        string           `json:"origQty"`
+	ExecutedQuantity        string           `json:"executedQty"`
+	CumulativeQuantity      string           `json:"cumQty"`
+	CumulativeBase          string           `json:"cumBase"`
+	TimeInForce             TimeInForceType  `json:"timeInForce"`
+	Type                    OrderType        `json:"type"`
+	ReduceOnly              bool             `json:"reduceOnly"`
+	ClosePosition           bool             `json:"closePosition"`
+	Side                    SideType         `json:"side"`
+	PositionSide            PositionSideType `json:"positionSide"`
+	StopPrice               string           `json:"stopPrice"`
+	WorkingType             WorkingType      `json:"workingType"`
+	PriceProtect            bool             `json:"priceProtect"` // if conditional order trigger is protected
+	OriginalType            OrderType        `json:"origType"`
+	PriceMatch              PriceMatchType   `json:"priceMatch"`
+	SelfTradePreventionMode string           `json:"selfTradePreventionMode"`
+	GoodTillDate            int64            `json:"goodTillDate"` // order pre-set auto cancel time for TIF GTD order
+	UpdateTime              int64            `json:"updateTime"`
 }
 
 // ListOpenOrdersService list opened orders
@@ -588,7 +509,7 @@ type Order struct {
 	ReduceOnly              bool             `json:"reduceOnly"`
 	OrigQuantity            string           `json:"origQty"`
 	ExecutedQuantity        string           `json:"executedQty"`
-	CumQuantity             string           `json:"cumQty"`
+	CumQuantity             string           `json:"cumQty"` // deprecated: use ExecutedQuantity instead
 	CumQuote                string           `json:"cumQuote"`
 	Status                  OrderStatusType  `json:"status"`
 	TimeInForce             TimeInForceType  `json:"timeInForce"`
@@ -737,7 +658,7 @@ func (s *CancelOrderService) Do(ctx context.Context, opts ...RequestOption) (res
 // CancelOrderResponse define response of canceling order
 type CancelOrderResponse struct {
 	ClientOrderID    string           `json:"clientOrderId"`
-	CumQuantity      string           `json:"cumQty"`
+	CumQuantity      string           `json:"cumQty"` // deprecated: use ExecutedQuantity instead
 	CumQuote         string           `json:"cumQuote"`
 	ExecutedQuantity string           `json:"executedQty"`
 	OrderID          int64            `json:"orderId"`
@@ -874,6 +795,7 @@ func (s *ListLiquidationOrdersService) Limit(limit int) *ListLiquidationOrdersSe
 }
 
 // Do send request
+// Deprecated: use /fapi/v1/forceOrders instead
 func (s *ListLiquidationOrdersService) Do(ctx context.Context, opts ...RequestOption) (res []*LiquidationOrder, err error) {
 	r := &request{
 		method:   http.MethodGet,

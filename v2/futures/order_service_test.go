@@ -438,74 +438,116 @@ func (s *orderServiceTestSuite) TestListOrders() {
 
 func (s *orderServiceTestSuite) TestModifyOrder() {
 	data := []byte(`{
-		"clientOrderId": "myOrder1",
-		"cumQty": "0",
-		"cumQuote": "0",
-		"executedQty": "0",
-		"orderId": 283194212,
-		"origQty": "11",
-		"price": "8301",
-		"reduceOnly": false,
-		"side": "BUY",
-		"status": "CANCELED",
-		"stopPrice": "8300",
+		"orderId": 20072994037,
 		"symbol": "BTCUSDT",
+		"pair": "BTCUSDT",
+		"status": "NEW",
+		"clientOrderId": "LJ9R4QZDihCaS8UAOOLpgW",
+		"price": "30005",
+		"avgPrice": "0.0",
+		"origQty": "1",
+		"executedQty": "0",
+		"cumQty": "0",
+		"cumBase": "0",
 		"timeInForce": "GTC",
-		"type": "TAKE_PROFIT",
-		"updateTime": 1571110484038,
+		"type": "LIMIT",
+		"reduceOnly": false,
+		"closePosition": false,
+		"side": "BUY",
+		"positionSide": "LONG",
+		"stopPrice": "0",
 		"workingType": "CONTRACT_PRICE",
-		"activatePrice": "10000",
-		"priceRate":"0.1",
-		"positionSide":"BOTH",
-		"priceProtect": false
+		"priceProtect": false,
+		"origType": "LIMIT",
+		"priceMatch": "NONE",
+		"selfTradePreventionMode": "NONE",
+		"goodTillDate": 0,
+		"updateTime": 1629182711600
 	}`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
 
+	orderID := int64(20072994037)
+	origClientOrderID := "LJ9R4QZDihCaS8UAOOLpgW"
 	symbol := "BTCUSDT"
-	orderID := int64(28)
-	origClientOrderID := "myOrder1"
-	price := "8301"
-	side := SideTypeSell
+	side := SideTypeBuy
+	quantity := "1"
+	price := "30005"
+	priceMatch := PriceMatchTypeNone
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setFormParams(params{
-			"symbol":            symbol,
 			"orderId":           orderID,
 			"origClientOrderId": origClientOrderID,
-			"price":             price,
+			"symbol":            symbol,
 			"side":              side,
+			"quantity":          quantity,
+			"price":             price,
+			"priceMatch":        priceMatch,
 		})
 		s.assertRequestEqual(e, r)
 	})
 
-	res, err := s.client.NewModifyOrderService().Symbol(symbol).Side(side).
-		OrderID(orderID).OrigClientOrderID(origClientOrderID).Price(price).
-		Do(newContext())
+	res, err := s.client.NewModifyOrderService().OrderID(orderID).OrigClientOrderID(origClientOrderID).
+		Symbol(symbol).Side(side).Quantity(quantity).Price(price).PriceMatch(priceMatch).Do(newContext())
 	r := s.r()
 	r.NoError(err)
-	e := &Order{
-		ClientOrderID:    origClientOrderID,
-		CumQuantity:      "0",
-		CumQuote:         "0",
-		ExecutedQuantity: "0",
-		OrderID:          283194212,
-		OrigQuantity:     "11",
-		Price:            "8301",
-		ReduceOnly:       false,
-		Side:             SideTypeBuy,
-		Status:           OrderStatusTypeCanceled,
-		StopPrice:        "8300",
-		Symbol:           symbol,
-		TimeInForce:      TimeInForceTypeGTC,
-		Type:             OrderTypeTakeProfit,
-		UpdateTime:       1571110484038,
-		WorkingType:      WorkingTypeContractPrice,
-		ActivatePrice:    "10000",
-		PriceRate:        "0.1",
-		PositionSide:     "BOTH",
-		PriceProtect:     false,
+	e := &ModifyOrderResponse{
+		OrderID:                 orderID,
+		Symbol:                  symbol,
+		Pair:                    "BTCUSDT",
+		Status:                  OrderStatusTypeNew,
+		ClientOrderID:           origClientOrderID,
+		Price:                   price,
+		AveragePrice:            "0.0",
+		OriginalQuantity:        quantity,
+		ExecutedQuantity:        "0",
+		CumulativeQuantity:      "0",
+		CumulativeBase:          "0",
+		TimeInForce:             TimeInForceTypeGTC,
+		Type:                    OrderTypeLimit,
+		ReduceOnly:              false,
+		ClosePosition:           false,
+		Side:                    side,
+		PositionSide:            PositionSideTypeLong,
+		StopPrice:               "0",
+		WorkingType:             WorkingTypeContractPrice,
+		PriceProtect:            false,
+		OriginalType:            OrderTypeLimit,
+		PriceMatch:              priceMatch,
+		SelfTradePreventionMode: "NONE",
+		GoodTillDate:            0,
+		UpdateTime:              1629182711600,
 	}
-	s.assertOrderEqual(e, res)
+	s.assertModifyOrderResponseEqual(e, res)
+}
+
+func (s *baseOrderTestSuite) assertModifyOrderResponseEqual(e, a *ModifyOrderResponse) {
+	r := s.r()
+	r.Equal(e.OrderID, a.OrderID, "OrderID")
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.Pair, a.Pair, "Pair")
+	r.Equal(e.Status, a.Status, "Status")
+	r.Equal(e.ClientOrderID, a.ClientOrderID, "ClientOrderID")
+	r.Equal(e.Price, a.Price, "Price")
+	r.Equal(e.AveragePrice, a.AveragePrice, "AveragePrice")
+	r.Equal(e.OriginalQuantity, a.OriginalQuantity, "OriginalQuantity")
+	r.Equal(e.ExecutedQuantity, a.ExecutedQuantity, "ExecutedQuantity")
+	r.Equal(e.CumulativeQuantity, a.CumulativeQuantity, "CumulativeQuantity")
+	r.Equal(e.CumulativeBase, a.CumulativeBase, "CumulativeBase")
+	r.Equal(e.TimeInForce, a.TimeInForce, "TimeInForce")
+	r.Equal(e.Type, a.Type, "Type")
+	r.Equal(e.ReduceOnly, a.ReduceOnly, "ReduceOnly")
+	r.Equal(e.ClosePosition, a.ClosePosition, "ClosePosition")
+	r.Equal(e.Side, a.Side, "Side")
+	r.Equal(e.PositionSide, a.PositionSide, "PositionSide")
+	r.Equal(e.StopPrice, a.StopPrice, "StopPrice")
+	r.Equal(e.WorkingType, a.WorkingType, "WorkingType")
+	r.Equal(e.PriceProtect, a.PriceProtect, "PriceProtect")
+	r.Equal(e.OriginalType, a.OriginalType, "OriginalType")
+	r.Equal(e.PriceMatch, a.PriceMatch, "PriceMatch")
+	r.Equal(e.SelfTradePreventionMode, a.SelfTradePreventionMode, "SelfTradePreventionMode")
+	r.Equal(e.GoodTillDate, a.GoodTillDate, "GoodTillDate")
+	r.Equal(e.UpdateTime, a.UpdateTime, "UpdateTime")
 }
 
 func (s *orderServiceTestSuite) TestCancelOrder() {
