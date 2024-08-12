@@ -255,11 +255,13 @@ func (s *ModifyOrderService) Symbol(symbol string) *ModifyOrderService {
 	return s
 }
 
+// OrderID will prevail over OrigClientOrderID
 func (s *ModifyOrderService) OrderID(orderID int64) *ModifyOrderService {
 	s.orderID = &orderID
 	return s
 }
 
+// OrigClientOrderID is not necessary if OrderID is provided
 func (s *ModifyOrderService) OrigClientOrderID(origClientOrderID string) *ModifyOrderService {
 	s.origClientOrderID = &origClientOrderID
 	return s
@@ -320,7 +322,16 @@ func (s *ModifyOrderService) modifyOrder(ctx context.Context, endpoint string, o
 	return data, header, nil
 }
 
-// Do send request
+// Do send request:
+//   - Either orderId or origClientOrderId must be sent, and the orderId will prevail if both are sent
+//   - Either price or priceMatch must be sent. Sending both will fail the request
+//   - When the new quantity or price doesn't satisfy PriceFilter / PercentPriceFilter / LotSizeFilter,
+//     amendment will be rejected and the order will stay as it is
+//   - However the order will be cancelled by the amendment in the following situations:
+//     -- when the order is in partially filled status and the new quantity <= executedQty
+//     -- when the order is TimeInForceTypeGTX and the new price will cause it to be executed immediately
+//   - One order can only be modified for less than 10000 times
+//   - Will set ModifyOrderResponse.SelfTradePreventionMode to "NONE"
 func (s *ModifyOrderService) Do(ctx context.Context, opts ...RequestOption) (res *ModifyOrderResponse, err error) {
 	data, _, err := s.modifyOrder(ctx, "/fapi/v1/order", opts...)
 	if err != nil {
