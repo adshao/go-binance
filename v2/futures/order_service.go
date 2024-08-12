@@ -245,20 +245,9 @@ type ModifyOrderService struct {
 	orderID           *int64
 	origClientOrderID *string
 	side              SideType
-	positionSide      *PositionSideType
-	orderType         OrderType
-	timeInForce       *TimeInForceType
 	quantity          string
-	reduceOnly        *string
-	price             *string
-	newClientOrderID  *string
-	stopPrice         *string
-	workingType       *WorkingType
-	activationPrice   *string
-	callbackRate      *string
-	priceProtect      *string
-	newOrderRespType  NewOrderRespType
-	closePosition     *string
+	price             string
+	priceMatch        *PriceMatchType
 }
 
 // Symbol set symbol
@@ -267,11 +256,13 @@ func (s *ModifyOrderService) Symbol(symbol string) *ModifyOrderService {
 	return s
 }
 
+// OrderID set orderID
 func (s *ModifyOrderService) OrderID(orderID int64) *ModifyOrderService {
 	s.orderID = &orderID
 	return s
 }
 
+// OrigClientOrderID set origClientOrderID
 func (s *ModifyOrderService) OrigClientOrderID(origClientOrderID string) *ModifyOrderService {
 	s.origClientOrderID = &origClientOrderID
 	return s
@@ -283,90 +274,21 @@ func (s *ModifyOrderService) Side(side SideType) *ModifyOrderService {
 	return s
 }
 
-// PositionSide set side
-func (s *ModifyOrderService) PositionSide(positionSide PositionSideType) *ModifyOrderService {
-	s.positionSide = &positionSide
-	return s
-}
-
-// Type set type
-func (s *ModifyOrderService) Type(orderType OrderType) *ModifyOrderService {
-	s.orderType = orderType
-	return s
-}
-
-// TimeInForce set timeInForce
-func (s *ModifyOrderService) TimeInForce(timeInForce TimeInForceType) *ModifyOrderService {
-	s.timeInForce = &timeInForce
-	return s
-}
-
 // Quantity set quantity
 func (s *ModifyOrderService) Quantity(quantity string) *ModifyOrderService {
 	s.quantity = quantity
 	return s
 }
 
-// ReduceOnly set reduceOnly
-func (s *ModifyOrderService) ReduceOnly(reduceOnly bool) *ModifyOrderService {
-	reduceOnlyStr := strconv.FormatBool(reduceOnly)
-	s.reduceOnly = &reduceOnlyStr
-	return s
-}
-
 // Price set price
 func (s *ModifyOrderService) Price(price string) *ModifyOrderService {
-	s.price = &price
+	s.price = price
 	return s
 }
 
-// NewClientOrderID set newClientOrderID
-func (s *ModifyOrderService) NewClientOrderID(newClientOrderID string) *ModifyOrderService {
-	s.newClientOrderID = &newClientOrderID
-	return s
-}
-
-// StopPrice set stopPrice
-func (s *ModifyOrderService) StopPrice(stopPrice string) *ModifyOrderService {
-	s.stopPrice = &stopPrice
-	return s
-}
-
-// WorkingType set workingType
-func (s *ModifyOrderService) WorkingType(workingType WorkingType) *ModifyOrderService {
-	s.workingType = &workingType
-	return s
-}
-
-// ActivationPrice set activationPrice
-func (s *ModifyOrderService) ActivationPrice(activationPrice string) *ModifyOrderService {
-	s.activationPrice = &activationPrice
-	return s
-}
-
-// CallbackRate set callbackRate
-func (s *ModifyOrderService) CallbackRate(callbackRate string) *ModifyOrderService {
-	s.callbackRate = &callbackRate
-	return s
-}
-
-// PriceProtect set priceProtect
-func (s *ModifyOrderService) PriceProtect(priceProtect bool) *ModifyOrderService {
-	priceProtectStr := strconv.FormatBool(priceProtect)
-	s.priceProtect = &priceProtectStr
-	return s
-}
-
-// NewOrderResponseType set newOrderResponseType
-func (s *ModifyOrderService) NewOrderResponseType(newOrderResponseType NewOrderRespType) *ModifyOrderService {
-	s.newOrderRespType = newOrderResponseType
-	return s
-}
-
-// ClosePosition set closePosition
-func (s *ModifyOrderService) ClosePosition(closePosition bool) *ModifyOrderService {
-	closePositionStr := strconv.FormatBool(closePosition)
-	s.closePosition = &closePositionStr
+// PriceMatch set priceMatch
+func (s *ModifyOrderService) PriceMatch(priceMatch PriceMatchType) *ModifyOrderService {
+	s.priceMatch = &priceMatch
 	return s
 }
 
@@ -378,46 +300,13 @@ func (s *ModifyOrderService) modifyOrder(ctx context.Context, endpoint string, o
 		secType:  secTypeSigned,
 	}
 	m := params{
-		"symbol":           s.symbol,
-		"side":             s.side,
-		"type":             s.orderType,
-		"newOrderRespType": s.newOrderRespType,
+		"symbol":   s.symbol,
+		"side":     s.side,
+		"quantity": s.quantity,
+		"price":    s.price,
 	}
 	if s.quantity != "" {
 		m["quantity"] = s.quantity
-	}
-	if s.positionSide != nil {
-		m["positionSide"] = *s.positionSide
-	}
-	if s.timeInForce != nil {
-		m["timeInForce"] = *s.timeInForce
-	}
-	if s.reduceOnly != nil {
-		m["reduceOnly"] = *s.reduceOnly
-	}
-	if s.price != nil {
-		m["price"] = *s.price
-	}
-	if s.newClientOrderID != nil {
-		m["newClientOrderId"] = *s.newClientOrderID
-	}
-	if s.stopPrice != nil {
-		m["stopPrice"] = *s.stopPrice
-	}
-	if s.workingType != nil {
-		m["workingType"] = *s.workingType
-	}
-	if s.priceProtect != nil {
-		m["priceProtect"] = *s.priceProtect
-	}
-	if s.activationPrice != nil {
-		m["activationPrice"] = *s.activationPrice
-	}
-	if s.callbackRate != nil {
-		m["callbackRate"] = *s.callbackRate
-	}
-	if s.closePosition != nil {
-		m["closePosition"] = *s.closePosition
 	}
 	r.setFormParams(m)
 	data, header, err = s.c.callAPI(ctx, r, opts...)
@@ -429,13 +318,30 @@ func (s *ModifyOrderService) modifyOrder(ctx context.Context, endpoint string, o
 
 // Do send request
 func (s *ModifyOrderService) Do(ctx context.Context, opts ...RequestOption) (res *Order, err error) {
-	data, _, err := s.modifyOrder(ctx, "/fapi/v1/order", opts...)
+	r := &request{
+		method:   http.MethodPut,
+		endpoint: "/fapi/v1/order",
+		secType:  secTypeSigned,
+	}
+	r.setFormParam("symbol", s.symbol)
+	r.setFormParam("side", s.side)
+	r.setFormParam("quantity", s.quantity)
+	r.setFormParam("price", s.price)
+	if s.orderID != nil {
+		r.setFormParam("orderId", *s.orderID)
+	}
+	if s.origClientOrderID != nil {
+		r.setFormParam("origClientOrderId", *s.origClientOrderID)
+	}
+	if s.priceMatch != nil {
+		r.setFormParam("priceMatch", *s.priceMatch)
+	}
+	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
 	}
 	res = new(Order)
 	err = json.Unmarshal(data, res)
-
 	if err != nil {
 		return nil, err
 	}

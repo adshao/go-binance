@@ -24,6 +24,9 @@ type SideType string
 // PositionSideType define position side type of order
 type PositionSideType string
 
+// PriceMatchType define price match type of order to modify
+type PriceMatchType string
+
 // OrderType define order type
 type OrderType string
 
@@ -83,6 +86,15 @@ const (
 	PositionSideTypeBoth  PositionSideType = "BOTH"
 	PositionSideTypeLong  PositionSideType = "LONG"
 	PositionSideTypeShort PositionSideType = "SHORT"
+
+	PriceMatchOpponent   PriceMatchType = "OPPONENT"
+	PriceMatchOpponent5  PriceMatchType = "OPPONENT_5"
+	PriceMatchOpponent10 PriceMatchType = "OPPONENT_10"
+	PriceMatchOpponent20 PriceMatchType = "OPPONENT_20"
+	PriceMatchQueue      PriceMatchType = "QUEUE"
+	PriceMatchQueue5     PriceMatchType = "QUEUE_5"
+	PriceMatchQueue10    PriceMatchType = "QUEUE_10"
+	PriceMatchQueue20    PriceMatchType = "QUEUE_20"
 
 	OrderTypeLimit              OrderType = "LIMIT"
 	OrderTypeMarket             OrderType = "MARKET"
