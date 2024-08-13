@@ -12,9 +12,14 @@ import (
 	"github.com/aiviaio/go-binance/v2/common"
 )
 
+// LiveStreamRateLimit is the rate limit for messages sent to the live stream WS connection
+// In fact Binance has a limit of five messages per second, but we are using four to have a margin
+const LiveStreamRateLimit = 4
+
 type WsLiveStreamsService struct {
-	conn      *websocket.Conn
-	connMutex sync.Mutex
+	conn        *websocket.Conn
+	connMutex   sync.Mutex
+	rateLimiter *time.Ticker
 
 	doneC           chan struct{}
 	errHandler      ErrHandler
@@ -38,10 +43,11 @@ type liveStreamOp struct {
 func NewWsLiveStreamsService(errHandler ErrHandler) (service *WsLiveStreamsService, doneC chan struct{}) {
 	doneC = make(chan struct{})
 	service = &WsLiveStreamsService{
-		doneC:      doneC,
-		errHandler: errHandler,
-		wsHandlers: make(map[string]WsHandler),
-		ops:        make(map[int64]*liveStreamOp),
+		rateLimiter: time.NewTicker(time.Second / LiveStreamRateLimit),
+		doneC:       doneC,
+		errHandler:  errHandler,
+		wsHandlers:  make(map[string]WsHandler),
+		ops:         make(map[int64]*liveStreamOp),
 	}
 	return
 }
@@ -125,37 +131,42 @@ func (s *WsLiveStreamsService) WsKlineServe(symbol string, interval string, hand
 
 // subscribe sends a subscription message to the WebSocket
 func (s *WsLiveStreamsService) subscribe(streams ...string) (stopC chan struct{}, err error) {
-	s.connMutex.Lock()
-	defer s.connMutex.Unlock()
-
 	stopC = make(chan struct{})
 	op := &liveStreamOp{ID: time.Now().UnixNano(), Method: common.LiveMethodSubscribe, Params: streams, stopC: stopC}
 	s.opsMutex.Lock()
 	s.ops[op.ID] = op
 	s.opsMutex.Unlock()
 	go s.waitForStop(op)
-	if err = s.conn.WriteJSON(op); err != nil {
-		return
-	}
 
+	<-s.rateLimiter.C
+	s.connMutex.Lock()
+	defer s.connMutex.Unlock()
+	if err = s.conn.WriteJSON(op); err != nil {
+		s.errHandler(fmt.Errorf("unable to write JSON: %w", err))
+	}
 	return
 }
 
 // unsubscribe sends an unsubscription message to the WebSocket
 func (s *WsLiveStreamsService) unsubscribe(streams ...string) error {
-	s.connMutex.Lock()
-	defer s.connMutex.Unlock()
-
 	op := &liveStreamOp{ID: time.Now().UnixMilli(), Method: common.LiveMethodUnsubscribe, Params: streams}
 	s.opsMutex.Lock()
 	s.ops[op.ID] = op
 	s.opsMutex.Unlock()
-	return s.conn.WriteJSON(op)
+
+	<-s.rateLimiter.C
+	s.connMutex.Lock()
+	defer s.connMutex.Unlock()
+	if err := s.conn.WriteJSON(op); err != nil {
+		return fmt.Errorf("unable to write JSON: %w", err)
+	}
+	return nil
 }
 
 // readMessages listens for incoming messages and handles them
 func (s *WsLiveStreamsService) readMessages() {
 	defer s.conn.Close()
+	defer s.rateLimiter.Stop()
 
 	for {
 		select {
@@ -238,6 +249,14 @@ func (s *WsLiveStreamsService) connect() error {
 	if err != nil {
 		return fmt.Errorf("unable to dial websocket, endpoint: %s: %w", endpoint, err)
 	}
+	conn.SetPingHandler(func(pingPayload string) error {
+		fmt.Println("receive ping")
+		s.connMutex.Lock()
+		defer s.connMutex.Unlock()
+		<-s.rateLimiter.C
+		fmt.Println("send pong")
+		return conn.WriteControl(websocket.PongMessage, []byte(pingPayload), time.Now().Add(WebsocketTimeout))
+	})
 	s.conn = conn
 
 	go s.readMessages()
