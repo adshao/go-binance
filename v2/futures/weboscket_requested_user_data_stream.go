@@ -15,6 +15,9 @@ const (
 	userDataStreamRequestBalance      = "@balance"
 	userDataStreamRequestTypePosition = "@position"
 	userDataStreamRequestTypeAccount  = "@account"
+
+	// userDataStreamRateLimit represent number of messages that can be sent per second
+	userDataStreamRateLimit = 4
 )
 
 type WsRequestedUserDataStreamService struct {
@@ -22,8 +25,9 @@ type WsRequestedUserDataStreamService struct {
 	apiKey    string
 	keepAlive bool
 
-	conn      *websocket.Conn
-	connMutex sync.Mutex
+	conn        *websocket.Conn
+	connMutex   sync.Mutex
+	rateLimiter *time.Ticker
 
 	doneC        chan struct{}
 	stopC        chan struct{}
@@ -36,12 +40,13 @@ type WsRequestedUserDataStreamService struct {
 
 func NewWsRequestedUserDataStreamService(listenKey, apiKey string, keepAlive bool, errHandler ErrHandler) (service *WsRequestedUserDataStreamService, doneC, stopC chan struct{}) {
 	service = &WsRequestedUserDataStreamService{
-		doneC:        make(chan struct{}),
-		stopC:        make(chan struct{}),
-		errHandler:   errHandler,
 		listenKey:    listenKey,
 		apiKey:       apiKey,
 		keepAlive:    keepAlive,
+		rateLimiter:  time.NewTicker(time.Second / userDataStreamRateLimit),
+		doneC:        make(chan struct{}),
+		stopC:        make(chan struct{}),
+		errHandler:   errHandler,
 		respHandlers: make(map[int64]userDataStreamResultHandler),
 	}
 	doneC = service.doneC
@@ -155,44 +160,16 @@ func (s *WsRequestedUserDataStreamService) connect() error {
 	if err != nil {
 		return fmt.Errorf("unable to dial websocket, endpoint: %s: %w", endpoint, err)
 	}
+	conn.SetPingHandler(func(pingPayload string) error {
+		s.connMutex.Lock()
+		defer s.connMutex.Unlock()
+		<-s.rateLimiter.C
+		return conn.WriteControl(websocket.PongMessage, []byte(pingPayload), time.Now().Add(WebsocketTimeout))
+	})
 	s.conn = conn
 
-	keepAlive(s.conn, WebsocketTimeout)
 	go s.readMessages()
 	return nil
-}
-
-func (s *WsRequestedUserDataStreamService) keepAliveWSConnection() {
-	ticker := time.NewTicker(WebsocketTimeout)
-
-	lastResponse := time.Now()
-	s.conn.SetPongHandler(func(msg string) error {
-		lastResponse = time.Now()
-		return nil
-	})
-
-	go func() {
-		defer ticker.Stop()
-		for {
-			deadline := time.Now().Add(10 * time.Second)
-			s.connMutex.Lock()
-			err := s.conn.WriteControl(websocket.PingMessage, []byte{}, deadline)
-			s.connMutex.Unlock()
-			if err != nil {
-				return
-			}
-
-			select {
-			case <-ticker.C:
-				if time.Since(lastResponse) > WebsocketTimeout {
-					s.doneC <- struct{}{}
-					return
-				}
-			case <-s.doneC:
-				return
-			}
-		}
-	}()
 }
 
 func (s *WsRequestedUserDataStreamService) readMessages() {
@@ -292,13 +269,15 @@ type userDataStreamResult struct {
 type userDataStreamResultHandler func(result *userDataStreamResult)
 
 func (s *WsRequestedUserDataStreamService) sendStreamRequest(method string, params interface{}, handler userDataStreamResultHandler) error {
-	s.connMutex.Lock()
-	defer s.connMutex.Unlock()
-
 	op := &userDataStreamRequest{ID: time.Now().UnixNano(), Method: method, Params: params}
 	s.respHandlersMutex.Lock()
 	s.respHandlers[op.ID] = handler
 	s.respHandlersMutex.Unlock()
+
+	<-s.rateLimiter.C
+	s.connMutex.Lock()
+	defer s.connMutex.Unlock()
+	fmt.Println("send request")
 	return s.conn.WriteJSON(op)
 }
 
