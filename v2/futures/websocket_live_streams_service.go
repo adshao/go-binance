@@ -262,11 +262,9 @@ func (s *WsLiveStreamsService) connect() error {
 		return fmt.Errorf("unable to dial websocket, endpoint: %s: %w", endpoint, err)
 	}
 	conn.SetPingHandler(func(pingPayload string) error {
-		fmt.Println("receive ping")
 		s.connMutex.Lock()
 		defer s.connMutex.Unlock()
 		<-s.rateLimiter.C
-		fmt.Println("send pong")
 		return conn.WriteControl(websocket.PongMessage, []byte(pingPayload), time.Now().Add(WebsocketTimeout))
 	})
 	s.conn = conn
