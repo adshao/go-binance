@@ -39,6 +39,13 @@ type ExchangeInfo struct {
 	RateLimits      []RateLimit   `json:"rateLimits"`
 	ExchangeFilters []interface{} `json:"exchangeFilters"`
 	Symbols         []Symbol      `json:"symbols"`
+	Assets          []Asset       `json:"assets"`
+}
+
+type Asset struct {
+	Asset             string `json:"asset"`
+	MarginAvailable   bool   `json:"marginAvailable"`
+	AutoAssetExchange string `json:"autoAssetExchange"`
 }
 
 // RateLimit struct
