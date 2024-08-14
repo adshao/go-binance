@@ -1042,3 +1042,129 @@ type UniversalTransferHistoryResponse struct {
 	FromAccountType string `json:"fromAccountType"`
 	ToAccountType   string `json:"toAccountType"`
 }
+
+// SubAccountDepositHistoryService Get Sub Account Deposit History
+// https://binance-docs.github.io/Brokerage-API/Brokerage_Operation_Endpoints/#get-sub-account-deposit-history
+type SubAccountDepositHistoryService struct {
+	c            *Client
+	subAccountId string
+	coin         *string
+	status       *int64
+	startTime    *int64
+	endTime      *int64
+	//default 500, max 500
+	limit  *int64
+	offset *int64
+}
+
+// SubAccountID set subAccountId
+func (s *SubAccountDepositHistoryService) SubAccountID(subAccountId string) *SubAccountDepositHistoryService {
+	s.subAccountId = subAccountId
+	return s
+}
+
+// Coin set cion
+func (s *SubAccountDepositHistoryService) Coin(coin string) *SubAccountDepositHistoryService {
+	s.coin = &coin
+	return s
+}
+
+// Status set status
+func (s *SubAccountDepositHistoryService) Status(status int64) *SubAccountDepositHistoryService {
+	s.status = &status
+	return s
+}
+
+// StartTime set startTime
+func (s *SubAccountDepositHistoryService) StartTime(startTime int64) *SubAccountDepositHistoryService {
+	s.startTime = &startTime
+	return s
+}
+
+// EndTime set endTime
+func (s *SubAccountDepositHistoryService) EndTime(endTime int64) *SubAccountDepositHistoryService {
+	s.endTime = &endTime
+	return s
+}
+
+// Limit set limit
+func (s *SubAccountDepositHistoryService) Limit(limit int64) *SubAccountDepositHistoryService {
+	s.limit = &limit
+	return s
+}
+
+// Offset set offset
+func (s *SubAccountDepositHistoryService) Offset(offset int64) *SubAccountDepositHistoryService {
+	s.offset = &offset
+	return s
+}
+
+func (s *SubAccountDepositHistoryService) subAccountDepositHistory(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: endpoint,
+		secType:  secTypeSigned,
+	}
+
+	m := params{
+		"subAccountId": s.subAccountId,
+	}
+	r.setParams(m)
+
+	if s.coin != nil {
+		r.setParam("coin", *s.coin)
+	}
+	if s.status != nil {
+		r.setParam("status", *s.status)
+	}
+	if s.startTime != nil {
+		r.setParam("startTime", *s.startTime)
+	}
+	if s.startTime != nil {
+		r.setParam("endTime", *s.endTime)
+	}
+	if s.limit != nil {
+		r.setParam("limit", *s.limit)
+	}
+	if s.offset != nil {
+		r.setParam("offset", *s.offset)
+	}
+
+	data, err = s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []byte{}, err
+	}
+	return data, nil
+}
+
+// Do send request
+func (s *SubAccountDepositHistoryService) Do(ctx context.Context, opts ...RequestOption) (res []*SubAccountDepositHistoryResponse, err error) {
+	data, err := s.subAccountDepositHistory(ctx, "/sapi/v1/broker/subAccount/depositHist", opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = make([]*SubAccountDepositHistoryResponse, 0)
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// SubAccountDepositHistoryResponse Get Sub Account Deposit History
+type SubAccountDepositHistoryResponse struct {
+	DepositID        int64  `json:"depositId"`
+	SubAccountID     string `json:"subAccountId"`
+	Address          string `json:"address"`
+	AddressTag       string `json:"addressTag"`
+	Amount           string `json:"amount"`
+	Coin             string `json:"coin"`
+	InsertTime       int64  `json:"insertTime"`
+	TransferType     int64  `json:"transferType"`
+	Network          string `json:"network"`
+	Status           int64  `json:"status"`
+	TxID             string `json:"txId"`
+	SourceAddress    string `json:"sourceAddress"`
+	ConfirmTimes     string `json:"confirmTimes"`
+	SelfReturnStatus int64  `json:"selfReturnStatus"`
+}
