@@ -1265,6 +1265,6 @@ func (s *SubAccountTransferFuturesService) Do(ctx context.Context, opts ...Reque
 // SubAccountTransferFuturesResponse Sub Account Transfer（FUTURES)
 type SubAccountTransferFuturesResponse struct {
 	Success      bool   `json:"success"`
-	TxnID        string `json:"txnId"`
+	TxnID        int64  `json:"txnId"`
 	ClientTranID string `json:"clientTranId"`
 }
