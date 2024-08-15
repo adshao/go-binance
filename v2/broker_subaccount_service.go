@@ -1168,3 +1168,103 @@ type SubAccountDepositHistoryResponse struct {
 	ConfirmTimes     string `json:"confirmTimes"`
 	SelfReturnStatus int64  `json:"selfReturnStatus"`
 }
+
+// SubAccountTransferFuturesService Sub Account Transfer（FUTURES）
+// https://binance-docs.github.io/Brokerage-API/Brokerage_Operation_Endpoints/#sub-account-transferfutures
+type SubAccountTransferFuturesService struct {
+	c *Client
+	// Either fromId or toId must be sent.
+	fromId *string
+	// Either fromId or toId must be sent.
+	toId         *string
+	futuresType  int64
+	asset        string
+	amount       float64
+	clientTranId string
+}
+
+// FromID set fromId
+func (s *SubAccountTransferFuturesService) FromID(fromId string) *SubAccountTransferFuturesService {
+	s.fromId = &fromId
+	return s
+}
+
+// ToID set toId
+func (s *SubAccountTransferFuturesService) ToID(toId string) *SubAccountTransferFuturesService {
+	s.toId = &toId
+	return s
+}
+
+// FuturesType set futuresType
+func (s *SubAccountTransferFuturesService) FuturesType(futuresType int64) *SubAccountTransferFuturesService {
+	s.futuresType = futuresType
+	return s
+}
+
+// Asset set startTime
+func (s *SubAccountTransferFuturesService) Asset(asset string) *SubAccountTransferFuturesService {
+	s.asset = asset
+	return s
+}
+
+// Amount set amount
+func (s *SubAccountTransferFuturesService) Amount(amount float64) *SubAccountTransferFuturesService {
+	s.amount = amount
+	return s
+}
+
+// ClientTranId set clientTranId
+func (s *SubAccountTransferFuturesService) ClientTranId(clientTranId string) *SubAccountTransferFuturesService {
+	s.clientTranId = clientTranId
+	return s
+}
+
+func (s *SubAccountTransferFuturesService) subAccountTransferFutures(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: endpoint,
+		secType:  secTypeSigned,
+	}
+
+	m := params{
+		"futuresType":  s.futuresType,
+		"asset":        s.asset,
+		"amount":       s.amount,
+		"clientTranId": s.clientTranId,
+	}
+	r.setParams(m)
+
+	if s.fromId != nil {
+		r.setParam("fromId", *s.fromId)
+	}
+	if s.toId != nil {
+		r.setParam("toId", *s.toId)
+	}
+
+	data, err = s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []byte{}, err
+	}
+	return data, nil
+}
+
+// Do send request
+func (s *SubAccountTransferFuturesService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountTransferFuturesResponse, err error) {
+	data, err := s.subAccountTransferFutures(ctx, "/sapi/v1/broker/transfer/futures", opts...)
+	if err != nil {
+		return nil, err
+	}
+	res = &SubAccountTransferFuturesResponse{}
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// SubAccountTransferFuturesResponse Sub Account Transfer（FUTURES)
+type SubAccountTransferFuturesResponse struct {
+	Success      bool   `json:"success"`
+	TxnID        string `json:"txnId"`
+	ClientTranID string `json:"clientTranId"`
+}
