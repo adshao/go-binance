@@ -1074,3 +1074,8 @@ func (c *Client) NewUniversalTransferHistoryService() *UniversalTransferHistoryS
 func (c *Client) NewSubAccountDepositHistoryService() *SubAccountDepositHistoryService {
 	return &SubAccountDepositHistoryService{c: c}
 }
+
+// NewSubAccountTransferFuturesService Sub Account Transfer（FUTURES）
+func (c *Client) NewSubAccountTransferFuturesService() *SubAccountTransferFuturesService {
+	return &SubAccountTransferFuturesService{c: c}
+}
