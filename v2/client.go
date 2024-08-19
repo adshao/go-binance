@@ -112,6 +112,15 @@ type UserUniversalTransferStatusType string
 // FuturesOrderBookHistoryDataType define the futures order book history data types
 type FuturesOrderBookHistoryDataType string
 
+// FutureAlgoType define future algo types
+type FuturesAlgoType string
+
+// FutureAlgoUrgencyType define future algo urgency type
+type FuturesAlgoUrgencyType string
+
+// FutureAlgoOrderStatusType define future algo order status
+type FuturesAlgoOrderStatusType string
+
 // Endpoints
 var (
 	BaseAPIMainURL    = "https://api.binance.com"
@@ -295,6 +304,17 @@ const (
 
 	FuturesOrderBookHistoryDataTypeTDepth FuturesOrderBookHistoryDataType = "T_DEPTH"
 	FuturesOrderBookHistoryDataTypeSDepth FuturesOrderBookHistoryDataType = "S_DEPTH"
+
+	FuturesAlgoTypeVp   FuturesAlgoType = "VP"
+	FuturesAlgoTypeTwap FuturesAlgoType = "TWAP"
+
+	FuturesAlgoUrgencyTypeLow    FuturesAlgoUrgencyType = "LOW"
+	FuturesAlgoUrgencyTypeMedium FuturesAlgoUrgencyType = "MEDIUM"
+	FuturesAlgoUrgencyTypeHigh   FuturesAlgoUrgencyType = "HIGH"
+
+	FuturesAlgoOrderStatusTypeWorking   FuturesAlgoOrderStatusType = "WORKING"
+	FuturesAlgoOrderStatusTypeFinished  FuturesAlgoOrderStatusType = "FINISHED"
+	FuturesAlgoOrderStatusTypeCancelled FuturesAlgoOrderStatusType = "CANCELLED"
 )
 
 func currentTimestamp() int64 {
@@ -1303,4 +1323,34 @@ func (c *Client) NewSubAccountFuturesAccountV2Service() *SubAccountFuturesAccoun
 // Futures order book history service
 func (c *Client) NewFuturesOrderBookHistoryService() *FuturesOrderBookHistoryService {
 	return &FuturesOrderBookHistoryService{c: c}
+}
+
+// NewCreateFuturesAlgoVpOrderService create futures algo vp order
+func (c *Client) NewCreateFuturesAlgoVpOrderService() *CreateFuturesAlgoVpOrderService {
+	return &CreateFuturesAlgoVpOrderService{c: c}
+}
+
+// NewCreateFuturesAlgoTwapOrderService create futures algo twap order
+func (c *Client) NewCreateFuturesAlgoTwapOrderService() *CreateFuturesAlgoTwapOrderService {
+	return &CreateFuturesAlgoTwapOrderService{c: c}
+}
+
+// NewListOpenFuturesAlgoOrdersService list open futures algo orders
+func (c *Client) NewListOpenFuturesAlgoOrdersService() *ListOpenFuturesAlgoOrdersService {
+	return &ListOpenFuturesAlgoOrdersService{c: c}
+}
+
+// NewListHistoryFuturesAlgoOrdersService list history futures algo orders
+func (c *Client) NewListHistoryFuturesAlgoOrdersService() *ListHistoryFuturesAlgoOrdersService {
+	return &ListHistoryFuturesAlgoOrdersService{c: c}
+}
+
+// NewCancelFuturesAlgoOrderService cancel future algo order
+func (c *Client) NewCancelFuturesAlgoOrderService() *CancelFuturesAlgoOrderService {
+	return &CancelFuturesAlgoOrderService{c: c}
+}
+
+// NewGetFuturesAlgoSubOrdersService get futures algo sub orders
+func (c *Client) NewGetFuturesAlgoSubOrdersService() *GetFuturesAlgoSubOrdersService {
+	return &GetFuturesAlgoSubOrdersService{c: c}
 }
