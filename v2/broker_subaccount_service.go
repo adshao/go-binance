@@ -925,7 +925,7 @@ type UniversalTransferHistoryService struct {
 	// Either fromId or toId must be sent.
 	toId *string
 	// Client transfer id, must be unique. The max length is 32 characters
-	clientTranId string
+	clientTranId *string
 	startTime    *int64
 	endTime      *int64
 	page         int64
@@ -948,7 +948,7 @@ func (s *UniversalTransferHistoryService) ToID(toID string) *UniversalTransferHi
 
 // ClientTranID set clientTranID
 func (s *UniversalTransferHistoryService) ClientTranID(clientTranID string) *UniversalTransferHistoryService {
-	s.clientTranId = clientTranID
+	s.clientTranId = &clientTranID
 	return s
 }
 
@@ -990,7 +990,6 @@ func (s *UniversalTransferHistoryService) universalTransferHistory(ctx context.C
 	}
 
 	m := params{
-		"clientTranId":  s.clientTranId,
 		"page":          s.page,
 		"limit":         s.limit,
 		"showAllStatus": s.showAllStatus,
@@ -1002,6 +1001,9 @@ func (s *UniversalTransferHistoryService) universalTransferHistory(ctx context.C
 	}
 	if s.toId != nil {
 		r.setParam("toId", *s.toId)
+	}
+	if s.fromId != nil {
+		r.setParam("clientTranId", *s.clientTranId)
 	}
 	if s.startTime != nil {
 		r.setParam("startTime", *s.startTime)
