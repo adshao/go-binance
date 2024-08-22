@@ -1023,6 +1023,7 @@ func (s *UniversalTransferHistoryService) Do(ctx context.Context, opts ...Reques
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("UniversalTransferHistoryService: ", string(data))
 	res = make([]*UniversalTransferHistoryResponse, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
@@ -1369,7 +1370,6 @@ func (s *SubAccountTransferFuturesHistoryService) Do(ctx context.Context, opts .
 		return nil, err
 	}
 
-	fmt.Println("SubAccountTransferFuturesHistoryService: ", string(data))
 	res = &SubAccountTransferFuturesHistoryResponse{}
 	err = json.Unmarshal(data, &res)
 	if err != nil {
@@ -1390,7 +1390,7 @@ type Transfers struct {
 	ToSubAccountID   string `json:"to,omitempty"`
 	Asset            string `json:"asset"`
 	Quantity         string `json:"qty"`
-	TxID             int64  `json:"tranId"`
+	TxID             string `json:"tranId"`
 	ClientTranID     string `json:"clientTranId"`
 	Time             int64  `json:"time"`
 }
