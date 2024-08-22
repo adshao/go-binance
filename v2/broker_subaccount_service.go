@@ -2,6 +2,7 @@ package binance
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 )
 
@@ -1267,4 +1268,129 @@ type SubAccountTransferFuturesResponse struct {
 	Success      bool   `json:"success"`
 	TxnID        int64  `json:"txnId"`
 	ClientTranID string `json:"clientTranId"`
+}
+
+// SubAccountTransferFuturesHistoryService Query Sub Account Transfer History（FUTURES）
+// https://binance-docs.github.io/Brokerage-API/Brokerage_Operation_Endpoints/#query-sub-account-transfer-historyfutures
+type SubAccountTransferFuturesHistoryService struct {
+	c            *Client
+	subAccountId string
+	futuresType  int64
+	clientTranId *string
+	startTime    *int64
+	endTime      *int64
+	//default 50, max 500
+	limit *int64
+	page  *int64
+}
+
+// SubAccountID set subAccountId required
+func (s *SubAccountTransferFuturesHistoryService) SubAccountID(subAccountId string) *SubAccountTransferFuturesHistoryService {
+	s.subAccountId = subAccountId
+	return s
+}
+
+// FuturesType set futuresType required
+func (s *SubAccountTransferFuturesHistoryService) FuturesType(futuresType int64) *SubAccountTransferFuturesHistoryService {
+	s.futuresType = futuresType
+	return s
+}
+
+// ClientTranId set clientTranId
+func (s *SubAccountTransferFuturesHistoryService) ClientTranId(clientTranId string) *SubAccountTransferFuturesHistoryService {
+	s.clientTranId = &clientTranId
+	return s
+}
+
+// StartTime set startTime
+func (s *SubAccountTransferFuturesHistoryService) StartTime(startTime int64) *SubAccountTransferFuturesHistoryService {
+	s.startTime = &startTime
+	return s
+}
+
+// EndTime set endTime
+func (s *SubAccountTransferFuturesHistoryService) EndTime(endTime int64) *SubAccountTransferFuturesHistoryService {
+	s.endTime = &endTime
+	return s
+}
+
+// Page set page required
+func (s *SubAccountTransferFuturesHistoryService) Page(page int64) *SubAccountTransferFuturesHistoryService {
+	s.page = &page
+	return s
+}
+
+// Limit set limit required
+func (s *SubAccountTransferFuturesHistoryService) Limit(limit int64) *SubAccountTransferFuturesHistoryService {
+	s.limit = &limit
+	return s
+}
+
+func (s *SubAccountTransferFuturesHistoryService) subAccountTransferFuturesHistory(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: endpoint,
+		secType:  secTypeSigned,
+	}
+
+	m := params{
+		"subAccountId": s.subAccountId,
+		"futuresType":  s.futuresType,
+	}
+	r.setParams(m)
+
+	if s.clientTranId != nil {
+		r.setParam("clientTranId", *s.clientTranId)
+	}
+	if s.startTime != nil {
+		r.setParam("startTime", *s.startTime)
+	}
+	if s.endTime != nil {
+		r.setParam("endTime", *s.endTime)
+	}
+	if s.limit != nil {
+		r.setParam("limit", *s.limit)
+	}
+	if s.page != nil {
+		r.setParam("page", *s.page)
+	}
+
+	data, err = s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return []byte{}, err
+	}
+	return data, nil
+}
+
+// Do send request
+func (s *SubAccountTransferFuturesHistoryService) Do(ctx context.Context, opts ...RequestOption) (res *SubAccountTransferFuturesHistoryResponse, err error) {
+	data, err := s.subAccountTransferFuturesHistory(ctx, "/sapi/v1/broker/transfer/futures", opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("SubAccountTransferFuturesHistoryService: ", string(data))
+	res = &SubAccountTransferFuturesHistoryResponse{}
+	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// SubAccountTransferFuturesHistoryResponse Query Sub Account Transfer History（FUTURES）
+type SubAccountTransferFuturesHistoryResponse struct {
+	Success     bool        `json:"success"`
+	FuturesType int64       `json:"futuresType"`
+	Transfers   []Transfers `json:"transfers"`
+}
+
+type Transfers struct {
+	FromSubAccountID string `json:"from,omitempty"`
+	ToSubAccountID   string `json:"to,omitempty"`
+	Asset            string `json:"asset"`
+	Quantity         string `json:"qty"`
+	TxID             int64  `json:"tranId"`
+	ClientTranID     string `json:"clientTranId"`
+	Time             int64  `json:"time"`
 }
