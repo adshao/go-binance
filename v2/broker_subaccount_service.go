@@ -2,7 +2,6 @@ package binance
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 )
 
@@ -1025,7 +1024,6 @@ func (s *UniversalTransferHistoryService) Do(ctx context.Context, opts ...Reques
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("UniversalTransferHistoryService: ", string(data))
 	res = make([]*UniversalTransferHistoryResponse, 0)
 	err = json.Unmarshal(data, &res)
 	if err != nil {
@@ -1036,6 +1034,7 @@ func (s *UniversalTransferHistoryService) Do(ctx context.Context, opts ...Reques
 
 // UniversalTransferHistoryResponse Query Universal Transfer History response
 type UniversalTransferHistoryResponse struct {
+	FromID          string `json:"fromId"`
 	ToID            string `json:"toId"`
 	Asset           string `json:"asset"`
 	Qty             string `json:"qty"`
