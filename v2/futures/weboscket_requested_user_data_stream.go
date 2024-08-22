@@ -98,11 +98,8 @@ type WsUserDataPosition struct {
 type WsUserDataPositionResponseHandler func(response *WsUserDataPositionResponse)
 
 func (s *WsRequestedUserDataStreamService) RequestUserPosition(handler WsUserDataPositionResponseHandler) error {
-	if s.eventHandler == nil {
-		return fmt.Errorf("data stream is not started")
-	}
-	endpoint := s.listenKey + userDataStreamRequestTypePosition
-	return s.sendStreamRequest(userDataStreamMethodRequest, []string{endpoint}, userDataStreamResultHandlerWrapper(handler, s.errHandler))
+	wrappedHandler := userDataStreamResultHandlerWrapper(userDataStreamRequestTypePosition, handler, s.errHandler)
+	return s.sendStreamRequest(userDataStreamRequestTypePosition, wrappedHandler)
 }
 
 type WsUserDataBalanceResponse struct {
@@ -122,11 +119,8 @@ type WsUserDataBalance struct {
 type WsUserDataBalanceResponseHandler func(response *WsUserDataBalanceResponse)
 
 func (s *WsRequestedUserDataStreamService) RequestUserBalance(handler WsUserDataBalanceResponseHandler) error {
-	if s.eventHandler == nil {
-		return fmt.Errorf("data stream is not started")
-	}
-	endpoint := s.listenKey + userDataStreamRequestBalance
-	return s.sendStreamRequest(userDataStreamMethodRequest, []string{endpoint}, userDataStreamResultHandlerWrapper(handler, s.errHandler))
+	wrappedHandler := userDataStreamResultHandlerWrapper(userDataStreamRequestBalance, handler, s.errHandler)
+	return s.sendStreamRequest(userDataStreamRequestBalance, wrappedHandler)
 }
 
 type WsUserDataBalanceAccountInfoResponse struct {
@@ -140,11 +134,8 @@ type WsUserDataBalanceAccountInfoResponse struct {
 type WsUserDataBalanceAccountInfoResponseHandler func(response *WsUserDataBalanceAccountInfoResponse)
 
 func (s *WsRequestedUserDataStreamService) RequestAccountInformation(handler WsUserDataBalanceAccountInfoResponseHandler) error {
-	if s.eventHandler == nil {
-		return fmt.Errorf("data stream is not started")
-	}
-	endpoint := s.listenKey + userDataStreamRequestTypeAccount
-	return s.sendStreamRequest(userDataStreamMethodRequest, []string{endpoint}, userDataStreamResultHandlerWrapper(handler, s.errHandler))
+	wrappedHandler := userDataStreamResultHandlerWrapper(userDataStreamRequestTypeAccount, handler, s.errHandler)
+	return s.sendStreamRequest(userDataStreamRequestTypeAccount, wrappedHandler)
 }
 
 func (s *WsRequestedUserDataStreamService) connect() error {
@@ -236,18 +227,23 @@ func (s *WsRequestedUserDataStreamService) handleResponse(responseRaw []byte) {
 		return
 	}
 
-	if response.Result == nil || len(response.Result) == 0 {
-		s.errHandler(fmt.Errorf("response result is empty, responseID: %d", response.ID))
-		return
-	}
-
 	var respHandler userDataStreamResultHandler
+	var ok bool
+
 	s.respHandlersMutex.Lock()
-	respHandler = s.respHandlers[response.ID]
+	respHandler, ok = s.respHandlers[response.ID]
 	delete(s.respHandlers, response.ID)
 	s.respHandlersMutex.Unlock()
 
-	respHandler(&response.Result[0])
+	if !ok {
+		s.errHandler(fmt.Errorf("response handler not found, responseID: %d", response.ID))
+		return
+	}
+	if response.Result == nil || len(response.Result) == 0 {
+		s.errHandler(fmt.Errorf("response result is empty, handlerTag: %s, responseID: %d", respHandler.tag, response.ID))
+		return
+	}
+	respHandler.handler(&response.Result[0])
 }
 
 type userDataStreamRequest struct {
@@ -266,10 +262,19 @@ type userDataStreamResult struct {
 	Res json.RawMessage `json:"res"`
 }
 
-type userDataStreamResultHandler func(result *userDataStreamResult)
+type userDataStreamResultHandler struct {
+	tag     string
+	handler func(result *userDataStreamResult)
+}
 
-func (s *WsRequestedUserDataStreamService) sendStreamRequest(method string, params interface{}, handler userDataStreamResultHandler) error {
-	op := &userDataStreamRequest{ID: time.Now().UnixNano(), Method: method, Params: params}
+func (s *WsRequestedUserDataStreamService) sendStreamRequest(requestType string, handler userDataStreamResultHandler) error {
+	if s.eventHandler == nil {
+		return fmt.Errorf("data stream is not started")
+	}
+
+	endpoint := s.listenKey + requestType
+	op := &userDataStreamRequest{ID: time.Now().UnixNano(), Method: userDataStreamMethodRequest, Params: []string{endpoint}}
+
 	s.respHandlersMutex.Lock()
 	s.respHandlers[op.ID] = handler
 	s.respHandlersMutex.Unlock()
@@ -281,17 +286,20 @@ func (s *WsRequestedUserDataStreamService) sendStreamRequest(method string, para
 	return s.conn.WriteJSON(op)
 }
 
-func userDataStreamResultHandlerWrapper[T any](handler func(*T), errHandler ErrHandler) userDataStreamResultHandler {
-	return func(result *userDataStreamResult) {
-		if handler == nil {
-			return
-		}
-		response := new(T)
-		err := json.Unmarshal(result.Res, &response)
-		if err != nil {
-			errHandler(fmt.Errorf("unable to unmarshal response: %w", err))
-			return
-		}
-		handler(response)
+func userDataStreamResultHandlerWrapper[T any](tag string, handler func(*T), errHandler ErrHandler) userDataStreamResultHandler {
+	return userDataStreamResultHandler{
+		tag: tag,
+		handler: func(result *userDataStreamResult) {
+			if handler == nil {
+				return
+			}
+			response := new(T)
+			err := json.Unmarshal(result.Res, &response)
+			if err != nil {
+				errHandler(fmt.Errorf("unable to unmarshal response: %w", err))
+				return
+			}
+			handler(response)
+		},
 	}
 }
