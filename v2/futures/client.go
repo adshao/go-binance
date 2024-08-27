@@ -619,3 +619,8 @@ func (c *Client) NewLongShortRatioService() *LongShortRatioService {
 func (c *Client) NewSymbolConfService() *SymbolConfService {
 	return &SymbolConfService{c: c}
 }
+
+// NewBrokerRebateService Query Broker Futures Commission Rebate Record
+func (c *Client) NewBrokerRebateService() *BrokerRebateService {
+	return &BrokerRebateService{c: c}
+}

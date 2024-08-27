@@ -282,7 +282,6 @@ func (s *WsRequestedUserDataStreamService) sendStreamRequest(requestType string,
 	<-s.rateLimiter.C
 	s.connMutex.Lock()
 	defer s.connMutex.Unlock()
-	fmt.Println("send request")
 	return s.conn.WriteJSON(op)
 }
 

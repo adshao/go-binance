@@ -1084,3 +1084,8 @@ func (c *Client) NewSubAccountTransferFuturesService() *SubAccountTransferFuture
 func (c *Client) NewSubAccountTransferFuturesHistoryService() *SubAccountTransferFuturesHistoryService {
 	return &SubAccountTransferFuturesHistoryService{c: c}
 }
+
+// NewBrokerRebateService Query Broker Commission Rebate Recent Record
+func (c *Client) NewBrokerRebateService() *BrokerRebateService {
+	return &BrokerRebateService{c: c}
+}
