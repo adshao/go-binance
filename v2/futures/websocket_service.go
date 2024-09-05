@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -995,58 +994,39 @@ func WsCompositiveIndexServe(symbol string, handler WsCompositeIndexHandler, err
 
 // WsUserDataEvent define user data event
 type WsUserDataEvent struct {
-	Event               UserDataEventType     `json:"e"`
-	Time                int64                 `json:"E"`
-	CrossWalletBalance  string                `json:"cw"`
-	MarginCallPositions []WsPosition          `json:"p"`
-	TransactionTime     int64                 `json:"T"`
-	AccountUpdate       WsAccountUpdate       `json:"a"`
-	OrderTradeUpdate    WsOrderTradeUpdate    `json:"o"`
-	AccountConfigUpdate WsAccountConfigUpdate `json:"ac"`
+	Event               UserDataEventType `json:"e"`
+	Time                int64             `json:"E"`
+	MarginCallUpdate    WsMarginCallUpdate
+	AccountUpdate       WsAccountUpdate
+	OrderTradeUpdate    WsOrderTradeUpdate
+	AccountConfigUpdate WsAccountConfigUpdate
+	TradeLiteUpdate     WsTradeLiteUpdate
 }
 
-func (e *WsUserDataEvent) UnmarshalJSON(data []byte) error {
-	var tmp struct {
-		Event               UserDataEventType     `json:"e"`
-		Time                interface{}           `json:"E"`
-		CrossWalletBalance  string                `json:"cw"`
-		MarginCallPositions []WsPosition          `json:"p"`
-		TransactionTime     int64                 `json:"T"`
-		AccountUpdate       WsAccountUpdate       `json:"a"`
-		OrderTradeUpdate    WsOrderTradeUpdate    `json:"o"`
-		AccountConfigUpdate WsAccountConfigUpdate `json:"ac"`
-	}
-	if err := json.Unmarshal(data, &tmp); err != nil {
-		return err
-	}
+type WsTradeLiteUpdate struct {
+	T  int64  `json:"T"`
+	S  string `json:"s"`
+	Q  string `json:"q"`
+	P  string `json:"p"`
+	M  bool   `json:"m"`
+	C  string `json:"c"`
+	S1 string `json:"S"`
+	L  string `json:"L"`
+	L1 string `json:"l"`
+	T1 int    `json:"t"`
+	I  int    `json:"i"`
+}
 
-	e.Event = tmp.Event
-	switch v := tmp.Time.(type) {
-	case float64:
-		e.Time = int64(v)
-	case string:
-		parsedTime, err := strconv.ParseInt(v, 10, 64)
-		if err != nil {
-			return err
-		}
-		e.Time = parsedTime
-	default:
-		return fmt.Errorf("unexpected type for E: %T", tmp.Time)
-	}
-	e.CrossWalletBalance = tmp.CrossWalletBalance
-	e.MarginCallPositions = tmp.MarginCallPositions
-	e.TransactionTime = tmp.TransactionTime
-	e.AccountUpdate = tmp.AccountUpdate
-	e.OrderTradeUpdate = tmp.OrderTradeUpdate
-	e.AccountConfigUpdate = tmp.AccountConfigUpdate
-	return nil
+type WsAccount struct {
+	Reason    UserDataEventReasonType `json:"m"`
+	Balances  []WsBalance             `json:"B"`
+	Positions []WsPosition            `json:"P"`
 }
 
 // WsAccountUpdate define account update
 type WsAccountUpdate struct {
-	Reason    UserDataEventReasonType `json:"m"`
-	Balances  []WsBalance             `json:"B"`
-	Positions []WsPosition            `json:"P"`
+	TransactionTime int64     `json:"T"`
+	Account         WsAccount `json:"a"`
 }
 
 // WsBalance define balance
@@ -1055,6 +1035,11 @@ type WsBalance struct {
 	Balance            string `json:"wb"`
 	CrossWalletBalance string `json:"cw"`
 	ChangeBalance      string `json:"bc"`
+}
+
+type WsMarginCallUpdate struct {
+	CrossWalletBalance  string       `json:"cw"`
+	MarginCallPositions []WsPosition `json:"p"`
 }
 
 // WsPosition define position
@@ -1071,8 +1056,7 @@ type WsPosition struct {
 	MaintenanceMarginRequired string           `json:"mm"`
 }
 
-// WsOrderTradeUpdate define order trade update
-type WsOrderTradeUpdate struct {
+type WsOrderTrade struct {
 	Symbol               string             `json:"s"`   // Symbol
 	ClientOrderID        string             `json:"c"`   // Client order ID
 	Side                 SideType           `json:"S"`   // Side
@@ -1109,10 +1093,21 @@ type WsOrderTradeUpdate struct {
 	GTD                  int64              `json:"gtd"` // TIF GTD order auto cancel time
 }
 
-// WsAccountConfigUpdate define account config update
-type WsAccountConfigUpdate struct {
+// WsOrderTradeUpdate define order trade update
+type WsOrderTradeUpdate struct {
+	TransactionTime int64        `json:"T"`
+	OrderTrade      WsOrderTrade `json:"o"`
+}
+
+type WsAccountConfig struct {
 	Symbol   string `json:"s"`
 	Leverage int64  `json:"l"`
+}
+
+// WsAccountConfigUpdate define account config update
+type WsAccountConfigUpdate struct {
+	TransactionTime int64           `json:"T"`
+	AccountConfig   WsAccountConfig `json:"ac"`
 }
 
 // WsUserDataHandler handle WsUserDataEvent
@@ -1122,12 +1117,50 @@ type WsUserDataHandler func(event *WsUserDataEvent)
 func WsUserDataServe(listenKey string, handler WsUserDataHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := fmt.Sprintf("%s/%s", getWsEndpoint(), listenKey)
 	cfg := newWsConfig(endpoint)
+
 	wsHandler := func(message []byte) {
-		event := new(WsUserDataEvent)
-		err := json.Unmarshal(message, event)
+		j, err := newJSON(message)
 		if err != nil {
 			errHandler(err)
 			return
+		}
+		event := new(WsUserDataEvent)
+		err = json.Unmarshal(message, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		switch UserDataEventType(j.Get("e").MustString()) {
+		case UserDataEventTypeMarginCall:
+			err = json.Unmarshal(message, &event.MarginCallUpdate)
+			if err != nil {
+				errHandler(err)
+				return
+			}
+		case UserDataEventTypeAccountUpdate:
+			err = json.Unmarshal(message, &event.AccountUpdate)
+			if err != nil {
+				errHandler(err)
+				return
+			}
+		case UserDataEventTypeOrderTradeUpdate:
+			err = json.Unmarshal(message, &event.OrderTradeUpdate)
+			if err != nil {
+				errHandler(err)
+				return
+			}
+		case UserDataEventTypeAccountConfigUpdate:
+			err = json.Unmarshal(message, &event.AccountConfigUpdate)
+			if err != nil {
+				errHandler(err)
+				return
+			}
+		case UserDataEventTypeTradeLiteUpdate:
+			err = json.Unmarshal(message, &event.TradeLiteUpdate)
+			if err != nil {
+				errHandler(err)
+				return
+			}
 		}
 		handler(event)
 	}
