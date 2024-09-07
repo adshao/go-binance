@@ -166,7 +166,7 @@ type ConvertResult struct {
 func (c *ConvertAcceptService) Do(ctx context.Context, opts ...RequestOption) (res *ConvertResult, err error) {
 	r := &request{
 		method:   http.MethodPost,
-		endpoint: "/fapi/v1/convert",
+		endpoint: "/fapi/v1/convert/acceptQuote",
 		secType:  secTypeSigned,
 	}
 	m := params{
@@ -215,7 +215,7 @@ type ConvertStatusResult struct {
 func (c *ConvertStatusService) Do(ctx context.Context, opts ...RequestOption) (res *ConvertStatusResult, err error) {
 	r := &request{
 		method:   http.MethodGet,
-		endpoint: "/fapi/v1/convert",
+		endpoint: "/fapi/v1/convert/orderStatus",
 		secType:  secTypeSigned,
 	}
 	m := params{
