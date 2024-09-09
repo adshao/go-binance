@@ -96,7 +96,7 @@ func (s *convertServiceTestSuite) TestAcceptQuote() {
 
 func (s *convertServiceTestSuite) TestGetConvertStatus() {
 	data := []byte(`{
-  "orderId":933256278426274426,
+  "orderId":"933256278426274426",
   "orderStatus":"SUCCESS",
   "fromAsset":"BTC",
   "fromAmount":"0.00054414",
@@ -112,7 +112,7 @@ func (s *convertServiceTestSuite) TestGetConvertStatus() {
 	orderId := "933256278426274426"
 	res, err := s.client.NewGetConvertStatusService().OrderId(orderId).Do(newContext())
 	s.r().NoError(err)
-	s.r().Equal(int64(933256278426274426), res.OrderId)
+	s.r().Equal("933256278426274426", res.OrderId)
 	s.r().Equal(ConvertAcceptStatusSuccess, res.OrderStatus)
 	s.r().Equal("BTC", res.FromAsset)
 	s.r().Equal("0.00054414", res.FromAmount)

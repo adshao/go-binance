@@ -201,7 +201,7 @@ func (c *ConvertStatusService) OrderId(orderId string) *ConvertStatusService {
 }
 
 type ConvertStatusResult struct {
-	OrderId      int64               `json:"orderId"`
+	OrderId      string              `json:"orderId"`
 	OrderStatus  ConvertAcceptStatus `json:"orderStatus"`
 	FromAsset    string              `json:"fromAsset"`
 	FromAmount   string              `json:"fromAmount"`
