@@ -698,3 +698,23 @@ func (c *Client) NewGetFeeBurnService() *GetFeeBurnService {
 func (c *Client) NewFeeBurnService() *FeeBurnService {
 	return &FeeBurnService{c: c}
 }
+
+// NewListConvertAssetsService init list convert assets service
+func (c *Client) NewListConvertExchangeInfoService() *ListConvertExchangeInfoService {
+	return &ListConvertExchangeInfoService{c: c}
+}
+
+// NewCreateConvertQuoteService init create convert quote service
+func (c *Client) NewCreateConvertQuoteService() *CreateConvertQuoteService {
+	return &CreateConvertQuoteService{c: c}
+}
+
+// NewCreateConvertService init accept convert quote service
+func (c *Client) NewConvertAcceptService() *ConvertAcceptService {
+	return &ConvertAcceptService{c: c}
+}
+
+// NewGetConvertStatusService init get convert status service
+func (c *Client) NewGetConvertStatusService() *ConvertStatusService {
+	return &ConvertStatusService{c: c}
+}
