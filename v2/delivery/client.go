@@ -6,13 +6,14 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/adshao/go-binance/v2/common"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"time"
+
+	"github.com/adshao/go-binance/v2/common"
 
 	"github.com/bitly/go-simplejson"
 )
@@ -489,4 +490,9 @@ func (c *Client) NewChangePositionModeService() *ChangePositionModeService {
 // NewGetPositionModeService init get position mode service
 func (c *Client) NewGetPositionModeService() *GetPositionModeService {
 	return &GetPositionModeService{c: c}
+}
+
+// NewGetFundingRateService init funding rate service
+func (c *Client) NewGetFundingInfoService() *GetFundingInfoService {
+	return &GetFundingInfoService{c: c}
 }
