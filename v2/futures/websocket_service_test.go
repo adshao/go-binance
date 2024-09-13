@@ -1641,21 +1641,21 @@ func (s *websocketServiceTestSuite) TestWsUserDataServeMarginCall() {
 		]
 	}`)
 	expectedEvent := &WsUserDataEvent{
-		Event:              "MARGIN_CALL",
-		Time:               1587727187525,
-		CrossWalletBalance: "3.16812045",
-		MarginCallPositions: []WsPosition{
-			{
-				Symbol:                    "ETHUSDT",
-				Side:                      "LONG",
-				Amount:                    "1.327",
-				MarginType:                "CROSSED",
-				IsolatedWallet:            "0",
-				MarkPrice:                 "187.17127",
-				UnrealizedPnL:             "-1.166074",
-				MaintenanceMarginRequired: "1.614445",
-			},
-		},
+		Event: "MARGIN_CALL",
+		Time:  1587727187525,
+		WsUserDataMarginCall: WsUserDataMarginCall{CrossWalletBalance: "3.16812045",
+			MarginCallPositions: []WsPosition{
+				{
+					Symbol:                    "ETHUSDT",
+					Side:                      "LONG",
+					Amount:                    "1.327",
+					MarginType:                "CROSSED",
+					IsolatedWallet:            "0",
+					MarkPrice:                 "187.17127",
+					UnrealizedPnL:             "-1.166074",
+					MaintenanceMarginRequired: "1.614445",
+				},
+			}},
 	}
 	s.testWsUserDataServe(data, expectedEvent)
 }
@@ -1718,50 +1718,52 @@ func (s *websocketServiceTestSuite) TestWsUserDataServeAccountUpdate() {
 		Event:           "ACCOUNT_UPDATE",
 		Time:            1564745798939,
 		TransactionTime: 1564745798938,
-		AccountUpdate: WsAccountUpdate{
-			Reason: "ORDER",
-			Balances: []WsBalance{
-				{
-					Asset:              "USDT",
-					Balance:            "122624.12345678",
-					CrossWalletBalance: "100.12345678",
+		WsUserDataAccountUpdate: WsUserDataAccountUpdate{
+			AccountUpdate: WsAccountUpdate{
+				Reason: "ORDER",
+				Balances: []WsBalance{
+					{
+						Asset:              "USDT",
+						Balance:            "122624.12345678",
+						CrossWalletBalance: "100.12345678",
+					},
+					{
+						Asset:              "BNB",
+						Balance:            "1.00000000",
+						CrossWalletBalance: "0.00000000",
+					},
 				},
-				{
-					Asset:              "BNB",
-					Balance:            "1.00000000",
-					CrossWalletBalance: "0.00000000",
-				},
-			},
-			Positions: []WsPosition{
-				{
-					Symbol:              "BTCUSDT",
-					Amount:              "0",
-					EntryPrice:          "0.00000",
-					AccumulatedRealized: "200",
-					UnrealizedPnL:       "0",
-					MarginType:          "isolated",
-					IsolatedWallet:      "0.00000000",
-					Side:                "BOTH",
-				},
-				{
-					Symbol:              "BTCUSDT",
-					Amount:              "20",
-					EntryPrice:          "6563.66500",
-					AccumulatedRealized: "0",
-					UnrealizedPnL:       "2850.21200",
-					MarginType:          "isolated",
-					IsolatedWallet:      "13200.70726908",
-					Side:                "LONG",
-				},
-				{
-					Symbol:              "BTCUSDT",
-					Amount:              "-10",
-					EntryPrice:          "6563.86000",
-					AccumulatedRealized: "-45.04000000",
-					UnrealizedPnL:       "-1423.15600",
-					MarginType:          "isolated",
-					IsolatedWallet:      "6570.42511771",
-					Side:                "SHORT",
+				Positions: []WsPosition{
+					{
+						Symbol:              "BTCUSDT",
+						Amount:              "0",
+						EntryPrice:          "0.00000",
+						AccumulatedRealized: "200",
+						UnrealizedPnL:       "0",
+						MarginType:          "isolated",
+						IsolatedWallet:      "0.00000000",
+						Side:                "BOTH",
+					},
+					{
+						Symbol:              "BTCUSDT",
+						Amount:              "20",
+						EntryPrice:          "6563.66500",
+						AccumulatedRealized: "0",
+						UnrealizedPnL:       "2850.21200",
+						MarginType:          "isolated",
+						IsolatedWallet:      "13200.70726908",
+						Side:                "LONG",
+					},
+					{
+						Symbol:              "BTCUSDT",
+						Amount:              "-10",
+						EntryPrice:          "6563.86000",
+						AccumulatedRealized: "-45.04000000",
+						UnrealizedPnL:       "-1423.15600",
+						MarginType:          "isolated",
+						IsolatedWallet:      "6570.42511771",
+						Side:                "SHORT",
+					},
 				},
 			},
 		},
@@ -1811,37 +1813,39 @@ func (s *websocketServiceTestSuite) TestWsUserDataServeOrderTradeUpdate() {
 		Event:           "ORDER_TRADE_UPDATE",
 		Time:            1568879465651,
 		TransactionTime: 1568879465650,
-		OrderTradeUpdate: WsOrderTradeUpdate{
-			Symbol:               "BTCUSDT",
-			ClientOrderID:        "TEST",
-			Side:                 "SELL",
-			Type:                 "TRAILING_STOP_MARKET",
-			TimeInForce:          "GTC",
-			OriginalQty:          "0.001",
-			OriginalPrice:        "0",
-			AveragePrice:         "0",
-			StopPrice:            "7103.04",
-			ExecutionType:        "NEW",
-			Status:               "NEW",
-			ID:                   8886774,
-			LastFilledQty:        "0",
-			AccumulatedFilledQty: "0",
-			LastFilledPrice:      "0",
-			CommissionAsset:      "USDT",
-			Commission:           "0",
-			TradeTime:            1568879465651,
-			TradeID:              0,
-			BidsNotional:         "0",
-			AsksNotional:         "9.91",
-			IsMaker:              false,
-			IsReduceOnly:         false,
-			WorkingType:          "CONTRACT_PRICE",
-			OriginalType:         "TRAILING_STOP_MARKET",
-			PositionSide:         "LONG",
-			IsClosingPosition:    false,
-			ActivationPrice:      "7476.89",
-			CallbackRate:         "5.0",
-			RealizedPnL:          "0",
+		WsUserDataOrderTradeUpdate: WsUserDataOrderTradeUpdate{
+			OrderTradeUpdate: WsOrderTradeUpdate{
+				Symbol:               "BTCUSDT",
+				ClientOrderID:        "TEST",
+				Side:                 "SELL",
+				Type:                 "TRAILING_STOP_MARKET",
+				TimeInForce:          "GTC",
+				OriginalQty:          "0.001",
+				OriginalPrice:        "0",
+				AveragePrice:         "0",
+				StopPrice:            "7103.04",
+				ExecutionType:        "NEW",
+				Status:               "NEW",
+				ID:                   8886774,
+				LastFilledQty:        "0",
+				AccumulatedFilledQty: "0",
+				LastFilledPrice:      "0",
+				CommissionAsset:      "USDT",
+				Commission:           "0",
+				TradeTime:            1568879465651,
+				TradeID:              0,
+				BidsNotional:         "0",
+				AsksNotional:         "9.91",
+				IsMaker:              false,
+				IsReduceOnly:         false,
+				WorkingType:          "CONTRACT_PRICE",
+				OriginalType:         "TRAILING_STOP_MARKET",
+				PositionSide:         "LONG",
+				IsClosingPosition:    false,
+				ActivationPrice:      "7476.89",
+				CallbackRate:         "5.0",
+				RealizedPnL:          "0",
+			},
 		},
 	}
 	s.testWsUserDataServe(data, expectedEvent)
@@ -1861,11 +1865,51 @@ func (s *websocketServiceTestSuite) TestWsUserDataServeAccountConfigUpdate() {
 		Event:           "ACCOUNT_CONFIG_UPDATE",
 		Time:            1611646737479,
 		TransactionTime: 1611646737476,
-		AccountConfigUpdate: WsAccountConfigUpdate{
-			Symbol:   "BTCUSDT",
-			Leverage: 25,
+		WsUserDataAccountConfigUpdate: WsUserDataAccountConfigUpdate{
+			AccountConfigUpdate: WsAccountConfigUpdate{
+				Symbol:   "BTCUSDT",
+				Leverage: 25,
+			},
 		},
 	}
+	s.testWsUserDataServe(data, expectedEvent)
+}
+
+func (s *websocketServiceTestSuite) TestWsUserDataServeTradeLite() {
+	data := []byte(`{
+		"e":"TRADE_LITE",             
+		"E":1721895408092,            
+		"T":1721895408214,                                   
+		"s":"BTCUSDT",                
+		"q":"0.001",                  
+		"p":"0",                      
+		"m":false,                    
+		"c":"z8hcUoOsqEdKMeKPSABslD", 
+		"S":"BUY",                   
+		"L":"64089.20",              
+		"l":"0.040",                 
+		"t":109100866,               
+		"i":8886774                
+	}`)
+
+	expectedEvent := &WsUserDataEvent{
+		Event:           "TRADE_LITE",
+		Time:            1721895408092,
+		TransactionTime: 1721895408214,
+		WsUserDataTradeLite: WsUserDataTradeLite{
+			Symbol:          "BTCUSDT",
+			OriginalQty:     "0.001",
+			OriginalPrice:   "0",
+			IsMaker:         false,
+			ClientOrderID:   "z8hcUoOsqEdKMeKPSABslD",
+			Side:            "BUY",
+			LastFilledPrice: "64089.20",
+			LastFilledQty:   "0.040",
+			TradeID:         109100866,
+			OrderID:         8886774,
+		},
+	}
+
 	s.testWsUserDataServe(data, expectedEvent)
 }
 
@@ -1882,6 +1926,21 @@ func (s *websocketServiceTestSuite) assertUserDataEvent(e, a *WsUserDataEvent) {
 	s.assertAccountUpdate(e.AccountUpdate, a.AccountUpdate)
 	s.assertOrderTradeUpdate(e.OrderTradeUpdate, a.OrderTradeUpdate)
 	s.assertAccountConfigUpdate(e.AccountConfigUpdate, a.AccountConfigUpdate)
+	s.assertTradeLite(e.WsUserDataTradeLite, a.WsUserDataTradeLite)
+}
+
+func (s *websocketServiceTestSuite) assertTradeLite(e, a WsUserDataTradeLite) {
+	r := s.r()
+	r.Equal(e.Symbol, a.Symbol, "Symbol")
+	r.Equal(e.OriginalQty, a.OriginalQty, "OriginalQty")
+	r.Equal(e.OriginalPrice, a.OriginalPrice, "OriginalPrice")
+	r.Equal(e.IsMaker, a.IsMaker, "IsMaker")
+	r.Equal(e.ClientOrderID, a.ClientOrderID, "ClientOrderID")
+	r.Equal(e.Side, a.Side, "Side")
+	r.Equal(e.LastFilledPrice, a.LastFilledPrice, "LastFilledPrice")
+	r.Equal(e.LastFilledQty, a.LastFilledQty, "LastFilledQty")
+	r.Equal(e.TradeID, a.TradeID, "TradeID")
+	r.Equal(e.OrderID, a.OrderID, "OrderID")
 }
 
 func (s *websocketServiceTestSuite) assertPosition(e, a WsPosition) {
