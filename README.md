@@ -381,7 +381,8 @@ BinanceClient = delivery.NewClient(ApiKey, SecretKey)
 ```
 
 #### Websocket client
-Order place
+##### Order place
+##### Async write/read
 ```go
 func main() {
     orderPlaceService, _ := futures.NewOrderPlaceWsService(apiKey, secretKey)
@@ -450,5 +451,30 @@ func listenOrderPlaceResponse(ctx context.Context, wg *sync.WaitGroup, orderPlac
     }
 }
 ```
+##### Sync write/read
+```go
+func main() {
+    orderPlaceService, _ := futures.NewOrderPlaceWsService(apiKey, secretKey)
+    
+    id := "some-id"
+    request := futures.NewOrderPlaceWsRequest()
+    request.
+        Symbol("BTCUSDT").
+        Side(futures.SideTypeSell).
+        Type(futures.OrderTypeLimit).
+        Price("68198.00").
+        Quantity("0.002").
+        TimeInForce(futures.TimeInForceTypeGTC)
+
+    response, err := orderPlaceService.SyncDo(id, request)
+    if err != nil {
+        log.Fatal(err)
+    }
+    
+    // handle response
+}
+```
+
+
 
 

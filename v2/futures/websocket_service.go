@@ -19,6 +19,7 @@ const (
 	baseCombinedTestnetURL = "wss://stream.binancefuture.com/stream?streams="
 	BaseWsApiMainURL       = "wss://ws-fapi.binance.com/ws-fapi/v1"
 	BaseWsApiTestnetURL    = "wss://testnet.binancefuture.com/ws-fapi/v1"
+	localhostWsApiURL      = "ws://localhost:8080/ws"
 )
 
 var (
@@ -32,6 +33,8 @@ var (
 	// WebsocketTimeoutReadWriteConnection is an interval for sending ping/pong messages if WebsocketKeepalive is enabled
 	// using for websocket API (read/write)
 	WebsocketTimeoutReadWriteConnection = time.Second * 10
+	// useLocalhost switch all the WS streams from production to localhost testing
+	useLocalhost = false
 )
 
 func getWsProxyUrl() *string {
@@ -1133,5 +1136,10 @@ func getWsApiEndpoint() string {
 	if UseTestnet {
 		return BaseWsApiTestnetURL
 	}
+
+	if useLocalhost {
+		return localhostWsApiURL
+	}
+
 	return BaseWsApiMainURL
 }
