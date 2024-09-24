@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/bitly/go-simplejson"
 )
 
 // Endpoints
@@ -23,7 +25,19 @@ var (
 	WebsocketKeepalive = false
 	// UseTestnet switch all the WS streams from production to the testnet
 	UseTestnet = false
+	ProxyUrl   = ""
 )
+
+func getWsProxyUrl() *string {
+	if ProxyUrl == "" {
+		return nil
+	}
+	return &ProxyUrl
+}
+
+func SetWsProxyUrl(url string) {
+	ProxyUrl = url
+}
 
 // getWsEndpoint return the base endpoint of the WS according the UseTestnet flag
 func getWsEndpoint() string {
@@ -368,8 +382,8 @@ type WsContinuousKline struct {
 	ActiveBuyQuoteVolume string `json:"Q"`
 }
 
-// WsContinuousKlineSubcribeArgs used with WsContinuousKlineServe or WsCombinedContinuousKlineServe
-type WsContinuousKlineSubcribeArgs struct {
+// WsContinuousKlineSubscribeArgs used with WsContinuousKlineServe or WsCombinedContinuousKlineServe
+type WsContinuousKlineSubscribeArgs struct {
 	Pair         string
 	ContractType string
 	Interval     string
@@ -379,7 +393,7 @@ type WsContinuousKlineSubcribeArgs struct {
 type WsContinuousKlineHandler func(event *WsContinuousKlineEvent)
 
 // WsContinuousKlineServe serve websocket continuous kline handler with a pair and contractType and interval like 15m, 30s
-func WsContinuousKlineServe(subscribeArgs *WsContinuousKlineSubcribeArgs, handler WsContinuousKlineHandler,
+func WsContinuousKlineServe(subscribeArgs *WsContinuousKlineSubscribeArgs, handler WsContinuousKlineHandler,
 	errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := fmt.Sprintf("%s/%s_%s@continuousKline_%s", getWsEndpoint(), strings.ToLower(subscribeArgs.Pair),
 		strings.ToLower(subscribeArgs.ContractType), subscribeArgs.Interval)
@@ -397,7 +411,7 @@ func WsContinuousKlineServe(subscribeArgs *WsContinuousKlineSubcribeArgs, handle
 }
 
 // WsCombinedContinuousKlineServe is similar to WsContinuousKlineServe, but it handles multiple pairs of different contractType with its interval
-func WsCombinedContinuousKlineServe(subscribeArgsList []*WsContinuousKlineSubcribeArgs,
+func WsCombinedContinuousKlineServe(subscribeArgsList []*WsContinuousKlineSubscribeArgs,
 	handler WsContinuousKlineHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	endpoint := getCombinedEndpoint()
 	for _, val := range subscribeArgsList {
@@ -559,6 +573,11 @@ type WsBookTickerEvent struct {
 	BestAskQty      string `json:"A"`
 }
 
+type WsCombinedBookTickerEvent struct {
+	Data   *WsBookTickerEvent `json:"data"`
+	Stream string             `json:"stream"`
+}
+
 // WsBookTickerHandler handle websocket that pushes updates to the best bid or ask price or quantity in real-time for a specified symbol.
 type WsBookTickerHandler func(event *WsBookTickerEvent)
 
@@ -574,6 +593,25 @@ func WsBookTickerServe(symbol string, handler WsBookTickerHandler, errHandler Er
 			return
 		}
 		handler(event)
+	}
+	return wsServe(cfg, wsHandler, errHandler)
+}
+
+func WsCombinedBookTickerServe(symbols []string, handler WsBookTickerHandler, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
+	endpoint := getCombinedEndpoint()
+	for _, s := range symbols {
+		endpoint += fmt.Sprintf("%s@bookTicker", strings.ToLower(s)) + "/"
+	}
+	endpoint = endpoint[:len(endpoint)-1]
+	cfg := newWsConfig(endpoint)
+	wsHandler := func(message []byte) {
+		event := new(WsCombinedBookTickerEvent)
+		err := json.Unmarshal(message, event)
+		if err != nil {
+			errHandler(err)
+			return
+		}
+		handler(event.Data)
 	}
 	return wsServe(cfg, wsHandler, errHandler)
 }
@@ -958,14 +996,106 @@ func WsCompositiveIndexServe(symbol string, handler WsCompositeIndexHandler, err
 
 // WsUserDataEvent define user data event
 type WsUserDataEvent struct {
-	Event               UserDataEventType     `json:"e"`
-	Time                int64                 `json:"E"`
-	CrossWalletBalance  string                `json:"cw"`
-	MarginCallPositions []WsPosition          `json:"p"`
-	TransactionTime     int64                 `json:"T"`
-	AccountUpdate       WsAccountUpdate       `json:"a"`
-	OrderTradeUpdate    WsOrderTradeUpdate    `json:"o"`
+	Event           UserDataEventType `json:"e"`
+	Time            int64             `json:"E"`
+	TransactionTime int64             `json:"T"`
+
+	// listenKeyExpired only have Event and Time
+	//
+
+	// MARGIN_CALL
+	WsUserDataMarginCall
+
+	// ACCOUNT_UPDATE
+	WsUserDataAccountUpdate
+
+	// ORDER_TRADE_UPDATE
+	WsUserDataOrderTradeUpdate
+
+	// ACCOUNT_CONFIG_UPDATE
+	WsUserDataAccountConfigUpdate
+
+	// TRADE_LITE
+	WsUserDataTradeLite
+}
+
+type WsUserDataAccountConfigUpdate struct {
 	AccountConfigUpdate WsAccountConfigUpdate `json:"ac"`
+}
+
+type WsUserDataAccountUpdate struct {
+	AccountUpdate WsAccountUpdate `json:"a"`
+}
+
+type WsUserDataMarginCall struct {
+	CrossWalletBalance  string       `json:"cw"`
+	MarginCallPositions []WsPosition `json:"p"`
+}
+
+type WsUserDataOrderTradeUpdate struct {
+	OrderTradeUpdate WsOrderTradeUpdate `json:"o"`
+}
+
+type WsUserDataTradeLite struct {
+	Symbol          string   `json:"s"`
+	OriginalQty     string   `json:"q"`
+	OriginalPrice   string   //`json:"p"`
+	IsMaker         bool     `json:"m"`
+	ClientOrderID   string   `json:"c"`
+	Side            SideType `json:"S"`
+	LastFilledPrice string   `json:"L"`
+	LastFilledQty   string   `json:"l"`
+	TradeID         int64    `json:"t"`
+	OrderID         int64    `json:"i"`
+}
+
+func (w *WsUserDataTradeLite) fromSimpleJson(j *simplejson.Json) (err error) {
+	w.Symbol = j.Get("s").MustString()
+	w.OriginalQty = j.Get("q").MustString()
+	w.OriginalPrice = j.Get("p").MustString()
+	w.IsMaker = j.Get("m").MustBool()
+	w.ClientOrderID = j.Get("c").MustString()
+	w.Side = SideType(j.Get("S").MustString())
+	w.LastFilledPrice = j.Get("L").MustString()
+	w.LastFilledQty = j.Get("l").MustString()
+	w.TradeID = j.Get("t").MustInt64()
+	w.OrderID = j.Get("i").MustInt64()
+	return nil
+}
+
+func (e *WsUserDataEvent) UnmarshalJSON(data []byte) error {
+	j, err := newJSON(data)
+	if err != nil {
+		return err
+	}
+	e.Event = UserDataEventType(j.Get("e").MustString())
+	e.Time = j.Get("E").MustInt64()
+	if v, ok := j.CheckGet("T"); ok {
+		e.TransactionTime = v.MustInt64()
+	}
+
+	eventMaps := map[UserDataEventType]any{
+		UserDataEventTypeMarginCall:          &e.WsUserDataMarginCall,
+		UserDataEventTypeAccountUpdate:       &e.WsUserDataAccountUpdate,
+		UserDataEventTypeOrderTradeUpdate:    &e.WsUserDataOrderTradeUpdate,
+		UserDataEventTypeAccountConfigUpdate: &e.WsUserDataAccountConfigUpdate,
+	}
+
+	switch e.Event {
+	case UserDataEventTypeTradeLite:
+		return e.WsUserDataTradeLite.fromSimpleJson(j)
+	case UserDataEventTypeListenKeyExpired:
+		// noting
+	default:
+		if v, ok := eventMaps[e.Event]; ok {
+			if err := json.Unmarshal(data, v); err != nil {
+				return err
+			}
+		} else {
+			return fmt.Errorf("unexpected event type: %v", e.Event)
+		}
+	}
+	return nil
 }
 
 // WsAccountUpdate define account update

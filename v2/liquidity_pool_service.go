@@ -294,13 +294,13 @@ func (s *GetUserSwapRecordsService) SwapId(swapId int64) *GetUserSwapRecordsServ
 	return s
 }
 
-// StartTime set start time when swaping
+// StartTime set start time when swapping
 func (s *GetUserSwapRecordsService) StartTime(startTime int64) *GetUserSwapRecordsService {
 	s.startTime = &startTime
 	return s
 }
 
-// EndTime set end time when swaping
+// EndTime set end time when swapping
 func (s *GetUserSwapRecordsService) EndTime(endTime int64) *GetUserSwapRecordsService {
 	s.endTime = &endTime
 	return s

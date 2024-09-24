@@ -18,7 +18,19 @@ var (
 	WebsocketTimeout = time.Second * 60
 	// WebsocketKeepalive enables sending ping/pong messages to check the connection stability
 	WebsocketKeepalive = false
+	ProxyUrl           = ""
 )
+
+func getWsProxyUrl() *string {
+	if ProxyUrl == "" {
+		return nil
+	}
+	return &ProxyUrl
+}
+
+func SetWsProxyUrl(url string) {
+	ProxyUrl = url
+}
 
 // getWsEndpoint return the base endpoint of the WS according the UseTestnet flag
 func getWsEndpoint() string {
@@ -410,7 +422,7 @@ type WsAggTradeEvent struct {
 	LastBreakdownTradeID  int64  `json:"l"`
 	TradeTime             int64  `json:"T"`
 	IsBuyerMaker          bool   `json:"m"`
-	Placeholder           bool   `json:"M"` // add this field to avoid case insensitive unmarshaling
+	Placeholder           bool   `json:"M"` // add this field to avoid case insensitive unmarshalling
 }
 
 // WsTradeHandler handle websocket trade event
@@ -464,7 +476,7 @@ type WsTradeEvent struct {
 	SellerOrderID int64  `json:"a"`
 	TradeTime     int64  `json:"T"`
 	IsBuyerMaker  bool   `json:"m"`
-	Placeholder   bool   `json:"M"` // add this field to avoid case insensitive unmarshaling
+	Placeholder   bool   `json:"M"` // add this field to avoid case insensitive unmarshalling
 }
 
 type WsCombinedTradeEvent struct {

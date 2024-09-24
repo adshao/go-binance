@@ -21,8 +21,12 @@ Name | Description | Status
 [web-socket-streams.md](https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md) | Details on available streams and payloads | <input type="checkbox" checked>  Implemented
 [user-data-stream.md](https://github.com/binance/binance-spot-api-docs/blob/master/user-data-stream.md) | Details on the dedicated account stream | <input type="checkbox" checked>  Implemented
 [margin-api.md](https://binance-docs.github.io/apidocs/spot/en) | Details on the Margin API (/sapi) | <input type="checkbox" checked>  Implemented
-[futures-api.md](https://binance-docs.github.io/apidocs/futures/en/#general-info) | Details on the Futures API (/fapi) | <input type="checkbox" checked>  Partially Implemented
-[delivery-api.md](https://binance-docs.github.io/apidocs/delivery/en/#general-info) | Details on the Coin-M Futures API (/dapi) | <input type="checkbox" checked>  Partially Implemented
+[futures-api.md](https://binance-docs.github.io/apidocs/futures/en/#general-info) | Details on the Futures API (/fapi) | <input type="checkbox" checked>  Implemented
+[delivery-api.md](https://binance-docs.github.io/apidocs/delivery/en/#general-info) | Details on the Coin-M Futures API (/dapi) | <input type="checkbox" checked>  Implemented
+[options-api.md](https://binance-docs.github.io/apidocs/voptions/en/#general-info) | Details on the Options API(/eapi) | <input type="checkbox" checked>  Implemented  
+
+  
+If you find an unimplemented interface, please submit an issue. It's great if you can open a PR to fix it.
 
 ### Installation
 
@@ -40,7 +44,12 @@ go get github.com/adshao/go-binance/v1
 
 ```golang
 import (
+    // for spot and other interfaces contained in https://binance-docs.github.io/apidocs/spot/en/#change-log
     "github.com/adshao/go-binance/v2"
+    
+    "github.com/adshao/go-binance/v2/futures" // optional package
+    "github.com/adshao/go-binance/v2/delivery" // optional package
+    "github.com/adshao/go-binance/v2/options" // optional package
 )
 ```
 
@@ -69,6 +78,16 @@ A service instance stands for a REST API endpoint and is initialized by client.N
 Simply call API in chain style. Call Do() in the end to send HTTP request.
 
 Following are some simple examples, please refer to [godoc](https://godoc.org/github.com/adshao/go-binance) for full references.
+
+If you have any questions, please refer to the specific version of the code for specific reference definitions or usage methods
+
+##### Proxy Client
+  
+```
+proxyUrl := "http://127.0.0.1:7890" // Please replace it with your exact proxy URL.
+client := binance.NewProxiedClient(apiKey, apiSecret, proxyUrl)
+```
+  
 
 #### Create Order
 
@@ -219,6 +238,12 @@ You don't need Client in websocket API. Just call binance.WsXxxServe(args, handl
 
 > For delivery API you can use `delivery.WsXxxServe(args, handler, errHandler)`.
 
+If you want to use a proxy, you can set `HTTPS_PROXY` or `HTTP_PROXY` in the environment variable, or you can call `SetWsProxyUrl` in the target packages within your code. Then you can call other websocket functions. For example:
+```golang
+binance.SetWsProxyUrl("http://127.0.0.1:7890")
+binance.WsDepthServe("LTCBTC", wsDepthHandler, errHandler)
+```
+  
 #### Depth
 
 ```golang
