@@ -74,21 +74,6 @@ type OrderCancelWsService struct {
 	c wsClient
 }
 
-// NewOrderCancelWsService init OrderCancelWsService
-func NewOrderCancelWsService(apiKey, secretKey string) (*OrderCancelWsService, error) {
-	conn, err := newConnection()
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := NewClientWs(conn, apiKey, secretKey)
-	if err != nil {
-		return nil, err
-	}
-
-	return &OrderCancelWsService{c: client}, nil
-}
-
 // Do - sends 'order.cancel' request
 func (s *OrderCancelWsService) Do(requestID string, request *OrderCancelRequest) error {
 	rawData, err := createWsRequest(requestID, s.c, CancelWsApiMethod, request.buildParams())

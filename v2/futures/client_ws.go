@@ -468,3 +468,33 @@ func (c *connection) ping() error {
 
 	return nil
 }
+
+// NewOrderPlaceWsService init OrderPlaceWsService
+func NewOrderPlaceWsService(apiKey, secretKey string) (*OrderPlaceWsService, error) {
+	conn, err := newConnection()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := NewClientWs(conn, apiKey, secretKey)
+	if err != nil {
+		return nil, err
+	}
+
+	return &OrderPlaceWsService{c: client}, nil
+}
+
+// NewOrderCancelWsService init OrderCancelWsService
+func NewOrderCancelWsService(apiKey, secretKey string) (*OrderCancelWsService, error) {
+	conn, err := newConnection()
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := NewClientWs(conn, apiKey, secretKey)
+	if err != nil {
+		return nil, err
+	}
+
+	return &OrderCancelWsService{c: client}, nil
+}

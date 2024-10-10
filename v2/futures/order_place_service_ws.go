@@ -13,21 +13,6 @@ type OrderPlaceWsService struct {
 	signFn func(string, string) (*string, error)
 }
 
-// NewOrderPlaceWsService init OrderPlaceWsService
-func NewOrderPlaceWsService(apiKey, secretKey string) (*OrderPlaceWsService, error) {
-	conn, err := newConnection()
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := NewClientWs(conn, apiKey, secretKey)
-	if err != nil {
-		return nil, err
-	}
-
-	return &OrderPlaceWsService{c: client}, nil
-}
-
 // OrderPlaceWsRequest parameters for 'order.place' websocket API
 type OrderPlaceWsRequest struct {
 	symbol           string
