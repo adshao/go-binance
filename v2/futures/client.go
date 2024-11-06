@@ -95,6 +95,7 @@ const (
 	OrderTypeTakeProfit         OrderType = "TAKE_PROFIT"
 	OrderTypeTakeProfitMarket   OrderType = "TAKE_PROFIT_MARKET"
 	OrderTypeTrailingStopMarket OrderType = "TRAILING_STOP_MARKET"
+	OrderTypeLiquidation        OrderType = "LIQUIDATION"
 
 	TimeInForceTypeGTC TimeInForceType = "GTC" // Good Till Cancel
 	TimeInForceTypeIOC TimeInForceType = "IOC" // Immediate or Cancel
@@ -166,6 +167,7 @@ const (
 	UserDataEventTypeAccountUpdate       UserDataEventType = "ACCOUNT_UPDATE"
 	UserDataEventTypeOrderTradeUpdate    UserDataEventType = "ORDER_TRADE_UPDATE"
 	UserDataEventTypeAccountConfigUpdate UserDataEventType = "ACCOUNT_CONFIG_UPDATE"
+	UserDataEventTypeTradeLite           UserDataEventType = "TRADE_LITE"
 
 	UserDataEventReasonTypeDeposit             UserDataEventReasonType = "DEPOSIT"
 	UserDataEventReasonTypeWithdraw            UserDataEventReasonType = "WITHDRAW"
@@ -697,4 +699,24 @@ func (c *Client) NewGetFeeBurnService() *GetFeeBurnService {
 
 func (c *Client) NewFeeBurnService() *FeeBurnService {
 	return &FeeBurnService{c: c}
+}
+
+// NewListConvertAssetsService init list convert assets service
+func (c *Client) NewListConvertExchangeInfoService() *ListConvertExchangeInfoService {
+	return &ListConvertExchangeInfoService{c: c}
+}
+
+// NewCreateConvertQuoteService init create convert quote service
+func (c *Client) NewCreateConvertQuoteService() *CreateConvertQuoteService {
+	return &CreateConvertQuoteService{c: c}
+}
+
+// NewCreateConvertService init accept convert quote service
+func (c *Client) NewConvertAcceptService() *ConvertAcceptService {
+	return &ConvertAcceptService{c: c}
+}
+
+// NewGetConvertStatusService init get convert status service
+func (c *Client) NewGetConvertStatusService() *ConvertStatusService {
+	return &ConvertStatusService{c: c}
 }
