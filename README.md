@@ -380,3 +380,101 @@ delivery.UseTestnet = true
 BinanceClient = delivery.NewClient(ApiKey, SecretKey)
 ```
 
+#### Websocket client
+##### Order place
+##### Async write/read
+```go
+func main() {
+    orderPlaceService, _ := futures.NewOrderPlaceWsService(apiKey, secretKey)
+    
+    ctx, cancel := context.WithCancel(context.Background())
+    
+    c := make(chan os.Signal, 1)
+    signal.Notify(c, os.Interrupt)
+    go func() {
+        select {
+            case <-c:
+            cancel()
+        }
+    }()
+
+    request := futures.NewOrderPlaceWsRequest()
+    request.
+        Symbol("BTCUSDT").
+        Side(futures.SideTypeSell).
+        Type(futures.OrderTypeLimit).
+        Price("68198.00").
+        Quantity("0.002").
+        TimeInForce(futures.TimeInForceTypeGTC)
+
+    // sender
+    go func() {
+        for {
+            select {
+            case <-ctx.Done():
+                return
+            default:
+                err := orderPlaceService.Do("id", request)
+                if err != nil {
+                    return
+                }
+            }
+        }
+    }()
+
+    wg := &sync.WaitGroup{}
+    wg.Add(1)
+    go listenOrderPlaceResponse(ctx, wg, orderPlaceService)
+    wg.Wait()
+
+    log.Println("exit")
+}
+
+func listenOrderPlaceResponse(ctx context.Context, wg *sync.WaitGroup, orderPlaceService *futures.OrderPlaceWsService) {
+    defer wg.Done()
+    
+    go func() {
+        for msg := range orderPlaceService.GetReadChannel() {
+            log.Println("order place response", string(msg))
+        }
+    }()
+    
+    go func() {
+        for err := range orderPlaceService.GetReadErrorChannel() {
+            log.Println("order place error", err)
+        }
+    }()
+
+    select {
+    case <-ctx.Done():
+        orderPlaceService.ReceiveAllDataBeforeStop(10 * time.Second)
+    }
+}
+```
+##### Sync write/read
+```go
+func main() {
+    orderPlaceService, _ := futures.NewOrderPlaceWsService(apiKey, secretKey)
+    
+    id := "some-id"
+    request := futures.NewOrderPlaceWsRequest()
+    request.
+        Symbol("BTCUSDT").
+        Side(futures.SideTypeSell).
+        Type(futures.OrderTypeLimit).
+        Price("68198.00").
+        Quantity("0.002").
+        TimeInForce(futures.TimeInForceTypeGTC)
+
+    response, err := orderPlaceService.SyncDo(id, request)
+    if err != nil {
+        log.Fatal(err)
+    }
+    
+    // handle response
+}
+```
+
+
+
+

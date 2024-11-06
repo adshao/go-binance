@@ -108,3 +108,27 @@ func keepAlive(c *websocket.Conn, timeout time.Duration) {
 		}
 	}()
 }
+
+var WsGetReadWriteConnection = func(cfg *WsConfig) (*websocket.Conn, error) {
+	proxy := http.ProxyFromEnvironment
+	if cfg.Proxy != nil {
+		u, err := url.Parse(*cfg.Proxy)
+		if err != nil {
+			return nil, err
+		}
+		proxy = http.ProxyURL(u)
+	}
+
+	Dialer := websocket.Dialer{
+		Proxy:             proxy,
+		HandshakeTimeout:  45 * time.Second,
+		EnableCompression: false,
+	}
+
+	c, _, err := Dialer.Dial(cfg.Endpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return c, nil
+}
