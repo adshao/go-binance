@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/bitly/go-simplejson"
+	"github.com/gorilla/websocket"
 	"strings"
 	"time"
-	"github.com/gorilla/websocket"
-	"github.com/bitly/go-simplejson"
 )
 
 // Endpoints
