@@ -28,9 +28,6 @@ const (
 )
 
 var (
-	// ErrorWsConnectionClosed defines that connection closed
-	ErrorWsConnectionClosed = errors.New("ws error: connection closed")
-
 	// ErrorWsReadConnectionTimeout defines that connection read timeout expired
 	ErrorWsReadConnectionTimeout = errors.New("ws error: read connection timeout")
 
@@ -58,7 +55,7 @@ type ClientWs struct {
 	requestsList                RequestList
 	readC                       chan []byte
 	readErrChan                 chan error
-	reconnectCount              atomic.Int64
+	reconnectCount              int64
 }
 
 func (c *ClientWs) debug(format string, v ...interface{}) {
@@ -203,7 +200,7 @@ func (c *ClientWs) read() {
 		if err != nil {
 			c.debug("read: error reading message '%v'", err)
 			c.reconnectSignal <- struct{}{}
-			c.readErrChan <- errors.Join(err, ErrorWsConnectionClosed)
+			c.readErrChan <- err
 
 			c.debug("read: wait to get connected")
 			<-c.connectionEstablishedSignal
@@ -290,7 +287,7 @@ func (c *ClientWs) handleReconnect() {
 // startReconnect starts reconnect loop with increasing delay
 func (c *ClientWs) startReconnect(b *backoff.Backoff) *connection {
 	for {
-		c.reconnectCount.Add(1)
+		atomic.AddInt64(&c.reconnectCount, 1)
 		conn, err := newConnection()
 		if err != nil {
 			delay := b.Duration()
@@ -304,9 +301,7 @@ func (c *ClientWs) startReconnect(b *backoff.Backoff) *connection {
 }
 
 // GetReconnectCount returns reconnect counter value
-func (c *ClientWs) GetReconnectCount() int64 {
-	return c.reconnectCount.Load()
-}
+func (c *ClientWs) GetReconnectCount() int64 { return atomic.LoadInt64(&c.reconnectCount) }
 
 // NewRequestList creates request list
 func NewRequestList() RequestList {
