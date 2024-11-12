@@ -74,9 +74,9 @@ type UserDataEventReasonType string
 type ForceOrderCloseType string
 
 // Endpoints
-const (
-	baseApiMainUrl    = "https://fapi.binance.com"
-	baseApiTestnetUrl = "https://testnet.binancefuture.com"
+var (
+	BaseApiMainUrl    = "https://fapi.binance.com"
+	BaseApiTestnetUrl = "https://testnet.binancefuture.com"
 )
 
 // Global enums
@@ -207,9 +207,9 @@ func newJSON(data []byte) (j *simplejson.Json, err error) {
 // getApiEndpoint return the base endpoint of the WS according the UseTestnet flag
 func getApiEndpoint() string {
 	if UseTestnet {
-		return baseApiTestnetUrl
+		return BaseApiTestnetUrl
 	}
-	return baseApiMainUrl
+	return BaseApiMainUrl
 }
 
 // NewClient initialize an API client instance with API key and secret key.

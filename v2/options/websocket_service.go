@@ -490,13 +490,19 @@ func WsDepthServe(symbol string, levels string, rate *time.Duration, handler WsD
 // reference: https://binance-docs.github.io/apidocs/voptions/en/#websocket-market-streams
 //
 // streamName: you should collaborate stream names through official documentation or other function above defined,
-// 				the legitimacy of parameters needs to be guaranteed by the caller
+//
+//	the legitimacy of parameters needs to be guaranteed by the caller
+//
 // handler: a map of handler function, its key needs to correspond to the handler of the incoming streamname,
-// 			handler's key should be in ["trade", "index", "markPrice", "kline", "ticker", "openInterest", "option_pair", "depth"]
+//
+//	handler's key should be in ["trade", "index", "markPrice", "kline", "ticker", "openInterest", "option_pair", "depth"]
+//
 // for example:
-// 			WsCombinedServe({"ETH-240927-5500-P@depth10"}, map[string]interface{}{"depth": func(*WsDepthEvent) {}}, func(error){})
-//			WsCombinedServe({"ETH-240927-5500-P@depth10", "ETH-240927-5500-P@kline_1m"},
-// 						    map[string]interface{}{"depth": func(*WsDepthEvent) {}, "kline": func(*WsKlineEvent){}}, func(error){})
+//
+//	WsCombinedServe({"ETH-240927-5500-P@depth10"}, map[string]interface{}{"depth": func(*WsDepthEvent) {}}, func(error){})
+//	WsCombinedServe({"ETH-240927-5500-P@depth10", "ETH-240927-5500-P@kline_1m"},
+//				    map[string]interface{}{"depth": func(*WsDepthEvent) {}, "kline": func(*WsKlineEvent){}}, func(error){})
+//
 // note: the symbol(underlying) of streamName should be upper.
 func WsCombinedServe(streamName []string, handler map[string]interface{}, errHandler ErrHandler) (doneC, stopC chan struct{}, err error) {
 	if len(streamName) <= 0 || len(handler) <= 0 {
