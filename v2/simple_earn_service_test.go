@@ -525,3 +525,48 @@ func (s *simpleEarnServiceTestSuite) TestSubscriptionPreview() {
 	s.r().Equal("0.22759183", preview.EstDailyRealTimeRewards)
 	s.r().Equal("0.22759183", preview.EstDailyAirdropRewards)
 }
+
+func (s *simpleEarnServiceTestSuite) TestLockedSubscriptionPreview() {
+	data := []byte(`
+  {
+    "rewardAsset": "AXS",
+    "totalRewardAmt": "5.17181528",
+    "extraRewardAsset": "BNB",
+    "estTotalExtraRewardAmt": "5.17181528",
+    "nextPay": "1.29295383",
+    "nextPayDate": 1646697600000,
+    "valueDate": 1646697600000,
+    "rewardsEndDate": 1651449600000,
+    "deliverDate": 1651536000000,
+    "nextSubscriptionDate": 1651536000000
+  }
+`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"projectId":     "AXS001",
+			"amount":        "0.1",
+			"autoSubscribe": true,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	preview, err := s.client.NewSimpleEarnLockedSubscriptionPreviewService().
+		ProjectId("AXS001").
+		Amount("0.1").
+		AutoSubscribe(true).
+		Do(newContext())
+	s.r().NoError(err)
+	s.r().Equal("AXS", preview.RewardAsset)
+	s.r().Equal("5.17181528", preview.TotalRewardAmt)
+	s.r().Equal("BNB", preview.ExtraRewardAsset)
+	s.r().Equal("5.17181528", preview.EstTotalExtraRewardAmt)
+	s.r().Equal("1.29295383", preview.NextPay)
+	s.r().EqualValues(1646697600000, preview.NextPayDate)
+	s.r().EqualValues(1646697600000, preview.ValueDate)
+	s.r().EqualValues(1651449600000, preview.RewardsEndDate)
+	s.r().EqualValues(1651536000000, preview.DeliverDate)
+	s.r().EqualValues(1651536000000, preview.NextSubscriptionDate)
+}

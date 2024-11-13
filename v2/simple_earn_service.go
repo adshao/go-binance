@@ -838,3 +838,66 @@ func (s *SimpleEarnSubscriptionPreviewService) Do(ctx context.Context, opts ...R
 	}
 	return res, nil
 }
+
+type SimpleEarnLockedSubscriptionPreviewService struct {
+	c             *Client
+	projectId     string
+	amount        string
+	autoSubscribe *bool
+}
+
+func (s *SimpleEarnLockedSubscriptionPreviewService) ProjectId(projectId string) *SimpleEarnLockedSubscriptionPreviewService {
+	s.projectId = projectId
+	return s
+}
+
+func (s *SimpleEarnLockedSubscriptionPreviewService) Amount(amount string) *SimpleEarnLockedSubscriptionPreviewService {
+	s.amount = amount
+	return s
+}
+
+func (s *SimpleEarnLockedSubscriptionPreviewService) AutoSubscribe(autoSubscribe bool) *SimpleEarnLockedSubscriptionPreviewService {
+	s.autoSubscribe = &autoSubscribe
+	return s
+}
+
+type SimpleEarnLockedSubscriptionPreviewResp struct {
+	RewardAsset            string `json:"rewardAsset"`
+	TotalRewardAmt         string `json:"totalRewardAmt"`
+	ExtraRewardAsset       string `json:"extraRewardAsset"`
+	EstTotalExtraRewardAmt string `json:"estTotalExtraRewardAmt"`
+	NextPay                string `json:"nextPay"`
+	NextPayDate            int64  `json:"nextPayDate"`
+	ValueDate              int64  `json:"valueDate"`
+	RewardsEndDate         int64  `json:"rewardsEndDate"`
+	DeliverDate            int64  `json:"deliverDate"`
+	NextSubscriptionDate   int64  `json:"nextSubscriptionDate"`
+}
+
+func (s *SimpleEarnLockedSubscriptionPreviewService) Do(ctx context.Context, opts ...RequestOption) (res *SimpleEarnLockedSubscriptionPreviewResp, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/simple-earn/locked/subscriptionPreview",
+		secType:  secTypeSigned,
+	}
+
+	if s.projectId != "" {
+		r.setParam("projectId", s.projectId)
+	}
+	if s.amount != "" {
+		r.setParam("amount", s.amount)
+	}
+	if s.autoSubscribe != nil {
+		r.setParam("autoSubscribe", *s.autoSubscribe)
+	}
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
