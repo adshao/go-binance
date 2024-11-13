@@ -888,7 +888,7 @@ func (s *SimpleEarnFlexiableSubscriptionPreviewService) Amount(amount string) *S
 	return s
 }
 
-type SimpleEarnFlexiableSubscriptionPreviewResp struct {
+type SimpleEarnFlexibleSubscriptionPreviewResp struct {
 	TotalAmount             string `json:"totalAmount"`
 	RewardAsset             string `json:"rewardAsset"`
 	AirDropAsset            string `json:"airDropAsset"`
@@ -897,7 +897,7 @@ type SimpleEarnFlexiableSubscriptionPreviewResp struct {
 	EstDailyAirdropRewards  string `json:"estDailyAirdropRewards"`
 }
 
-func (s *SimpleEarnFlexiableSubscriptionPreviewService) Do(ctx context.Context, opts ...RequestOption) (res *SimpleEarnFlexiableSubscriptionPreviewResp, err error) {
+func (s *SimpleEarnFlexiableSubscriptionPreviewService) Do(ctx context.Context, opts ...RequestOption) (res *SimpleEarnFlexibleSubscriptionPreviewResp, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/simple-earn/flexible/subscriptionPreview",
@@ -916,7 +916,7 @@ func (s *SimpleEarnFlexiableSubscriptionPreviewService) Do(ctx context.Context, 
 		return nil, err
 	}
 
-	res = new(SimpleEarnFlexiableSubscriptionPreviewResp)
+	res = new(SimpleEarnFlexibleSubscriptionPreviewResp)
 	if err := json.Unmarshal(data, &res); err != nil {
 		return nil, err
 	}
