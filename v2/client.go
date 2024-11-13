@@ -1354,3 +1354,11 @@ func (c *Client) NewCancelFuturesAlgoOrderService() *CancelFuturesAlgoOrderServi
 func (c *Client) NewGetFuturesAlgoSubOrdersService() *GetFuturesAlgoSubOrdersService {
 	return &GetFuturesAlgoSubOrdersService{c: c}
 }
+
+// ----- simple earn service -----
+
+func (c *Client) NewGetSimpleEarnAccountService() *SimpleEarnGetAccountService {
+	return &SimpleEarnGetAccountService{c: c}
+}
+
+// ----- end simple earn service -----
