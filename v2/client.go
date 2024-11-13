@@ -1369,4 +1369,8 @@ func (c *Client) NewListSimpleEarnLockedProductService() *SimpleEarnListLockedPr
 	return &SimpleEarnListLockedProductService{c: c}
 }
 
+func (c *Client) NewGetSimpleEarnFlexiblePositionService() *SimpleEarnGetFlexiblePositionService {
+	return &SimpleEarnGetFlexiblePositionService{c: c}
+}
+
 // ----- end simple earn service -----
