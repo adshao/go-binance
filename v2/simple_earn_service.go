@@ -741,3 +741,49 @@ func (s *SimpleEarnSetAutoSubscribeFlexibleProductService) Do(ctx context.Contex
 	}
 	return res, nil
 }
+
+type SimpleEarnSetAutoSubscribeLockedProductService struct {
+	c             *Client
+	positionId    int
+	autoSubscribe *bool
+}
+
+func (s *SimpleEarnSetAutoSubscribeLockedProductService) PositionId(positionId int) *SimpleEarnSetAutoSubscribeLockedProductService {
+	s.positionId = positionId
+	return s
+}
+
+func (s *SimpleEarnSetAutoSubscribeLockedProductService) AutoSubscribe(autoSubscribe bool) *SimpleEarnSetAutoSubscribeLockedProductService {
+	s.autoSubscribe = &autoSubscribe
+	return s
+}
+
+type SimpleEarnSetAutoSubscribeLockedProductResp struct {
+	Success bool `json:"success"`
+}
+
+func (s *SimpleEarnSetAutoSubscribeLockedProductService) Do(ctx context.Context, opts ...RequestOption) (res *SimpleEarnSetAutoSubscribeLockedProductResp, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v1/simple-earn/locked/setAutoSubscribe",
+		secType:  secTypeSigned,
+	}
+
+	if s.positionId != 0 {
+		r.setParam("positionId", s.positionId)
+	}
+	if s.autoSubscribe != nil {
+		r.setParam("autoSubscribe", *s.autoSubscribe)
+	}
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	res = new(SimpleEarnSetAutoSubscribeLockedProductResp)
+	if err := json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}

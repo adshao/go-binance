@@ -469,3 +469,26 @@ func (s *simpleEarnServiceTestSuite) TestSetAutoSubscribeFlexibleProduct() {
 	s.r().NoError(err)
 	s.r().Equal(true, resp.Success)
 }
+
+func (s *simpleEarnServiceTestSuite) TestSetAutoSubscribeLockedProduct() {
+	data := []byte(`{
+  "success": true
+}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"positionId":    12345,
+			"autoSubscribe": true,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	resp, err := s.client.NewSimpleEarnSetAutoSubscribeLockedProductService().
+		PositionId(12345).
+		AutoSubscribe(true).
+		Do(newContext())
+	s.r().NoError(err)
+	s.r().Equal(true, resp.Success)
+}
