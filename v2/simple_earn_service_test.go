@@ -493,7 +493,7 @@ func (s *simpleEarnServiceTestSuite) TestSetAutoSubscribeLockedProduct() {
 	s.r().Equal(true, resp.Success)
 }
 
-func (s *simpleEarnServiceTestSuite) TestFlexiableSubscriptionPreview() {
+func (s *simpleEarnServiceTestSuite) TestFlexibleSubscriptionPreview() {
 	data := []byte(`{
   "totalAmount": "1232.32230982",
   "rewardAsset": "BUSD",
