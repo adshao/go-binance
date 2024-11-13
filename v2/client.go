@@ -1409,4 +1409,8 @@ func (c *Client) NewSimpleEarnSetAutoSubscribeLockedProductService() *SimpleEarn
 	return &SimpleEarnSetAutoSubscribeLockedProductService{c: c}
 }
 
+func (c *Client) NewSimpleEarnSubscriptionPreviewService() *SimpleEarnSubscriptionPreviewService {
+	return &SimpleEarnSubscriptionPreviewService{c: c}
+}
+
 // ----- end simple earn service -----

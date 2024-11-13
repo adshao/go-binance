@@ -492,3 +492,36 @@ func (s *simpleEarnServiceTestSuite) TestSetAutoSubscribeLockedProduct() {
 	s.r().NoError(err)
 	s.r().Equal(true, resp.Success)
 }
+
+func (s *simpleEarnServiceTestSuite) TestSubscriptionPreview() {
+	data := []byte(`{
+  "totalAmount": "1232.32230982",
+  "rewardAsset": "BUSD",
+  "airDropAsset": "BETH",
+  "estDailyBonusRewards": "0.22759183",
+  "estDailyRealTimeRewards": "0.22759183",
+  "estDailyAirdropRewards": "0.22759183"
+}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"productId": "BTC001",
+			"amount":    "0.1",
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	preview, err := s.client.NewSimpleEarnSubscriptionPreviewService().
+		ProductId("BTC001").
+		Amount("0.1").
+		Do(newContext())
+	s.r().NoError(err)
+	s.r().Equal("1232.32230982", preview.TotalAmount)
+	s.r().Equal("BUSD", preview.RewardAsset)
+	s.r().Equal("BETH", preview.AirDropAsset)
+	s.r().Equal("0.22759183", preview.EstDailyBonusRewards)
+	s.r().Equal("0.22759183", preview.EstDailyRealTimeRewards)
+	s.r().Equal("0.22759183", preview.EstDailyAirdropRewards)
+}

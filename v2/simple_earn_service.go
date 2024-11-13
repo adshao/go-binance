@@ -787,3 +787,54 @@ func (s *SimpleEarnSetAutoSubscribeLockedProductService) Do(ctx context.Context,
 	}
 	return res, nil
 }
+
+type SimpleEarnSubscriptionPreviewService struct {
+	c         *Client
+	productId string
+	amount    string
+}
+
+func (s *SimpleEarnSubscriptionPreviewService) ProductId(productId string) *SimpleEarnSubscriptionPreviewService {
+	s.productId = productId
+	return s
+}
+
+func (s *SimpleEarnSubscriptionPreviewService) Amount(amount string) *SimpleEarnSubscriptionPreviewService {
+	s.amount = amount
+	return s
+}
+
+type SimpleEarnSubscriptionPreviewResp struct {
+	TotalAmount             string `json:"totalAmount"`
+	RewardAsset             string `json:"rewardAsset"`
+	AirDropAsset            string `json:"airDropAsset"`
+	EstDailyBonusRewards    string `json:"estDailyBonusRewards"`
+	EstDailyRealTimeRewards string `json:"estDailyRealTimeRewards"`
+	EstDailyAirdropRewards  string `json:"estDailyAirdropRewards"`
+}
+
+func (s *SimpleEarnSubscriptionPreviewService) Do(ctx context.Context, opts ...RequestOption) (res *SimpleEarnSubscriptionPreviewResp, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/simple-earn/flexible/subscriptionPreview",
+		secType:  secTypeSigned,
+	}
+
+	if s.productId != "" {
+		r.setParam("productId", s.productId)
+	}
+	if s.amount != "" {
+		r.setParam("amount", s.amount)
+	}
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	res = new(SimpleEarnSubscriptionPreviewResp)
+	if err := json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
