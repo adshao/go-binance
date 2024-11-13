@@ -208,8 +208,8 @@ func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnLockedPositionService() {
       "asset": "AXS",
       "amount": "122.09202928",
       "purchaseTime": 1646182276000,
-      "duration": "60",
-      "accrualDays": "4",
+      "duration": 60,
+      "accrualDays": 4,
       "rewardAsset": "AXS",
       "APY": "0.2032",
       "rewardAmt": "5.17181528",
@@ -218,11 +218,11 @@ func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnLockedPositionService() {
       "estExtraRewardAmt": "5.17181528",
       "nextPay": "1.29295383",
       "nextPayDate": 1646697600000,
-      "payPeriod": "1",
+      "payPeriod": 1,
       "redeemAmountEarly": "2802.24068892",
       "rewardsEndDate": 1651449600000,
       "deliverDate": 1651536000000,
-      "redeemPeriod": "1",
+      "redeemPeriod": 1,
       "redeemingAmt": "232.2323",
       "redeemTo": "FLEXIBLE",
       "partialAmtDeliverDate": 1651536000000,
@@ -264,8 +264,8 @@ func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnLockedPositionService() {
 	s.r().Equal("AXS", position.Rows[0].Asset)
 	s.r().Equal("122.09202928", position.Rows[0].Amount)
 	s.r().EqualValues(1646182276000, position.Rows[0].PurchaseTime)
-	s.r().Equal("60", position.Rows[0].Duration)
-	s.r().Equal("4", position.Rows[0].AccrualDays)
+	s.r().EqualValues(60, position.Rows[0].Duration)
+	s.r().EqualValues(4, position.Rows[0].AccrualDays)
 	s.r().Equal("AXS", position.Rows[0].RewardAsset)
 	s.r().Equal("0.2032", position.Rows[0].APY)
 	s.r().Equal("5.17181528", position.Rows[0].RewardAmt)
@@ -274,11 +274,11 @@ func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnLockedPositionService() {
 	s.r().Equal("5.17181528", position.Rows[0].EstExtraRewardAmt)
 	s.r().Equal("1.29295383", position.Rows[0].NextPay)
 	s.r().EqualValues(1646697600000, position.Rows[0].NextPayDate)
-	s.r().Equal("1", position.Rows[0].PayPeriod)
+	s.r().EqualValues(1, position.Rows[0].PayPeriod)
 	s.r().Equal("2802.24068892", position.Rows[0].RedeemAmountEarly)
 	s.r().EqualValues(1651449600000, position.Rows[0].RewardsEndDate)
 	s.r().EqualValues(1651536000000, position.Rows[0].DeliverDate)
-	s.r().Equal("1", position.Rows[0].RedeemPeriod)
+	s.r().EqualValues(1, position.Rows[0].RedeemPeriod)
 	s.r().Equal("232.2323", position.Rows[0].RedeemingAmt)
 	s.r().Equal("FLEXIBLE", position.Rows[0].RedeemTo)
 	s.r().EqualValues(1651536000000, position.Rows[0].PartialAmtDeliverDate)
@@ -418,6 +418,29 @@ func (s *simpleEarnServiceTestSuite) TestRedeemFlexibleProduct() {
 		RedeemAll(true).
 		Amount("0.1").
 		DestAccount("SPOT").
+		Do(newContext())
+	s.r().NoError(err)
+	s.r().Equal(40607, redeemResp.RedeemId)
+	s.r().Equal(true, redeemResp.Success)
+}
+
+func (s *simpleEarnServiceTestSuite) TestRedeemLockedProduct() {
+	data := []byte(`{
+  "redeemId": 40607,
+  "success": true
+}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"positionId": 12345,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	redeemResp, err := s.client.NewSimpleEarnRedeemLockedProductService().
+		PositionId(12345).
 		Do(newContext())
 	s.r().NoError(err)
 	s.r().Equal(40607, redeemResp.RedeemId)

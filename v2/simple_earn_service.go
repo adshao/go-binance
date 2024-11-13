@@ -310,8 +310,8 @@ type SimpleEarnLockedPosition struct {
 	Asset                 string `json:"asset"`
 	Amount                string `json:"amount"`
 	PurchaseTime          int64  `json:"purchaseTime"`
-	Duration              string `json:"duration"`
-	AccrualDays           string `json:"accrualDays"`
+	Duration              int    `json:"duration"`
+	AccrualDays           int    `json:"accrualDays"`
 	RewardAsset           string `json:"rewardAsset"`
 	APY                   string `json:"APY"`
 	RewardAmt             string `json:"rewardAmt"`
@@ -320,11 +320,11 @@ type SimpleEarnLockedPosition struct {
 	EstExtraRewardAmt     string `json:"estExtraRewardAmt"`
 	NextPay               string `json:"nextPay"`
 	NextPayDate           int64  `json:"nextPayDate"`
-	PayPeriod             string `json:"payPeriod"`
+	PayPeriod             int    `json:"payPeriod"`
 	RedeemAmountEarly     string `json:"redeemAmountEarly"`
 	RewardsEndDate        int64  `json:"rewardsEndDate"`
 	DeliverDate           int64  `json:"deliverDate"`
-	RedeemPeriod          string `json:"redeemPeriod"`
+	RedeemPeriod          int    `json:"redeemPeriod"`
 	RedeemingAmt          string `json:"redeemingAmt"`
 	RedeemTo              string `json:"redeemTo"`
 	PartialAmtDeliverDate int64  `json:"partialAmtDeliverDate"`
@@ -652,6 +652,44 @@ func (s *SimpleEarnRedeemFlexibleProductService) Do(ctx context.Context, opts ..
 	}
 
 	res = new(SimpleEarnRedeemFlexibleProductResp)
+	if err := json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type SimpleEarnRedeemLockedProductService struct {
+	c          *Client
+	positionId int
+}
+
+func (s *SimpleEarnRedeemLockedProductService) PositionId(positionId int) *SimpleEarnRedeemLockedProductService {
+	s.positionId = positionId
+	return s
+}
+
+type SimpleEarnRedeemLockedProductResp struct {
+	RedeemId int  `json:"redeemId"`
+	Success  bool `json:"success"`
+}
+
+func (s *SimpleEarnRedeemLockedProductService) Do(ctx context.Context, opts ...RequestOption) (res *SimpleEarnRedeemLockedProductResp, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v1/simple-earn/locked/redeem",
+		secType:  secTypeSigned,
+	}
+
+	if s.positionId != 0 {
+		r.setParam("positionId", s.positionId)
+	}
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	res = new(SimpleEarnRedeemLockedProductResp)
 	if err := json.Unmarshal(data, &res); err != nil {
 		return nil, err
 	}
