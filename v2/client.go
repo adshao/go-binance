@@ -1356,68 +1356,8 @@ func (c *Client) NewGetFuturesAlgoSubOrdersService() *GetFuturesAlgoSubOrdersSer
 }
 
 // ----- simple earn service -----
-
-func (c *Client) NewGetSimpleEarnAccountService() *SimpleEarnGetAccountService {
-	return &SimpleEarnGetAccountService{c: c}
-}
-
-func (c *Client) NewListSimpleEarnFlexibleProductService() *SimpleEarnListFlexibleProductService {
-	return &SimpleEarnListFlexibleProductService{c: c}
-}
-
-func (c *Client) NewListSimpleEarnLockedProductService() *SimpleEarnListLockedProductService {
-	return &SimpleEarnListLockedProductService{c: c}
-}
-
-func (c *Client) NewGetSimpleEarnFlexiblePositionService() *SimpleEarnGetFlexiblePositionService {
-	return &SimpleEarnGetFlexiblePositionService{c: c}
-}
-
-func (c *Client) NewGetSimpleEarnLockedPositionService() *SimpleEarnGetLockedPositionService {
-	return &SimpleEarnGetLockedPositionService{c: c}
-}
-
-func (c *Client) NewGetSimpleEarnFlexibleQuotaService() *SimpleEarnGetFlexibleQuotaService {
-	return &SimpleEarnGetFlexibleQuotaService{c: c}
-}
-
-func (c *Client) NewGetSimpleEarnLockedQuotaService() *SimpleEarnGetLockedQuotaService {
-	return &SimpleEarnGetLockedQuotaService{c: c}
-}
-
-func (c *Client) NewSimpleEarnSubscribeFlexibleProductService() *SimpleEarnSubscribeFlexibleProductService {
-	return &SimpleEarnSubscribeFlexibleProductService{c: c}
-}
-
-func (c *Client) NewSimpleEarnSubscribeLockedProductService() *SimpleEarnSubscribeLockedProductService {
-	return &SimpleEarnSubscribeLockedProductService{c: c}
-}
-
-func (c *Client) NewSimpleEarnRedeemFlexibleProductService() *SimpleEarnRedeemFlexibleProductService {
-	return &SimpleEarnRedeemFlexibleProductService{c: c}
-}
-
-func (c *Client) NewSimpleEarnRedeemLockedProductService() *SimpleEarnRedeemLockedProductService {
-	return &SimpleEarnRedeemLockedProductService{c: c}
-}
-
-func (c *Client) NewSimpleEarnSetAutoSubscribeFlexibleProductService() *SimpleEarnSetAutoSubscribeFlexibleProductService {
-	return &SimpleEarnSetAutoSubscribeFlexibleProductService{c: c}
-}
-
-func (c *Client) NewSimpleEarnSetAutoSubscribeLockedProductService() *SimpleEarnSetAutoSubscribeLockedProductService {
-	return &SimpleEarnSetAutoSubscribeLockedProductService{c: c}
-}
-
-func (c *Client) NewSimpleEarnSubscriptionPreviewService() *SimpleEarnSubscriptionPreviewService {
-	return &SimpleEarnSubscriptionPreviewService{c: c}
-}
-
-func (c *Client) NewSimpleEarnLockedSubscriptionPreviewService() *SimpleEarnLockedSubscriptionPreviewService {
-	return &SimpleEarnLockedSubscriptionPreviewService{c: c}
-}
-func (c *Client) NewSimpleEarnSetRedeemOptionService() *SimpleEarnSetRedeemOptionService {
-	return &SimpleEarnSetRedeemOptionService{c: c}
+func (c *Client) NewSimpleEarnService() *SimpleEarnService {
+	return &SimpleEarnService{c: c}
 }
 
 // ----- end simple earn service -----

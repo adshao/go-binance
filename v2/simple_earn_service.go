@@ -5,6 +5,90 @@ import (
 	"net/http"
 )
 
+type SimpleEarnService struct {
+	c *Client
+}
+
+func (s *SimpleEarnService) GetAccount() *SimpleEarnGetAccountService {
+	return &SimpleEarnGetAccountService{c: s.c}
+}
+
+func (s *SimpleEarnService) FlexibleService() *SimpleEarnFlexiableService {
+	return &SimpleEarnFlexiableService{c: s.c}
+}
+
+func (s *SimpleEarnService) LockedService() *SimpleEarnLockedService {
+	return &SimpleEarnLockedService{c: s.c}
+}
+
+// --
+type SimpleEarnFlexiableService struct {
+	c *Client
+}
+
+func (s *SimpleEarnFlexiableService) ListProduct() *SimpleEarnListFlexibleProductService {
+	return &SimpleEarnListFlexibleProductService{c: s.c}
+}
+
+func (s *SimpleEarnFlexiableService) GetPosition() *SimpleEarnGetFlexiblePositionService {
+	return &SimpleEarnGetFlexiblePositionService{c: s.c}
+}
+
+func (s *SimpleEarnFlexiableService) GetLeftQuote() *SimpleEarnGetFlexibleQuotaService {
+	return &SimpleEarnGetFlexibleQuotaService{c: s.c}
+}
+
+func (s *SimpleEarnFlexiableService) Subscribe() *SimpleEarnSubscribeFlexibleProductService {
+	return &SimpleEarnSubscribeFlexibleProductService{c: s.c}
+}
+
+func (s *SimpleEarnFlexiableService) Redeem() *SimpleEarnRedeemFlexibleProductService {
+	return &SimpleEarnRedeemFlexibleProductService{c: s.c}
+}
+
+func (s *SimpleEarnFlexiableService) SetAutoSubscribe() *SimpleEarnSetAutoSubscribeFlexibleProductService {
+	return &SimpleEarnSetAutoSubscribeFlexibleProductService{c: s.c}
+}
+
+func (s *SimpleEarnFlexiableService) PreviewSubscribe() *SimpleEarnFlexiableSubscriptionPreviewService {
+	return &SimpleEarnFlexiableSubscriptionPreviewService{c: s.c}
+}
+
+// --
+
+type SimpleEarnLockedService struct {
+	c *Client
+}
+
+func (s *SimpleEarnLockedService) ListProduct() *SimpleEarnListLockedProductService {
+	return &SimpleEarnListLockedProductService{c: s.c}
+}
+func (s *SimpleEarnLockedService) GetPosition() *SimpleEarnGetLockedPositionService {
+	return &SimpleEarnGetLockedPositionService{c: s.c}
+}
+func (s *SimpleEarnLockedService) GetLeftQuote() *SimpleEarnGetLockedQuotaService {
+	return &SimpleEarnGetLockedQuotaService{c: s.c}
+}
+func (s *SimpleEarnLockedService) Subscribe() *SimpleEarnSubscribeLockedProductService {
+	return &SimpleEarnSubscribeLockedProductService{c: s.c}
+}
+func (s *SimpleEarnLockedService) Redeem() *SimpleEarnRedeemLockedProductService {
+	return &SimpleEarnRedeemLockedProductService{c: s.c}
+}
+func (s *SimpleEarnLockedService) SetAutoSubscribe() *SimpleEarnSetAutoSubscribeLockedProductService {
+	return &SimpleEarnSetAutoSubscribeLockedProductService{c: s.c}
+}
+
+func (s *SimpleEarnLockedService) PreviewSubscribe() *SimpleEarnLockedSubscriptionPreviewService {
+	return &SimpleEarnLockedSubscriptionPreviewService{c: s.c}
+}
+
+func (s *SimpleEarnLockedService) SetRedeemOption() *SimpleEarnSetRedeemOptionService {
+	return &SimpleEarnSetRedeemOptionService{c: s.c}
+}
+
+// --------------------
+
 type SimpleEarnGetAccountService struct {
 	c *Client
 }
@@ -788,23 +872,23 @@ func (s *SimpleEarnSetAutoSubscribeLockedProductService) Do(ctx context.Context,
 	return res, nil
 }
 
-type SimpleEarnSubscriptionPreviewService struct {
+type SimpleEarnFlexiableSubscriptionPreviewService struct {
 	c         *Client
 	productId string
 	amount    string
 }
 
-func (s *SimpleEarnSubscriptionPreviewService) ProductId(productId string) *SimpleEarnSubscriptionPreviewService {
+func (s *SimpleEarnFlexiableSubscriptionPreviewService) ProductId(productId string) *SimpleEarnFlexiableSubscriptionPreviewService {
 	s.productId = productId
 	return s
 }
 
-func (s *SimpleEarnSubscriptionPreviewService) Amount(amount string) *SimpleEarnSubscriptionPreviewService {
+func (s *SimpleEarnFlexiableSubscriptionPreviewService) Amount(amount string) *SimpleEarnFlexiableSubscriptionPreviewService {
 	s.amount = amount
 	return s
 }
 
-type SimpleEarnSubscriptionPreviewResp struct {
+type SimpleEarnFlexiableSubscriptionPreviewResp struct {
 	TotalAmount             string `json:"totalAmount"`
 	RewardAsset             string `json:"rewardAsset"`
 	AirDropAsset            string `json:"airDropAsset"`
@@ -813,7 +897,7 @@ type SimpleEarnSubscriptionPreviewResp struct {
 	EstDailyAirdropRewards  string `json:"estDailyAirdropRewards"`
 }
 
-func (s *SimpleEarnSubscriptionPreviewService) Do(ctx context.Context, opts ...RequestOption) (res *SimpleEarnSubscriptionPreviewResp, err error) {
+func (s *SimpleEarnFlexiableSubscriptionPreviewService) Do(ctx context.Context, opts ...RequestOption) (res *SimpleEarnFlexiableSubscriptionPreviewResp, err error) {
 	r := &request{
 		method:   http.MethodGet,
 		endpoint: "/sapi/v1/simple-earn/flexible/subscriptionPreview",
@@ -832,7 +916,7 @@ func (s *SimpleEarnSubscriptionPreviewService) Do(ctx context.Context, opts ...R
 		return nil, err
 	}
 
-	res = new(SimpleEarnSubscriptionPreviewResp)
+	res = new(SimpleEarnFlexiableSubscriptionPreviewResp)
 	if err := json.Unmarshal(data, &res); err != nil {
 		return nil, err
 	}

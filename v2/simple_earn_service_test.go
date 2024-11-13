@@ -31,7 +31,7 @@ func (s *simpleEarnServiceTestSuite) TestGetAccount() {
 		s.assertRequestEqual(e, r)
 	})
 
-	account, err := s.client.NewGetSimpleEarnAccountService().Do(newContext())
+	account, err := s.client.NewSimpleEarnService().GetAccount().Do(newContext())
 	s.r().NoError(err)
 	s.r().Equal("0.01067982", account.TotalAmountInBTC)
 	s.r().Equal("77.13289230", account.TotalAmountInUSDT)
@@ -74,7 +74,7 @@ func (s *simpleEarnServiceTestSuite) TestListFlexibleProduct() {
 		s.assertRequestEqual(e, r)
 	})
 
-	product, err := s.client.NewListSimpleEarnFlexibleProductService().Asset("BTC").Do(newContext())
+	product, err := s.client.NewSimpleEarnService().FlexibleService().ListProduct().Asset("BTC").Do(newContext())
 	s.r().NoError(err)
 	s.r().Equal("BTC001", product.Rows[0].ProductId)
 	s.r().Equal("BTC", product.Rows[0].Asset)
@@ -86,7 +86,7 @@ func (s *simpleEarnServiceTestSuite) TestListFlexibleProduct() {
 	s.r().Equal(true, product.Rows[0].IsSoldOut)
 	s.r().Equal(true, product.Rows[0].Hot)
 	s.r().Equal("0.01000000", product.Rows[0].MinPurchaseAmount)
-	s.r().Equal("1646182276000", product.Rows[0].SubscriptionStartTime)
+	s.r().EqualValues(1646182276000, product.Rows[0].SubscriptionStartTime)
 	s.r().Equal("PURCHASING", product.Rows[0].Status)
 	s.r().Equal(1, product.Total)
 }
@@ -126,7 +126,7 @@ func (s *simpleEarnServiceTestSuite) TestListLockedProduct() {
 		s.assertRequestEqual(e, r)
 	})
 
-	product, err := s.client.NewListSimpleEarnLockedProductService().Asset("AXS").Do(newContext())
+	product, err := s.client.NewSimpleEarnService().LockedService().ListProduct().Asset("AXS").Do(newContext())
 	s.r().NoError(err)
 	s.r().Equal("Axs*90", product.Rows[0].ProjectId)
 	s.r().Equal("AXS", product.Rows[0].Detail.Asset)
@@ -179,7 +179,7 @@ func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnFlexiblePositionService() 
 		s.assertRequestEqual(e, r)
 	})
 
-	position, err := s.client.NewGetSimpleEarnFlexiblePositionService().Asset("USDT").Do(newContext())
+	position, err := s.client.NewSimpleEarnService().FlexibleService().GetPosition().Asset("USDT").Do(newContext())
 	s.r().NoError(err)
 	s.r().Equal("75.46000000", position.Rows[0].TotalAmount)
 	s.r().Equal(map[string]string{"0-5BTC": "0.05", "5-10BTC": "0.03"}, position.Rows[0].TierAnnualPercentageRate)
@@ -250,7 +250,7 @@ func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnLockedPositionService() {
 		s.assertRequestEqual(e, r)
 	})
 
-	position, err := s.client.NewGetSimpleEarnLockedPositionService().
+	position, err := s.client.NewSimpleEarnService().LockedService().GetPosition().
 		Asset("AXS").
 		PositionId(123123).
 		ProjectId("Axs*90").
@@ -305,7 +305,7 @@ func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnFlexibleQuotaService() {
 		s.assertRequestEqual(e, r)
 	})
 
-	quota, err := s.client.NewGetSimpleEarnFlexibleQuotaService().
+	quota, err := s.client.NewSimpleEarnService().FlexibleService().GetLeftQuote().
 		ProductId("BTC001").
 		Do(newContext())
 	s.r().NoError(err)
@@ -326,7 +326,7 @@ func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnLockedQuotaService() {
 		s.assertRequestEqual(e, r)
 	})
 
-	quota, err := s.client.NewGetSimpleEarnLockedQuotaService().
+	quota, err := s.client.NewSimpleEarnService().LockedService().GetLeftQuote().
 		ProjectId("AXS001").
 		Do(newContext())
 	s.r().NoError(err)
@@ -351,7 +351,7 @@ func (s *simpleEarnServiceTestSuite) TestSubscribeFlexibleProduct() {
 		s.assertRequestEqual(e, r)
 	})
 
-	subscribeResp, err := s.client.NewSimpleEarnSubscribeFlexibleProductService().
+	subscribeResp, err := s.client.NewSimpleEarnService().FlexibleService().Subscribe().
 		ProductId("BTC001").
 		Amount("0.1").
 		AutoSubscribe(true).
@@ -382,7 +382,7 @@ func (s *simpleEarnServiceTestSuite) TestSubscribeLockedProduct() {
 		s.assertRequestEqual(e, r)
 	})
 
-	subscribeResp, err := s.client.NewSimpleEarnSubscribeLockedProductService().
+	subscribeResp, err := s.client.NewSimpleEarnService().LockedService().Subscribe().
 		ProjectId("AXS001").
 		Amount("0.1").
 		AutoSubscribe(true).
@@ -413,7 +413,7 @@ func (s *simpleEarnServiceTestSuite) TestRedeemFlexibleProduct() {
 		s.assertRequestEqual(e, r)
 	})
 
-	redeemResp, err := s.client.NewSimpleEarnRedeemFlexibleProductService().
+	redeemResp, err := s.client.NewSimpleEarnService().FlexibleService().Redeem().
 		ProductId("BTC001").
 		RedeemAll(true).
 		Amount("0.1").
@@ -439,7 +439,7 @@ func (s *simpleEarnServiceTestSuite) TestRedeemLockedProduct() {
 		s.assertRequestEqual(e, r)
 	})
 
-	redeemResp, err := s.client.NewSimpleEarnRedeemLockedProductService().
+	redeemResp, err := s.client.NewSimpleEarnService().LockedService().Redeem().
 		PositionId(12345).
 		Do(newContext())
 	s.r().NoError(err)
@@ -462,7 +462,7 @@ func (s *simpleEarnServiceTestSuite) TestSetAutoSubscribeFlexibleProduct() {
 		s.assertRequestEqual(e, r)
 	})
 
-	resp, err := s.client.NewSimpleEarnSetAutoSubscribeFlexibleProductService().
+	resp, err := s.client.NewSimpleEarnService().FlexibleService().SetAutoSubscribe().
 		ProductId("BTC001").
 		AutoSubscribe(true).
 		Do(newContext())
@@ -485,7 +485,7 @@ func (s *simpleEarnServiceTestSuite) TestSetAutoSubscribeLockedProduct() {
 		s.assertRequestEqual(e, r)
 	})
 
-	resp, err := s.client.NewSimpleEarnSetAutoSubscribeLockedProductService().
+	resp, err := s.client.NewSimpleEarnService().LockedService().SetAutoSubscribe().
 		PositionId(12345).
 		AutoSubscribe(true).
 		Do(newContext())
@@ -493,7 +493,7 @@ func (s *simpleEarnServiceTestSuite) TestSetAutoSubscribeLockedProduct() {
 	s.r().Equal(true, resp.Success)
 }
 
-func (s *simpleEarnServiceTestSuite) TestSubscriptionPreview() {
+func (s *simpleEarnServiceTestSuite) TestFlexiableSubscriptionPreview() {
 	data := []byte(`{
   "totalAmount": "1232.32230982",
   "rewardAsset": "BUSD",
@@ -513,7 +513,7 @@ func (s *simpleEarnServiceTestSuite) TestSubscriptionPreview() {
 		s.assertRequestEqual(e, r)
 	})
 
-	preview, err := s.client.NewSimpleEarnSubscriptionPreviewService().
+	preview, err := s.client.NewSimpleEarnService().FlexibleService().PreviewSubscribe().
 		ProductId("BTC001").
 		Amount("0.1").
 		Do(newContext())
@@ -553,7 +553,7 @@ func (s *simpleEarnServiceTestSuite) TestLockedSubscriptionPreview() {
 		s.assertRequestEqual(e, r)
 	})
 
-	preview, err := s.client.NewSimpleEarnLockedSubscriptionPreviewService().
+	preview, err := s.client.NewSimpleEarnService().LockedService().PreviewSubscribe().
 		ProjectId("AXS001").
 		Amount("0.1").
 		AutoSubscribe(true).
@@ -571,7 +571,7 @@ func (s *simpleEarnServiceTestSuite) TestLockedSubscriptionPreview() {
 	s.r().EqualValues(1651536000000, preview.NextSubscriptionDate)
 }
 
-func (s *simpleEarnServiceTestSuite) TestSetRedeemOption() {
+func (s *simpleEarnServiceTestSuite) TestLockedSetRedeemOption() {
 	data := []byte(`{
   "success": true
 }`)
@@ -586,7 +586,7 @@ func (s *simpleEarnServiceTestSuite) TestSetRedeemOption() {
 		s.assertRequestEqual(e, r)
 	})
 
-	resp, err := s.client.NewSimpleEarnSetRedeemOptionService().
+	resp, err := s.client.NewSimpleEarnService().LockedService().SetRedeemOption().
 		PositionId("12345").
 		RedeemTo(RedeemToSpot).
 		Do(newContext())
