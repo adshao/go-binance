@@ -1361,8 +1361,12 @@ func (c *Client) NewGetSimpleEarnAccountService() *SimpleEarnGetAccountService {
 	return &SimpleEarnGetAccountService{c: c}
 }
 
-func (c *Client) NewListSimpleEarnFlexibleProductService() *SimpleEarnGetFlexibleProductService {
-	return &SimpleEarnGetFlexibleProductService{c: c}
+func (c *Client) NewListSimpleEarnFlexibleProductService() *SimpleEarnListFlexibleProductService {
+	return &SimpleEarnListFlexibleProductService{c: c}
+}
+
+func (c *Client) NewListSimpleEarnLockedProductService() *SimpleEarnListLockedProductService {
+	return &SimpleEarnListLockedProductService{c: c}
 }
 
 // ----- end simple earn service -----
