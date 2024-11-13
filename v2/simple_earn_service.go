@@ -517,3 +517,78 @@ func (s *SimpleEarnSubscribeFlexibleProductService) Do(ctx context.Context, opts
 	}
 	return res, nil
 }
+
+type SimpleEarnSubscribeLockedProductService struct {
+	c             *Client
+	projectId     string
+	amount        string
+	autoSubscribe bool
+	sourceAccount SimpleEarnSubscribeSourceAccount
+	redeemTo      string
+}
+
+func (s *SimpleEarnSubscribeLockedProductService) ProjectId(projectId string) *SimpleEarnSubscribeLockedProductService {
+	s.projectId = projectId
+	return s
+}
+
+func (s *SimpleEarnSubscribeLockedProductService) Amount(amount string) *SimpleEarnSubscribeLockedProductService {
+	s.amount = amount
+	return s
+}
+
+func (s *SimpleEarnSubscribeLockedProductService) AutoSubscribe(autoSubscribe bool) *SimpleEarnSubscribeLockedProductService {
+	s.autoSubscribe = autoSubscribe
+	return s
+}
+
+func (s *SimpleEarnSubscribeLockedProductService) SourceAccount(sourceAccount SimpleEarnSubscribeSourceAccount) *SimpleEarnSubscribeLockedProductService {
+	s.sourceAccount = sourceAccount
+	return s
+}
+
+func (s *SimpleEarnSubscribeLockedProductService) RedeemTo(redeemTo string) *SimpleEarnSubscribeLockedProductService {
+	s.redeemTo = redeemTo
+	return s
+}
+
+type SimpleEarnSubscribeLockedProductResp struct {
+	PurchaseId int  `json:"purchaseId"`
+	PositionId int  `json:"positionId"`
+	Success    bool `json:"success"`
+}
+
+func (s *SimpleEarnSubscribeLockedProductService) Do(ctx context.Context, opts ...RequestOption) (res *SimpleEarnSubscribeLockedProductResp, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v1/simple-earn/locked/subscribe",
+		secType:  secTypeSigned,
+	}
+
+	if s.projectId != "" {
+		r.setParam("projectId", s.projectId)
+	}
+	if s.amount != "" {
+		r.setParam("amount", s.amount)
+	}
+	if s.autoSubscribe {
+		r.setParam("autoSubscribe", s.autoSubscribe)
+	}
+	if s.sourceAccount != "" {
+		r.setParam("sourceAccount", string(s.sourceAccount))
+	}
+	if s.redeemTo != "" {
+		r.setParam("redeemTo", s.redeemTo)
+	}
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	res = new(SimpleEarnSubscribeLockedProductResp)
+	if err := json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}

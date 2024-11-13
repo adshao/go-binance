@@ -361,3 +361,36 @@ func (s *simpleEarnServiceTestSuite) TestSubscribeFlexibleProduct() {
 	s.r().Equal(40607, subscribeResp.PurchaseId)
 	s.r().Equal(true, subscribeResp.Success)
 }
+
+func (s *simpleEarnServiceTestSuite) TestSubscribeLockedProduct() {
+	data := []byte(`{
+  "purchaseId": 40607,
+  "positionId": 12345,
+  "success": true
+}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"projectId":     "AXS001",
+			"amount":        "0.1",
+			"autoSubscribe": true,
+			"sourceAccount": "SPOT",
+			"redeemTo":      "FLEXIBLE",
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	subscribeResp, err := s.client.NewSimpleEarnSubscribeLockedProductService().
+		ProjectId("AXS001").
+		Amount("0.1").
+		AutoSubscribe(true).
+		SourceAccount(SourceAccountSpot).
+		RedeemTo("FLEXIBLE").
+		Do(newContext())
+	s.r().NoError(err)
+	s.r().Equal(40607, subscribeResp.PurchaseId)
+	s.r().EqualValues(12345, subscribeResp.PositionId)
+	s.r().Equal(true, subscribeResp.Success)
+}
