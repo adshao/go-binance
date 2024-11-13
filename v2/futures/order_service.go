@@ -14,23 +14,24 @@ import (
 
 // CreateOrderService create order
 type CreateOrderService struct {
-	c                *Client
-	symbol           string
-	side             SideType
-	positionSide     *PositionSideType
-	orderType        OrderType
-	timeInForce      *TimeInForceType
-	quantity         string
-	reduceOnly       *string
-	price            *string
-	newClientOrderID *string
-	stopPrice        *string
-	workingType      *WorkingType
-	activationPrice  *string
-	callbackRate     *string
-	priceProtect     *string
-	newOrderRespType NewOrderRespType
-	closePosition    *string
+	c                       *Client
+	symbol                  string
+	side                    SideType
+	positionSide            *PositionSideType
+	orderType               OrderType
+	timeInForce             *TimeInForceType
+	quantity                string
+	reduceOnly              *string
+	price                   *string
+	newClientOrderID        *string
+	stopPrice               *string
+	workingType             *WorkingType
+	activationPrice         *string
+	callbackRate            *string
+	priceProtect            *string
+	newOrderRespType        NewOrderRespType
+	closePosition           *string
+	selfTradePreventionMode *SelfTradePreventionMode
 }
 
 // Symbol set symbol
@@ -132,6 +133,12 @@ func (s *CreateOrderService) ClosePosition(closePosition bool) *CreateOrderServi
 	return s
 }
 
+// SelfTradePreventionMode set selfTradePreventionMode
+func (s *CreateOrderService) SelfTradePreventionMode(selfTradePreventionMode SelfTradePreventionMode) *CreateOrderService {
+	s.selfTradePreventionMode = &selfTradePreventionMode
+	return s
+}
+
 func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, opts ...RequestOption) (data []byte, header *http.Header, err error) {
 	r := &request{
 		method:   http.MethodPost,
@@ -179,6 +186,9 @@ func (s *CreateOrderService) createOrder(ctx context.Context, endpoint string, o
 	}
 	if s.closePosition != nil {
 		m["closePosition"] = *s.closePosition
+	}
+	if s.selfTradePreventionMode != nil {
+		m["selfTradePreventionMode"] = *s.selfTradePreventionMode
 	}
 	r.setFormParams(m)
 	data, header, err = s.c.callAPI(ctx, r, opts...)
@@ -668,27 +678,28 @@ func (s *CancelOrderService) Do(ctx context.Context, opts ...RequestOption) (res
 
 // CancelOrderResponse define response of canceling order
 type CancelOrderResponse struct {
-	ClientOrderID    string           `json:"clientOrderId"`
-	CumQuantity      string           `json:"cumQty"` // deprecated: use ExecutedQuantity instead
-	CumQuote         string           `json:"cumQuote"`
-	ExecutedQuantity string           `json:"executedQty"`
-	OrderID          int64            `json:"orderId"`
-	OrigQuantity     string           `json:"origQty"`
-	Price            string           `json:"price"`
-	ReduceOnly       bool             `json:"reduceOnly"`
-	Side             SideType         `json:"side"`
-	Status           OrderStatusType  `json:"status"`
-	StopPrice        string           `json:"stopPrice"`
-	Symbol           string           `json:"symbol"`
-	TimeInForce      TimeInForceType  `json:"timeInForce"`
-	Type             OrderType        `json:"type"`
-	UpdateTime       int64            `json:"updateTime"`
-	WorkingType      WorkingType      `json:"workingType"`
-	ActivatePrice    string           `json:"activatePrice"`
-	PriceRate        string           `json:"priceRate"`
-	OrigType         string           `json:"origType"`
-	PositionSide     PositionSideType `json:"positionSide"`
-	PriceProtect     bool             `json:"priceProtect"`
+	ClientOrderID           string                  `json:"clientOrderId"`
+	CumQuantity             string                  `json:"cumQty"` // deprecated: use ExecutedQuantity instead
+	CumQuote                string                  `json:"cumQuote"`
+	ExecutedQuantity        string                  `json:"executedQty"`
+	OrderID                 int64                   `json:"orderId"`
+	OrigQuantity            string                  `json:"origQty"`
+	Price                   string                  `json:"price"`
+	ReduceOnly              bool                    `json:"reduceOnly"`
+	Side                    SideType                `json:"side"`
+	Status                  OrderStatusType         `json:"status"`
+	StopPrice               string                  `json:"stopPrice"`
+	Symbol                  string                  `json:"symbol"`
+	TimeInForce             TimeInForceType         `json:"timeInForce"`
+	Type                    OrderType               `json:"type"`
+	UpdateTime              int64                   `json:"updateTime"`
+	WorkingType             WorkingType             `json:"workingType"`
+	ActivatePrice           string                  `json:"activatePrice"`
+	PriceRate               string                  `json:"priceRate"`
+	OrigType                string                  `json:"origType"`
+	PositionSide            PositionSideType        `json:"positionSide"`
+	PriceProtect            bool                    `json:"priceProtect"`
+	SelfTradePreventionMode SelfTradePreventionMode `json:"selfTradePreventionMode"`
 }
 
 // CancelAllOpenOrdersService cancel all open orders
