@@ -318,6 +318,11 @@ const (
 	FuturesAlgoOrderStatusTypeWorking   FuturesAlgoOrderStatusType = "WORKING"
 	FuturesAlgoOrderStatusTypeFinished  FuturesAlgoOrderStatusType = "FINISHED"
 	FuturesAlgoOrderStatusTypeCancelled FuturesAlgoOrderStatusType = "CANCELLED"
+
+	SelfTradePreventionModeNone        SelfTradePreventionMode = "NONE"
+	SelfTradePreventionModeExpireTaker SelfTradePreventionMode = "EXPIRE_TAKER"
+	SelfTradePreventionModeExpireBoth  SelfTradePreventionMode = "EXPIRE_BOTH"
+	SelfTradePreventionModeExpireMaker SelfTradePreventionMode = "EXPIRE_MAKER"
 )
 
 func currentTimestamp() int64 {

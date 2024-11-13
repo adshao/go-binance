@@ -1,5 +1,4 @@
 pkg/
 .idea
 *.iml
-.env
 coverage.txt
