@@ -592,3 +592,68 @@ func (s *SimpleEarnSubscribeLockedProductService) Do(ctx context.Context, opts .
 	}
 	return res, nil
 }
+
+type SimpleEarnRedeemFlexibleProductService struct {
+	c           *Client
+	productId   string
+	redeemAll   bool
+	amount      string
+	destAccount string
+}
+
+func (s *SimpleEarnRedeemFlexibleProductService) ProductId(productId string) *SimpleEarnRedeemFlexibleProductService {
+	s.productId = productId
+	return s
+}
+
+func (s *SimpleEarnRedeemFlexibleProductService) RedeemAll(redeemAll bool) *SimpleEarnRedeemFlexibleProductService {
+	s.redeemAll = redeemAll
+	return s
+}
+
+func (s *SimpleEarnRedeemFlexibleProductService) Amount(amount string) *SimpleEarnRedeemFlexibleProductService {
+	s.amount = amount
+	return s
+}
+
+func (s *SimpleEarnRedeemFlexibleProductService) DestAccount(destAccount string) *SimpleEarnRedeemFlexibleProductService {
+	s.destAccount = destAccount
+	return s
+}
+
+type SimpleEarnRedeemFlexibleProductResp struct {
+	RedeemId int  `json:"redeemId"`
+	Success  bool `json:"success"`
+}
+
+func (s *SimpleEarnRedeemFlexibleProductService) Do(ctx context.Context, opts ...RequestOption) (res *SimpleEarnRedeemFlexibleProductResp, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v1/simple-earn/flexible/redeem",
+		secType:  secTypeSigned,
+	}
+
+	if s.productId != "" {
+		r.setParam("productId", s.productId)
+	}
+	if s.redeemAll {
+		r.setParam("redeemAll", s.redeemAll)
+	}
+	if s.amount != "" {
+		r.setParam("amount", s.amount)
+	}
+	if s.destAccount != "" {
+		r.setParam("destAccount", s.destAccount)
+	}
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	res = new(SimpleEarnRedeemFlexibleProductResp)
+	if err := json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}

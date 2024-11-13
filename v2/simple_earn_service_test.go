@@ -394,3 +394,32 @@ func (s *simpleEarnServiceTestSuite) TestSubscribeLockedProduct() {
 	s.r().EqualValues(12345, subscribeResp.PositionId)
 	s.r().Equal(true, subscribeResp.Success)
 }
+
+func (s *simpleEarnServiceTestSuite) TestRedeemFlexibleProduct() {
+	data := []byte(`{
+  "redeemId": 40607,
+  "success": true
+}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"productId":   "BTC001",
+			"redeemAll":   true,
+			"amount":      "0.1",
+			"destAccount": "SPOT",
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	redeemResp, err := s.client.NewSimpleEarnRedeemFlexibleProductService().
+		ProductId("BTC001").
+		RedeemAll(true).
+		Amount("0.1").
+		DestAccount("SPOT").
+		Do(newContext())
+	s.r().NoError(err)
+	s.r().Equal(40607, redeemResp.RedeemId)
+	s.r().Equal(true, redeemResp.Success)
+}

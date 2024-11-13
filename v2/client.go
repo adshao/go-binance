@@ -1393,4 +1393,8 @@ func (c *Client) NewSimpleEarnSubscribeLockedProductService() *SimpleEarnSubscri
 	return &SimpleEarnSubscribeLockedProductService{c: c}
 }
 
+func (c *Client) NewSimpleEarnRedeemFlexibleProductService() *SimpleEarnRedeemFlexibleProductService {
+	return &SimpleEarnRedeemFlexibleProductService{c: c}
+}
+
 // ----- end simple earn service -----
