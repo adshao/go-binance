@@ -446,3 +446,26 @@ func (s *simpleEarnServiceTestSuite) TestRedeemLockedProduct() {
 	s.r().Equal(40607, redeemResp.RedeemId)
 	s.r().Equal(true, redeemResp.Success)
 }
+
+func (s *simpleEarnServiceTestSuite) TestSetAutoSubscribeFlexibleProduct() {
+	data := []byte(`{
+  "success": true
+}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"productId":     "BTC001",
+			"autoSubscribe": true,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	resp, err := s.client.NewSimpleEarnSetAutoSubscribeFlexibleProductService().
+		ProductId("BTC001").
+		AutoSubscribe(true).
+		Do(newContext())
+	s.r().NoError(err)
+	s.r().Equal(true, resp.Success)
+}

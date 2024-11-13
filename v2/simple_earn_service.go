@@ -457,7 +457,7 @@ type SimpleEarnSubscribeFlexibleProductService struct {
 	c             *Client
 	productId     string
 	amount        string
-	autoSubscribe bool
+	autoSubscribe *bool
 	sourceAccount SimpleEarnSubscribeSourceAccount
 }
 
@@ -472,7 +472,7 @@ func (s *SimpleEarnSubscribeFlexibleProductService) Amount(amount string) *Simpl
 }
 
 func (s *SimpleEarnSubscribeFlexibleProductService) AutoSubscribe(autoSubscribe bool) *SimpleEarnSubscribeFlexibleProductService {
-	s.autoSubscribe = autoSubscribe
+	s.autoSubscribe = &autoSubscribe
 	return s
 }
 
@@ -499,8 +499,8 @@ func (s *SimpleEarnSubscribeFlexibleProductService) Do(ctx context.Context, opts
 	if s.amount != "" {
 		r.setParam("amount", s.amount)
 	}
-	if s.autoSubscribe {
-		r.setParam("autoSubscribe", s.autoSubscribe)
+	if s.autoSubscribe != nil {
+		r.setParam("autoSubscribe", *s.autoSubscribe)
 	}
 	if s.sourceAccount != "" {
 		r.setParam("sourceAccount", string(s.sourceAccount))
@@ -522,7 +522,7 @@ type SimpleEarnSubscribeLockedProductService struct {
 	c             *Client
 	projectId     string
 	amount        string
-	autoSubscribe bool
+	autoSubscribe *bool
 	sourceAccount SimpleEarnSubscribeSourceAccount
 	redeemTo      string
 }
@@ -538,7 +538,7 @@ func (s *SimpleEarnSubscribeLockedProductService) Amount(amount string) *SimpleE
 }
 
 func (s *SimpleEarnSubscribeLockedProductService) AutoSubscribe(autoSubscribe bool) *SimpleEarnSubscribeLockedProductService {
-	s.autoSubscribe = autoSubscribe
+	s.autoSubscribe = &autoSubscribe
 	return s
 }
 
@@ -571,8 +571,8 @@ func (s *SimpleEarnSubscribeLockedProductService) Do(ctx context.Context, opts .
 	if s.amount != "" {
 		r.setParam("amount", s.amount)
 	}
-	if s.autoSubscribe {
-		r.setParam("autoSubscribe", s.autoSubscribe)
+	if s.autoSubscribe != nil {
+		r.setParam("autoSubscribe", *s.autoSubscribe)
 	}
 	if s.sourceAccount != "" {
 		r.setParam("sourceAccount", string(s.sourceAccount))
@@ -596,7 +596,7 @@ func (s *SimpleEarnSubscribeLockedProductService) Do(ctx context.Context, opts .
 type SimpleEarnRedeemFlexibleProductService struct {
 	c           *Client
 	productId   string
-	redeemAll   bool
+	redeemAll   *bool
 	amount      string
 	destAccount string
 }
@@ -607,7 +607,7 @@ func (s *SimpleEarnRedeemFlexibleProductService) ProductId(productId string) *Si
 }
 
 func (s *SimpleEarnRedeemFlexibleProductService) RedeemAll(redeemAll bool) *SimpleEarnRedeemFlexibleProductService {
-	s.redeemAll = redeemAll
+	s.redeemAll = &redeemAll
 	return s
 }
 
@@ -636,8 +636,8 @@ func (s *SimpleEarnRedeemFlexibleProductService) Do(ctx context.Context, opts ..
 	if s.productId != "" {
 		r.setParam("productId", s.productId)
 	}
-	if s.redeemAll {
-		r.setParam("redeemAll", s.redeemAll)
+	if s.redeemAll != nil {
+		r.setParam("redeemAll", *s.redeemAll)
 	}
 	if s.amount != "" {
 		r.setParam("amount", s.amount)
@@ -690,6 +690,52 @@ func (s *SimpleEarnRedeemLockedProductService) Do(ctx context.Context, opts ...R
 	}
 
 	res = new(SimpleEarnRedeemLockedProductResp)
+	if err := json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type SimpleEarnSetAutoSubscribeFlexibleProductService struct {
+	c             *Client
+	productId     string
+	autoSubscribe *bool
+}
+
+func (s *SimpleEarnSetAutoSubscribeFlexibleProductService) ProductId(productId string) *SimpleEarnSetAutoSubscribeFlexibleProductService {
+	s.productId = productId
+	return s
+}
+
+func (s *SimpleEarnSetAutoSubscribeFlexibleProductService) AutoSubscribe(autoSubscribe bool) *SimpleEarnSetAutoSubscribeFlexibleProductService {
+	s.autoSubscribe = &autoSubscribe
+	return s
+}
+
+type SimpleEarnSetAutoSubscribeFlexibleProductResp struct {
+	Success bool `json:"success"`
+}
+
+func (s *SimpleEarnSetAutoSubscribeFlexibleProductService) Do(ctx context.Context, opts ...RequestOption) (res *SimpleEarnSetAutoSubscribeFlexibleProductResp, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v1/simple-earn/flexible/setAutoSubscribe",
+		secType:  secTypeSigned,
+	}
+
+	if s.productId != "" {
+		r.setParam("productId", s.productId)
+	}
+	if s.autoSubscribe != nil {
+		r.setParam("autoSubscribe", *s.autoSubscribe)
+	}
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	res = new(SimpleEarnSetAutoSubscribeFlexibleProductResp)
 	if err := json.Unmarshal(data, &res); err != nil {
 		return nil, err
 	}
