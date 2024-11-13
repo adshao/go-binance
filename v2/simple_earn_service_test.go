@@ -290,3 +290,24 @@ func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnLockedPositionService() {
 	s.r().Equal(true, position.Rows[0].CanReStake)
 	s.r().Equal(1, position.Total)
 }
+
+func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnFlexiblePersonalLeftQuotaService() {
+	data := []byte(`{
+  "leftPersonalQuota": "1000"
+}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"productId": "BTC001",
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	quota, err := s.client.NewGetSimpleEarnFlexibleQuotaService().
+		ProductId("BTC001").
+		Do(newContext())
+	s.r().NoError(err)
+	s.r().Equal("1000", quota.LeftPersonalQuota)
+}

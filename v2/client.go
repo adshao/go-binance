@@ -1377,4 +1377,8 @@ func (c *Client) NewGetSimpleEarnLockedPositionService() *SimpleEarnGetLockedPos
 	return &SimpleEarnGetLockedPositionService{c: c}
 }
 
+func (c *Client) NewGetSimpleEarnFlexibleQuotaService() *SimpleEarnGetFlexibleQuotaService {
+	return &SimpleEarnGetFlexibleQuotaService{c: c}
+}
+
 // ----- end simple earn service -----

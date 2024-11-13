@@ -370,3 +370,40 @@ func (s *SimpleEarnGetLockedPositionService) Do(ctx context.Context, opts ...Req
 	}
 	return res, nil
 }
+
+type SimpleEarnGetFlexibleQuotaService struct {
+	c         *Client
+	productId string
+}
+
+func (s *SimpleEarnGetFlexibleQuotaService) ProductId(productId string) *SimpleEarnGetFlexibleQuotaService {
+	s.productId = productId
+	return s
+}
+
+type SimpleEarnFlexiblePersonalLeftQuotaResp struct {
+	LeftPersonalQuota string `json:"leftPersonalQuota"`
+}
+
+func (s *SimpleEarnGetFlexibleQuotaService) Do(ctx context.Context, opts ...RequestOption) (res *SimpleEarnFlexiblePersonalLeftQuotaResp, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/simple-earn/flexible/personalLeftQuota",
+		secType:  secTypeSigned,
+	}
+
+	if s.productId != "" {
+		r.setParam("productId", s.productId)
+	}
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	res = new(SimpleEarnFlexiblePersonalLeftQuotaResp)
+	if err := json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
