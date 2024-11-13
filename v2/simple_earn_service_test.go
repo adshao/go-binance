@@ -312,8 +312,6 @@ func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnFlexibleQuotaService() {
 	s.r().Equal("1000", quota.LeftPersonalQuota)
 }
 
-// ... existing code ...
-
 func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnLockedQuotaService() {
 	data := []byte(`{
   "leftPersonalQuota": "1000"
@@ -335,4 +333,31 @@ func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnLockedQuotaService() {
 	s.r().Equal("1000", quota.LeftPersonalQuota)
 }
 
-// ... existing code ...
+func (s *simpleEarnServiceTestSuite) TestSubscribeFlexibleProduct() {
+	data := []byte(`{
+  "purchaseId": 40607,
+  "success": true
+}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"productId":     "BTC001",
+			"amount":        "0.1",
+			"autoSubscribe": true,
+			"sourceAccount": "SPOT",
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	subscribeResp, err := s.client.NewSimpleEarnSubscribeFlexibleProductService().
+		ProductId("BTC001").
+		Amount("0.1").
+		AutoSubscribe(true).
+		SourceAccount(SourceAccountSpot).
+		Do(newContext())
+	s.r().NoError(err)
+	s.r().Equal(40607, subscribeResp.PurchaseId)
+	s.r().Equal(true, subscribeResp.Success)
+}

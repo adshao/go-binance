@@ -1385,4 +1385,8 @@ func (c *Client) NewGetSimpleEarnLockedQuotaService() *SimpleEarnGetLockedQuotaS
 	return &SimpleEarnGetLockedQuotaService{c: c}
 }
 
+func (c *Client) NewSimpleEarnSubscribeFlexibleProductService() *SimpleEarnSubscribeFlexibleProductService {
+	return &SimpleEarnSubscribeFlexibleProductService{c: c}
+}
+
 // ----- end simple earn service -----

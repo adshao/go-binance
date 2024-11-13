@@ -444,3 +444,76 @@ func (s *SimpleEarnGetLockedQuotaService) Do(ctx context.Context, opts ...Reques
 	}
 	return res, nil
 }
+
+type SimpleEarnSubscribeSourceAccount string
+
+const (
+	SourceAccountSpot SimpleEarnSubscribeSourceAccount = "SPOT"
+	SourceAccountFund SimpleEarnSubscribeSourceAccount = "FUND"
+	SourceAccountAll  SimpleEarnSubscribeSourceAccount = "ALL"
+)
+
+type SimpleEarnSubscribeFlexibleProductService struct {
+	c             *Client
+	productId     string
+	amount        string
+	autoSubscribe bool
+	sourceAccount SimpleEarnSubscribeSourceAccount
+}
+
+func (s *SimpleEarnSubscribeFlexibleProductService) ProductId(productId string) *SimpleEarnSubscribeFlexibleProductService {
+	s.productId = productId
+	return s
+}
+
+func (s *SimpleEarnSubscribeFlexibleProductService) Amount(amount string) *SimpleEarnSubscribeFlexibleProductService {
+	s.amount = amount
+	return s
+}
+
+func (s *SimpleEarnSubscribeFlexibleProductService) AutoSubscribe(autoSubscribe bool) *SimpleEarnSubscribeFlexibleProductService {
+	s.autoSubscribe = autoSubscribe
+	return s
+}
+
+func (s *SimpleEarnSubscribeFlexibleProductService) SourceAccount(sourceAccount SimpleEarnSubscribeSourceAccount) *SimpleEarnSubscribeFlexibleProductService {
+	s.sourceAccount = sourceAccount
+	return s
+}
+
+type SimpleEarnSubscribeFlexibleProductResp struct {
+	PurchaseId int  `json:"purchaseId"`
+	Success    bool `json:"success"`
+}
+
+func (s *SimpleEarnSubscribeFlexibleProductService) Do(ctx context.Context, opts ...RequestOption) (res *SimpleEarnSubscribeFlexibleProductResp, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v1/simple-earn/flexible/subscribe",
+		secType:  secTypeSigned,
+	}
+
+	if s.productId != "" {
+		r.setParam("productId", s.productId)
+	}
+	if s.amount != "" {
+		r.setParam("amount", s.amount)
+	}
+	if s.autoSubscribe {
+		r.setParam("autoSubscribe", s.autoSubscribe)
+	}
+	if s.sourceAccount != "" {
+		r.setParam("sourceAccount", string(s.sourceAccount))
+	}
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	res = new(SimpleEarnSubscribeFlexibleProductResp)
+	if err := json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
