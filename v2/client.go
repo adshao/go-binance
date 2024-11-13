@@ -1416,5 +1416,8 @@ func (c *Client) NewSimpleEarnSubscriptionPreviewService() *SimpleEarnSubscripti
 func (c *Client) NewSimpleEarnLockedSubscriptionPreviewService() *SimpleEarnLockedSubscriptionPreviewService {
 	return &SimpleEarnLockedSubscriptionPreviewService{c: c}
 }
+func (c *Client) NewSimpleEarnSetRedeemOptionService() *SimpleEarnSetRedeemOptionService {
+	return &SimpleEarnSetRedeemOptionService{c: c}
+}
 
 // ----- end simple earn service -----

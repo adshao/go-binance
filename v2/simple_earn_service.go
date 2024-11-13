@@ -901,3 +901,56 @@ func (s *SimpleEarnLockedSubscriptionPreviewService) Do(ctx context.Context, opt
 	}
 	return res, nil
 }
+
+type RedeemTo string
+
+const (
+	RedeemToSpot     RedeemTo = "SPOT"
+	RedeemToFlexible RedeemTo = "FLEXIBLE"
+)
+
+type SimpleEarnSetRedeemOptionService struct {
+	c          *Client
+	positionId string
+	redeemTo   RedeemTo
+}
+
+func (s *SimpleEarnSetRedeemOptionService) PositionId(positionId string) *SimpleEarnSetRedeemOptionService {
+	s.positionId = positionId
+	return s
+}
+
+func (s *SimpleEarnSetRedeemOptionService) RedeemTo(redeemTo RedeemTo) *SimpleEarnSetRedeemOptionService {
+	s.redeemTo = redeemTo
+	return s
+}
+
+type SimpleEarnSetRedeemOptionResp struct {
+	Success bool `json:"success"`
+}
+
+func (s *SimpleEarnSetRedeemOptionService) Do(ctx context.Context, opts ...RequestOption) (res *SimpleEarnSetRedeemOptionResp, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v1/simple-earn/locked/setRedeemOption",
+		secType:  secTypeSigned,
+	}
+
+	if s.positionId != "" {
+		r.setParam("positionId", s.positionId)
+	}
+	if s.redeemTo != "" {
+		r.setParam("redeemTo", string(s.redeemTo))
+	}
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	res = new(SimpleEarnSetRedeemOptionResp)
+	if err := json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}

@@ -570,3 +570,26 @@ func (s *simpleEarnServiceTestSuite) TestLockedSubscriptionPreview() {
 	s.r().EqualValues(1651536000000, preview.DeliverDate)
 	s.r().EqualValues(1651536000000, preview.NextSubscriptionDate)
 }
+
+func (s *simpleEarnServiceTestSuite) TestSetRedeemOption() {
+	data := []byte(`{
+  "success": true
+}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"positionId": "12345",
+			"redeemTo":   "SPOT",
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	resp, err := s.client.NewSimpleEarnSetRedeemOptionService().
+		PositionId("12345").
+		RedeemTo(RedeemToSpot).
+		Do(newContext())
+	s.r().NoError(err)
+	s.r().Equal(true, resp.Success)
+}
