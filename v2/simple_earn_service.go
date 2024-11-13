@@ -263,3 +263,110 @@ func (s *SimpleEarnGetFlexiblePositionService) Do(ctx context.Context, opts ...R
 	}
 	return res, nil
 }
+
+type SimpleEarnGetLockedPositionService struct {
+	c          *Client
+	asset      string
+	positionId int
+	projectId  string
+	current    int64
+	size       int64
+}
+
+func (s *SimpleEarnGetLockedPositionService) Asset(asset string) *SimpleEarnGetLockedPositionService {
+	s.asset = asset
+	return s
+}
+
+func (s *SimpleEarnGetLockedPositionService) PositionId(positionId int) *SimpleEarnGetLockedPositionService {
+	s.positionId = positionId
+	return s
+}
+
+func (s *SimpleEarnGetLockedPositionService) ProjectId(projectId string) *SimpleEarnGetLockedPositionService {
+	s.projectId = projectId
+	return s
+}
+
+func (s *SimpleEarnGetLockedPositionService) Current(current int64) *SimpleEarnGetLockedPositionService {
+	s.current = current
+	return s
+}
+
+func (s *SimpleEarnGetLockedPositionService) Size(size int64) *SimpleEarnGetLockedPositionService {
+	s.size = size
+	return s
+}
+
+type SimpleEarnLockedPositionResp struct {
+	Rows  []SimpleEarnLockedPosition `json:"rows"`
+	Total int                        `json:"total"`
+}
+
+type SimpleEarnLockedPosition struct {
+	PositionId            int    `json:"positionId"`
+	ParentPositionId      int    `json:"parentPositionId"`
+	ProjectId             string `json:"projectId"`
+	Asset                 string `json:"asset"`
+	Amount                string `json:"amount"`
+	PurchaseTime          int64  `json:"purchaseTime"`
+	Duration              string `json:"duration"`
+	AccrualDays           string `json:"accrualDays"`
+	RewardAsset           string `json:"rewardAsset"`
+	APY                   string `json:"APY"`
+	RewardAmt             string `json:"rewardAmt"`
+	ExtraRewardAsset      string `json:"extraRewardAsset"`
+	ExtraRewardAPR        string `json:"extraRewardAPR"`
+	EstExtraRewardAmt     string `json:"estExtraRewardAmt"`
+	NextPay               string `json:"nextPay"`
+	NextPayDate           int64  `json:"nextPayDate"`
+	PayPeriod             string `json:"payPeriod"`
+	RedeemAmountEarly     string `json:"redeemAmountEarly"`
+	RewardsEndDate        int64  `json:"rewardsEndDate"`
+	DeliverDate           int64  `json:"deliverDate"`
+	RedeemPeriod          string `json:"redeemPeriod"`
+	RedeemingAmt          string `json:"redeemingAmt"`
+	RedeemTo              string `json:"redeemTo"`
+	PartialAmtDeliverDate int64  `json:"partialAmtDeliverDate"`
+	CanRedeemEarly        bool   `json:"canRedeemEarly"`
+	CanFastRedemption     bool   `json:"canFastRedemption"`
+	AutoSubscribe         bool   `json:"autoSubscribe"`
+	Type                  string `json:"type"`
+	Status                string `json:"status"`
+	CanReStake            bool   `json:"canReStake"`
+}
+
+func (s *SimpleEarnGetLockedPositionService) Do(ctx context.Context, opts ...RequestOption) (res *SimpleEarnLockedPositionResp, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/simple-earn/locked/position",
+		secType:  secTypeSigned,
+	}
+
+	if s.asset != "" {
+		r.setParam("asset", s.asset)
+	}
+	if s.positionId != 0 {
+		r.setParam("positionId", s.positionId)
+	}
+	if s.projectId != "" {
+		r.setParam("projectId", s.projectId)
+	}
+	if s.current != 0 {
+		r.setParam("current", s.current)
+	}
+	if s.size != 0 {
+		r.setParam("size", s.size)
+	}
+
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	res = new(SimpleEarnLockedPositionResp)
+	if err := json.Unmarshal(data, &res); err != nil {
+		return nil, err
+	}
+	return res, nil
+}

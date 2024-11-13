@@ -197,3 +197,96 @@ func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnFlexiblePositionService() 
 	s.r().Equal(true, position.Rows[0].AutoSubscribe)
 	s.r().Equal(1, position.Total)
 }
+
+func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnLockedPositionService() {
+	data := []byte(`{
+  "rows": [
+    {
+      "positionId": 123123,
+      "parentPositionId": 123122,
+      "projectId": "Axs*90",
+      "asset": "AXS",
+      "amount": "122.09202928",
+      "purchaseTime": 1646182276000,
+      "duration": "60",
+      "accrualDays": "4",
+      "rewardAsset": "AXS",
+      "APY": "0.2032",
+      "rewardAmt": "5.17181528",
+      "extraRewardAsset": "BNB",
+      "extraRewardAPR": "0.0203",
+      "estExtraRewardAmt": "5.17181528",
+      "nextPay": "1.29295383",
+      "nextPayDate": 1646697600000,
+      "payPeriod": "1",
+      "redeemAmountEarly": "2802.24068892",
+      "rewardsEndDate": 1651449600000,
+      "deliverDate": 1651536000000,
+      "redeemPeriod": "1",
+      "redeemingAmt": "232.2323",
+      "redeemTo": "FLEXIBLE",
+      "partialAmtDeliverDate": 1651536000000,
+      "canRedeemEarly": true,
+      "canFastRedemption": true,
+      "autoSubscribe": true,
+      "type": "AUTO",
+      "status": "HOLDING",
+      "canReStake": true
+    }
+  ],
+  "total": 1
+}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"asset":      "AXS",
+			"positionId": 123123,
+			"projectId":  "Axs*90",
+			"current":    1,
+			"size":       10,
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	position, err := s.client.NewGetSimpleEarnLockedPositionService().
+		Asset("AXS").
+		PositionId(123123).
+		ProjectId("Axs*90").
+		Current(1).
+		Size(10).
+		Do(newContext())
+	s.r().NoError(err)
+	s.r().Equal(123123, position.Rows[0].PositionId)
+	s.r().Equal(123122, position.Rows[0].ParentPositionId)
+	s.r().Equal("Axs*90", position.Rows[0].ProjectId)
+	s.r().Equal("AXS", position.Rows[0].Asset)
+	s.r().Equal("122.09202928", position.Rows[0].Amount)
+	s.r().EqualValues(1646182276000, position.Rows[0].PurchaseTime)
+	s.r().Equal("60", position.Rows[0].Duration)
+	s.r().Equal("4", position.Rows[0].AccrualDays)
+	s.r().Equal("AXS", position.Rows[0].RewardAsset)
+	s.r().Equal("0.2032", position.Rows[0].APY)
+	s.r().Equal("5.17181528", position.Rows[0].RewardAmt)
+	s.r().Equal("BNB", position.Rows[0].ExtraRewardAsset)
+	s.r().Equal("0.0203", position.Rows[0].ExtraRewardAPR)
+	s.r().Equal("5.17181528", position.Rows[0].EstExtraRewardAmt)
+	s.r().Equal("1.29295383", position.Rows[0].NextPay)
+	s.r().EqualValues(1646697600000, position.Rows[0].NextPayDate)
+	s.r().Equal("1", position.Rows[0].PayPeriod)
+	s.r().Equal("2802.24068892", position.Rows[0].RedeemAmountEarly)
+	s.r().EqualValues(1651449600000, position.Rows[0].RewardsEndDate)
+	s.r().EqualValues(1651536000000, position.Rows[0].DeliverDate)
+	s.r().Equal("1", position.Rows[0].RedeemPeriod)
+	s.r().Equal("232.2323", position.Rows[0].RedeemingAmt)
+	s.r().Equal("FLEXIBLE", position.Rows[0].RedeemTo)
+	s.r().EqualValues(1651536000000, position.Rows[0].PartialAmtDeliverDate)
+	s.r().Equal(true, position.Rows[0].CanRedeemEarly)
+	s.r().Equal(true, position.Rows[0].CanFastRedemption)
+	s.r().Equal(true, position.Rows[0].AutoSubscribe)
+	s.r().Equal("AUTO", position.Rows[0].Type)
+	s.r().Equal("HOLDING", position.Rows[0].Status)
+	s.r().Equal(true, position.Rows[0].CanReStake)
+	s.r().Equal(1, position.Total)
+}
