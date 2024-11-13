@@ -127,6 +127,9 @@ var (
 	BaseAPITestnetURL = "https://testnet.binance.vision"
 )
 
+// SelfTradePreventionMode define self trade prevention strategy
+type SelfTradePreventionMode string
+
 // UseTestnet switch all the API endpoints from production to the testnet
 var UseTestnet = false
 
