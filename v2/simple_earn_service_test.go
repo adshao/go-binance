@@ -291,7 +291,7 @@ func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnLockedPositionService() {
 	s.r().Equal(1, position.Total)
 }
 
-func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnFlexiblePersonalLeftQuotaService() {
+func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnFlexibleQuotaService() {
 	data := []byte(`{
   "leftPersonalQuota": "1000"
 }`)
@@ -311,3 +311,28 @@ func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnFlexiblePersonalLeftQuotaS
 	s.r().NoError(err)
 	s.r().Equal("1000", quota.LeftPersonalQuota)
 }
+
+// ... existing code ...
+
+func (s *simpleEarnServiceTestSuite) TestGetSimpleEarnLockedQuotaService() {
+	data := []byte(`{
+  "leftPersonalQuota": "1000"
+}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"projectId": "AXS001",
+		})
+		s.assertRequestEqual(e, r)
+	})
+
+	quota, err := s.client.NewGetSimpleEarnLockedQuotaService().
+		ProjectId("AXS001").
+		Do(newContext())
+	s.r().NoError(err)
+	s.r().Equal("1000", quota.LeftPersonalQuota)
+}
+
+// ... existing code ...

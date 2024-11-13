@@ -1381,4 +1381,8 @@ func (c *Client) NewGetSimpleEarnFlexibleQuotaService() *SimpleEarnGetFlexibleQu
 	return &SimpleEarnGetFlexibleQuotaService{c: c}
 }
 
+func (c *Client) NewGetSimpleEarnLockedQuotaService() *SimpleEarnGetLockedQuotaService {
+	return &SimpleEarnGetLockedQuotaService{c: c}
+}
+
 // ----- end simple earn service -----
