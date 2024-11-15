@@ -17,15 +17,6 @@ const (
 
 type params map[string]interface{}
 
-// encode encodes the parameters to a URL encoded string
-func (p *params) encode() string {
-	queryValues := url.Values{}
-	for key, value := range *p {
-		queryValues.Add(key, fmt.Sprintf("%v", value))
-	}
-	return queryValues.Encode()
-}
-
 // request define an API request
 type request struct {
 	method     string

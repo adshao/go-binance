@@ -4,21 +4,21 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/bitly/go-simplejson"
-	"github.com/gorilla/websocket"
 	"strings"
 	"time"
+
+	"github.com/bitly/go-simplejson"
+	"github.com/gorilla/websocket"
 )
 
 // Endpoints
-const (
-	baseWsMainUrl          = "wss://fstream.binance.com/ws"
-	baseWsTestnetUrl       = "wss://stream.binancefuture.com/ws"
-	baseCombinedMainURL    = "wss://fstream.binance.com/stream?streams="
-	baseCombinedTestnetURL = "wss://stream.binancefuture.com/stream?streams="
+var (
+	BaseWsMainUrl          = "wss://fstream.binance.com/ws"
+	BaseWsTestnetUrl       = "wss://stream.binancefuture.com/ws"
+	BaseCombinedMainURL    = "wss://fstream.binance.com/stream?streams="
+	BaseCombinedTestnetURL = "wss://stream.binancefuture.com/stream?streams="
 	BaseWsApiMainURL       = "wss://ws-fapi.binance.com/ws-fapi/v1"
 	BaseWsApiTestnetURL    = "wss://testnet.binancefuture.com/ws-fapi/v1"
-	localhostWsApiURL      = "ws://localhost:8080/ws"
 )
 
 var (
@@ -28,12 +28,10 @@ var (
 	WebsocketKeepalive = false
 	// UseTestnet switch all the WS streams from production to the testnet
 	UseTestnet = false
-	ProxyUrl   = ""
 	// WebsocketTimeoutReadWriteConnection is an interval for sending ping/pong messages if WebsocketKeepalive is enabled
 	// using for websocket API (read/write)
 	WebsocketTimeoutReadWriteConnection = time.Second * 10
-	// useLocalhost switch all the WS streams from production to localhost testing
-	useLocalhost = false
+	ProxyUrl                            = ""
 )
 
 func getWsProxyUrl() *string {
@@ -50,17 +48,17 @@ func SetWsProxyUrl(url string) {
 // getWsEndpoint return the base endpoint of the WS according the UseTestnet flag
 func getWsEndpoint() string {
 	if UseTestnet {
-		return baseWsTestnetUrl
+		return BaseWsTestnetUrl
 	}
-	return baseWsMainUrl
+	return BaseWsMainUrl
 }
 
 // getCombinedEndpoint return the base endpoint of the combined stream according the UseTestnet flag
 func getCombinedEndpoint() string {
 	if UseTestnet {
-		return baseCombinedTestnetURL
+		return BaseCombinedTestnetURL
 	}
-	return baseCombinedMainURL
+	return BaseCombinedMainURL
 }
 
 // WsAggTradeEvent define websocket aggTrde event.
@@ -1213,10 +1211,6 @@ func WsApiInitReadWriteConn() (*websocket.Conn, error) {
 func getWsApiEndpoint() string {
 	if UseTestnet {
 		return BaseWsApiTestnetURL
-	}
-
-	if useLocalhost {
-		return localhostWsApiURL
 	}
 
 	return BaseWsApiMainURL
