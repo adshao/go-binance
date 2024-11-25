@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/adshao/go-binance/v2/futures/mock"
+	"github.com/adshao/go-binance/v2/common/websocket"
+	"github.com/adshao/go-binance/v2/common/websocket/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
 )
@@ -19,10 +20,13 @@ func (s *orderCancelServiceWsTestSuite) SetupTest() {
 	s.requestID = "e2a85d9f-07a5-4f94-8d5f-789dc3deb098"
 
 	s.ctrl = gomock.NewController(s.T())
-	s.client = mock.NewMockwsClient(s.ctrl)
+	s.client = mock.NewMockClient(s.ctrl)
 
 	s.orderCancel = &OrderCancelWsService{
-		c: s.client,
+		c:         s.client,
+		ApiKey:    s.apiKey,
+		SecretKey: s.secretKey,
+		KeyType:   s.signedKey,
 	}
 
 	s.orderCancelRequest = NewOrderCancelRequest().OrigClientOrderID(s.requestID)
@@ -40,7 +44,7 @@ type orderCancelServiceWsTestSuite struct {
 	timeOffset int64
 
 	ctrl   *gomock.Controller
-	client *mock.MockwsClient
+	client *mock.MockClient
 
 	requestID string
 
@@ -53,7 +57,7 @@ func TestOrderCancelServiceWs(t *testing.T) {
 }
 
 func (s *orderCancelServiceWsTestSuite) TestOrderCancel() {
-	s.expectCalls(s.apiKey, s.secretKey, s.signedKey, s.timeOffset)
+	s.reset(s.apiKey, s.secretKey, s.signedKey, s.timeOffset)
 
 	s.client.EXPECT().Write(s.requestID, gomock.Any()).Return(nil).AnyTimes()
 
@@ -62,34 +66,34 @@ func (s *orderCancelServiceWsTestSuite) TestOrderCancel() {
 }
 
 func (s *orderCancelServiceWsTestSuite) TestOrderCancel_EmptyRequestID() {
-	s.expectCalls(s.apiKey, s.secretKey, s.signedKey, s.timeOffset)
+	s.reset(s.apiKey, s.secretKey, s.signedKey, s.timeOffset)
 
 	s.client.EXPECT().Write(gomock.Any(), gomock.Any()).Return(nil).Times(0)
 
 	err := s.orderCancel.Do("", s.orderCancelRequest)
-	s.ErrorIs(err, ErrorRequestIDNotSet)
+	s.ErrorIs(err, websocket.ErrorRequestIDNotSet)
 }
 
 func (s *orderCancelServiceWsTestSuite) TestOrderCancel_EmptyApiKey() {
-	s.expectCalls("", s.secretKey, s.signedKey, s.timeOffset)
+	s.reset("", s.secretKey, s.signedKey, s.timeOffset)
 
 	s.client.EXPECT().Write(s.requestID, gomock.Any()).Return(nil).Times(0)
 
 	err := s.orderCancel.Do(s.requestID, s.orderCancelRequest)
-	s.ErrorIs(err, ErrorApiKeyIsNotSet)
+	s.ErrorIs(err, websocket.ErrorApiKeyIsNotSet)
 }
 
 func (s *orderCancelServiceWsTestSuite) TestOrderCancel_EmptySecretKey() {
-	s.expectCalls(s.apiKey, "", s.signedKey, s.timeOffset)
+	s.reset(s.apiKey, "", s.signedKey, s.timeOffset)
 
 	s.client.EXPECT().Write(s.requestID, gomock.Any()).Return(nil).Times(0)
 
 	err := s.orderCancel.Do(s.requestID, s.orderCancelRequest)
-	s.ErrorIs(err, ErrorSecretKeyIsNotSet)
+	s.ErrorIs(err, websocket.ErrorSecretKeyIsNotSet)
 }
 
 func (s *orderCancelServiceWsTestSuite) TestOrderCancel_EmptySignKeyType() {
-	s.expectCalls(s.apiKey, s.secretKey, "", s.timeOffset)
+	s.reset(s.apiKey, s.secretKey, "", s.timeOffset)
 
 	s.client.EXPECT().Write(s.requestID, gomock.Any()).Return(nil).Times(0)
 
@@ -98,7 +102,7 @@ func (s *orderCancelServiceWsTestSuite) TestOrderCancel_EmptySignKeyType() {
 }
 
 func (s *orderCancelServiceWsTestSuite) TestOrderCancelSync() {
-	s.expectCalls(s.apiKey, s.secretKey, s.signedKey, s.timeOffset)
+	s.reset(s.apiKey, s.secretKey, s.signedKey, s.timeOffset)
 
 	orderCancelResponse := OrderCancelWsResponse{
 		Id:     s.requestID,
@@ -122,7 +126,7 @@ func (s *orderCancelServiceWsTestSuite) TestOrderCancelSync() {
 }
 
 func (s *orderCancelServiceWsTestSuite) TestOrderCancelSync_EmptyRequestID() {
-	s.expectCalls(s.apiKey, s.secretKey, s.signedKey, s.timeOffset)
+	s.reset(s.apiKey, s.secretKey, s.signedKey, s.timeOffset)
 
 	s.client.EXPECT().
 		WriteSync(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("write sync: error")).Times(0)
@@ -130,33 +134,33 @@ func (s *orderCancelServiceWsTestSuite) TestOrderCancelSync_EmptyRequestID() {
 	req := s.orderCancelRequest
 	response, err := s.orderCancel.SyncDo("", req)
 	s.Nil(response)
-	s.ErrorIs(err, ErrorRequestIDNotSet)
+	s.ErrorIs(err, websocket.ErrorRequestIDNotSet)
 }
 
 func (s *orderCancelServiceWsTestSuite) TestOrderCancelSync_EmptyApiKey() {
-	s.expectCalls("", s.secretKey, s.signedKey, s.timeOffset)
+	s.reset("", s.secretKey, s.signedKey, s.timeOffset)
 
 	s.client.EXPECT().
 		WriteSync(s.requestID, gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("write sync: error")).Times(0)
 
 	response, err := s.orderCancel.SyncDo(s.requestID, s.orderCancelRequest)
 	s.Nil(response)
-	s.ErrorIs(err, ErrorApiKeyIsNotSet)
+	s.ErrorIs(err, websocket.ErrorApiKeyIsNotSet)
 }
 
 func (s *orderCancelServiceWsTestSuite) TestOrderCancelSync_EmptySecretKey() {
-	s.expectCalls(s.apiKey, "", s.signedKey, s.timeOffset)
+	s.reset(s.apiKey, "", s.signedKey, s.timeOffset)
 
 	s.client.EXPECT().
 		WriteSync(s.requestID, gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("write sync: error")).Times(0)
 
 	response, err := s.orderCancel.SyncDo(s.requestID, s.orderCancelRequest)
 	s.Nil(response)
-	s.ErrorIs(err, ErrorSecretKeyIsNotSet)
+	s.ErrorIs(err, websocket.ErrorSecretKeyIsNotSet)
 }
 
 func (s *orderCancelServiceWsTestSuite) TestOrderCancelSync_EmptySignKeyType() {
-	s.expectCalls(s.apiKey, s.secretKey, "", s.timeOffset)
+	s.reset(s.apiKey, s.secretKey, "", s.timeOffset)
 
 	s.client.EXPECT().
 		WriteSync(s.requestID, gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("write sync: error")).Times(0)
@@ -166,9 +170,12 @@ func (s *orderCancelServiceWsTestSuite) TestOrderCancelSync_EmptySignKeyType() {
 	s.Error(err)
 }
 
-func (s *orderCancelServiceWsTestSuite) expectCalls(apiKey, secretKey, signKeyType string, timeOffset int64) {
-	s.client.EXPECT().GetApiKey().Return(apiKey).AnyTimes()
-	s.client.EXPECT().GetSecretKey().Return(secretKey).AnyTimes()
-	s.client.EXPECT().GetKeyType().Return(signKeyType).AnyTimes()
-	s.client.EXPECT().GetTimeOffset().Return(timeOffset).AnyTimes()
+func (s *orderCancelServiceWsTestSuite) reset(apiKey, secretKey, signKeyType string, timeOffset int64) {
+	s.orderCancel = &OrderCancelWsService{
+		c:          s.client,
+		ApiKey:     apiKey,
+		SecretKey:  secretKey,
+		KeyType:    signKeyType,
+		TimeOffset: timeOffset,
+	}
 }

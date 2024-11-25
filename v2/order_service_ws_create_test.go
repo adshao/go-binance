@@ -1,7 +1,6 @@
-package futures
+package binance
 
 import (
-	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -30,14 +29,14 @@ func (s *orderPlaceServiceWsTestSuite) SetupTest() {
 	s.ctrl = gomock.NewController(s.T())
 	s.client = mock.NewMockClient(s.ctrl)
 
-	s.orderPlace = &OrderPlaceWsService{
+	s.orderPlace = &OrderCreateWsService{
 		c:         s.client,
 		ApiKey:    s.apiKey,
 		SecretKey: s.secretKey,
 		KeyType:   s.signedKey,
 	}
 
-	s.orderPlaceRequest = NewOrderPlaceWsRequest().
+	s.orderPlaceRequest = NewOrderCreateWsRequest().
 		Symbol(s.symbol).
 		Side(s.side).
 		Type(s.orderType).
@@ -70,8 +69,8 @@ type orderPlaceServiceWsTestSuite struct {
 	price            string
 	newClientOrderID string
 
-	orderPlace        *OrderPlaceWsService
-	orderPlaceRequest *OrderPlaceWsRequest
+	orderPlace        *OrderCreateWsService
+	orderPlaceRequest *OrderCreateWsRequest
 }
 
 func TestOrderPlaceServiceWsPlace(t *testing.T) {
@@ -202,7 +201,7 @@ func (s *orderPlaceServiceWsTestSuite) TestOrderPlaceSync_EmptySignKeyType() {
 }
 
 func (s *orderPlaceServiceWsTestSuite) reset(apiKey, secretKey, signKeyType string, timeOffset int64) {
-	s.orderPlace = &OrderPlaceWsService{
+	s.orderPlace = &OrderCreateWsService{
 		c:          s.client,
 		ApiKey:     apiKey,
 		SecretKey:  secretKey,

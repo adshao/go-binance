@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/adshao/go-binance/v2/common"
+	"github.com/adshao/go-binance/v2/common/websocket"
 )
 
 // NewOrderCancelRequest init OrderCancelRequest
@@ -71,12 +72,46 @@ type OrderCancelWsResponse struct {
 
 // OrderCancelWsService cancel order
 type OrderCancelWsService struct {
-	c wsClient
+	c          websocket.Client
+	ApiKey     string
+	SecretKey  string
+	KeyType    string
+	TimeOffset int64
+}
+
+// NewOrderCancelWsService init OrderCancelWsService
+func NewOrderCancelWsService(apiKey, secretKey string) (*OrderCancelWsService, error) {
+	conn, err := websocket.NewConnection(WsApiInitReadWriteConn, WebsocketKeepalive, WebsocketTimeoutReadWriteConnection)
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := websocket.NewClient(conn)
+	if err != nil {
+		return nil, err
+	}
+
+	return &OrderCancelWsService{
+		c:         client,
+		ApiKey:    apiKey,
+		SecretKey: secretKey,
+		KeyType:   common.KeyTypeHmac,
+	}, nil
 }
 
 // Do - sends 'order.cancel' request
 func (s *OrderCancelWsService) Do(requestID string, request *OrderCancelRequest) error {
-	rawData, err := createWsRequest(requestID, s.c, CancelWsApiMethod, request.buildParams())
+	rawData, err := websocket.CreateRequest(
+		websocket.NewRequestData(
+			requestID,
+			s.ApiKey,
+			s.SecretKey,
+			s.TimeOffset,
+			s.KeyType,
+		),
+		websocket.CancelFuturesWsApiMethod,
+		request.buildParams(),
+	)
 	if err != nil {
 		return err
 	}
@@ -90,12 +125,22 @@ func (s *OrderCancelWsService) Do(requestID string, request *OrderCancelRequest)
 
 // SyncDo - sends 'order.cancel' request and receives response
 func (s *OrderCancelWsService) SyncDo(requestID string, request *OrderCancelRequest) (*OrderCancelWsResponse, error) {
-	rawData, err := createWsRequest(requestID, s.c, CancelWsApiMethod, request.buildParams())
+	rawData, err := websocket.CreateRequest(
+		websocket.NewRequestData(
+			requestID,
+			s.ApiKey,
+			s.SecretKey,
+			s.TimeOffset,
+			s.KeyType,
+		),
+		websocket.CancelFuturesWsApiMethod,
+		request.buildParams(),
+	)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := s.c.WriteSync(requestID, rawData, WriteSyncWsTimeout)
+	response, err := s.c.WriteSync(requestID, rawData, websocket.WriteSyncWsTimeout)
 	if err != nil {
 		return nil, err
 	}

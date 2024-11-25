@@ -1,4 +1,4 @@
-package futures
+package websocket
 
 import (
 	"context"
@@ -14,22 +14,28 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-func (s *clientWsTestSuite) SetupTest() {
+type testApiRequest struct {
+	Id     string                 `json:"id"`
+	Method string                 `json:"method"`
+	Params map[string]interface{} `json:"params"`
+}
+
+func (s *clientTestSuite) SetupTest() {
 	s.apiKey = "dummyApiKey"
 	s.secretKey = "dummySecretKey"
 }
 
-type clientWsTestSuite struct {
+type clientTestSuite struct {
 	suite.Suite
 	apiKey    string
 	secretKey string
 }
 
-func TestClientWs(t *testing.T) {
-	suite.Run(t, new(clientWsTestSuite))
+func TestClient(t *testing.T) {
+	suite.Run(t, new(clientTestSuite))
 }
 
-func (s *clientWsTestSuite) TestReadWriteSync() {
+func (s *clientTestSuite) TestReadWriteSync() {
 	stopCh := make(chan struct{})
 	go func() {
 		startWsTestServer(stopCh)
@@ -38,13 +44,23 @@ func (s *clientWsTestSuite) TestReadWriteSync() {
 		stopCh <- struct{}{}
 	}()
 
-	useLocalhost = true
-	WebsocketKeepalive = true
+	conn, err := NewConnection(func() (*websocket.Conn, error) {
+		Dialer := websocket.Dialer{
+			Proxy:             http.ProxyFromEnvironment,
+			HandshakeTimeout:  45 * time.Second,
+			EnableCompression: false,
+		}
 
-	conn, err := newConnection()
+		c, _, err := Dialer.Dial("ws://localhost:8080/ws", nil)
+		if err != nil {
+			return nil, err
+		}
+
+		return c, nil
+	}, true, 10*time.Second)
 	s.Require().NoError(err)
 
-	client, err := NewClientWs(conn, s.apiKey, s.secretKey)
+	client, err := NewClient(conn)
 	s.Require().NoError(err)
 
 	tests := []struct {
@@ -58,7 +74,7 @@ func (s *clientWsTestSuite) TestReadWriteSync() {
 				s.Require().NoError(err)
 				requestID := id.String()
 
-				req := WsApiRequest{
+				req := testApiRequest{
 					Id:     requestID,
 					Method: "some-method",
 					Params: map[string]interface{}{},
@@ -66,7 +82,7 @@ func (s *clientWsTestSuite) TestReadWriteSync() {
 				reqRaw, err := json.Marshal(req)
 				s.Require().NoError(err)
 
-				responseRaw, err := client.WriteSync(requestID, reqRaw, WriteSyncWsTimeout)
+				responseRaw, err := client.WriteSync(requestID, reqRaw, 5*time.Second)
 				s.Require().NoError(err)
 				s.Require().Equal(reqRaw, responseRaw)
 			},
@@ -78,7 +94,7 @@ func (s *clientWsTestSuite) TestReadWriteSync() {
 				s.Require().NoError(err)
 				requestID := id.String()
 
-				req := WsApiRequest{
+				req := testApiRequest{
 					Id:     "some-other-request-id",
 					Method: "some-method",
 					Params: map[string]interface{}{},
@@ -89,7 +105,7 @@ func (s *clientWsTestSuite) TestReadWriteSync() {
 				err = client.Write(requestID, reqRaw)
 				s.Require().NoError(err)
 
-				req = WsApiRequest{
+				req = testApiRequest{
 					Id:     requestID,
 					Method: "some-method",
 					Params: map[string]interface{}{},
@@ -97,7 +113,7 @@ func (s *clientWsTestSuite) TestReadWriteSync() {
 				reqRaw, err = json.Marshal(req)
 				s.Require().NoError(err)
 
-				responseRaw, err := client.WriteSync(requestID, reqRaw, WriteSyncWsTimeout)
+				responseRaw, err := client.WriteSync(requestID, reqRaw, 5*time.Second)
 				s.Require().NoError(err)
 				s.Require().Equal(reqRaw, responseRaw)
 			},
@@ -109,7 +125,7 @@ func (s *clientWsTestSuite) TestReadWriteSync() {
 				s.Require().NoError(err)
 				requestID := id.String()
 
-				req := WsApiRequest{
+				req := testApiRequest{
 					Id:     requestID,
 					Method: "some-method",
 					Params: map[string]interface{}{
@@ -131,7 +147,7 @@ func (s *clientWsTestSuite) TestReadWriteSync() {
 				s.Require().NoError(err)
 				requestID := id.String()
 
-				req := WsApiRequest{
+				req := testApiRequest{
 					Id:     requestID,
 					Method: "some-method",
 					Params: map[string]interface{}{},
@@ -197,7 +213,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("Received message: %s\n", message)
 
-		req := WsApiRequest{}
+		req := testApiRequest{}
 		if err := json.Unmarshal(message, &req); err != nil {
 			log.Println("Error unmarshalling message:", err)
 			continue

@@ -5,12 +5,36 @@ import (
 	"time"
 
 	"github.com/adshao/go-binance/v2/common"
+	"github.com/adshao/go-binance/v2/common/websocket"
 )
 
 // OrderPlaceWsService creates order
 type OrderPlaceWsService struct {
-	c      wsClient
-	signFn func(string, string) (*string, error)
+	c          websocket.Client
+	ApiKey     string
+	SecretKey  string
+	KeyType    string
+	TimeOffset int64
+}
+
+// NewOrderPlaceWsService init OrderPlaceWsService
+func NewOrderPlaceWsService(apiKey, secretKey string) (*OrderPlaceWsService, error) {
+	conn, err := websocket.NewConnection(WsApiInitReadWriteConn, WebsocketKeepalive, WebsocketTimeoutReadWriteConnection)
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := websocket.NewClient(conn)
+	if err != nil {
+		return nil, err
+	}
+
+	return &OrderPlaceWsService{
+		c:         client,
+		ApiKey:    apiKey,
+		SecretKey: secretKey,
+		KeyType:   common.KeyTypeHmac,
+	}, nil
 }
 
 // OrderPlaceWsRequest parameters for 'order.place' websocket API
@@ -209,7 +233,17 @@ func (s *OrderPlaceWsRequest) buildParams() params {
 
 // Do - sends 'order.place' request
 func (s *OrderPlaceWsService) Do(requestID string, request *OrderPlaceWsRequest) error {
-	rawData, err := createWsRequest(requestID, s.c, OrderPlaceWsApiMethod, request.buildParams())
+	rawData, err := websocket.CreateRequest(
+		websocket.NewRequestData(
+			requestID,
+			s.ApiKey,
+			s.SecretKey,
+			s.TimeOffset,
+			s.KeyType,
+		),
+		websocket.OrderPlaceFuturesWsApiMethod,
+		request.buildParams(),
+	)
 	if err != nil {
 		return err
 	}
@@ -223,12 +257,22 @@ func (s *OrderPlaceWsService) Do(requestID string, request *OrderPlaceWsRequest)
 
 // SyncDo - sends 'order.place' request and receives response
 func (s *OrderPlaceWsService) SyncDo(requestID string, request *OrderPlaceWsRequest) (*CreateOrderWsResponse, error) {
-	rawData, err := createWsRequest(requestID, s.c, OrderPlaceWsApiMethod, request.buildParams())
+	rawData, err := websocket.CreateRequest(
+		websocket.NewRequestData(
+			requestID,
+			s.ApiKey,
+			s.SecretKey,
+			s.TimeOffset,
+			s.KeyType,
+		),
+		websocket.OrderPlaceFuturesWsApiMethod,
+		request.buildParams(),
+	)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := s.c.WriteSync(requestID, rawData, WriteSyncWsTimeout)
+	response, err := s.c.WriteSync(requestID, rawData, websocket.WriteSyncWsTimeout)
 	if err != nil {
 		return nil, err
 	}
