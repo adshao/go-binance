@@ -10,9 +10,9 @@ import (
 )
 
 // Endpoints
-const (
-	baseWsMainUrl    = "wss://dstream.binance.com/ws"
-	baseWsTestnetUrl = "wss://dstream.binancefuture.com/ws"
+var (
+	BaseWsMainUrl    = "wss://dstream.binance.com/ws"
+	BaseWsTestnetUrl = "wss://dstream.binancefuture.com/ws"
 )
 
 var (
@@ -28,9 +28,9 @@ var (
 // getWsEndpoint return the base endpoint of the WS according the UseTestnet flag
 func getWsEndpoint() string {
 	if UseTestnet {
-		return baseWsTestnetUrl
+		return BaseWsTestnetUrl
 	}
-	return baseWsMainUrl
+	return BaseWsMainUrl
 }
 
 func getWsProxyUrl() *string {

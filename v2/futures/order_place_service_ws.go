@@ -15,22 +15,23 @@ type OrderPlaceWsService struct {
 
 // OrderPlaceWsRequest parameters for 'order.place' websocket API
 type OrderPlaceWsRequest struct {
-	symbol           string
-	side             SideType
-	positionSide     *PositionSideType
-	orderType        OrderType
-	timeInForce      *TimeInForceType
-	quantity         string
-	reduceOnly       *bool
-	price            *string
-	newClientOrderID *string
-	stopPrice        *string
-	workingType      *WorkingType
-	activationPrice  *string
-	callbackRate     *string
-	priceProtect     *bool
-	newOrderRespType NewOrderRespType
-	closePosition    *bool
+	symbol                  string
+	side                    SideType
+	positionSide            *PositionSideType
+	orderType               OrderType
+	timeInForce             *TimeInForceType
+	quantity                string
+	reduceOnly              *bool
+	price                   *string
+	newClientOrderID        *string
+	stopPrice               *string
+	workingType             *WorkingType
+	activationPrice         *string
+	callbackRate            *string
+	priceProtect            *bool
+	newOrderRespType        NewOrderRespType
+	closePosition           *bool
+	selfTradePreventionMode *SelfTradePreventionMode
 }
 
 // NewOrderPlaceWsRequest init OrderPlaceWsRequest
@@ -134,6 +135,12 @@ func (s *OrderPlaceWsRequest) ClosePosition(closePosition bool) *OrderPlaceWsReq
 	return s
 }
 
+// SelfTradePreventionMode set selfTradePreventionMode
+func (s *OrderPlaceWsRequest) SelfTradePreventionMode(selfTradePreventionMode SelfTradePreventionMode) *OrderPlaceWsRequest {
+	s.selfTradePreventionMode = &selfTradePreventionMode
+	return s
+}
+
 // CreateOrderResult define order creation result
 type CreateOrderResult struct {
 	CreateOrderResponse
@@ -192,6 +199,9 @@ func (s *OrderPlaceWsRequest) buildParams() params {
 	}
 	if s.closePosition != nil {
 		m["closePosition"] = *s.closePosition
+	}
+	if s.selfTradePreventionMode != nil {
+		m["selfTradePreventionMode"] = *s.selfTradePreventionMode
 	}
 
 	return m

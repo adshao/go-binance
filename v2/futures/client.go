@@ -73,6 +73,9 @@ type UserDataEventReasonType string
 // ForceOrderCloseType define reason type for force order
 type ForceOrderCloseType string
 
+// SelfTradePreventionMode define self trade prevention strategy
+type SelfTradePreventionMode string
+
 // Endpoints
 var (
 	BaseApiMainUrl    = "https://fapi.binance.com"
@@ -186,6 +189,11 @@ const (
 
 	ForceOrderCloseTypeLiquidation ForceOrderCloseType = "LIQUIDATION"
 	ForceOrderCloseTypeADL         ForceOrderCloseType = "ADL"
+
+	SelfTradePreventionModeNone        SelfTradePreventionMode = "NONE"
+	SelfTradePreventionModeExpireTaker SelfTradePreventionMode = "EXPIRE_TAKER"
+	SelfTradePreventionModeExpireBoth  SelfTradePreventionMode = "EXPIRE_BOTH"
+	SelfTradePreventionModeExpireMaker SelfTradePreventionMode = "EXPIRE_MAKER"
 
 	timestampKey  = "timestamp"
 	signatureKey  = "signature"

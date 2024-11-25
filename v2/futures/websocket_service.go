@@ -4,18 +4,19 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/bitly/go-simplejson"
-	"github.com/gorilla/websocket"
 	"strings"
 	"time"
+
+	"github.com/bitly/go-simplejson"
+	"github.com/gorilla/websocket"
 )
 
 // Endpoints
-const (
-	baseWsMainUrl          = "wss://fstream.binance.com/ws"
-	baseWsTestnetUrl       = "wss://stream.binancefuture.com/ws"
-	baseCombinedMainURL    = "wss://fstream.binance.com/stream?streams="
-	baseCombinedTestnetURL = "wss://stream.binancefuture.com/stream?streams="
+var (
+	BaseWsMainUrl          = "wss://fstream.binance.com/ws"
+	BaseWsTestnetUrl       = "wss://stream.binancefuture.com/ws"
+	BaseCombinedMainURL    = "wss://fstream.binance.com/stream?streams="
+	BaseCombinedTestnetURL = "wss://stream.binancefuture.com/stream?streams="
 	BaseWsApiMainURL       = "wss://ws-fapi.binance.com/ws-fapi/v1"
 	BaseWsApiTestnetURL    = "wss://testnet.binancefuture.com/ws-fapi/v1"
 	localhostWsApiURL      = "ws://localhost:8080/ws"
@@ -50,17 +51,17 @@ func SetWsProxyUrl(url string) {
 // getWsEndpoint return the base endpoint of the WS according the UseTestnet flag
 func getWsEndpoint() string {
 	if UseTestnet {
-		return baseWsTestnetUrl
+		return BaseWsTestnetUrl
 	}
-	return baseWsMainUrl
+	return BaseWsMainUrl
 }
 
 // getCombinedEndpoint return the base endpoint of the combined stream according the UseTestnet flag
 func getCombinedEndpoint() string {
 	if UseTestnet {
-		return baseCombinedTestnetURL
+		return BaseCombinedTestnetURL
 	}
-	return baseCombinedMainURL
+	return BaseCombinedMainURL
 }
 
 // WsAggTradeEvent define websocket aggTrde event.
