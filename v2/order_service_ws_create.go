@@ -60,6 +60,10 @@ func NewOrderCreateWsRequest() *OrderCreateWsRequest {
 	return &OrderCreateWsRequest{}
 }
 
+func (s *OrderCreateWsRequest) GetParams() map[string]interface{} {
+	return s.buildParams()
+}
+
 // buildParams builds params
 func (s *OrderCreateWsRequest) buildParams() params {
 	m := params{

@@ -349,6 +349,7 @@ func NewConnection(
 		lastResponseMu:         sync.Mutex{},
 		initUnderlyingWsConnFn: initUnderlyingWsConnFn,
 		keepaliveTimeout:       keepaliveTimeout,
+		isKeepAliveNeeded:      isKeepAliveNeeded,
 	}
 
 	if isKeepAliveNeeded {

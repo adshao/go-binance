@@ -38,6 +38,10 @@ func (s *OrderCancelRequest) OrigClientOrderID(origClientOrderID string) *OrderC
 	return s
 }
 
+func (r *OrderCancelRequest) GetParams() map[string]interface{} {
+	return r.buildParams()
+}
+
 // buildParams builds params
 func (s *OrderCancelRequest) buildParams() params {
 	m := params{
