@@ -31,7 +31,7 @@ If you find an unimplemented interface, please submit an issue. It's great if yo
 ### Installation
 
 ```shell
-go get github.com/adshao/go-binance/v2
+go get github.com/aaabigfish/go-binance/v2
 ```
 
 For v1 API, it has been moved to `v1` branch, please use:
@@ -45,11 +45,11 @@ go get github.com/adshao/go-binance/v1
 ```golang
 import (
     // for spot and other interfaces contained in https://binance-docs.github.io/apidocs/spot/en/#change-log
-    "github.com/adshao/go-binance/v2"
+    "github.com/aaabigfish/go-binance/v2"
     
-    "github.com/adshao/go-binance/v2/futures" // optional package
-    "github.com/adshao/go-binance/v2/delivery" // optional package
-    "github.com/adshao/go-binance/v2/options" // optional package
+    "github.com/aaabigfish/go-binance/v2/futures" // optional package
+    "github.com/aaabigfish/go-binance/v2/delivery" // optional package
+    "github.com/aaabigfish/go-binance/v2/options" // optional package
 )
 ```
 
@@ -347,7 +347,7 @@ Use the `binance.UseTestnet` flag before calling the client creation and the web
 
 ```go
 import (
-    "github.com/adshao/go-binance/v2"
+    "github.com/aaabigfish/go-binance/v2"
 )
 
 binance.UseTestnet = true
@@ -360,7 +360,7 @@ Use the `futures.UseTestnet` flag before calling the client creation and the web
 
 ```go
 import (
-    "github.com/adshao/go-binance/v2/futures"
+    "github.com/aaabigfish/go-binance/v2/futures"
 )
 
 futures.UseTestnet = true
@@ -373,7 +373,7 @@ Use the `delivery.UseTestnet` flag before calling the client creation and the we
 
 ```go
 import (
-    "github.com/adshao/go-binance/v2/delivery"
+    "github.com/aaabigfish/go-binance/v2/delivery"
 )
 
 delivery.UseTestnet = true

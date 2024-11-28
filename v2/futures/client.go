@@ -15,7 +15,7 @@ import (
 
 	"github.com/bitly/go-simplejson"
 
-	"github.com/adshao/go-binance/v2/common"
+	"github.com/aaabigfish/go-binance/v2/common"
 )
 
 // SideType define side type of order
