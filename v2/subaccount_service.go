@@ -1926,21 +1926,21 @@ func (s *SubAccountUniversalTransferService) Do(ctx context.Context, opts ...Req
 		secType:  secTypeSigned,
 	}
 	if s.fromEmail != nil {
-		r.setFormParam("fromEmail", *s.fromEmail)
+		r.setParam("fromEmail", *s.fromEmail)
 	}
 	if s.toEmail != nil {
-		r.setFormParam("toEmail", *s.toEmail)
+		r.setParam("toEmail", *s.toEmail)
 	}
-	r.setFormParam("fromAccountType", s.fromAccountType)
-	r.setFormParam("toAccountType", s.toAccountType)
+	r.setParam("fromAccountType", s.fromAccountType)
+	r.setParam("toAccountType", s.toAccountType)
 	if s.clientTranId != nil {
-		r.setFormParam("clientTranId", *s.clientTranId)
+		r.setParam("clientTranId", *s.clientTranId)
 	}
 	if s.symbol != nil {
-		r.setFormParam("symbol", *s.symbol)
+		r.setParam("symbol", *s.symbol)
 	}
-	r.setFormParam("asset", s.asset)
-	r.setFormParam("amount", s.amount)
+	r.setParam("asset", s.asset)
+	r.setParam("amount", s.amount)
 	if s.recvWindow != nil {
 		r.recvWindow = *s.recvWindow
 	}
