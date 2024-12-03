@@ -218,6 +218,59 @@ func (s *exchangeInfoServiceTestSuite) TestExchangeInfo() {
 	s.assertMaxNumAlgoOrdersFilterEqual(eMaxNumAlgoOrdersFilter, res.Symbols[0].MaxNumAlgoOrdersFilter())
 }
 
+func (s *exchangeInfoServiceTestSuite) TestExchangeInfoWithPermissionSets() {
+	data := []byte(`{
+		"timezone":"UTC",
+		"serverTime":1733252001653,
+		"rateLimits":[
+			{
+				"rateLimitType":"REQUEST_WEIGHT",
+				"interval":"MINUTE",
+				"intervalNum":1,
+				"limit":6000
+			}
+		],
+		"exchangeFilters":[],
+		"symbols":[
+			{
+				"symbol":"BTCUSDT",
+				"status":"TRADING",
+				"baseAsset":"BTC",
+				"baseAssetPrecision":8,
+				"quoteAsset":"USDT",
+				"quotePrecision":8,
+				"quoteAssetPrecision":8,
+				"baseCommissionPrecision":8,
+				"quoteCommissionPrecision":8,
+				"orderTypes":["LIMIT","LIMIT_MAKER","MARKET","STOP_LOSS","STOP_LOSS_LIMIT","TAKE_PROFIT","TAKE_PROFIT_LIMIT"],
+				"icebergAllowed":true,
+				"ocoAllowed":true,
+				"otoAllowed":true,
+				"quoteOrderQtyMarketAllowed":true,
+				"allowTrailingStop":true,
+				"cancelReplaceAllowed":true,
+				"isSpotTradingAllowed":true,
+				"isMarginTradingAllowed":true,
+				"filters":[
+					{
+						"filterType":"PRICE_FILTER",
+						"minPrice":"0.01000000",
+						"maxPrice":"1000000.00000000",
+						"tickSize":"0.01000000"
+					}
+				],
+				"permissions":[],
+				"permissionSets":[["SPOT","MARGIN"]]
+			}
+		]
+	}`)
+	s.mockDo(data, nil)
+	res, err := s.client.NewExchangeInfoService().Symbol("BTCUSDT").Do(newContext())
+	s.r().NoError(err)
+	s.r().Len(res.Symbols[0].PermissionSets, 1)
+	s.r().Equal([]string{"SPOT", "MARGIN"}, res.Symbols[0].PermissionSets[0])
+}
+
 func (s *exchangeInfoServiceTestSuite) assertExchangeInfoEqual(e, a *ExchangeInfo) {
 	r := s.r()
 
