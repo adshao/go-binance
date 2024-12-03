@@ -102,6 +102,7 @@ type Symbol struct {
 	IsMarginTradingAllowed     bool                     `json:"isMarginTradingAllowed"`
 	Filters                    []map[string]interface{} `json:"filters"`
 	Permissions                []string                 `json:"permissions"`
+	PermissionSets             [][]string               `json:"permissionSets"`
 }
 
 // LotSizeFilter define lot size filter of symbol
