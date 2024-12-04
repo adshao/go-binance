@@ -2,6 +2,7 @@ package binance
 
 import (
 	"context"
+	"encoding/json"
 	stdjson "encoding/json"
 	"net/http"
 )

@@ -525,7 +525,10 @@ func (c *Client) NewGetBalanceService() *GetBalanceService {
 	return &GetBalanceService{c: c}
 }
 
-// NewGetPositionRiskService init getting position risk service
+func (c *Client) NewGetPositionRiskV2Service() *GetPositionRiskV2Service {
+	return &GetPositionRiskV2Service{c: c}
+}
+
 func (c *Client) NewGetPositionRiskService() *GetPositionRiskService {
 	return &GetPositionRiskService{c: c}
 }

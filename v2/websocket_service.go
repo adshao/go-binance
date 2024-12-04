@@ -1,6 +1,7 @@
 package binance
 
 import (
+	"encoding/json"
 	stdjson "encoding/json"
 	"fmt"
 	"strings"

@@ -664,6 +664,7 @@ func (s *CancelOrderService) Do(ctx context.Context, opts ...RequestOption) (res
 	if s.origClientOrderID != nil {
 		r.setFormParam("origClientOrderId", *s.origClientOrderID)
 	}
+
 	data, _, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {
 		return nil, err
