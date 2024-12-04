@@ -2,6 +2,7 @@ package binance
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 
 	"github.com/adshao/go-binance/v2/common"

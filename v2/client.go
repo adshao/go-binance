@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -13,7 +14,6 @@ import (
 	"time"
 
 	"github.com/bitly/go-simplejson"
-	jsoniter "github.com/json-iterator/go"
 
 	"github.com/adshao/go-binance/v2/common"
 	"github.com/adshao/go-binance/v2/delivery"
@@ -132,9 +132,6 @@ type SelfTradePreventionMode string
 
 // UseTestnet switch all the API endpoints from production to the testnet
 var UseTestnet = false
-
-// Redefining the standard package
-var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // Global enums
 const (

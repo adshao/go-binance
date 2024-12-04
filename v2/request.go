@@ -1,6 +1,7 @@
 package binance
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
