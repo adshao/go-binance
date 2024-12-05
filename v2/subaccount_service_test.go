@@ -1599,7 +1599,7 @@ func (s *subAccountUniversalTransferServiceTestSuite) TestSubAccountUniversalTra
 	var asset string = "USDT"
 	var amount string = "0.0125586"
 	s.assertReq(func(r *request) {
-		e := newSignedRequest().setFormParam("fromAccountType", fromAccountType).setFormParam("toAccountType", toAccountType).setFormParam("asset", asset).setFormParam("amount", amount)
+		e := newSignedRequest().setParam("fromAccountType", fromAccountType).setParam("toAccountType", toAccountType).setParam("asset", asset).setParam("amount", amount)
 		s.assertRequestEqual(e, r)
 	})
 	res, err := s.client.NewSubAccountUniversalTransferService().FromAccountType(fromAccountType).ToAccountType(toAccountType).Asset(asset).Amount(amount).Do(newContext())
