@@ -1,6 +1,7 @@
 package binance
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/adshao/go-binance/v2/common"

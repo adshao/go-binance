@@ -1,6 +1,9 @@
 package binance
 
-import "context"
+import (
+	"context"
+	"encoding/json"
+)
 
 // InternalUniversalTransferService Universal Transfer (For Master Account)
 // https://binance-docs.github.io/apidocs/spot/en/#universal-transfer-for-master-account
