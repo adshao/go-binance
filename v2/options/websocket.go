@@ -40,7 +40,7 @@ var wsServe = func(cfg *WsConfig, handler WsHandler, errHandler ErrHandler) (don
 	Dialer := websocket.Dialer{
 		Proxy:             proxy,
 		HandshakeTimeout:  45 * time.Second,
-		EnableCompression: false,
+		EnableCompression: true,
 	}
 
 	c, _, err := Dialer.Dial(cfg.Endpoint, nil)
