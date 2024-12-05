@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/bitly/go-simplejson"
@@ -440,8 +441,10 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 		r.setParam(timestampKey, currentTimestamp()-c.TimeOffset)
 	}
 	queryString := r.query.Encode()
+	queryString = strings.ReplaceAll(queryString, "%40", "@")
 	body := &bytes.Buffer{}
 	bodyString := r.form.Encode()
+	bodyString = strings.ReplaceAll(bodyString, "%40", "@")
 	header := http.Header{}
 	if r.header != nil {
 		header = r.header.Clone()
