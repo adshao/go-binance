@@ -860,24 +860,22 @@ func (s *orderServiceTestSuite) TestModifyBatchOrders() {
 	s.mockDo(data, nil)
 	defer s.assertDo()
 
-	orders := []*CreateOrderService{
-		s.client.NewCreateOrderService().
+	orders := []*ModifyOrder{
+		new(ModifyOrder).
 			Symbol("BTCUSDT").
-			Side(SideTypeBuy).
-			Type(OrderTypeLimit).
+			OrigClientOrderID("Ne7DEEvLvv8b8egTqrZceu").
 			Quantity("1").
-			Price("99995.00").
-			TimeInForce(TimeInForceTypeGTC),
-		s.client.NewCreateOrderService().
+			Side("BUY").
+			Price("99995.00"),
+		new(ModifyOrder).
 			Symbol("BTCUSDT").
-			Side(SideTypeSell).
-			Type(OrderTypeLimit).
+			OrigClientOrderID("GYby67jLvv8b8egTr8Adrf").
 			Quantity("1").
-			Price("-100005.00").
-			TimeInForce(TimeInForceTypeGTC),
+			Side("SELL").
+			Price("-100005.00"),
 	}
 
-	res, err := s.client.NewCreateBatchOrdersService().OrderList(orders).Do(context.Background())
+	res, err := s.client.NewModifyBatchOrdersService().OrderList(orders).Do(context.Background())
 
 	r := s.r()
 	r.NoError(err)

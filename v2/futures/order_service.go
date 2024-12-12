@@ -1087,10 +1087,63 @@ func (s *CreateBatchOrdersService) Do(ctx context.Context, opts ...RequestOption
 	return batchCreateOrdersResponse, nil
 }
 
+// ModifyOrder contains parameters for order modification request
+type ModifyOrder struct {
+	orderID           *int64
+	origClientOrderID *string
+	symbol            string
+	side              SideType
+	quantity          string
+	price             *string
+	priceMatch        *PriceMatchType
+}
+
+// Symbol set symbol
+func (s *ModifyOrder) Symbol(symbol string) *ModifyOrder {
+	s.symbol = symbol
+	return s
+}
+
+// OrderID will prevail over OrigClientOrderID
+func (s *ModifyOrder) OrderID(orderID int64) *ModifyOrder {
+	s.orderID = &orderID
+	return s
+}
+
+// OrigClientOrderID is not necessary if OrderID is provided
+func (s *ModifyOrder) OrigClientOrderID(origClientOrderID string) *ModifyOrder {
+	s.origClientOrderID = &origClientOrderID
+	return s
+}
+
+// Side set side
+func (s *ModifyOrder) Side(side SideType) *ModifyOrder {
+	s.side = side
+	return s
+}
+
+// Quantity set quantity
+func (s *ModifyOrder) Quantity(quantity string) *ModifyOrder {
+	s.quantity = quantity
+	return s
+}
+
+// Price set price
+func (s *ModifyOrder) Price(price string) *ModifyOrder {
+	s.price = &price
+	return s
+}
+
+// PriceMatch set priceMatch
+func (s *ModifyOrder) PriceMatch(priceMatch PriceMatchType) *ModifyOrder {
+	s.priceMatch = &priceMatch
+	return s
+}
+
 // ModifyBatchOrdersService handles batch modification of orders
 type ModifyBatchOrdersService struct {
 	c      *Client
-	orders []*ModifyOrderService
+	orders []*ModifyOrder
 }
 
 // CreateBatchOrdersResponse contains the response from CreateBatchOrders operation
@@ -1112,8 +1165,8 @@ func newModifyBatchOrdersResponse(n int) *ModifyBatchOrdersResponse {
 	}
 }
 
-// OrderList set the list of ModifyOrderService to be used in the ModifyBatchOrders operation
-func (s *ModifyBatchOrdersService) OrderList(orders []*ModifyOrderService) *ModifyBatchOrdersService {
+// OrderList set the list of ModifyOrder to be used in the ModifyBatchOrders operation
+func (s *ModifyBatchOrdersService) OrderList(orders []*ModifyOrder) *ModifyBatchOrdersService {
 	s.orders = orders
 	return s
 }
