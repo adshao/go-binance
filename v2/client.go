@@ -441,9 +441,11 @@ func (c *Client) parseRequest(r *request, opts ...RequestOption) (err error) {
 		r.setParam(timestampKey, currentTimestamp()-c.TimeOffset)
 	}
 	queryString := r.query.Encode()
+	// @It is a safe character and does not require escape.
 	queryString = strings.ReplaceAll(queryString, "%40", "@")
 	body := &bytes.Buffer{}
 	bodyString := r.form.Encode()
+	// @It is a safe character and does not require escape.
 	bodyString = strings.ReplaceAll(bodyString, "%40", "@")
 	header := http.Header{}
 	if r.header != nil {
