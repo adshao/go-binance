@@ -823,3 +823,105 @@ func (s *orderServiceTestSuite) TestCreateBatchOrders() {
 	}
 	r.EqualValues(e, res)
 }
+
+func (s *orderServiceTestSuite) TestModifyBatchOrders() {
+	data := []byte(`[
+	{
+			"orderId": 42042723,
+			"symbol": "BTCUSDT",
+			"status": "NEW",
+			"clientOrderId": "Ne7DEEvLvv8b8egTqrZceu",
+			"price": "99995.00",
+			"avgPrice": "0.00",
+			"origQty": "1",
+			"executedQty": "0",
+			"cumQty": "0",
+			"cumQuote": "0.00",
+			"timeInForce": "GTC",
+			"type": "LIMIT",
+			"reduceOnly": false,
+			"closePosition": false,
+			"side": "BUY",
+			"positionSide": "BOTH",
+			"stopPrice": "0.00",
+			"workingType": "CONTRACT_PRICE",
+			"priceProtect": false,
+			"origType": "LIMIT",
+			"priceMatch": "NONE",
+			"selfTradePreventionMode": "NONE",
+			"goodTillDate": 0,
+			"updateTime": 1733500988978
+		},
+		{
+			"code": -1102, 
+			"msg": "Mandatory parameter 'price' was not sent, was empty/null, or malformed."
+		}
+	]`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+
+	orders := []*ModifyOrder{
+		new(ModifyOrder).
+			Symbol("BTCUSDT").
+			OrigClientOrderID("Ne7DEEvLvv8b8egTqrZceu").
+			Quantity("1").
+			Side("BUY").
+			Price("99995.00"),
+		new(ModifyOrder).
+			Symbol("BTCUSDT").
+			OrigClientOrderID("GYby67jLvv8b8egTr8Adrf").
+			Quantity("1").
+			Side("SELL").
+			Price("-100005.00"),
+	}
+
+	res, err := s.client.NewModifyBatchOrdersService().OrderList(orders).Do(context.Background())
+
+	r := s.r()
+	r.NoError(err)
+
+	r.Equal(1, len(res.Orders))
+
+	e := &Order{
+		Symbol:                  "BTCUSDT",
+		OrderID:                 42042723,
+		ClientOrderID:           "Ne7DEEvLvv8b8egTqrZceu",
+		Price:                   "99995.00",
+		ReduceOnly:              false,
+		OrigQuantity:            "1",
+		ExecutedQuantity:        "0",
+		CumQuantity:             "0",
+		CumQuote:                "0.00",
+		Status:                  "NEW",
+		TimeInForce:             "GTC",
+		Type:                    "LIMIT",
+		Side:                    "BUY",
+		StopPrice:               "0.00",
+		Time:                    0,
+		UpdateTime:              1733500988978,
+		WorkingType:             "CONTRACT_PRICE",
+		ActivatePrice:           "",
+		PriceRate:               "",
+		AvgPrice:                "0.00",
+		OrigType:                "LIMIT",
+		PositionSide:            "BOTH",
+		PriceProtect:            false,
+		ClosePosition:           false,
+		PriceMatch:              "NONE",
+		SelfTradePreventionMode: "NONE",
+		GoodTillDate:            0,
+	}
+	s.assertOrderEqual(e, res.Orders[0])
+
+	r.Equal(
+		[]error{
+			nil,
+			&common.APIError{
+				Code:     -1102,
+				Message:  "Mandatory parameter 'price' was not sent, was empty/null, or malformed.",
+				Response: nil,
+			},
+		},
+		res.Errors)
+
+}
