@@ -26,6 +26,8 @@ var (
 
 	ProxyUrl = ""
 )
+// currently option websocket streams are not supported on US domain
+const UseUSDomain = false
 
 // getWsEndpoint return the base endpoint of the WS according the UseTestnet flag
 func getWsEndpoint() string {

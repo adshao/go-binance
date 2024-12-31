@@ -16,10 +16,10 @@ import (
 
 	"github.com/bitly/go-simplejson"
 
-	"github.com/adshao/go-binance/v2/common"
-	"github.com/adshao/go-binance/v2/delivery"
-	"github.com/adshao/go-binance/v2/futures"
-	"github.com/adshao/go-binance/v2/options"
+	"github.com/whiteher0n/go-binance/v2/common"
+	"github.com/whiteher0n/go-binance/v2/delivery"
+	"github.com/whiteher0n/go-binance/v2/futures"
+	"github.com/whiteher0n/go-binance/v2/options"
 )
 
 // SideType define side type of order
@@ -125,6 +125,7 @@ type FuturesAlgoOrderStatusType string
 // Endpoints
 var (
 	BaseAPIMainURL    = "https://api.binance.com"
+	BaseAPIMainUSURL    = "https://api.binance.us"
 	BaseAPITestnetURL = "https://testnet.binance.vision"
 )
 
@@ -133,6 +134,7 @@ type SelfTradePreventionMode string
 
 // UseTestnet switch all the API endpoints from production to the testnet
 var UseTestnet = false
+var UseUSDomain = false
 
 // Global enums
 const (
@@ -344,6 +346,9 @@ func newJSON(data []byte) (j *simplejson.Json, err error) {
 func getAPIEndpoint() string {
 	if UseTestnet {
 		return BaseAPITestnetURL
+	}
+	if UseUSDomain {
+		return BaseAPIMainUSURL
 	}
 	return BaseAPIMainURL
 }

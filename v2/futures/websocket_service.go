@@ -28,11 +28,15 @@ var (
 	WebsocketKeepalive = false
 	// UseTestnet switch all the WS streams from production to the testnet
 	UseTestnet = false
+	
 	// WebsocketTimeoutReadWriteConnection is an interval for sending ping/pong messages if WebsocketKeepalive is enabled
 	// using for websocket API (read/write)
 	WebsocketTimeoutReadWriteConnection = time.Second * 10
 	ProxyUrl                            = ""
 )
+
+// currently future websocket streams are not supported on US domain
+const UseUSDomain = false
 
 func getWsProxyUrl() *string {
 	if ProxyUrl == "" {

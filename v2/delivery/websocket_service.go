@@ -12,6 +12,7 @@ import (
 // Endpoints
 var (
 	BaseWsMainUrl    = "wss://dstream.binance.com/ws"
+	BaseWsMainUSUrl    = "wss://dstream.binance.us/ws"
 	BaseWsTestnetUrl = "wss://dstream.binancefuture.com/ws"
 )
 
