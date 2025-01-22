@@ -12,7 +12,7 @@ func AmountToLotSize(amount, minQty, stepSize string, precision int) string {
 	amountDec := decimal.RequireFromString(amount)
 	minQtyDec := decimal.RequireFromString(minQty)
 	baseAmountDec := amountDec.Sub(minQtyDec)
-	if baseAmountDec.LessThan(decimal.RequireFromString("0")) {
+	if baseAmountDec.LessThan(decimal.Zero) {
 		return "0"
 	}
 	stepSizeDec := decimal.RequireFromString(stepSize)
