@@ -26,6 +26,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 		"transactTime": 1499827319559,
 		"price": "0.0001",
 		"origQty": "12.00",
+		"origQuoteOrderQty": "10.00",
 		"executedQty": "10.00",
 		"cummulativeQuoteQty": "10.00",
 		"status": "FILLED",
@@ -69,6 +70,7 @@ func (s *orderServiceTestSuite) TestCreateOrder() {
 		TransactTime:             1499827319559,
 		Price:                    "0.0001",
 		OrigQuantity:             "12.00",
+		OrigQuoteOrderQuantity:   "10.00",
 		ExecutedQuantity:         "10.00",
 		CummulativeQuoteQuantity: "10.00",
 		Status:                   OrderStatusTypeFilled,
@@ -92,6 +94,7 @@ func (s *orderServiceTestSuite) TestCreateOrderFull() {
 		"transactTime": 1499827319559,
 		"price": "0.0001",
 		"origQty": "12.00",
+		"origQuoteOrderQty": "10.00",
 		"executedQty": "10.00",
 		"cummulativeQuoteQty": "10.00",
 		"status": "FILLED",
@@ -145,6 +148,7 @@ func (s *orderServiceTestSuite) TestCreateOrderFull() {
 		TransactTime:             1499827319559,
 		Price:                    "0.0001",
 		OrigQuantity:             "12.00",
+		OrigQuoteOrderQuantity:   "10.00",
 		ExecutedQuantity:         "10.00",
 		CummulativeQuoteQuantity: "10.00",
 		Status:                   OrderStatusTypeFilled,
@@ -177,6 +181,7 @@ func (s *baseOrderTestSuite) assertCreateOrderResponseEqual(e, a *CreateOrderRes
 	r.Equal(e.TransactTime, a.TransactTime, "TransactTime")
 	r.Equal(e.Price, a.Price, "Price")
 	r.Equal(e.OrigQuantity, a.OrigQuantity, "OrigQuantity")
+	r.Equal(e.OrigQuoteOrderQuantity, a.OrigQuoteOrderQuantity, "OrigQuoteOrderQuantity")
 	r.Equal(e.ExecutedQuantity, a.ExecutedQuantity, "ExecutedQuantity")
 	r.Equal(e.CummulativeQuoteQuantity, a.CummulativeQuoteQuantity, "CummulativeQuoteQuantity")
 	r.Equal(e.Status, a.Status, "Status")
@@ -793,6 +798,7 @@ func (s *orderServiceTestSuite) TestCancelOrder() {
 		"transactTime": 1507725176595,
 		"price": "1.00000000",
 		"origQty": "10.00000000",
+		"origQuoteOrderQty": "11.00000000",
 		"executedQty": "8.00000000",
 		"cummulativeQuoteQty": "8.00000000",
 		"status": "CANCELED",
@@ -830,6 +836,7 @@ func (s *orderServiceTestSuite) TestCancelOrder() {
 		TransactTime:             1507725176595,
 		Price:                    "1.00000000",
 		OrigQuantity:             "10.00000000",
+		OrigQuoteOrderQuantity:   "11.00000000",
 		ExecutedQuantity:         "8.00000000",
 		CummulativeQuoteQuantity: "8.00000000",
 		Status:                   OrderStatusTypeCanceled,
@@ -1015,6 +1022,7 @@ func (s *baseOrderTestSuite) assertCancelOrderResponseEqual(e, a *CancelOrderRes
 	r.Equal(e.TransactTime, a.TransactTime, "TransactTime")
 	r.Equal(e.Price, a.Price, "Price")
 	r.Equal(e.OrigQuantity, a.OrigQuantity, "OrigQuantity")
+	r.Equal(e.OrigQuoteOrderQuantity, a.OrigQuoteOrderQuantity, "OrigQuoteOrderQuantity")
 	r.Equal(e.ExecutedQuantity, a.ExecutedQuantity, "ExecutedQuantity")
 	r.Equal(e.CummulativeQuoteQuantity, a.CummulativeQuoteQuantity, "CummulativeQuoteQuantity")
 	r.Equal(e.Status, a.Status, "Status")

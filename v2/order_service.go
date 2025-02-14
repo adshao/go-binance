@@ -179,6 +179,7 @@ type CreateOrderResponse struct {
 	TransactTime             int64  `json:"transactTime"`
 	Price                    string `json:"price"`
 	OrigQuantity             string `json:"origQty"`
+	OrigQuoteOrderQuantity   string `json:"origQuoteOrderQty"`
 	ExecutedQuantity         string `json:"executedQty"`
 	CummulativeQuoteQuantity string `json:"cummulativeQuoteQty"`
 	IsIsolated               bool   `json:"isIsolated"` // for isolated margin
@@ -807,6 +808,7 @@ type CancelOrderResponse struct {
 	TransactTime             int64                   `json:"transactTime"`
 	Price                    string                  `json:"price"`
 	OrigQuantity             string                  `json:"origQty"`
+	OrigQuoteOrderQuantity   string                  `json:"origQuoteOrderQty"`
 	ExecutedQuantity         string                  `json:"executedQty"`
 	CummulativeQuoteQuantity string                  `json:"cummulativeQuoteQty"`
 	Status                   OrderStatusType         `json:"status"`
