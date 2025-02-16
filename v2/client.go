@@ -131,6 +131,8 @@ var (
 // SelfTradePreventionMode define self trade prevention strategy
 type SelfTradePreventionMode string
 
+type MarginAccountBorrowRepayType string
+
 // UseTestnet switch all the API endpoints from production to the testnet
 var UseTestnet = false
 
@@ -321,6 +323,9 @@ const (
 	SelfTradePreventionModeExpireTaker SelfTradePreventionMode = "EXPIRE_TAKER"
 	SelfTradePreventionModeExpireBoth  SelfTradePreventionMode = "EXPIRE_BOTH"
 	SelfTradePreventionModeExpireMaker SelfTradePreventionMode = "EXPIRE_MAKER"
+
+	MarginAccountBorrow MarginAccountBorrowRepayType = "BORROW"
+	MarginAccountRepay  MarginAccountBorrowRepayType = "REPAY"
 )
 
 func currentTimestamp() int64 {
@@ -771,13 +776,20 @@ func (c *Client) NewMarginTransferService() *MarginTransferService {
 }
 
 // NewMarginLoanService init margin account loan service
+// Deprecated: use NewMarginBorrowRepayService instead
 func (c *Client) NewMarginLoanService() *MarginLoanService {
 	return &MarginLoanService{c: c}
 }
 
 // NewMarginRepayService init margin account repay service
+// Deprecated: use NewMarginBorrowRepayService instead
 func (c *Client) NewMarginRepayService() *MarginRepayService {
 	return &MarginRepayService{c: c}
+}
+
+// NewMarginBorrowRepayService init margin account borrow/repay service
+func (c *Client) NewMarginBorrowRepayService() *MarginBorrowRepayService {
+	return &MarginBorrowRepayService{c: c}
 }
 
 // NewCreateMarginOrderService init creating margin order service
