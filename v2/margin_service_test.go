@@ -92,6 +92,64 @@ func (s *marginTestSuite) TestRepay() {
 	s.assertTransactionResponseEqual(e, res)
 }
 
+func (s *marginTestSuite) TestBorrowRepayBorrow() {
+	data := []byte(`{
+		"tranId": 100000001
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	asset := "BTC"
+	amount := "1.000"
+	_type := MarginAccountBorrow
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setFormParams(params{
+			"asset":  asset,
+			"amount": amount,
+			"type":   string(_type),
+		})
+		s.assertRequestEqual(e, r)
+	})
+	res, err := s.client.NewMarginBorrowRepayService().
+		Asset(asset).
+		Amount(amount).
+		Type(_type).
+		Do(newContext())
+	s.r().NoError(err)
+	e := &TransactionResponse{
+		TranID: 100000001,
+	}
+	s.assertTransactionResponseEqual(e, res)
+}
+
+func (s *marginTestSuite) TestBorrowRepayRepay() {
+	data := []byte(`{
+		"tranId": 100000001
+	}`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	asset := "BTC"
+	amount := "1.000"
+	_type := MarginAccountRepay
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setFormParams(params{
+			"asset":  asset,
+			"amount": amount,
+			"type":   string(_type),
+		})
+		s.assertRequestEqual(e, r)
+	})
+	res, err := s.client.NewMarginBorrowRepayService().
+		Asset(asset).
+		Amount(amount).
+		Type(_type).
+		Do(newContext())
+	s.r().NoError(err)
+	e := &TransactionResponse{
+		TranID: 100000001,
+	}
+	s.assertTransactionResponseEqual(e, res)
+}
+
 func (s *marginTestSuite) TestListMarginLoans() {
 	data := []byte(`{
 		"rows": [

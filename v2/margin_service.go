@@ -64,6 +64,7 @@ type TransactionResponse struct {
 }
 
 // MarginLoanService apply for a loan
+// Deprecated: use MarginBorrowRepayService instead
 type MarginLoanService struct {
 	c          *Client
 	asset      string
@@ -128,6 +129,7 @@ func (s *MarginLoanService) Do(ctx context.Context, opts ...RequestOption) (res 
 }
 
 // MarginRepayService repay loan for margin account
+// Deprecated: use MarginBorrowRepayService instead
 type MarginRepayService struct {
 	c          *Client
 	asset      string
@@ -177,6 +179,77 @@ func (s *MarginRepayService) Do(ctx context.Context, opts ...RequestOption) (res
 	}
 	if s.symbol != nil {
 		r.setParam("symbol", *s.symbol)
+	}
+
+	res = new(TransactionResponse)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// MarginBorrowRepayService borrow/repay for margin account
+type MarginBorrowRepayService struct {
+	c          *Client
+	asset      string                       // Mandatory:YES
+	amount     string                       // Mandatory:YES
+	isIsolated bool                         // Mandatory:YES, TRUE for Isolated Margin, FALSE for Cross Margin, Default FALSE
+	symbol     string                       // Mandatory:YES, Only for Isolated margin
+	_type      MarginAccountBorrowRepayType // Mandatory:YES, BORROW or REPAY
+}
+
+// Asset set asset being transferred, e.g., BTC
+func (s *MarginBorrowRepayService) Asset(asset string) *MarginBorrowRepayService {
+	s.asset = asset
+	return s
+}
+
+// Amount the amount to be transferred
+func (s *MarginBorrowRepayService) Amount(amount string) *MarginBorrowRepayService {
+	s.amount = amount
+	return s
+}
+
+// IsIsolated is for isolated margin or not, "TRUE", "FALSE"，default "FALSE"
+func (s *MarginBorrowRepayService) IsIsolated(isIsolated bool) *MarginBorrowRepayService {
+	s.isIsolated = isIsolated
+	return s
+}
+
+// Symbol set isolated symbol
+func (s *MarginBorrowRepayService) Symbol(symbol string) *MarginBorrowRepayService {
+	s.symbol = symbol
+	return s
+}
+
+func (s *MarginBorrowRepayService) Type(marginBorrowRepayType MarginAccountBorrowRepayType) *MarginBorrowRepayService {
+	s._type = marginBorrowRepayType
+	return s
+}
+
+// Do send request
+func (s *MarginBorrowRepayService) Do(ctx context.Context, opts ...RequestOption) (res *TransactionResponse, err error) {
+	r := &request{
+		method:   http.MethodPost,
+		endpoint: "/sapi/v1/margin/borrow-repay",
+		secType:  secTypeSigned,
+	}
+	m := params{
+		"asset":  s.asset,
+		"amount": s.amount,
+		"type":   string(s._type),
+	}
+	r.setFormParams(m)
+	if s.isIsolated {
+		r.setParam("isIsolated", "TRUE")
+	}
+	if s.symbol != "" {
+		r.setParam("symbol", s.symbol)
 	}
 
 	res = new(TransactionResponse)
