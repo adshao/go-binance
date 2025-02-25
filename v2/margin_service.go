@@ -391,6 +391,8 @@ type MarginBorrowRepay struct {
 	Status         string `json:"status"`    //one of PENDING (pending execution), CONFIRMED (successfully execution), FAILED (execution failed, nothing happened to your account);
 	Timestamp      int64  `json:"timestamp"`
 	TxID           int64  `json:"txId"`
+
+	ClientTag string `json:"clientTag"` // This field is not in the document
 }
 
 // ListMarginLoansService list loan record
