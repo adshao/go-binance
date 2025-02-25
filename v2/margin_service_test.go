@@ -150,6 +150,101 @@ func (s *marginTestSuite) TestBorrowRepayRepay() {
 	s.assertTransactionResponseEqual(e, res)
 }
 
+func (s *marginTestSuite) TestListBorrowRepay() {
+	data := []byte(`{
+		  "rows": [
+			  {
+				"type": "AUTO",
+				"isolatedSymbol": "BNBUSDT",
+				"amount": "14.00000000",
+				"asset": "BNB",   
+				"interest": "0.01866667",
+				"principal": "13.98133333",
+				"status": "CONFIRMED",
+				"timestamp": 1563438204000,
+				"txId": 2970933056
+			  }
+		  ],
+		  "total": 1
+		}
+	`)
+	s.mockDo(data, nil)
+	defer s.assertDo()
+	asset := "BTC"
+	isolatedSymbol := "BTCUSDT"
+	txId := int64(100000001)
+	startTime := int64(1555056425000)
+	endTime := int64(1555056425001)
+	current := int64(1)
+	size := int64(10)
+	_type := MarginAccountRepay
+	s.assertReq(func(r *request) {
+		e := newSignedRequest().setParams(params{
+			"asset":          asset,
+			"isolatedSymbol": isolatedSymbol,
+			"txId":           txId,
+			"startTime":      startTime,
+			"endTime":        endTime,
+			"current":        current,
+			"size":           size,
+			"type":           _type,
+		})
+		s.assertRequestEqual(e, r)
+	})
+	res, err := s.client.NewListMarginBorrowRepayService().
+		Asset(asset).
+		IsolatedSymbol(isolatedSymbol).
+		TxId(txId).
+		StartTime(startTime).
+		EndTime(endTime).
+		Current(current).
+		Size(size).
+		Type(_type).
+		Do(newContext())
+	s.r().NoError(err)
+	e := &MarginBorrowRepayResponse{
+		Total: 1,
+		Rows: []MarginBorrowRepay{
+			{
+				Type:           "AUTO",
+				IsolatedSymbol: "BNBUSDT",
+				Amount:         "14.00000000",
+				Asset:          "BNB",
+				Interest:       "0.01866667",
+				Principal:      "13.98133333",
+				Status:         "CONFIRMED",
+				Timestamp:      1563438204000,
+				TxID:           2970933056,
+			},
+		},
+	}
+	s.assertListBorrowRepayResponseEqual(e, res)
+}
+
+func (s *marginTestSuite) assertListBorrowRepayResponseEqual(e, a *MarginBorrowRepayResponse) {
+	r := s.r()
+	r.Equal(e.Total, a.Total, "Total")
+	r.Len(a.Rows, len(e.Rows), "Rows")
+	for i := 0; i < len(e.Rows); i++ {
+		s.assertListBorrowRepayItemEqual(&e.Rows[i], &a.Rows[i])
+	}
+}
+
+func (s *marginTestSuite) assertListBorrowRepayItemEqual(e, a *MarginBorrowRepay) {
+	r := s.r()
+	r.Equal(e.Type, a.Type, "Type")
+	r.Equal(e.IsolatedSymbol, a.IsolatedSymbol, "IsolatedSymbol")
+	r.Equal(e.Amount, a.Amount, "Amount")
+	r.Equal(e.Asset, a.Asset, "Asset")
+	r.Equal(e.Interest, a.Interest, "Interest")
+	r.Equal(e.Principal, a.Principal, "Principal")
+	r.Equal(e.Status, a.Status, "Status")
+	r.Equal(e.Status, MarginAccountBorrowRepayStatusConfirmed, "Status")
+
+	r.Equal(e.Timestamp, a.Timestamp, "Timestamp")
+	r.Equal(e.TxID, a.TxID, "TxID")
+}
+
 func (s *marginTestSuite) TestListMarginLoans() {
 	data := []byte(`{
 		"rows": [
