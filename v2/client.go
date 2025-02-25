@@ -326,6 +326,10 @@ const (
 
 	MarginAccountBorrow MarginAccountBorrowRepayType = "BORROW"
 	MarginAccountRepay  MarginAccountBorrowRepayType = "REPAY"
+
+	MarginAccountBorrowRepayStatusPending   string = "PENDING"
+	MarginAccountBorrowRepayStatusConfirmed string = "CONFIRMED"
+	MarginAccountBorrowRepayStatusFailed    string = "FAILED"
 )
 
 func currentTimestamp() int64 {
@@ -792,6 +796,10 @@ func (c *Client) NewMarginBorrowRepayService() *MarginBorrowRepayService {
 	return &MarginBorrowRepayService{c: c}
 }
 
+func (c *Client) NewListMarginBorrowRepayService() *ListMarginBorrowRepayService {
+	return &ListMarginBorrowRepayService{c: c}
+}
+
 // NewCreateMarginOrderService init creating margin order service
 func (c *Client) NewCreateMarginOrderService() *CreateMarginOrderService {
 	return &CreateMarginOrderService{c: c}
@@ -818,11 +826,13 @@ func (c *Client) NewGetMarginOrderService() *GetMarginOrderService {
 }
 
 // NewListMarginLoansService init list margin loan service
+// Deprecated: use NewListMarginBorrowRepayService instead
 func (c *Client) NewListMarginLoansService() *ListMarginLoansService {
 	return &ListMarginLoansService{c: c}
 }
 
 // NewListMarginRepaysService init list margin repay service
+// Deprecated: use NewListMarginBorrowRepayService instead
 func (c *Client) NewListMarginRepaysService() *ListMarginRepaysService {
 	return &ListMarginRepaysService{c: c}
 }

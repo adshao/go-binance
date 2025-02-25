@@ -264,7 +264,139 @@ func (s *MarginBorrowRepayService) Do(ctx context.Context, opts ...RequestOption
 	return res, nil
 }
 
+// ListMarginBorrowRepayService Query borrow/repay records in Margin account
+// 1. txId or startTime must be sent. txId takes precedence. Response in descending order
+// 2. If an asset is sent, data within 30 days before endTime; If an asset is not sent, data within 7 days before endTime
+// 3. If neither startTime nor endTime is sent, the recent 7-day data will be returned.
+// 4. startTime set as endTime - 7days by default, endTime set as current time by default
+type ListMarginBorrowRepayService struct {
+	c              *Client
+	asset          *string                      // Mandatory:NO
+	isolatedSymbol *string                      // Mandatory:NO, Symbol in Isolated Margin
+	txId           *int64                       // Mandatory:NO, Transaction id
+	startTime      *int64                       // Mandatory:NO, milliseconds
+	endTime        *int64                       // Mandatory:NO, milliseconds
+	current        *int64                       // Mandatory:NO, Current querying page. Start from 1. Default:1
+	size           *int64                       // Mandatory:NO, Default:10 Max:100
+	_type          MarginAccountBorrowRepayType // Mandatory:YES, BORROW or REPAY
+}
+
+// Asset set asset being transferred, e.g., BTC
+func (s *ListMarginBorrowRepayService) Asset(asset string) *ListMarginBorrowRepayService {
+	s.asset = &asset
+	return s
+}
+
+func (s *ListMarginBorrowRepayService) IsolatedSymbol(isolatedSymbol string) *ListMarginBorrowRepayService {
+	s.isolatedSymbol = &isolatedSymbol
+	return s
+}
+
+func (s *ListMarginBorrowRepayService) TxId(txId int64) *ListMarginBorrowRepayService {
+	s.txId = &txId
+	return s
+}
+
+func (s *ListMarginBorrowRepayService) StartTime(startTime int64) *ListMarginBorrowRepayService {
+	s.startTime = &startTime
+	return s
+}
+
+func (s *ListMarginBorrowRepayService) EndTime(endTime int64) *ListMarginBorrowRepayService {
+	s.endTime = &endTime
+	return s
+}
+
+// Current currently querying page. Start from 1. Default:1
+func (s *ListMarginBorrowRepayService) Current(current int64) *ListMarginBorrowRepayService {
+	s.current = &current
+	return s
+}
+
+// Size default:10 max:100
+func (s *ListMarginBorrowRepayService) Size(size int64) *ListMarginBorrowRepayService {
+	s.size = &size
+	return s
+}
+
+func (s *ListMarginBorrowRepayService) Type(marginBorrowRepayType MarginAccountBorrowRepayType) *ListMarginBorrowRepayService {
+	s._type = marginBorrowRepayType
+	return s
+}
+
+// Do send request
+func (s *ListMarginBorrowRepayService) Do(ctx context.Context, opts ...RequestOption) (res *MarginBorrowRepayResponse, err error) {
+	r := &request{
+		method:   http.MethodGet,
+		endpoint: "/sapi/v1/margin/borrow-repay",
+		secType:  secTypeSigned,
+	}
+	m := params{
+		//"asset":          s.asset,
+		//"isolatedSymbol": s.isolatedSymbol,
+		//"txId":           s.txId,
+		//"startTime":      s.startTime,
+		//"endTime":        s.endTime,
+		//"current":        s.current,
+		//"size":           s.size,
+		"type": string(s._type),
+	}
+	r.setParams(m)
+	if s.asset != nil {
+		r.setParam("asset", *s.asset)
+	}
+	if s.isolatedSymbol != nil {
+		r.setParam("isolatedSymbol", *s.isolatedSymbol)
+	}
+	if s.txId != nil {
+		r.setParam("txId", *s.txId)
+	}
+	if s.startTime != nil {
+		r.setParam("startTime", *s.startTime)
+	}
+	if s.endTime != nil {
+		r.setParam("endTime", *s.endTime)
+	}
+	if s.current != nil {
+		r.setParam("current", *s.current)
+	}
+	if s.size != nil {
+		r.setParam("size", *s.size)
+	}
+
+	res = new(MarginBorrowRepayResponse)
+	data, err := s.c.callAPI(ctx, r, opts...)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+type MarginBorrowRepayResponse struct {
+	Rows  []MarginBorrowRepay `json:"rows"`
+	Total int64               `json:"total"`
+}
+
+type MarginBorrowRepay struct {
+	Type           string `json:"type"`           // AUTO,MANUAL for Cross Margin Borrow; MANUAL，AUTO，BNB_AUTO_REPAY，POINT_AUTO_REPAY for Cross Margin Repay; AUTO，MANUAL for Isolated Margin Borrow/Repay;
+	IsolatedSymbol string `json:"isolatedSymbol"` // "BNBUSDT"  isolated symbol, will not be returned for crossed margin
+	Amount         string `json:"amount"`
+	Asset          string `json:"asset"`
+	Interest       string `json:"interest"`  // Interest repaid
+	Principal      string `json:"principal"` // Principal repaid
+	Status         string `json:"status"`    //one of PENDING (pending execution), CONFIRMED (successfully execution), FAILED (execution failed, nothing happened to your account);
+	Timestamp      int64  `json:"timestamp"`
+	TxID           int64  `json:"txId"`
+
+	ClientTag string `json:"clientTag"` // This field is not in the document
+}
+
 // ListMarginLoansService list loan record
+// Deprecated: use ListMarginBorrowRepayService instead
 type ListMarginLoansService struct {
 	c         *Client
 	asset     string
@@ -361,6 +493,7 @@ type MarginLoan struct {
 }
 
 // ListMarginRepaysService list repay record
+// Deprecated: use ListMarginBorrowRepayService instead
 type ListMarginRepaysService struct {
 	c         *Client
 	asset     string
