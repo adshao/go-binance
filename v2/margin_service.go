@@ -240,18 +240,13 @@ func (s *MarginBorrowRepayService) Do(ctx context.Context, opts ...RequestOption
 		secType:  secTypeSigned,
 	}
 	m := params{
-		"asset":  s.asset,
-		"amount": s.amount,
-		"type":   string(s._type),
+		"asset":      s.asset,
+		"isIsolated": s.isIsolated,
+		"symbol":     s.symbol,
+		"amount":     s.amount,
+		"type":       string(s._type),
 	}
 	r.setFormParams(m)
-	if s.isIsolated {
-		r.setParam("isIsolated", "TRUE")
-	}
-	if s.symbol != "" {
-		r.setParam("symbol", s.symbol)
-	}
-
 	res = new(TransactionResponse)
 	data, err := s.c.callAPI(ctx, r, opts...)
 	if err != nil {

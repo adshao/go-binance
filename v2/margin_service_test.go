@@ -103,9 +103,11 @@ func (s *marginTestSuite) TestBorrowRepayBorrow() {
 	_type := MarginAccountBorrow
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setFormParams(params{
-			"asset":  asset,
-			"amount": amount,
-			"type":   string(_type),
+			"asset":      asset,
+			"amount":     amount,
+			"isIsolated": false,
+			"symbol":     "",
+			"type":       string(_type),
 		})
 		s.assertRequestEqual(e, r)
 	})
@@ -132,9 +134,11 @@ func (s *marginTestSuite) TestBorrowRepayRepay() {
 	_type := MarginAccountRepay
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setFormParams(params{
-			"asset":  asset,
-			"amount": amount,
-			"type":   string(_type),
+			"asset":      asset,
+			"amount":     amount,
+			"isIsolated": false,
+			"symbol":     "",
+			"type":       string(_type),
 		})
 		s.assertRequestEqual(e, r)
 	})
