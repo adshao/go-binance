@@ -695,14 +695,19 @@ func (s *GetMarginAccountService) Do(ctx context.Context, opts ...RequestOption)
 
 // MarginAccount define margin account info
 type MarginAccount struct {
-	BorrowEnabled       bool        `json:"borrowEnabled"`
-	MarginLevel         string      `json:"marginLevel"`
-	TotalAssetOfBTC     string      `json:"totalAssetOfBtc"`
-	TotalLiabilityOfBTC string      `json:"totalLiabilityOfBtc"`
-	TotalNetAssetOfBTC  string      `json:"totalNetAssetOfBtc"`
-	TradeEnabled        bool        `json:"tradeEnabled"`
-	TransferEnabled     bool        `json:"transferEnabled"`
-	UserAssets          []UserAsset `json:"userAssets"`
+	Created                    bool        `json:"created"`
+	BorrowEnabled              bool        `json:"borrowEnabled"`
+	MarginLevel                string      `json:"marginLevel"`
+	CollateralMarginLevel      string      `json:"collateralMarginLevel"`
+	TotalAssetOfBTC            string      `json:"totalAssetOfBtc"`
+	TotalLiabilityOfBTC        string      `json:"totalLiabilityOfBtc"`
+	TotalNetAssetOfBTC         string      `json:"totalNetAssetOfBtc"`
+	TotalCollateralValueInUSDT string      `json:"totalCollateralValueInUSDT"`
+	TradeEnabled               bool        `json:"tradeEnabled"`
+	TransferInEnabled          bool        `json:"transferInEnabled"`
+	TransferOutEnabled         bool        `json:"transferOutEnabled"`
+	AccountType                string      `json:"accountType"`
+	UserAssets                 []UserAsset `json:"userAssets"`
 }
 
 // UserAsset define user assets of margin account

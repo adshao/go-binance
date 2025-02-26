@@ -388,13 +388,18 @@ func (s *marginTestSuite) assertMarginRepayEqual(e, a *MarginRepay) {
 
 func (s *marginTestSuite) TestGetMarginAccount() {
 	data := []byte(`{
+		"created": true,
 		"borrowEnabled": true,
 		"marginLevel": "11.64405625",
+		"collateralMarginLevel": "0.64405625",
 		"totalAssetOfBtc": "6.82728457",
 		"totalLiabilityOfBtc": "0.58633215",
 		"totalNetAssetOfBtc": "6.24095242",
+		"totalCollateralValueInUSDT": "1234.33",
 		"tradeEnabled": true,
-		"transferEnabled": true,
+		"transferInEnabled": true,
+		"transferOutEnabled": true,
+		"accountType": "MARGIN_1",
 		"userAssets": [
 			{
 				"asset": "BTC",
@@ -439,13 +444,18 @@ func (s *marginTestSuite) TestGetMarginAccount() {
 	res, err := s.client.NewGetMarginAccountService().Do(newContext())
 	s.r().NoError(err)
 	e := &MarginAccount{
-		BorrowEnabled:       true,
-		MarginLevel:         "11.64405625",
-		TotalAssetOfBTC:     "6.82728457",
-		TotalLiabilityOfBTC: "0.58633215",
-		TotalNetAssetOfBTC:  "6.24095242",
-		TradeEnabled:        true,
-		TransferEnabled:     true,
+		Created:                    true,
+		BorrowEnabled:              true,
+		MarginLevel:                "11.64405625",
+		CollateralMarginLevel:      "0.64405625",
+		TotalAssetOfBTC:            "6.82728457",
+		TotalLiabilityOfBTC:        "0.58633215",
+		TotalNetAssetOfBTC:         "6.24095242",
+		TotalCollateralValueInUSDT: "1234.33",
+		TradeEnabled:               true,
+		TransferInEnabled:          true,
+		TransferOutEnabled:         true,
+		AccountType:                "MARGIN_1",
 		UserAssets: []UserAsset{
 			{
 				Asset:    "BTC",
@@ -586,13 +596,18 @@ func (s *marginTestSuite) assertIsolatedMarginAssetEqual(e, a IsolatedMarginAsse
 
 func (s *marginTestSuite) assertMarginAccountEqual(e, a *MarginAccount) {
 	r := s.r()
+	r.Equal(e.Created, a.Created, "Created")
 	r.Equal(e.BorrowEnabled, a.BorrowEnabled, "BorrowEnabled")
 	r.Equal(e.MarginLevel, a.MarginLevel, "MarginLevel")
+	r.Equal(e.CollateralMarginLevel, a.CollateralMarginLevel, "CollateralMarginLevel")
 	r.Equal(e.TotalAssetOfBTC, a.TotalAssetOfBTC, "TotalAssetOfBTC")
 	r.Equal(e.TotalLiabilityOfBTC, a.TotalLiabilityOfBTC, "TotalLiabilityOfBTC")
 	r.Equal(e.TotalNetAssetOfBTC, a.TotalNetAssetOfBTC, "TotalNetAssetOfBTC")
+	r.Equal(e.TotalCollateralValueInUSDT, a.TotalCollateralValueInUSDT, "TotalCollateralValueInUSDT")
 	r.Equal(e.TradeEnabled, a.TradeEnabled, "TradeEnabled")
-	r.Equal(e.TransferEnabled, a.TransferEnabled, "TransferEnabled")
+	r.Equal(e.TransferInEnabled, a.TransferInEnabled, "TransferInEnabled")
+	r.Equal(e.TransferOutEnabled, a.TransferOutEnabled, "TransferOutEnabled")
+	r.Equal(e.AccountType, a.AccountType, "AccountType")
 	r.Len(a.UserAssets, len(e.UserAssets), "UserAssets")
 	for i := 0; i < len(a.UserAssets); i++ {
 		s.assertUserAssetEqual(e.UserAssets[i], a.UserAssets[i])
