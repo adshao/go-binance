@@ -893,7 +893,8 @@ func (s *marginTestSuite) TestListMarginTrades() {
 
 func (s *marginTestSuite) TestGetMaxBorrowable() {
 	data := []byte(`{
-		"amount": "1.69248805"
+		"amount": "1.69248805",
+		"borrowLimit": "1000"
 	}`)
 	s.mockDo(data, nil)
 	defer s.assertDo()
@@ -910,13 +911,15 @@ func (s *marginTestSuite) TestGetMaxBorrowable() {
 	r := s.r()
 	r.NoError(err)
 	e := &MaxBorrowable{
-		Amount: "1.69248805",
+		Amount:      "1.69248805",
+		BorrowLimit: "1000",
 	}
 	s.assertMaxBorrowableEqual(e, borrowable)
 }
 
 func (s *marginTestSuite) assertMaxBorrowableEqual(e, a *MaxBorrowable) {
 	s.r().Equal(e.Amount, a.Amount, "Amount")
+	s.r().Equal(e.BorrowLimit, a.BorrowLimit, "BorrowLimit")
 }
 
 func (s *marginTestSuite) TestGetMaxTransferable() {
