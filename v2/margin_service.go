@@ -999,8 +999,10 @@ func (s *GetMaxBorrowableService) Do(ctx context.Context, opts ...RequestOption)
 }
 
 // MaxBorrowable define max borrowable response
+// https://developers.binance.com/docs/margin_trading/borrow-and-repay/Query-Max-Borrow
 type MaxBorrowable struct {
-	Amount string `json:"amount"`
+	Amount      string `json:"amount"`      // account's currently max borrowable amount with sufficient system availability
+	BorrowLimit string `json:"borrowLimit"` // max borrowable amount limited by the account level
 }
 
 // GetMaxTransferableService get max transferable of asset
