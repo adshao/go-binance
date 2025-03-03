@@ -18,7 +18,7 @@ Make sure you have read binance API document before continuing.
 ## Community
 Join our growing community on Telegram to get help, or just chat!
 
-[![Telegram Chat](https://patrolavia.github.io/telegram-badge/chat.png)](https://t.me/gobinancegroup)
+https://t.me/gobinancegroup
 
 ### API List
 
