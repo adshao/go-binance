@@ -486,8 +486,8 @@ func main() {
 
 - Check out [CCXT](https://github.com/ccxt/ccxt)  for more than 100 crypto exchanges with a unified trading API.
 - Check out [Python-Binance](https://github.com/sammchardy/python-binance) for a complete Python Wrapper.
-- Check out [Node-Binance-API] (https://github.com/carlosmiei/node-binance-api) for a node.js sdk.
-- Check out [Binance-Trade-Bot] (https://github.com/ccxt/binance-trade-bot) for a binance bot in python
+- Check out [Node-Binance-API](https://github.com/carlosmiei/node-binance-api) for a node.js sdk.
+- Check out [Binance-Trade-Bot](https://github.com/ccxt/binance-trade-bot) for a binance bot in python
 
 
 
