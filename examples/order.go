@@ -17,11 +17,10 @@ func SpotOrder() {
 	symbol := "BTCUSDT"
 	side := binance.SideTypeSell
 	orderType := binance.OrderTypeMarket
-	timeInForce := binance.TimeInForceTypeGTC
-	quantity := "0.001"
+	quantity := "0.0001"
 
 	res, err := client.NewCreateOrderService().Symbol(symbol).Side(side).
-		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).Do(context.Background())
+		Type(orderType).Quantity(quantity).Do(context.Background())
 
 	if err != nil {
 		fmt.Println(err)
@@ -32,19 +31,18 @@ func SpotOrder() {
 }
 
 func FuturesOrder() {
-	binance.UseTestnet = true
+	futures.UseTestnet = true
 	apiKey := ""
 	secret := ""
 	client := binance.NewFuturesClient(apiKey, secret)
 
-	symbol := "BTCUSDT"
+	symbol := "LTCUSDT"
 	side := futures.SideTypeSell
 	orderType := futures.OrderTypeMarket
-	timeInForce := futures.TimeInForceTypeGTC
-	quantity := "0.001"
+	quantity := "0.1"
 
 	res, err := client.NewCreateOrderService().Symbol(symbol).Side(side).
-		Type(orderType).TimeInForce(timeInForce).Quantity(quantity).Do(context.Background())
+		Type(orderType).Quantity(quantity).PositionSide(futures.PositionSideTypeLong).Do(context.Background())
 
 	if err != nil {
 		fmt.Println(err)

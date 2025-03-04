@@ -1,6 +1,8 @@
 package main
 
 func main() {
-	Ticker()
-	Ohlcv()
+	// Ticker()
+	// Ohlcv()
+	// SpotOrder()
+	FuturesOrder()
 }
