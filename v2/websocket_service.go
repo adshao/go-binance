@@ -18,6 +18,11 @@ var (
 	BaseWsApiMainURL       = "wss://ws-api.binance.com:443/ws-api/v3"
 	BaseWsApiTestnetURL    = "wss://testnet.binance.vision/ws-api/v3"
 
+	// WebsocketTimeout is an interval for sending ping/pong messages if WebsocketKeepalive is enabled
+	WebsocketTimeout = time.Second * 60
+
+	// WebsocketKeepalive enables sending ping/pong messages to check the connection stability
+	WebsocketKeepalive = false
 	// WebsocketTimeoutReadWriteConnection is an interval for sending ping/pong messages if WebsocketKeepalive is enabled
 	// using for websocket API (read/write)
 	WebsocketTimeoutReadWriteConnection = time.Second * 10
