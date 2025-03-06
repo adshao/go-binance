@@ -31,6 +31,7 @@ func (s *withdrawServiceTestSuite) TestCreateWithdraw() {
 	amount := "0.01"
 	transactionFeeFlag := true
 	name := "eth"
+	walletType := 0
 	s.assertReq(func(r *request) {
 		e := newSignedRequest().setParams(params{
 			"coin":               coin,
@@ -41,6 +42,7 @@ func (s *withdrawServiceTestSuite) TestCreateWithdraw() {
 			"amount":             amount,
 			"transactionFeeFlag": transactionFeeFlag,
 			"name":               name,
+			"walletType":         walletType,
 		})
 		s.assertRequestEqual(e, r)
 	})
@@ -54,6 +56,7 @@ func (s *withdrawServiceTestSuite) TestCreateWithdraw() {
 		Amount(amount).
 		TransactionFeeFlag(transactionFeeFlag).
 		Name(name).
+		WalletType(walletType).
 		Do(newContext())
 
 	r := s.r()

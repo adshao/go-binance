@@ -8,7 +8,7 @@ import (
 
 // CreateWithdrawService submits a withdraw request.
 //
-// See https://binance-docs.github.io/apidocs/spot/en/#withdraw
+// See https://developers.binance.com/docs/wallet/capital/withdraw
 type CreateWithdrawService struct {
 	c                  *Client
 	coin               string
@@ -17,8 +17,9 @@ type CreateWithdrawService struct {
 	address            string
 	addressTag         *string
 	amount             string
-	transactionFeeFlag *bool
-	name               *string
+	transactionFeeFlag *bool   // When making internal transfer, true for returning the fee to the destination account; false for returning the fee back to the departure account. Default false.
+	name               *string // Description of the address. Address book cap is 200, space in name should be encoded into %20
+	walletType         *int    // The wallet type for withdraw，0-spot wallet ，1-funding wallet. Default walletType is the current "selected wallet" under wallet->Fiat and Spot/Funding->Deposit
 }
 
 // Coin sets the coin parameter (MANDATORY).
@@ -69,6 +70,11 @@ func (s *CreateWithdrawService) Name(v string) *CreateWithdrawService {
 	return s
 }
 
+func (s *CreateWithdrawService) WalletType(walletType int) *CreateWithdrawService {
+	s.walletType = &walletType
+	return s
+}
+
 // Do sends the request.
 func (s *CreateWithdrawService) Do(ctx context.Context, opts ...RequestOption) (*CreateWithdrawResponse, error) {
 	r := &request{
@@ -93,6 +99,9 @@ func (s *CreateWithdrawService) Do(ctx context.Context, opts ...RequestOption) (
 	}
 	if v := s.name; v != nil {
 		r.setParam("name", *v)
+	}
+	if s.walletType != nil {
+		r.setParam("walletType", *s.walletType)
 	}
 
 	data, err := s.c.callAPI(ctx, r, opts...)
