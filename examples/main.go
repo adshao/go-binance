@@ -4,5 +4,6 @@ func main() {
 	// Ticker()
 	// Ohlcv()
 	// SpotOrder()
-	FuturesOrder()
+	// FuturesOrder()
+	WalletBalance()
 }
